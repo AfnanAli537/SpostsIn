@@ -1,0 +1,47 @@
+{
+    "selectLanguage" :"اختر اللغة",
+    "arabic": "عربي",
+    "english": "إنجليزي",
+
+    "next": "التالي",
+    "skip": "تخطي",
+    "back": "عودة",
+
+
+
+    "welcomeBack": "مرحبًا بعودتك",
+    "forgotPasswordIntr": "هل نسيت كلمة المرور؟",
+    "forgotPassword":"نسيت كلمة المرور",
+    "verify": "تحقق",
+    "login": "تسجيل الدخول",
+    "signUp": "إنشاء حساب" ,
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "notHaveAccount": "ليس لديك حساب؟"  ,
+    "alreadyHaveAccount": "لديك حساب بالفعل",
+    "createYourAccount": "أنشئ حسابك",
+    "fullName":"الاسم الكامل",
+     "confirmPasswordIsRequired":"تأكيد كلمة المرور مطلوب",
+    "passwordsDonotMatch":"كلمات المرور لا تتطابق",
+    "passwordIsRequired":"كلمة المرور مطلوبة",
+    "pleaseEnteraStrongPassword":"يرجى إدخال كلمة مرور قوية" ,
+    "lowercaseValidation": "على الأقل حرف صغير واحد",
+    "uppercaseValidation": "على الأقل حرف كبير واحد",
+    "specialCharacterValidation": "على الأقل رمز خاص واحد",
+    "numberValidation": "على الأقل رقم واحد",
+    "minLengthValidation": "يجب أن يكون على الأقل 8 أحرف",
+    "oldPassword": "كلمة المرور القديمة",
+    "oldPasswordRequired": "كلمة المرور القديمة مطلوبة",
+    "newPassword": "كلمة المرور الجديدة",
+    "newPasswordRequired": "كلمة المرور الجديدة مطلوبة",
+    "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+    "confirmPasswordRequired": "تأكيد كلمة المرور الجديدة مطلوب",
+    "changePassword": "تغيير كلمة المرور",
+    "changePasswordSuccessfully": "تم تغيير كلمة المرور بنجاح",
+    "home": "الرئيسية",
+    "chats": "المحادثات",
+    "chat": "المحادثة",
+    "profile": "الملف الشخصي"
+    
+}

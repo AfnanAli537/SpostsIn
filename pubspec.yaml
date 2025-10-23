@@ -9,6 +9,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  animated_toggle_switch: ^0.8.5
+  flutter_screenutil: ^5.9.3
+  flutter_launcher_icons: ^0.14.4
+  toast: ^0.3.0
+  flutter_native_splash: ^2.4.7
+  google_fonts: ^6.3.2
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +27,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+flutter_intl:
+  enabled: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  
