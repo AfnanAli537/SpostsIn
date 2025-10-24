@@ -55,6 +55,36 @@ class MessageLookup extends MessageLookupByLibrary {
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 number",
     ),
+    "onboarding1Desc": MessageLookupByLibrary.simpleMessage(
+      "Find and connect with top athletes through AI-powered talent discovery. Filter by sport, skills, and achievements.",
+    ),
+    "onboarding1Title": MessageLookupByLibrary.simpleMessage(
+      "Discover Sports Talents",
+    ),
+    "onboarding2Desc": MessageLookupByLibrary.simpleMessage(
+      "Create and publish tryouts, competitions, or sponsorship offers to attract the right athletes.",
+    ),
+    "onboarding2Title": MessageLookupByLibrary.simpleMessage(
+      "Post Opportunities",
+    ),
+    "onboarding3Desc": MessageLookupByLibrary.simpleMessage(
+      "Join SportsIn and take your sports career to the next level.",
+    ),
+    "onboarding3Title": MessageLookupByLibrary.simpleMessage(
+      "Build Your Sports Profile",
+    ),
+    "onboarding4Desc": MessageLookupByLibrary.simpleMessage(
+      "Upload your performance videos and get instant AI-powered analysis on your skills, movements, and progress.",
+    ),
+    "onboarding4Title": MessageLookupByLibrary.simpleMessage(
+      "AI Video Analysis",
+    ),
+    "onboarding5Desc": MessageLookupByLibrary.simpleMessage(
+      "Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities.",
+    ),
+    "onboarding5Title": MessageLookupByLibrary.simpleMessage(
+      "Connect & Communicate",
+    ),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Password is required",

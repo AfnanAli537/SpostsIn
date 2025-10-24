@@ -53,6 +53,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رقم واحد",
     ),
+    "onboarding1Desc": MessageLookupByLibrary.simpleMessage(
+      "ابحث وتواصل مع أفضل الرياضيين من خلال اكتشاف المواهب المدعوم بالذكاء الاصطناعي.",
+    ),
+    "onboarding1Title": MessageLookupByLibrary.simpleMessage(
+      "اكتشف المواهب الرياضية",
+    ),
+    "onboarding2Desc": MessageLookupByLibrary.simpleMessage(
+      "أنشئ وانشر تجارب الأداء أو البطولات لجذب الرياضيين المناسبين.",
+    ),
+    "onboarding2Title": MessageLookupByLibrary.simpleMessage("انشر الفرص"),
+    "onboarding3Desc": MessageLookupByLibrary.simpleMessage(
+      "انضم إلى SportsIn وارتقِ بمسيرتك الرياضية إلى المستوى التالي.",
+    ),
+    "onboarding3Title": MessageLookupByLibrary.simpleMessage(
+      "ابنِ ملفك الرياضي",
+    ),
+    "onboarding4Desc": MessageLookupByLibrary.simpleMessage(
+      "حمّل مقاطع الفيديو الخاصة بك واحصل على تحليل فوري مدعوم بالذكاء الاصطناعي.",
+    ),
+    "onboarding4Title": MessageLookupByLibrary.simpleMessage(
+      "تحليل الفيديو بالذكاء الاصطناعي",
+    ),
+    "onboarding5Desc": MessageLookupByLibrary.simpleMessage(
+      "تحدث مباشرة مع المدربين والأندية والرياضيين. كوّن شبكتك الرياضية وابقَ على اطلاع على الفرص الجديدة.",
+    ),
+    "onboarding5Title": MessageLookupByLibrary.simpleMessage("تواصل وتفاعل"),
     "password": MessageLookupByLibrary.simpleMessage("كلمة المرور"),
     "passwordIsRequired": MessageLookupByLibrary.simpleMessage(
       "كلمة المرور مطلوبة",

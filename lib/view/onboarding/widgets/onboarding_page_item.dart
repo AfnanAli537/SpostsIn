@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:sports_in/core/constants/strings_manager.dart';
 import 'package:sports_in/data/models/onboarding_model.dart';
 
 class OnboardingPageItem extends StatelessWidget {
@@ -67,7 +68,7 @@ class OnboardingPageItem extends StatelessWidget {
 
             // --- Title
             Text(
-              model.title,
+              StringsManager.getLocalizedString(context, model.title),
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 color: Colors.greenAccent,
@@ -81,7 +82,7 @@ class OnboardingPageItem extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Text(
-                model.description,
+                StringsManager.getLocalizedString(context, model.description),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                 
@@ -160,7 +161,7 @@ SmoothPageIndicator(
                         style: GoogleFonts.inter(
                           color: Colors.black,
                           fontSize: 16.sp,
-                          fontWeight: FontWeight.normal,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                                          Icon(

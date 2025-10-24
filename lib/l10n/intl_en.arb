@@ -29,5 +29,20 @@
         "home": "Home",
       "chats": "Chats",
       "chat": "Chat",
-      "profile": "Profile"
+      "profile": "Profile",
+
+
+  "onboarding1Title": "Discover Sports Talents",
+  "onboarding2Title": "Post Opportunities",
+  "onboarding3Title": "Build Your Sports Profile",
+  "onboarding4Title": "AI Video Analysis",
+  "onboarding5Title": "Connect & Communicate",
+  "onboarding1Desc": "Find and connect with top athletes through AI-powered talent discovery. Filter by sport, skills, and achievements.",
+  "onboarding2Desc": "Create and publish tryouts, competitions, or sponsorship offers to attract the right athletes.",
+  "onboarding3Desc": "Join SportsIn and take your sports career to the next level.",
+  "onboarding4Desc": "Upload your performance videos and get instant AI-powered analysis on your skills, movements, and progress.",
+  "onboarding5Desc": "Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities."
+
+
+
 }

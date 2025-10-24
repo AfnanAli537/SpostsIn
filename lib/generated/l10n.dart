@@ -278,6 +278,106 @@ class S {
   String get profile {
     return Intl.message('Profile', name: 'profile', desc: '', args: []);
   }
+
+  /// `Discover Sports Talents`
+  String get onboarding1Title {
+    return Intl.message(
+      'Discover Sports Talents',
+      name: 'onboarding1Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post Opportunities`
+  String get onboarding2Title {
+    return Intl.message(
+      'Post Opportunities',
+      name: 'onboarding2Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Build Your Sports Profile`
+  String get onboarding3Title {
+    return Intl.message(
+      'Build Your Sports Profile',
+      name: 'onboarding3Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI Video Analysis`
+  String get onboarding4Title {
+    return Intl.message(
+      'AI Video Analysis',
+      name: 'onboarding4Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect & Communicate`
+  String get onboarding5Title {
+    return Intl.message(
+      'Connect & Communicate',
+      name: 'onboarding5Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find and connect with top athletes through AI-powered talent discovery. Filter by sport, skills, and achievements.`
+  String get onboarding1Desc {
+    return Intl.message(
+      'Find and connect with top athletes through AI-powered talent discovery. Filter by sport, skills, and achievements.',
+      name: 'onboarding1Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create and publish tryouts, competitions, or sponsorship offers to attract the right athletes.`
+  String get onboarding2Desc {
+    return Intl.message(
+      'Create and publish tryouts, competitions, or sponsorship offers to attract the right athletes.',
+      name: 'onboarding2Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join SportsIn and take your sports career to the next level.`
+  String get onboarding3Desc {
+    return Intl.message(
+      'Join SportsIn and take your sports career to the next level.',
+      name: 'onboarding3Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload your performance videos and get instant AI-powered analysis on your skills, movements, and progress.`
+  String get onboarding4Desc {
+    return Intl.message(
+      'Upload your performance videos and get instant AI-powered analysis on your skills, movements, and progress.',
+      name: 'onboarding4Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities.`
+  String get onboarding5Desc {
+    return Intl.message(
+      'Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities.',
+      name: 'onboarding5Desc',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

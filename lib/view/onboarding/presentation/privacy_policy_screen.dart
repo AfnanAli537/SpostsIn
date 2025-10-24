@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
@@ -107,6 +108,7 @@ By continuing, you confirm that you have read and agree to our policy.
                       : null, // disabled until agreed
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r))
                   ),
                   child: _isLoading
                       ? const SizedBox(
