@@ -52,6 +52,13 @@ import 'package:sports_in/generated/l10n.dart';
 
 
 class StringsManager {
+ static String getStarted(BuildContext context) => S.of(context).getStarted;
+   static String skip(BuildContext context) =>
+       S.of(context).skip;    
+       static String next(BuildContext context) =>
+       S.of(context).next;
+       static String back(BuildContext context) =>
+       S.of(context).back;
   static String getLocalizedString(BuildContext context, String key) {
     final s = S.of(context);
     switch (key) {

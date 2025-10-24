@@ -6,6 +6,8 @@
      "next": "Next",
      "skip": "Skip",
      "back": "Back",
+     "getStarted":"Get Started",
+
     "forgotPassword":"Forgot Password",
      "verify": "Verify",
      "login":"Login",

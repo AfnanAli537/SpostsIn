@@ -6,6 +6,7 @@
     "next": "التالي",
     "skip": "تخطي",
     "back": "عودة",
+    "getStarted":"ابدأ",
 
 
 
@@ -48,7 +49,7 @@
 
   "onboarding1Title": "اكتشف المواهب الرياضية",
   "onboarding2Title": "انشر الفرص",
-  "onboarding3Title": "ابنِ ملفك الرياضي",
+  "onboarding3Title": "أنشئ ملفك الرياضي",
   "onboarding4Title": "تحليل الفيديو بالذكاء الاصطناعي",
   "onboarding5Title": "تواصل وتفاعل",
   "onboarding1Desc": "ابحث وتواصل مع أفضل الرياضيين من خلال اكتشاف المواهب المدعوم بالذكاء الاصطناعي.",

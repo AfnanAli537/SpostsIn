@@ -54,7 +54,7 @@ class OnboardingPageItem extends StatelessWidget {
               child: TextButton(
                 onPressed: onSkip,
                 child: Text(
-                  "Skip",
+                  StringsManager.skip(context),
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 16.sp,
@@ -115,7 +115,7 @@ class OnboardingPageItem extends StatelessWidget {
          size: 12, 
        ),
          Text(
-                 "Previous",
+                 StringsManager.back(context),
                  style: GoogleFonts.inter(
           fontSize: 15.sp,
           color: isFirst ? Colors.white54 : Colors.white,
@@ -157,7 +157,7 @@ SmoothPageIndicator(
                     children: [
      
                       Text(
-                        isLast ? "Get Started" : "Next",
+                        isLast ? StringsManager.getStarted(context) : StringsManager.next(context),
                         style: GoogleFonts.inter(
                           color: Colors.black,
                           fontSize: 16.sp,

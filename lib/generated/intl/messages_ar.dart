@@ -40,6 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "english": MessageLookupByLibrary.simpleMessage("إنجليزي"),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("نسيت كلمة المرور"),
     "fullName": MessageLookupByLibrary.simpleMessage("الاسم الكامل"),
+    "getStarted": MessageLookupByLibrary.simpleMessage("ابدأ"),
     "home": MessageLookupByLibrary.simpleMessage("الرئيسية"),
     "login": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
@@ -67,7 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "انضم إلى SportsIn وارتقِ بمسيرتك الرياضية إلى المستوى التالي.",
     ),
     "onboarding3Title": MessageLookupByLibrary.simpleMessage(
-      "ابنِ ملفك الرياضي",
+      "أنشئ ملفك الرياضي",
     ),
     "onboarding4Desc": MessageLookupByLibrary.simpleMessage(
       "حمّل مقاطع الفيديو الخاصة بك واحصل على تحليل فوري مدعوم بالذكاء الاصطناعي.",

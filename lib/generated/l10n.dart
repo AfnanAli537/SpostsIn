@@ -89,6 +89,11 @@ class S {
     return Intl.message('Back', name: 'back', desc: '', args: []);
   }
 
+  /// `Get Started`
+  String get getStarted {
+    return Intl.message('Get Started', name: 'getStarted', desc: '', args: []);
+  }
+
   /// `Forgot Password`
   String get forgotPassword {
     return Intl.message(

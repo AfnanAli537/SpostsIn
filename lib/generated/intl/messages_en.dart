@@ -40,6 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("Forgot Password"),
     "fullName": MessageLookupByLibrary.simpleMessage("Full Name"),
+    "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
     "home": MessageLookupByLibrary.simpleMessage("Home"),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
