@@ -1,0 +1,44 @@
+flutter_native_splash:
+  
+  android: true
+  ios: true
+
+  #! FOR ALL PLATFORM, except Android 12+:
+
+  color: "#1B3346"  ##====================================[REQUIRED]==========
+  color_dark: "#B9D1E4"
+  # platform-specific color. will override general color if active:
+  color_android: "#1B3346"
+  color_dark_android: "#B9D1E4"
+  color_ios: "#1B3346"
+  color_dark_ios: "#B9D1E4"
+
+  # general image for all platform (except android 12+):
+  # allows you to specify an image used in the splash screen. It must be a
+  # png file and should be sized for 4x pixel density.
+  image:                assets/images/splash_screen.png
+  image_dark:          assets/images/splash_screen_dark.png
+  # platform-specific image. will override general image if active:
+  image_android:       assets/images/splash_screen.png
+  image_dark_android:  assets/images/splash_screen_dark.png
+  image_ios:           assets/images/splash_screen.png
+  image_dark_ios:      assets/images/splash_screen_dark.png
+  
+
+ 
+
+ 
+  fullscreen: false                # default false
+  # if you dont want to hide notif bar, for android just set this to false,
+  
+  #! ANDROID 12+ configuration:
+  android_12:
+    # background color
+    color: "#1B3346"
+    color_dark: "#B9D1E4"
+
+    image: assets/images/splash_screen.png    
+    image_dark: assets/images/splash_screen_dark.png 
+
+
+  

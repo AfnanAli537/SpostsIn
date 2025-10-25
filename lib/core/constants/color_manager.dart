@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ColorManager {
   static const Color lightPrimary = Color(0xFF1B3346);
-  static const Color lightAccent = Color(0xFFCBFD16);
+  static const Color lightAccent = Color(0xFFCAFC17);
   static const Color lightBackground = Color(0xFFFFFFFF);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightBorder = Color(0xFFD9D9D9);
@@ -16,10 +16,27 @@ class ColorManager {
   static const Color darkBorder = Color(0xFF333333);
   static const Color darkTextPrimary = Color(0xFFFFFFFF);
   static const Color darkTextSecondary = Color(0xFFB0B0B0);
-
+  
 
   static const Color success = Color(0xFF4CAF50);
   static const Color error = Color(0xFFE53935);
   static const Color warning = Color(0xFFFFA000);
   static const Color transparent = Colors.transparent;
+
+
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
+  static const Color grey = Color(0xFF9E9E9E);
+  static const Color lightGrey = Color(0xFFE0E0E0);
+  static const Color darkGrey = Color(0xFF616161);
+  static const Color lightBlack = Color(0xFF292F15);
+  
+static const Color borderColor = Color(0xFF9E9D9D); 
+// Hint text and unfocused label color
+static const Color hintTextColor = Color(0xFF9E9D9D); 
+// The color for the focused border (assumed Deep Purple for the purple highlight)
+static const Color focusColor = Color(0xFF6F6F6F); 
+// Standard red for error states
+static const Color errorColor = Colors.red; 
+
 }
