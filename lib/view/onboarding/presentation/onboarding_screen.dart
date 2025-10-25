@@ -66,6 +66,7 @@ class OnboardingScreen extends StatelessWidget {
                       }
                     },
                     onSkip: () {
+                      Navigator.pushReplacementNamed(context, AppRoutes.login );
                       context.read<OnboardingBloc>().add(SkipEvent());
                     },
                   );

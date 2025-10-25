@@ -74,6 +74,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     if (state is OnboardingLoaded) {
       final s = state as OnboardingLoaded;
       emit(s.copyWith(currentPageIndex: s.pages.length - 1));
+      
     }
   }
 
