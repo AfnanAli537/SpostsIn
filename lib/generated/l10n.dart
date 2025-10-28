@@ -84,9 +84,9 @@ class S {
     return Intl.message('Skip', name: 'skip', desc: '', args: []);
   }
 
-  /// `Back`
+  /// `Previous`
   String get back {
-    return Intl.message('Back', name: 'back', desc: '', args: []);
+    return Intl.message('Previous', name: 'back', desc: '', args: []);
   }
 
   /// `Get Started`
@@ -282,6 +282,11 @@ class S {
   /// `Profile`
   String get profile {
     return Intl.message('Profile', name: 'profile', desc: '', args: []);
+  }
+
+  /// `create`
+  String get create {
+    return Intl.message('create', name: 'create', desc: '', args: []);
   }
 
   /// `Discover Sports Talents`

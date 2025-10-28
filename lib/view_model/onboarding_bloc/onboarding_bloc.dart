@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 import '../../data/models/onboarding_model.dart';
@@ -9,7 +10,8 @@ part 'onboarding_event.dart';
 part 'onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
-  OnboardingBloc() : super(OnboardingLoading()) {
+  final SharedPref sharedPrefHelper;
+  OnboardingBloc(this.sharedPrefHelper) : super(OnboardingLoading()) {
     on<LoadOnboardingEvent>(_onLoad);
     on<NextPageEvent>(_onNext);
     on<PreviousPageEvent>(_onPrevious);
@@ -70,10 +72,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     }
   }
 
-  void _onSkip(SkipEvent event, Emitter<OnboardingState> emit) {
+  void _onSkip(SkipEvent event, Emitter<OnboardingState> emit)async {
     if (state is OnboardingLoaded) {
-      final s = state as OnboardingLoaded;
-      emit(s.copyWith(currentPageIndex: s.pages.length - 1));
+      await sharedPrefHelper.setOnboardingCompleted(true);
+      emit(OnboardingCompleted());
       
     }
   }
@@ -84,7 +86,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(s.copyWith(currentPageIndex: event.newIndex));
     }
  }
-  void _onComplete(CompleteOnboardingEvent event, Emitter<OnboardingState> emit) {
+  void _onComplete(CompleteOnboardingEvent event, Emitter<OnboardingState> emit)async {
+    await sharedPrefHelper.setOnboardingCompleted(true);
     emit(OnboardingCompleted());
   }
 

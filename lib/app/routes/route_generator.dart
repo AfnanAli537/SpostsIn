@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/view/auth/login/presentation/login_screen.dart';
+import 'package:sports_in/view/auth/presentation/forget_password/forget_password.dart';
+import 'package:sports_in/view/auth/presentation/forget_password/reset_password.dart';
+import 'package:sports_in/view/auth/presentation/login/presentation/login_screen.dart';
+import 'package:sports_in/view/auth/presentation/otp/otp_screen.dart';
 import 'package:sports_in/view/onboarding/presentation/onboarding_screen.dart';
 import 'package:sports_in/view/onboarding/presentation/privacy_policy_screen.dart';
 import 'package:sports_in/view_model/onboarding_bloc/onboarding_bloc.dart';
 
+import 'package:sports_in/main.dart'; 
 abstract class RoutesManager {
   static Route? router(RouteSettings settings) {
     switch (settings.name) {
@@ -24,9 +27,27 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => OnboardingBloc(),
+             create: (_) => OnboardingBloc(sharedPref),
               child: OnboardingScreen(),
             ),
+          );
+        }
+      case AppRoutes.forgetPassword:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => ForgetPasswordScreen(),
+          );
+        }
+      case AppRoutes.otp:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => EmailVerificationScreen(),
+          );
+        }
+      case AppRoutes.resetPassword:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => ResetPasswordScreen(),
           );
         }
     }

@@ -1,7 +1,10 @@
 /// This file stores all localization keys centrally.
 /// You can later rename or refactor easily without touching multiple files.
 class StringKeys {
-  // Onboarding
+  /// sharedpref keys
+  static const String onboardingKey = 'completedOnboarding';
+  static const String privacyKey = 'seenPrivacy';
+  ///  Onboarding
   static const String onboarding1Title = 'onboarding1Title';
   static const String onboarding1Desc = 'onboarding1Desc';
   static const String onboarding2Title = 'onboarding2Title';
@@ -12,5 +15,6 @@ class StringKeys {
   static const String onboarding4Desc = 'onboarding4Desc';
   static const String onboarding5Title = 'onboarding5Title';
   static const String onboarding5Desc = 'onboarding5Desc';
-
+  static const String themeKey = 'theme_mode';
+  static const String languageKey = 'language_code';
 }

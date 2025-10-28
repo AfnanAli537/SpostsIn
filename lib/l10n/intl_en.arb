@@ -5,7 +5,7 @@
  
      "next": "Next",
      "skip": "Skip",
-     "back": "Back",
+     "back": "Previous",
      "getStarted":"Get Started",
 
     "forgotPassword":"Forgot Password",
@@ -32,8 +32,9 @@
       "chats": "Chats",
       "chat": "Chat",
       "profile": "Profile",
+       "create": "create",
 
-
+       
   "onboarding1Title": "Discover Sports Talents",
   "onboarding2Title": "Post Opportunities",
   "onboarding3Title": "Build Your Sports Profile",

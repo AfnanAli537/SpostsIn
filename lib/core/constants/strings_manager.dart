@@ -52,6 +52,7 @@ import 'package:sports_in/generated/l10n.dart';
 
 
 class StringsManager {
+  static String create (BuildContext context) => S.of(context).create;
  static String getStarted(BuildContext context) => S.of(context).getStarted;
    static String skip(BuildContext context) =>
        S.of(context).skip;    

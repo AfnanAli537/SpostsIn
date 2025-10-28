@@ -26,13 +26,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Already have an account?",
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
-    "back": MessageLookupByLibrary.simpleMessage("Back"),
+    "back": MessageLookupByLibrary.simpleMessage("Previous"),
     "chat": MessageLookupByLibrary.simpleMessage("Chat"),
     "chats": MessageLookupByLibrary.simpleMessage("Chats"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage("Confirm Password"),
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Confirm password is required",
     ),
+    "create": MessageLookupByLibrary.simpleMessage("create"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage(
       "Create your Account",
     ),

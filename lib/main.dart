@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/app/cubit_provider.dart';
+import 'package:sports_in/app/di/dependency_injection.dart';
 import 'package:sports_in/app/sports_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 
-// void main() {
-//   runApp(const SportsIn());
-// }
+
+late SharedPref sharedPref;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final prefs = await SharedPreferences.getInstance();
-  final seenPrivacy = prefs.getBool('seenPrivacy') ?? false;
-  final completedOnboarding = prefs.getBool('completedOnboarding') ?? false;
-
-  String initialRoute;
+    await initDependencies(); 
+  sharedPref = await SharedPref.init();
+  final bool completedOnboarding = sharedPref.getOnboardingCompleted();
+  final bool seenPrivacy = sharedPref.getPrivacySeen();
+  late final String initialRoute;
   if (completedOnboarding) {
     initialRoute = AppRoutes.login;
   } else if (seenPrivacy) {
@@ -23,6 +24,11 @@ void main() async {
     initialRoute = AppRoutes.privacyPolicy;
   }
 
-  runApp(SportsIn(initialRoute: initialRoute));
+  runApp( 
+    MultiBlocProvider(
+      providers: AppCubitProviders.getProviders(sharedPref),
+      child:    SportsIn(initialRoute: initialRoute),
+    ),
+ );
 }
 
