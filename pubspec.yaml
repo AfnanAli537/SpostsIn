@@ -20,6 +20,8 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   image_picker: ^1.2.0
+  dio: ^5.9.0
+  flutter_svg: ^2.2.1
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +30,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/svg/
+
 flutter_intl:
   enabled: true
 
@@ -35,4 +40,3 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icons/app_icon.png"
-  

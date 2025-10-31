@@ -278,6 +278,531 @@ class S {
   String get profile {
     return Intl.message('Profile', name: 'profile', desc: '', args: []);
   }
+
+  /// `Register`
+  String get register {
+    return Intl.message('Register', name: 'register', desc: '', args: []);
+  }
+
+  /// `Create`
+  String get create {
+    return Intl.message('Create', name: 'create', desc: '', args: []);
+  }
+
+  /// `Registered successfully!`
+  String get registeredSuccessfully {
+    return Intl.message(
+      'Registered successfully!',
+      name: 'registeredSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What Is Your Type?`
+  String get whatIsYourType {
+    return Intl.message(
+      'What Is Your Type?',
+      name: 'whatIsYourType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Knowing your goal helps us tailor your experience`
+  String get knowingYourGoal {
+    return Intl.message(
+      'Knowing your goal helps us tailor your experience',
+      name: 'knowingYourGoal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CONTINUE`
+  String get continueText {
+    return Intl.message('CONTINUE', name: 'continueText', desc: '', args: []);
+  }
+
+  /// `Already have an account?`
+  String get alreadyHaveAnAccount {
+    return Intl.message(
+      'Already have an account?',
+      name: 'alreadyHaveAnAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Player`
+  String get player {
+    return Intl.message('Player', name: 'player', desc: '', args: []);
+  }
+
+  /// `Coach`
+  String get coach {
+    return Intl.message('Coach', name: 'coach', desc: '', args: []);
+  }
+
+  /// `Scout`
+  String get scout {
+    return Intl.message('Scout', name: 'scout', desc: '', args: []);
+  }
+
+  /// `Club`
+  String get club {
+    return Intl.message('Club', name: 'club', desc: '', args: []);
+  }
+
+  /// `Institute`
+  String get institute {
+    return Intl.message('Institute', name: 'institute', desc: '', args: []);
+  }
+
+  /// `Other`
+  String get other {
+    return Intl.message('Other', name: 'other', desc: '', args: []);
+  }
+
+  /// `First name`
+  String get firstName {
+    return Intl.message('First name', name: 'firstName', desc: '', args: []);
+  }
+
+  /// `Last name`
+  String get lastName {
+    return Intl.message('Last name', name: 'lastName', desc: '', args: []);
+  }
+
+  /// `Height (cm)`
+  String get height {
+    return Intl.message('Height (cm)', name: 'height', desc: '', args: []);
+  }
+
+  /// `Weight (kg)`
+  String get weight {
+    return Intl.message('Weight (kg)', name: 'weight', desc: '', args: []);
+  }
+
+  /// `Gender`
+  String get gender {
+    return Intl.message('Gender', name: 'gender', desc: '', args: []);
+  }
+
+  /// `Location`
+  String get location {
+    return Intl.message('Location', name: 'location', desc: '', args: []);
+  }
+
+  /// `Sport profession`
+  String get sportProfession {
+    return Intl.message(
+      'Sport profession',
+      name: 'sportProfession',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specialized sports`
+  String get specializedSport {
+    return Intl.message(
+      'Specialized sports',
+      name: 'specializedSport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Position`
+  String get position {
+    return Intl.message('Position', name: 'position', desc: '', args: []);
+  }
+
+  /// `Nationality`
+  String get nationality {
+    return Intl.message('Nationality', name: 'nationality', desc: '', args: []);
+  }
+
+  /// `Years of experience`
+  String get yearsOfExperience {
+    return Intl.message(
+      'Years of experience',
+      name: 'yearsOfExperience',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Institute name`
+  String get instituteName {
+    return Intl.message(
+      'Institute name',
+      name: 'instituteName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Industry`
+  String get industary {
+    return Intl.message('Industry', name: 'industary', desc: '', args: []);
+  }
+
+  /// `Club name`
+  String get clubName {
+    return Intl.message('Club name', name: 'clubName', desc: '', args: []);
+  }
+
+  /// `Foundation date dd/mm/yyyy`
+  String get foundDate {
+    return Intl.message(
+      'Foundation date dd/mm/yyyy',
+      name: 'foundDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Currently in a Club`
+  String get currentlyInClub {
+    return Intl.message(
+      'Currently in a Club',
+      name: 'currentlyInClub',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Male`
+  String get male {
+    return Intl.message('Male', name: 'male', desc: '', args: []);
+  }
+
+  /// `Female`
+  String get female {
+    return Intl.message('Female', name: 'female', desc: '', args: []);
+  }
+
+  /// `Algeria`
+  String get algeria {
+    return Intl.message('Algeria', name: 'algeria', desc: '', args: []);
+  }
+
+  /// `Egypt`
+  String get egypt {
+    return Intl.message('Egypt', name: 'egypt', desc: '', args: []);
+  }
+
+  /// `Morocco`
+  String get morocco {
+    return Intl.message('Morocco', name: 'morocco', desc: '', args: []);
+  }
+
+  /// `Tunisia`
+  String get tunisia {
+    return Intl.message('Tunisia', name: 'tunisia', desc: '', args: []);
+  }
+
+  /// `Sudan`
+  String get sudan {
+    return Intl.message('Sudan', name: 'sudan', desc: '', args: []);
+  }
+
+  /// `Select a Sport`
+  String get selectSports {
+    return Intl.message(
+      'Select a Sport',
+      name: 'selectSports',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Footballer`
+  String get footballer {
+    return Intl.message('Footballer', name: 'footballer', desc: '', args: []);
+  }
+
+  /// `Basketballer`
+  String get basketballer {
+    return Intl.message(
+      'Basketballer',
+      name: 'basketballer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tennis Player`
+  String get tennisPlayer {
+    return Intl.message(
+      'Tennis Player',
+      name: 'tennisPlayer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Swimmer`
+  String get swimmer {
+    return Intl.message('Swimmer', name: 'swimmer', desc: '', args: []);
+  }
+
+  /// `Football`
+  String get football {
+    return Intl.message('Football', name: 'football', desc: '', args: []);
+  }
+
+  /// `Basketball`
+  String get basketball {
+    return Intl.message('Basketball', name: 'basketball', desc: '', args: []);
+  }
+
+  /// `Tennis`
+  String get tennis {
+    return Intl.message('Tennis', name: 'tennis', desc: '', args: []);
+  }
+
+  /// `Swimming`
+  String get swimming {
+    return Intl.message('Swimming', name: 'swimming', desc: '', args: []);
+  }
+
+  /// `Goalkeeper`
+  String get goalkeeper {
+    return Intl.message('Goalkeeper', name: 'goalkeeper', desc: '', args: []);
+  }
+
+  /// `Defender`
+  String get defender {
+    return Intl.message('Defender', name: 'defender', desc: '', args: []);
+  }
+
+  /// `Midfielder`
+  String get midfielder {
+    return Intl.message('Midfielder', name: 'midfielder', desc: '', args: []);
+  }
+
+  /// `Forward`
+  String get forward {
+    return Intl.message('Forward', name: 'forward', desc: '', args: []);
+  }
+
+  /// `0-2 years`
+  String get yearsOfExperience0to2 {
+    return Intl.message(
+      '0-2 years',
+      name: 'yearsOfExperience0to2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3-5 years`
+  String get yearsOfExperience3to5 {
+    return Intl.message(
+      '3-5 years',
+      name: 'yearsOfExperience3to5',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `6-10 years`
+  String get yearsOfExperience5to10 {
+    return Intl.message(
+      '6-10 years',
+      name: 'yearsOfExperience5to10',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `10+ years`
+  String get yearsOfExperience10Plus {
+    return Intl.message(
+      '10+ years',
+      name: 'yearsOfExperience10Plus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your email`
+  String get enterEmail {
+    return Intl.message(
+      'Please enter your email',
+      name: 'enterEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid email`
+  String get invalidEmail {
+    return Intl.message(
+      'Please enter a valid email',
+      name: 'invalidEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your password`
+  String get enterPassword {
+    return Intl.message(
+      'Please enter your password',
+      name: 'enterPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be at least 6 characters`
+  String get shortPassword {
+    return Intl.message(
+      'Password must be at least 6 characters',
+      name: 'shortPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passwords do not match`
+  String get passwordsDontMatch {
+    return Intl.message(
+      'Passwords do not match',
+      name: 'passwordsDontMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your {field}`
+  String enterField(Object field) {
+    return Intl.message(
+      'Please enter your $field',
+      name: 'enterField',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `{field} must be at least 2 characters`
+  String fieldTooShort(Object field) {
+    return Intl.message(
+      '$field must be at least 2 characters',
+      name: 'fieldTooShort',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `Invalid {field}`
+  String invalidField(Object field) {
+    return Intl.message(
+      'Invalid $field',
+      name: 'invalidField',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `Please select {field}`
+  String selectField(Object field) {
+    return Intl.message(
+      'Please select $field',
+      name: 'selectField',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `Please enter your height`
+  String get enterHeight {
+    return Intl.message(
+      'Please enter your height',
+      name: 'enterHeight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid height (100–250 cm)`
+  String get invalidHeight {
+    return Intl.message(
+      'Please enter a valid height (100–250 cm)',
+      name: 'invalidHeight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your weight`
+  String get enterWeight {
+    return Intl.message(
+      'Please enter your weight',
+      name: 'enterWeight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid weight (30–200 kg)`
+  String get invalidWeight {
+    return Intl.message(
+      'Please enter a valid weight (30–200 kg)',
+      name: 'invalidWeight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your age`
+  String get enterAge {
+    return Intl.message(
+      'Please enter your age',
+      name: 'enterAge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid age`
+  String get invalidAge {
+    return Intl.message(
+      'Please enter a valid age',
+      name: 'invalidAge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a date`
+  String get enterDate {
+    return Intl.message(
+      'Please select a date',
+      name: 'enterDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select at least one sport`
+  String get selectAtLeastOne {
+    return Intl.message(
+      'Please select at least one sport',
+      name: 'selectAtLeastOne',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `name`
+  String get name {
+    return Intl.message('name', name: 'name', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

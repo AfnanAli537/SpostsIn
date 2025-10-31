@@ -29,4 +29,15 @@ class ColorManager {
   static const Color grey = Color(0xFF9E9E9E);
   static const Color lightGrey = Color(0xFFE0E0E0);
   static const Color darkGrey = Color(0xFF616161);
+  static const Color lightBlack = Color(0xFF292F15);
+  
+static const Color borderColor = Color(0xFF9E9D9D); 
+// Hint text and unfocused label color
+static const Color hintTextColor = Color(0xFF9E9D9D); 
+// The color for the focused border (assumed Deep Purple for the purple highlight)
+static const Color focusColor = Color(0xFF6F6F6F); 
+// Standard red for error states
+static const Color errorColor = Colors.red; 
+
+
 }

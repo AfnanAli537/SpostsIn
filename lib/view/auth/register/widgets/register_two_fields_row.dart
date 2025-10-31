@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisterTwoFieldsRow extends StatelessWidget {
   final Widget leftField;
-  final Widget? rightField; // optional
-
+  final Widget? rightField;
+  
   const RegisterTwoFieldsRow({
-    Key? key,
+    super.key,
     required this.leftField,
     this.rightField,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(child: leftField),
-        const SizedBox(width: 10),
+        SizedBox(width: 10.w),
         Expanded(
-          child: rightField ?? const SizedBox.shrink(), // empty space if null
+          child: rightField ?? const SizedBox.shrink(), 
         ),
       ],
     );

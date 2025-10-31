@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 
-
 class ThemeManager {
-  // Light Theme
+  // 🌞 LIGHT THEME
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      
-      // Color Scheme
       colorScheme: ColorScheme.light(
         primary: ColorManager.lightPrimary,
         secondary: ColorManager.lightAccent,
@@ -23,487 +21,240 @@ class ThemeManager {
         onBackground: ColorManager.lightTextPrimary,
         onError: ColorManager.lightBorder,
       ),
-      
-      // Scaffold
       scaffoldBackgroundColor: ColorManager.lightBackground,
-      
-      // App Bar
+
       appBarTheme: AppBarTheme(
         backgroundColor: ColorManager.lightBackground,
         foregroundColor: ColorManager.black,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: ColorManager.black),
+        iconTheme: IconThemeData(color: ColorManager.black, size: 24.sp),
         titleTextStyle: GoogleFonts.lexend(
           color: ColorManager.black,
-          fontSize: 18,
+          fontSize: 18.sp,
           fontWeight: FontWeight.bold,
         ),
       ),
-      
-      // Text Theme
-      textTheme: TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: ColorManager.lightTextPrimary,
-        ),
-        displayMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: ColorManager.lightTextPrimary,
-        ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.lightTextPrimary,
-        ),
-        headlineLarge: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.lightTextPrimary,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.lightTextPrimary,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.lightTextPrimary,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.lightTextPrimary,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.lightTextPrimary,
-        ),
-        titleSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.lightTextPrimary,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: ColorManager.lightTextPrimary,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          color: ColorManager.lightTextPrimary,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-          color: ColorManager.lightTextSecondary,
-        ),
-        labelLarge: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.lightTextPrimary,
-        ),
-        labelMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.lightTextSecondary,
-        ),
-        labelSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.lightTextSecondary,
-        ),
-      ),
-      
-      // Elevated Button
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ColorManager.lightPrimary,
-          foregroundColor: ColorManager.white,
-          elevation: 2,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: GoogleFonts.poppins(
-            fontSize: 15,
-            color: ColorManager.lightAccent,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      
-      // Outlined Button
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: ColorManager.lightPrimary,
-          side: BorderSide(color: ColorManager.lightBorder, width: 1.5),
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      
-      // Text Button
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: ColorManager.lightBlack,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          textStyle: GoogleFonts.inter(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      
 
+      textTheme: _textTheme(ColorManager.black),
+      elevatedButtonTheme: _elevatedButtonTheme(ColorManager.lightPrimary),
+      outlinedButtonTheme: _outlinedButtonTheme(
+        ColorManager.lightPrimary,
+        ColorManager.white,
+      ),
+      textButtonTheme: _textButtonTheme(ColorManager.lightBlack),
 
- inputDecorationTheme: InputDecorationTheme(
-  contentPadding: const EdgeInsets.symmetric(
-    horizontal: 16.0,
-    vertical: 12.0,
-  ),
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: const BorderSide(
-      color: ColorManager.borderColor, 
-      width: 1.0,
-    ),
-  ),
-  
-  
-  enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: const BorderSide(
-      color: ColorManager.borderColor, 
-      width: 1.0,
-    ),
-  ),
-  
-  
-  focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: BorderSide(
-      color: ColorManager.focusColor, 
-      width: 2.0, 
-    ),
-  ),
+      inputDecorationTheme: _inputDecorationTheme(
+        ColorManager.borderColor,
+        ColorManager.focusColor,
+        ColorManager.hintTextColor,
+      ),
 
-  filled: true,
-  fillColor: ColorManager.borderColor.withOpacity(0.05), 
-  
-  
-  hintStyle: const TextStyle(
-    color: ColorManager.hintTextColor,
-    fontSize: 16.0,
-   
-    fontWeight: FontWeight.w400, 
-  ),
-  
-  
-  prefixIconColor: ColorManager.hintTextColor, 
-  suffixIconColor: ColorManager.hintTextColor,
-),
-      // Input Decoration
-      // inputDecorationTheme: InputDecorationTheme(
-      //   filled: true,
-      //   fillColor: ColorManager.lightSurface,
-      //   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      //   border: OutlineInputBorder(
-      //     borderRadius: BorderRadius.circular(8),
-      //     borderSide: BorderSide(color: ColorManager.lightBorder),
-      //   ),
-      //   enabledBorder: OutlineInputBorder(
-      //     borderRadius: BorderRadius.circular(8),
-      //     borderSide: BorderSide(color: ColorManager.lightBorder),
-      //   ),
-      //   focusedBorder: OutlineInputBorder(
-      //     borderRadius: BorderRadius.circular(8),
-      //     borderSide: BorderSide(color: ColorManager.lightPrimary, width: 2),
-      //   ),
-      //   errorBorder: OutlineInputBorder(
-      //     borderRadius: BorderRadius.circular(8),
-      //     borderSide: BorderSide(color: ColorManager.error),
-      //   ),
-      //   focusedErrorBorder: OutlineInputBorder(
-      //     borderRadius: BorderRadius.circular(8),
-      //     borderSide: BorderSide(color: ColorManager.error, width: 2),
-      //   ),
-      //   labelStyle: TextStyle(color: ColorManager.lightTextSecondary),
-      //   hintStyle: TextStyle(color: ColorManager.lightTextSecondary),
-      // ),
-      
-      // Card
       cardTheme: CardThemeData(
         color: ColorManager.lightSurface,
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: ColorManager.lightBorder, width: 1),
+          borderRadius: BorderRadius.circular(12.r),
+          side: BorderSide(color: ColorManager.lightBorder, width: 1.w),
         ),
-        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      ) ,
-      
-      // Bottom Navigation Bar
+        margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+      ),
+
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: ColorManager.lightSurface,
         selectedItemColor: ColorManager.lightPrimary,
         unselectedItemColor: ColorManager.lightTextSecondary,
         elevation: 8,
-        type: BottomNavigationBarType.fixed,
-        // selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        // unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
       ),
-      
-      // Divider
+
       dividerTheme: DividerThemeData(
-        color: ColorManager.lightBorder,
-        thickness: 1,
-        space: 1,
+        color: ColorManager.darkSurface,
+        thickness: 1.w,
+        space: 1.h,
       ),
-      
-      // Icon
+
       iconTheme: IconThemeData(
         color: ColorManager.lightTextPrimary,
-        size: 24,
+        size: 24.sp,
       ),
     );
   }
-  
-  // Dark Theme
+
+  // 🌚 DARK THEME
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      
-      // Color Scheme
       colorScheme: ColorScheme.dark(
         primary: ColorManager.darkPrimary,
         secondary: ColorManager.darkAccent,
         surface: ColorManager.darkSurface,
         background: ColorManager.darkBackground,
         error: ColorManager.error,
-        onPrimary: ColorManager.black,
-        onSecondary: ColorManager.black,
+        onPrimary: ColorManager.darkBackground,
+        onSecondary: ColorManager.darkPrimary,
         onSurface: ColorManager.darkTextPrimary,
         onBackground: ColorManager.darkTextPrimary,
-        onError: ColorManager.white,
+        onError: ColorManager.darkBorder,
       ),
-      
-      // Scaffold
-      scaffoldBackgroundColor: ColorManager.darkSurface,
-      
-      // App Bar
+      scaffoldBackgroundColor: ColorManager.darkBackground,
+
       appBarTheme: AppBarTheme(
-        backgroundColor: ColorManager.darkSurface,
-        foregroundColor: ColorManager.darkTextPrimary,
+        backgroundColor: ColorManager.darkBackground,
+        foregroundColor: ColorManager.white,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: ColorManager.darkAccent),
+        iconTheme: IconThemeData(color: ColorManager.white, size: 24.sp),
         titleTextStyle: GoogleFonts.lexend(
-          color: ColorManager.darkTextPrimary,
-          fontSize: 18,
+          color: ColorManager.white,
+          fontSize: 18.sp,
           fontWeight: FontWeight.bold,
         ),
       ),
-      
-      // Text Theme
-      textTheme: TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: ColorManager.darkTextPrimary,
-        ),
-        displayMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: ColorManager.darkTextPrimary,
-        ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.darkTextPrimary,
-        ),
-        headlineLarge: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.darkTextPrimary,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.darkTextPrimary,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.darkTextPrimary,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: ColorManager.darkTextPrimary,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.darkTextPrimary,
-        ),
-        titleSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.darkTextPrimary,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
-          color: ColorManager.darkTextPrimary,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          color: ColorManager.darkTextPrimary,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-          color: ColorManager.darkTextSecondary,
-        ),
-        labelLarge: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.darkTextPrimary,
-        ),
-        labelMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.darkTextSecondary,
-        ),
-        labelSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: ColorManager.darkTextSecondary,
-        ),
+
+      textTheme: _textTheme(ColorManager.lightBackground),
+      elevatedButtonTheme: _elevatedButtonTheme(ColorManager.darkPrimary),
+      outlinedButtonTheme: _outlinedButtonTheme(
+        ColorManager.darkPrimary,
+        ColorManager.darkAccent,
       ),
-      
-      // Elevated Button
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ColorManager.darkPrimary,
-          foregroundColor: ColorManager.black,
-          elevation: 2,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: GoogleFonts.poppins(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+      textButtonTheme: _textButtonTheme(ColorManager.white),
+
+      inputDecorationTheme: _inputDecorationTheme(
+        ColorManager.darkBorder,
+        ColorManager.darkPrimary,
+        ColorManager.darkGrey,
       ),
-      
-      // Outlined Button
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: ColorManager.darkPrimary,
-          side: BorderSide(color: ColorManager.darkBorder, width: 1.5),
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      
-      // Text Button
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: ColorManager.lightAccent,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          textStyle: GoogleFonts.inter(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      
-      // Input Decoration
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: ColorManager.darkSurface,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: ColorManager.darkBorder),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: ColorManager.darkBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: ColorManager.darkPrimary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: ColorManager.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: ColorManager.error, width: 2),
-        ),
-        labelStyle: TextStyle(color: ColorManager.darkTextSecondary),
-        hintStyle: TextStyle(color: ColorManager.darkTextSecondary),
-      ),
-      
-      // Card
+
       cardTheme: CardThemeData(
         color: ColorManager.darkSurface,
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: ColorManager.darkBorder, width: 1),
+          borderRadius: BorderRadius.circular(12.r),
+          side: BorderSide(color: ColorManager.darkBorder, width: 1.w),
         ),
-        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
       ),
-      
-      // Bottom Navigation Bar
+
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: ColorManager.darkSurface,
         selectedItemColor: ColorManager.darkPrimary,
         unselectedItemColor: ColorManager.darkTextSecondary,
         elevation: 8,
-        type: BottomNavigationBarType.fixed,
-        // selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        // unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
       ),
-      
-      // Divider
+
       dividerTheme: DividerThemeData(
-        color: ColorManager.darkBorder,
-        thickness: 1,
-        space: 1,
+        color: ColorManager.lightBackground,
+        thickness: 1.w,
+        space: 1.h,
       ),
-      
-      // Icon
+
       iconTheme: IconThemeData(
         color: ColorManager.darkTextPrimary,
-        size: 24,
+        size: 24.sp,
       ),
+    );
+  }
+
+  // 📱 Shared methods for reusability and consistency
+
+  static TextTheme _textTheme(Color color) {
+    return TextTheme(
+      displayLarge: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold, color: color),
+      displayMedium: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold, color: color),
+      displaySmall: GoogleFonts.poppins(fontSize: 24.sp, fontWeight: FontWeight.bold, color: color,height: 1.9),
+      headlineLarge: GoogleFonts.poppins(fontSize: 22.sp, fontWeight: FontWeight.bold, color: color),
+      headlineMedium: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: color),
+      headlineSmall: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500, color: color),
+      titleLarge: GoogleFonts.poppins(fontSize: 16.sp, fontWeight: FontWeight.w600, color: color),
+      titleMedium: GoogleFonts.poppins(fontSize: 15.sp, fontWeight: FontWeight.w500, color: color,height: 1.4),
+      titleSmall: GoogleFonts.poppins(fontSize: 20.sp, fontWeight: FontWeight.w300, color: color,height: 1.6),
+      bodyLarge: GoogleFonts.inter(fontSize: 16.sp, color: color,fontWeight: FontWeight.w500),
+      bodyMedium: TextStyle(fontSize: 14.sp, color: color),
+      labelLarge: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w300, color: color),
+    );
+  }
+
+  static ElevatedButtonThemeData _elevatedButtonTheme(Color bgColor) {
+    return ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        foregroundColor: ColorManager.lightAccent,
+        elevation: 2,
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        textStyle: GoogleFonts.poppins(
+          fontSize: 15.sp,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  static OutlinedButtonThemeData _outlinedButtonTheme(Color fgColor, Color borderColor) {
+    return OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: fgColor,
+        side: BorderSide(color: borderColor, width: 1.5.w),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        textStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  static TextButtonThemeData _textButtonTheme(Color fgColor) {
+    return TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: fgColor,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        textStyle: GoogleFonts.inter(fontSize: 15.sp, fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  static InputDecorationTheme _inputDecorationTheme(
+    Color borderColor,
+    Color focusColor,
+    Color hintColor,
+  ) {
+    return InputDecorationTheme(
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: borderColor, width: 1.w),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: borderColor, width: 1.w),
+      ),
+      errorBorder:OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: ColorManager.errorColor, width: 2.w),
+      ), 
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: focusColor, width: 2.w),
+      ),
+      filled: true,
+      fillColor: borderColor.withOpacity(0.20),
+     
+      hintStyle: TextStyle(
+        color: hintColor,
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+      ),
+      labelStyle:TextStyle(
+        color: hintColor,
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+      ), 
+      prefixIconColor: hintColor,
+      suffixIconColor: hintColor,
     );
   }
 }

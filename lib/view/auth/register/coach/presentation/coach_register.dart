@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/utils/validators/auth_validator.dart';
+import 'package:sports_in/core/constants/strings_manager.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
-import 'package:sports_in/core/widgets/register_text_field.dart';
-import 'package:sports_in/core/widgets/register_two_fields_row.dart';
-import 'package:sports_in/view/auth/register/widgets/register_button.dart';
-import 'package:sports_in/view/user_type/widgets/app_dropdown_overlay.dart';
+import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/view/auth/register/widgets/register_text_field.dart';
+import 'package:sports_in/view/auth/register/widgets/register_two_fields_row.dart';
+import 'package:sports_in/view/auth/register/widgets/radio_dropdown_overlay.dart';
 
 class CoachRegisterScreen extends StatefulWidget {
   const CoachRegisterScreen({super.key});
@@ -25,220 +27,226 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
   final confirmPasswordController = TextEditingController();
   final yearsOfExperienceController = TextEditingController();
 
-  String? selectedLocation;
-  String? selectedSport;
-  String? selectedGender;
+  String? sportName;
+  String? yearsOfExperience;
+  String? location;
+  String? gender;
   bool hasClub = false;
   File? selectedImage;
 
-  final Map<String, String?> _errors = {};
+  List<String> get genderOptions => [
+        StringsManager.male(context),
+        StringsManager.female(context),
+      ];
 
-  void _unfocus() => FocusScope.of(context).unfocus();
+  List<String> get locationOptions => [
+        StringsManager.algeria(context),
+        StringsManager.egypt(context),
+        StringsManager.morocco(context),
+        StringsManager.tunisia(context),
+        StringsManager.sudan(context),
+      ];
 
-  void _validateAndSubmit() {
-    _unfocus();
+  List<String> get yearsOfExperienceOptions => [
+        StringsManager.yearsOfExperience0to2(context),
+        StringsManager.yearsOfExperience3to5(context),
+        StringsManager.yearsOfExperience5to10(context),
+        StringsManager.yearsOfExperience10Plus(context),
+      ];
 
-    setState(() {
-      _errors.clear();
+  List<String> get sportNameOptions => [
+        StringsManager.football(context),
+        StringsManager.basketball(context),
+        StringsManager.tennis(context),
+        StringsManager.swimming(context),
+      ];
 
-      _errors['firstName'] = ValidationHelper.validateRequired(
-        firstNameController.text,
-        fieldName: "First name",
+  void _onRegister() {
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(StringsManager.registeredSuccessfully(context))),
       );
-      _errors['lastName'] = ValidationHelper.validateRequired(
-        lastNameController.text,
-        fieldName: "Last name",
-      );
-      _errors['email'] = ValidationHelper.validateEmail(emailController.text);
-      _errors['password'] = ValidationHelper.validatePassword(
-        passwordController.text,
-      );
-      _errors['confirmPassword'] = ValidationHelper.validateConfirmPassword(
-        passwordController.text,
-        confirmPasswordController.text,
-      );
-      _errors['yearsOfExperience'] = ValidationHelper.validateRequired(
-        yearsOfExperienceController.text,
-        fieldName: "Years of experience",
-      );
-
-      if (selectedLocation == null) {
-        _errors['location'] = "Please select a location";
-      }
-      if (selectedSport == null) {
-        _errors['sport'] = "Please select a sport";
-      }
-      if (selectedGender == null) {
-        _errors['gender'] = "Please select gender";
-      }
-    });
-
-    if (_errors.values.every((e) => e == null)) {
-      // ✅ All inputs are valid — you can handle registration here
-      // For example: call API or navigate
-      debugPrint('Form is valid. Proceed with registration.');
     }
   }
 
   @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    yearsOfExperienceController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: _unfocus,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.disabled,
-            child: Column(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
             children: [
-              const Text(
-                "Create your Account",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                StringsManager.createYourAccount(context),
+                style: theme.textTheme.titleLarge,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
-              // 🖼 Image Picker
               AppImagePicker(onImageSelected: (img) => selectedImage = img),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
-              // 👤 First & Last Name
+              // First & Last name
               RegisterTwoFieldsRow(
                 leftField: RegisterTextField(
                   controller: firstNameController,
-                  hintText: "First name",
-                  errorText: _errors['firstName'],
+                  labelText: StringsManager.firstName(context),
+                  validator: (v) => Validators.validateName(
+                    context,
+                    v,
+                    fieldName:
+                        StringsManager.firstName(context).toLowerCase(),
+                  ),
                 ),
                 rightField: RegisterTextField(
                   controller: lastNameController,
-                  hintText: "Last name",
-                  errorText: _errors['lastName'],
+                  labelText: StringsManager.lastName(context),
+                  validator: (v) => Validators.validateName(
+                    context,
+                    v,
+                    fieldName: StringsManager.lastName(context).toLowerCase(),
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
 
-              // 📧 Email
+              SizedBox(height: 16.h),
+
+              // Email
               RegisterTextField(
                 controller: emailController,
-                hintText: "Email",
+                labelText: StringsManager.email(context),
                 keyboardType: TextInputType.emailAddress,
-                errorText: _errors['email'],
+                validator: (v) => Validators.validateEmail(context, v),
               ),
-              const SizedBox(height: 10),
 
-              // 🔒 Password
+              SizedBox(height: 16.h),
+
+              // Password
               RegisterTextField(
                 controller: passwordController,
-                hintText: "Password",
+                labelText: StringsManager.password(context),
                 isPassword: true,
-                errorText: _errors['password'],
+                validator: (v) => Validators.validatePassword(context, v),
               ),
-              const SizedBox(height: 10),
 
-              // 🔑 Confirm Password
+              SizedBox(height: 16.h),
+
+              // Confirm password
               RegisterTextField(
                 controller: confirmPasswordController,
-                hintText: "Confirm password",
-                isPassword: true,
-                errorText: _errors['confirmPassword'],
-              ),
-              const SizedBox(height: 10),
-
-              // 📊 Years of Experience
-              RegisterTextField(
-                controller: yearsOfExperienceController,
-                hintText: "Years of experience",
-                keyboardType: TextInputType.number,
-                errorText: _errors['yearsOfExperience'],
-              ),
-              const SizedBox(height: 10),
-
-              // ⚽ Sport Name
-              AppDropdownOverlay(
-                hintText: "Sport name",
-                options: const [
-                  "Football",
-                  "Basketball",
-                  "Tennis",
-                  "Volleyball",
-                ],
-                value: selectedSport,
-                onChanged: (v) {
-                  _unfocus();
-                  setState(() => selectedSport = v);
-                },
-                errorText: _errors['sport'],
-              ),
-              const SizedBox(height: 10),
-
-              // 🌍 Location
-              AppDropdownOverlay(
-                hintText: "Location",
-                options: const [
-                  'Egypt',
-                  'USA',
-                  'Germany',
-                  'France',
-                  'Brazil',
-                  'Japan',
-                  'India',
-                  'Spain',
-                ],
-                value: selectedLocation,
-                onChanged: (v) {
-                  _unfocus();
-                  setState(() => selectedLocation = v);
-                },
-                errorText: _errors['location'],
-              ),
-              const SizedBox(height: 10),
-
-              // 🚻 Gender
-              AppDropdownOverlay(
-                hintText: "Gender",
-                options: const ["Male", "Female"],
-                value: selectedGender,
-                onChanged: (v) {
-                  _unfocus();
-                  setState(() => selectedGender = v);
-                },
-                errorText: _errors['gender'],
-              ),
-              const SizedBox(height: 24),
-
-              // 🏟 Club Option
-              Row(
-                children: [
-                  Radio<bool>(
-                    value: true,
-                    groupValue: hasClub,
-                    activeColor: ColorManager.darkAccent1,
-                    onChanged: (value) {
-                      setState(() => hasClub = value!);
-                    },
-                  ),
-                  const Text(
-                    "Club",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // ✅ Submit Button
-              SizedBox(
-                width: double.infinity,
-                child: RegisterButton(
-                  label: "Create",
-                  onPressed: _validateAndSubmit,
+                labelText: StringsManager.confirmPassword(context),
+                isConformPassword: true,
+                validator: (v) => Validators.validateConfirmPassword(
+                  context,
+                  v,
+                  passwordController.text,
                 ),
               ),
+
+              SizedBox(height: 16.h),
+
+              // Gender
+              AppDropdownOverlay(
+                labelText: StringsManager.gender(context),
+                value: gender,
+                options: genderOptions,
+                onChanged: (val) => setState(() => gender = val),
+                validator: (v) => Validators.validateDropdown(
+                  context,
+                  v,
+                  fieldName: StringsManager.gender(context).toLowerCase(),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Sport + Location
+              RegisterTwoFieldsRow(
+                leftField: AppDropdownOverlay(
+                  labelText: StringsManager.specializedSport(context),
+                  value: sportName,
+                  options: sportNameOptions,
+                  onChanged: (val) => setState(() => sportName = val),
+                  validator: (v) => Validators.validateDropdown(
+                    context,
+                    v,
+                    fieldName:
+                        StringsManager.specializedSport(context).toLowerCase(),
+                  ),
+                ),
+                rightField: AppDropdownOverlay(
+                  labelText: StringsManager.location(context),
+                  value: location,
+                  options: locationOptions,
+                  onChanged: (val) => setState(() => location = val),
+                  validator: (v) => Validators.validateDropdown(
+                    context,
+                    v,
+                    fieldName: StringsManager.location(context).toLowerCase(),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Experience
+              AppDropdownOverlay(
+                labelText: StringsManager.yearsOfExperience(context),
+                value: yearsOfExperience,
+                options: yearsOfExperienceOptions,
+                onChanged: (val) => setState(() => yearsOfExperience = val),
+                validator: (v) => Validators.validateDropdown(
+                  context,
+                  v,
+                  fieldName:
+                      StringsManager.yearsOfExperience(context).toLowerCase(),
+                ),
+              ),
+
+              SizedBox(height: 24.h),
+
+              // Currently in club checkbox
+              Row(
+                children: [
+                  Checkbox(
+                    value: hasClub,
+                    activeColor: ColorManager.darkAccent1,
+                    onChanged: (value) => setState(() => hasClub = value!),
+                  ),
+                  Text(
+                    StringsManager.currentlyInClub(context),
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 30.h),
+
+              CustomElevatedButton(
+                text: StringsManager.create(context),
+                onPressed: _onRegister,
+              ),
+
+              SizedBox(height: 20.h),
             ],
           ),
         ),
       ),
-    ));
+    );
   }
 }

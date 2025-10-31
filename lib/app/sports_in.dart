@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/app/routes/route_generator.dart';
+import 'package:sports_in/core/theme/theme_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -18,7 +19,7 @@ class SportsIn extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: AppRoutes.login,
         onGenerateRoute:RoutesManager.router,
-        // theme: ,
+        theme: ThemeManager.lightTheme,
         // darkTheme:,
       localizationsDelegates: [
     S.delegate,
@@ -27,7 +28,8 @@ class SportsIn extends StatelessWidget {
     GlobalCupertinoLocalizations.delegate,
   ],
   supportedLocales: S.delegate.supportedLocales,
-  locale: const Locale('en'),
+  locale: null,
+
   // Dynamic (uses device language)
 // locale: null,
       ),
