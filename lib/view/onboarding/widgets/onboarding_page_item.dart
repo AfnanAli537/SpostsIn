@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/constants/strings_manager.dart';
 import 'package:sports_in/data/models/onboarding_model.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class OnboardingPageItem extends StatelessWidget {
   final OnboardingModel model;
@@ -33,6 +33,7 @@ class OnboardingPageItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final string = S.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
@@ -72,7 +73,7 @@ class OnboardingPageItem extends StatelessWidget {
                         child:  Visibility(
                           visible: !isLast,
                           child: Text(
-                            StringsManager.skip(context),
+                            string.skip,
                             style: textTheme.bodyLarge?.copyWith(
                               color: ColorManager.lightBackground,
                             ),
@@ -83,7 +84,7 @@ class OnboardingPageItem extends StatelessWidget {
             
                     SizedBox(height: 38.h),
                     Text(
-                      StringsManager.getLocalizedString(context, model.title),
+                      model.title,
                       textAlign: TextAlign.center,
                       style: textTheme.headlineLarge?.copyWith(
                         color: colorScheme.secondary,
@@ -94,8 +95,7 @@ class OnboardingPageItem extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Text(
-                        StringsManager.getLocalizedString(
-                            context, model.description),
+                       model.description,
                         textAlign: TextAlign.center,
                         style: textTheme.titleMedium?.copyWith(
                           color: ColorManager.lightBackground,
@@ -128,7 +128,7 @@ class OnboardingPageItem extends StatelessWidget {
                                     : ColorManager.lightBackground
                               ),
                               Text(
-                                StringsManager.back(context),
+                                string.back,
                                 style: textTheme.labelLarge?.copyWith(
                                   color: isFirst
                                       ? ColorManager.darkTextPrimary
@@ -161,8 +161,8 @@ class OnboardingPageItem extends StatelessWidget {
                             children: [
                               Text(
                                 isLast
-                                    ? StringsManager.getStarted(context)
-                                    : StringsManager.next(context),
+                                    ? string.getStarted
+                                    : string.next,
                                 style: textTheme.labelLarge?.copyWith(
                                   color: colorScheme.onInverseSurface,
                                   fontWeight: FontWeight.w600,

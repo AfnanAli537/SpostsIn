@@ -1,3 +1,4 @@
+
 class OnboardingModel {
   final String title;
   final String description;
@@ -9,3 +10,6 @@ class OnboardingModel {
     required this.imagePath,
   });
 }
+
+
+

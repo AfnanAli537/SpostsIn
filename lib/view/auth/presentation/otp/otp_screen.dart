@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/view/auth/widgets/auth_title.dart';
 
 
@@ -12,6 +13,7 @@ class EmailVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final string =S.of(context);
     return Scaffold(
         resizeToAvoidBottomInset: true,
       appBar: AppBar(),
@@ -21,10 +23,10 @@ class EmailVerificationScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AuthTitle(
-                  title: "Email Verification",
-                  subtitle: "Get Your Code !",
-                  hintDesc: "please enter 4 digits code that send to yor email address",),
+              AuthTitle(
+                 title:string.emailVerfiy,
+                  subtitle: string.GetYourCode,
+                  hintDesc: string.otpHint,),
               const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -42,7 +44,7 @@ class EmailVerificationScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              CustomElevatedButton(text: "Verify and proceed", onPressed: () {Navigator.pushNamed(context, AppRoutes.resetPassword);}),
+              CustomElevatedButton(text:string.VerifyAndProceed, onPressed: () {Navigator.pushNamed(context, AppRoutes.resetPassword);}),
             ],
           ),
         ),

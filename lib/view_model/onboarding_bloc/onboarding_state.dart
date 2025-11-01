@@ -7,17 +7,15 @@ final class OnboardingLoading extends OnboardingState {}
 
 final class OnboardingLoaded extends OnboardingState {
   final int currentPageIndex;
-  final List<OnboardingModel> pages;
-
+  final int  pagesLength;
   OnboardingLoaded({
-    required this.currentPageIndex,
-    required this.pages,
+    required this.currentPageIndex, required this.pagesLength,
   });
 
-  OnboardingLoaded copyWith({int? currentPageIndex, List<OnboardingModel>? pages}) {
+  OnboardingLoaded copyWith({int? currentPageIndex,int? pagesLength }) {
     return OnboardingLoaded(
       currentPageIndex: currentPageIndex ?? this.currentPageIndex,
-      pages: pages ?? this.pages,
+      pagesLength : pagesLength ?? this.pagesLength,
     );
   }
 }

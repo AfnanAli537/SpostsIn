@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-
 class AuthTitle extends StatelessWidget {
-  final String title;
+  final String  title;
   final String? subtitle;
   final String? hintDesc;
 
@@ -30,6 +28,7 @@ class AuthTitle extends StatelessWidget {
            style: textTheme.bodySmall?.copyWith(color: ColorScheme.of(context).onSurface.withOpacity(0.40))
          ),
         ],
+        Row(),
       ],
     );
   }
