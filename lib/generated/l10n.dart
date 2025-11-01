@@ -84,69 +84,14 @@ class S {
     return Intl.message('Skip', name: 'skip', desc: '', args: []);
   }
 
-  /// `Back`
+  /// `Previous`
   String get back {
-    return Intl.message('Back', name: 'back', desc: '', args: []);
+    return Intl.message('Previous', name: 'back', desc: '', args: []);
   }
 
   /// `Get Started`
   String get getStarted {
     return Intl.message('Get Started', name: 'getStarted', desc: '', args: []);
-  }
-
-  /// `Forgot Password`
-  String get forgotPassword {
-    return Intl.message(
-      'Forgot Password',
-      name: 'forgotPassword',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Verify`
-  String get verify {
-    return Intl.message('Verify', name: 'verify', desc: '', args: []);
-  }
-
-  /// `Login`
-  String get login {
-    return Intl.message('Login', name: 'login', desc: '', args: []);
-  }
-
-  /// `Sign Up`
-  String get signUp {
-    return Intl.message('Sign Up', name: 'signUp', desc: '', args: []);
-  }
-
-  /// `Email`
-  String get email {
-    return Intl.message('Email', name: 'email', desc: '', args: []);
-  }
-
-  /// `Password`
-  String get password {
-    return Intl.message('Password', name: 'password', desc: '', args: []);
-  }
-
-  /// `Confirm Password`
-  String get confirmPassword {
-    return Intl.message(
-      'Confirm Password',
-      name: 'confirmPassword',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Don't have an account?`
-  String get notHaveAccount {
-    return Intl.message(
-      'Don\'t have an account?',
-      name: 'notHaveAccount',
-      desc: '',
-      args: [],
-    );
   }
 
   /// `Already have an account?`
@@ -284,6 +229,11 @@ class S {
     return Intl.message('Profile', name: 'profile', desc: '', args: []);
   }
 
+  /// `create`
+  String get create {
+    return Intl.message('create', name: 'create', desc: '', args: []);
+  }
+
   /// `Discover Sports Talents`
   String get onboarding1Title {
     return Intl.message(
@@ -379,6 +329,401 @@ class S {
     return Intl.message(
       'Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities.',
       name: 'onboarding5Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email Verification`
+  String get emailVerfiy {
+    return Intl.message(
+      'Email Verification',
+      name: 'emailVerfiy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `or continue with`
+  String get continueWith {
+    return Intl.message(
+      'or continue with',
+      name: 'continueWith',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forgot your password?`
+  String get forgetYourPassword {
+    return Intl.message(
+      'Forgot your password?',
+      name: 'forgetYourPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email`
+  String get email {
+    return Intl.message('Email', name: 'email', desc: '', args: []);
+  }
+
+  /// `Password`
+  String get password {
+    return Intl.message('Password', name: 'password', desc: '', args: []);
+  }
+
+  /// `Sign in`
+  String get signIn {
+    return Intl.message('Sign in', name: 'signIn', desc: '', args: []);
+  }
+
+  /// `Verify`
+  String get verify {
+    return Intl.message('Verify', name: 'verify', desc: '', args: []);
+  }
+
+  /// `Login`
+  String get login {
+    return Intl.message('Login', name: 'login', desc: '', args: []);
+  }
+
+  /// `Sign Up`
+  String get signUp {
+    return Intl.message('Sign Up', name: 'signUp', desc: '', args: []);
+  }
+
+  /// `Confirm Password`
+  String get confirmPassword {
+    return Intl.message(
+      'Confirm Password',
+      name: 'confirmPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Don't have an account?`
+  String get notHaveAccount {
+    return Intl.message(
+      'Don\'t have an account?',
+      name: 'notHaveAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome`
+  String get welcome {
+    return Intl.message('Welcome', name: 'welcome', desc: '', args: []);
+  }
+
+  /// `Login to your Account`
+  String get loginToYourAccount {
+    return Intl.message(
+      'Login to your Account',
+      name: 'loginToYourAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Your Code !`
+  String get GetYourCode {
+    return Intl.message(
+      'Get Your Code !',
+      name: 'GetYourCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `please enter 4 digits code that send to yor email address`
+  String get otpHint {
+    return Intl.message(
+      'please enter 4 digits code that send to yor email address',
+      name: 'otpHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verify and proceed`
+  String get VerifyAndProceed {
+    return Intl.message(
+      'Verify and proceed',
+      name: 'VerifyAndProceed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset Password`
+  String get resetPassword {
+    return Intl.message(
+      'Reset Password',
+      name: 'resetPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your new password`
+  String get enterNewPassword {
+    return Intl.message(
+      'Enter your new password',
+      name: 'enterNewPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your new password must be different than the previous password`
+  String get passwordHintDesc {
+    return Intl.message(
+      'Your new password must be different than the previous password',
+      name: 'passwordHintDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Password`
+  String get newPassword {
+    return Intl.message(
+      'New Password',
+      name: 'newPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OK`
+  String get ok {
+    return Intl.message('OK', name: 'ok', desc: '', args: []);
+  }
+
+  /// `Forget Password`
+  String get forgetPassword {
+    return Intl.message(
+      'Forget Password',
+      name: 'forgetPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Email Address here`
+  String get enterEmailAddressHere {
+    return Intl.message(
+      'Enter Email Address here',
+      name: 'enterEmailAddressHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Email Address associated with your account`
+  String get enterEmailAssociated {
+    return Intl.message(
+      'Enter Email Address associated with your account',
+      name: 'enterEmailAssociated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send verification code`
+  String get sendVerificationCode {
+    return Intl.message(
+      'Send verification code',
+      name: 'sendVerificationCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy & Policy`
+  String get privacyPolicyTitle {
+    return Intl.message(
+      'Privacy & Policy',
+      name: 'privacyPolicyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last updated: 11 October 2025`
+  String get lastUpdated {
+    return Intl.message(
+      'Last updated: 11 October 2025',
+      name: 'lastUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Introduction`
+  String get introductionTitle {
+    return Intl.message(
+      'Introduction',
+      name: 'introductionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SportsIn is a professional social platform for athletes, coaches, and sports clubs to connect, share experiences, and discover opportunities.`
+  String get introductionBody {
+    return Intl.message(
+      'SportsIn is a professional social platform for athletes, coaches, and sports clubs to connect, share experiences, and discover opportunities.',
+      name: 'introductionBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Information We Collect`
+  String get informationTitle {
+    return Intl.message(
+      'Information We Collect',
+      name: 'informationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When you use SportsIn, we may collect the following types of information:\n\n• Personal data: your name, email, profile photo, sports skills, and interests.\n• Activity data: posts, messages, likes, and other interactions.\n• Device data: device type, operating system, and IP address.`
+  String get informationBody {
+    return Intl.message(
+      'When you use SportsIn, we may collect the following types of information:\n\n• Personal data: your name, email, profile photo, sports skills, and interests.\n• Activity data: posts, messages, likes, and other interactions.\n• Device data: device type, operating system, and IP address.',
+      name: 'informationBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `How We Use Your Information`
+  String get useInfoTitle {
+    return Intl.message(
+      'How We Use Your Information',
+      name: 'useInfoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We use the collected data to:\n\n• Personalize your experience within the app.\n• Improve our features and services.\n• Send you relevant notifications about activities or opportunities.\n• Ensure the security and integrity of our platform.`
+  String get useInfoBody {
+    return Intl.message(
+      'We use the collected data to:\n\n• Personalize your experience within the app.\n• Improve our features and services.\n• Send you relevant notifications about activities or opportunities.\n• Ensure the security and integrity of our platform.',
+      name: 'useInfoBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sharing Your Information`
+  String get sharingInfoTitle {
+    return Intl.message(
+      'Sharing Your Information',
+      name: 'sharingInfoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).`
+  String get sharingInfoBody {
+    return Intl.message(
+      'We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).',
+      name: 'sharingInfoBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Changes to This Policy`
+  String get changesTitle {
+    return Intl.message(
+      'Changes to This Policy',
+      name: 'changesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We may update this Privacy Policy from time to time. Any significant changes will be communicated through the app.`
+  String get changesBody {
+    return Intl.message(
+      'We may update this Privacy Policy from time to time. Any significant changes will be communicated through the app.',
+      name: 'changesBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact Us`
+  String get contactTitle {
+    return Intl.message('Contact Us', name: 'contactTitle', desc: '', args: []);
+  }
+
+  /// `If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app`
+  String get contactBody {
+    return Intl.message(
+      'If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app',
+      name: 'contactBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I agree`
+  String get agreeLabel {
+    return Intl.message('I agree', name: 'agreeLabel', desc: '', args: []);
+  }
+
+  /// `CONTINUE`
+  String get continueButton {
+    return Intl.message('CONTINUE', name: 'continueButton', desc: '', args: []);
+  }
+
+  /// `Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character `
+  String get strongPassword {
+    return Intl.message(
+      'Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ',
+      name: 'strongPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password is required`
+  String get emptyPassword {
+    return Intl.message(
+      'Password is required',
+      name: 'emptyPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email is required`
+  String get emprtEmail {
+    return Intl.message(
+      'Email is required',
+      name: 'emprtEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid email`
+  String get validEmail {
+    return Intl.message(
+      'Enter a valid email',
+      name: 'validEmail',
       desc: '',
       args: [],
     );

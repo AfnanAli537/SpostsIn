@@ -1,6 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
@@ -10,117 +14,103 @@ class PrivacyPolicyScreen extends StatefulWidget {
 }
 
 class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
-  bool _isChecked = false;
-  bool _isLoading = false;
-
-  Future<void> _continue(BuildContext context) async {
-    setState(() => _isLoading = true);
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seenPrivacy', true);
-
-    // Add a short delay just for smoother transition
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/onboarding');
-  }
+  bool _isAgreed = false;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final string = S.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy & Policy'),
-        centerTitle: true,
-      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: size.width * 0.06,
-            vertical: size.height * 0.02,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Scrollable privacy content
+              Align(
+                alignment: Alignment.topRight,
+                child: Icon(
+                  Icons.info_outline_rounded,
+                  size: 22.sp,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.8),
+                ),
+              ),
+              SizedBox(height: 5.h),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Text(
-                    '''
-Welcome to SportsIn!
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        string.privacyPolicyTitle,
+                        style: textTheme.headlineSmall,
+                      ),
+                      SizedBox(height: 6.h),
+                      Text(
+                        string.lastUpdated,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).hintColor,
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
 
-We value your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when using our app.
+                      _buildSectionTitle(string.introductionTitle),
+                      _buildBodyText(string.informationBody),
 
-1. Information We Collect
-   - Account data (name, email, etc.)
-   - Activity and interaction data
-   - Uploaded media (e.g., profile pictures, videos)
+                      _buildSectionTitle(string.informationTitle),
+                      _buildBodyText(string.informationBody),
 
-2. How We Use Your Information
-   - Improve your experience
-   - Enable communication between users
-   - Provide AI-based performance insights
+                      _buildSectionTitle(string.useInfoTitle),
+                      _buildBodyText(string.useInfoBody),
 
-3. Sharing Your Information
-   - We do not sell your data
-   - Data may be shared with trusted service providers
+                      _buildSectionTitle(string.sharingInfoTitle),
+                      _buildBodyText(string.sharingInfoBody),
 
-By continuing, you confirm that you have read and agree to our policy.
-                    ''',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(height: 1.6),
-                  ),
-                ),
-              ),
+                      _buildSectionTitle(string.changesTitle),
+                      _buildBodyText(string.changesBody),
 
-              const SizedBox(height: 16),
-
-              // Checkbox + text
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Checkbox(
-                    value: _isChecked,
-                    onChanged: (val) {
-                      setState(() => _isChecked = val ?? false);
-                    },
-                  ),
-                  const Expanded(
-                    child: Text(
-                      "I agree to the Privacy Policy and Terms of Service.",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Continue button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isChecked && !_isLoading
-                      ? () => _continue(context)
-                      : null, // disabled until agreed
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r))
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
+                      _buildSectionTitle(string.contactTitle),
+                      _buildBodyText(string.contactBody),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _isAgreed,
+                            activeColor: Theme.of(
+                              context,
+                            ).colorScheme.onSecondary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.r),
+                            ),
+                            onChanged: (value) =>
+                                setState(() => _isAgreed = value ?? false),
                           ),
-                        )
-                      : const Text("Continue"),
+                          Expanded(
+                            child: Text(
+                              string.agreeLabel,
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+
+              SizedBox(height: 8.h),
+
+              CustomElevatedButton(
+                text: string.continueButton,
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+                },
+                enabled: _isAgreed,
               ),
             ],
           ),
@@ -128,4 +118,21 @@ By continuing, you confirm that you have read and agree to our policy.
       ),
     );
   }
+
+  Widget _buildSectionTitle(String title) => Padding(
+    padding: EdgeInsets.only(top: 14.h, bottom: 4.h),
+    child: Text(
+      title,
+      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
+    ),
+  );
+
+  Widget _buildBodyText(String text) => Text(
+    text,
+    style: TextStyle(
+      fontSize: 13.5.sp,
+      height: 1.4,
+      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+    ),
+  );
 }
