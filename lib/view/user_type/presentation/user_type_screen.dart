@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/view/user_type/widgets/type_option_tile.dart';
-import 'package:sports_in/core/constants/strings_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserTypeScreen extends StatefulWidget {
@@ -14,17 +14,23 @@ class UserTypeScreen extends StatefulWidget {
 }
 
 class _UserTypeScreenState extends State<UserTypeScreen> {
+  late S string;
+  late List<Map<String, dynamic>> userTypes;
   String? selectedType;
 
-  // Use non-localized keys for logic and localized labels for display
-  final List<Map<String, dynamic>> userTypes = [
-    {'key': 'player', 'label': StringsManager.player, 'icon': SvgAssets.player},
-    {'key': 'coach', 'label': StringsManager.coach, 'icon': SvgAssets.coach},
-    {'key': 'scout', 'label': StringsManager.scout, 'icon': SvgAssets.scout},
-    {'key': 'club', 'label': StringsManager.club, 'icon': SvgAssets.club},
-    {'key': 'institute', 'label': StringsManager.institute, 'icon': SvgAssets.institute},
-    {'key': 'other', 'label': StringsManager.other, 'icon': SvgAssets.other},
-  ];
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    string = S.of(context);
+    userTypes = [
+      {'key': 'player', 'label': string.player, 'icon': SvgAssets.player},
+      {'key': 'coach', 'label': string.coach, 'icon': SvgAssets.coach},
+      {'key': 'scout', 'label': string.scout, 'icon': SvgAssets.scout},
+      {'key': 'club', 'label': string.club, 'icon': SvgAssets.club},
+      {'key': 'institute', 'label': string.institute, 'icon': SvgAssets.institute},
+      {'key': 'other', 'label': string.other, 'icon': SvgAssets.other},
+    ];
+  }
 
   void _navigateToNext() {
     switch (selectedType) {
@@ -63,7 +69,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
           child: Column(
             children: [
               Text(
-                StringsManager.whatIsYourType(context),
+                string.whatIsYourType,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -71,7 +77,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
               ),
               SizedBox(height: 4.h),
               Text(
-                StringsManager.knowingYourGoal(context),
+                string.knowingYourGoal,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium,
               ),
@@ -94,7 +100,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                           height: itemHeight,
                           child: TypeOptionTile(
                             // Display localized label
-                            label: type['label'](context),
+                            label: type['label'],
                             icon: type['icon'],
                             isSelected: selectedType == type['key'],
                             onTap: () => setState(() {
@@ -113,13 +119,13 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
               //   mainAxisAlignment: MainAxisAlignment.center,
               //   children: [
               //     Text(
-              //       StringsManager.alreadyHaveAnAccount(context),
+              //       string.alreadyHaveAnAccount(context),
               //       style: Theme.of(context).textTheme.bodyMedium,
               //     ),
               //     const SizedBox(width: 10),
               //     TextButton(
               //       onPressed: () => Navigator.pop(context),
-              //       child: Text(StringsManager.login(context)),
+              //       child: Text(string.login(context)),
               //     ),
               //   ],
               // ),
@@ -128,7 +134,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
               SizedBox(
                 width: double.infinity,
                 child: CustomElevatedButton(
-                  text: StringsManager.continueText(context),
+                  text: string.continueText,
                   enabled: selectedType != null,
                   onPressed: selectedType == null ? null : _navigateToNext,
                 ),

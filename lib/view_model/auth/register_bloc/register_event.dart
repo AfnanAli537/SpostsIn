@@ -1,25 +1,25 @@
-// File: lib/blocs/auth/signup/signup_event.dart
-
 part of 'register_bloc.dart';
 
-abstract class RegisterEvent {}
-
-class RegisterSubmittedEvent extends RegisterEvent {
-  final UserType userType;
-  final String email;
-  final String password;
-  final String confirmPassword;
-  final Map<String, dynamic> userData;
-
-  RegisterSubmittedEvent({
-    required this.userType,
-    required this.email,
-    required this.password,
-    required this.confirmPassword,
-    required this.userData,
-  });
+abstract class RegistrationEvent extends Equatable {
+  const RegistrationEvent();
 }
 
-class RegisterResetEvent extends RegisterEvent {}
+class SubmitRegistrationEvent extends RegistrationEvent {
+  final UserModel userData;
+  final dynamic localizations; // S type from generated/l10n.dart
 
-class InitialRegisterScreenEvent extends RegisterEvent {}
+  const SubmitRegistrationEvent({
+    required this.userData,
+    required this.localizations,
+  });
+
+  @override
+  List<Object?> get props => [userData, localizations];
+}
+
+class ResetValidationEvent extends RegistrationEvent {
+  const ResetValidationEvent();
+
+  @override
+  List<Object?> get props => [];
+}

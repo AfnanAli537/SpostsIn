@@ -28,7 +28,7 @@ class SportsIn extends StatelessWidget {
     GlobalCupertinoLocalizations.delegate,
   ],
   supportedLocales: S.delegate.supportedLocales,
-  locale: null,
+  locale: Locale('ar'),
 
   // Dynamic (uses device language)
 // locale: null,

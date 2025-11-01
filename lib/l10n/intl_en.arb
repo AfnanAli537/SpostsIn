@@ -78,6 +78,7 @@
   "sudan": "Sudan",
 
   "selectSports": "Select a Sport",
+  "sport": "Sport",
   "footballer": "Footballer",
 
   "basketballer": "Basketballer",
@@ -105,10 +106,6 @@
   "enterPassword": "Please enter your password",
   "shortPassword": "Password must be at least 6 characters",
   "passwordsDontMatch": "Passwords do not match",
-  "enterField": "Please enter your {field}",
-  "fieldTooShort": "{field} must be at least 2 characters",
-  "invalidField": "Invalid {field}",
-  "selectField": "Please select {field}",
   "enterHeight": "Please enter your height",
   "invalidHeight": "Please enter a valid height (100–250 cm)",
   "enterWeight": "Please enter your weight",
@@ -117,5 +114,46 @@
   "invalidAge": "Please enter a valid age",
   "enterDate": "Please select a date",
   "selectAtLeastOne": "Please select at least one sport",
-  "name": "name"
+  "loading": "Loading",
+  "name": "name",
+  "number": "number",
+  "field": "field",
+  "done": "Done",
+  
+  "enterField": "Please enter your {field}",
+  "@enterField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "fieldTooShort": "{field} is too short",
+  "@fieldTooShort": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "invalidField": "Invalid {field}",
+  "@invalidField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "selectField": "Please select a {field}",
+  "@selectField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  }
+
 }

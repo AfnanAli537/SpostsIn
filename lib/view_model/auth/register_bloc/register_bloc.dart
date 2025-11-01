@@ -1,203 +1,203 @@
-// // File: lib/blocs/auth/signup/signup_bloc.dart
-
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:sports_in/core/utils/validators/regex.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:sports_in/data/models/user_model.dart';
-// import 'package:sports_in/data/repo/auth_repository.dart';
+import 'package:sports_in/data/repo/auth_repository.dart';
+import 'package:sports_in/core/utils/validators/regex.dart'; 
+import 'package:sports_in/generated/l10n.dart'; 
 
 part 'register_event.dart';
 part 'register_state.dart';
 
-// class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-//   final AuthRepository _authRepository;
+class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
+  final RegistrationRepository repository;
 
-//   RegisterBloc(this._authRepository) : super(RegisterInitialState()) {
-//     on<RegisterSubmittedEvent>(_onRegisterSubmitted);
-//     on<RegisterResetEvent>(_onRegisterReset);
-//     on<InitialRegisterScreenEvent>(_onRegisterInit);
-//   }
+  RegistrationBloc(this.repository) : super(RegistrationInitial()) {
+    on<SubmitRegistrationEvent>(_onSubmitRegistration);
+    on<ResetValidationEvent>((event, emit) => emit(RegistrationInitial()));
+  }
 
-//   Future<void> _onRegisterSubmitted(
-//     RegisterSubmittedEvent event,
-//     Emitter<RegisterState> emit,
-//   ) async {
-//     emit(RegisterLoadingState());
+  Future<void> _onSubmitRegistration(
+    SubmitRegistrationEvent event,
+    Emitter<RegistrationState> emit,
+  ) async {
+    final user = event.userData;
+    final localizations = S.current;
 
-//     try {
-//       // Validate common fields
-//       final emailError = Validators.validateEmail(event.email);
-//       final passwordError = Validators.validatePassword(event.password);
-//       final confirmPasswordError = Validators.validateConfirmPassword(
-//         event.confirmPassword,
-//         event.password,
-//       );
+    // ✅ Validate user data
+    final validationError = _validateUserData(user, localizations);
+    if (validationError != null) {
+      emit(RegistrationValidationError(validationError));
+      return;
+    }
 
-//       if (emailError != null) {
-//         emit(RegisterFailureState(emailError));
-//         return;
-//       }
-//       if (passwordError != null) {
-//         emit(RegisterFailureState(passwordError));
-//         return;
-//       }
-//       if (confirmPasswordError != null) {
-//         emit(RegisterFailureState(confirmPasswordError));
-//         return;
-//       }
+    emit(RegistrationLoading());
 
-//       // Validate user-specific fields based on userType
-//       final validationError =
-//           _validateUserSpecificData(event.userType, event.userData);
-//       if (validationError != null) {
-//         emit(RegisterFailureState(validationError));
-//         return;
-//       }
+    try {
+      // Simulated or actual API call
+      final success = await repository.registerUser(user);
 
-//       // Register user with appropriate endpoint based on userType
-//       final response = await _registerUser(
-//         userType: event.userType,
-//         email: event.email,
-//         password: event.password,
-//         userData: event.userData,
-//       );
+      if (success) {
+        emit(const RegistrationSuccess(message: "Registration successful!"));
+      } else {
+        emit(const RegistrationError("Registration failed. Please try again."));
+      }
+    } catch (e) {
+      emit(RegistrationError("An error occurred: ${e.toString()}"));
+    }
+  }
 
-//       if (response != null && response['success'] == true) {
-//         emit(RegisterSuccessState(
-//           userName: response['user']['name'] ?? 'User',
-//           userType: event.userType,
-//           token: response['token'],
-//         ));
-//       } else {
-//         emit(RegisterFailureState(
-//             response?['message'] ?? 'Failed to register. Please try again.'));
-//       }
-//     } catch (e) {
-//       emit(RegisterFailureState(e.toString()));
-//     }
-//   }
+  /// ✅ Centralized validation logic (using Validators class)
+  String? _validateUserData(UserModel user, S localizations) {
+    // --- Type-specific Validations ---
+    switch (user.userType) {
+      case UserType.player:
+        return _validatePlayerData(user, localizations);
+      case UserType.coach || UserType.scout:
+        return _validateCoachAndScoutData(user, localizations);
+      case UserType.club:
+        return _validateClubData(user, localizations);
+      case UserType.institute:
+        return _validateInstituteData(user, localizations);
+      case UserType.others:
+        // optional generic check
+        return null;
+    }
+  }
 
-//   // Validate user-specific data based on type
-//   String? _validateUserSpecificData(
-//       UserType userType, Map<String, dynamic> userData) {
-//     switch (userType) {
-//       case UserType.player:
-//         if (userData['firstName'] == null || userData['firstName'].isEmpty) {
-//           return 'First name is required';
-//         }
-//         if (userData['lastName'] == null || userData['lastName'].isEmpty) {
-//           return 'Last name is required';
-//         }
-//         if (userData['height'] == null || userData['height'].isEmpty) {
-//           return 'Height is required';
-//         }
-//         if (userData['weight'] == null || userData['weight'].isEmpty) {
-//           return 'Weight is required';
-//         }
-//         if (userData['gender'] == null || userData['gender'].isEmpty) {
-//           return 'Gender is required';
-//         }
-//         if (userData['location'] == null || userData['location'].isEmpty) {
-//           return 'Location is required';
-//         }
-//         if (userData['sportPosition'] == null ||
-//             userData['sportPosition'].isEmpty) {
-//           return 'Sport profession is required';
-//         }
-//         if (userData['position'] == null || userData['position'].isEmpty) {
-//           return 'Position is required';
-//         }
-//         break;
+  // ==================== PLAYER ====================
+  String? _validatePlayerData(UserModel user, S s) {
+        // --- Common Validations ---
+    final firstNameResult =
+        Validators.validateNameBLoC(user.firstName, s, fieldName: s.firstName);
+    if (!firstNameResult.isValid) return firstNameResult.errorMessage;
 
-//       case UserType.coach:
-//         if (userData['firstName'] == null || userData['firstName'].isEmpty) {
-//           return 'First name is required';
-//         }
-//         if (userData['lastName'] == null || userData['lastName'].isEmpty) {
-//           return 'Last name is required';
-//         }
-//         if (userData['yearsOfExperience'] == null ||
-//             userData['yearsOfExperience'].isEmpty) {
-//           return 'Years of experience is required';
-//         }
-//         if (userData['sportName'] == null || userData['sportName'].isEmpty) {
-//           return 'Sport name is required';
-//         }
-//         if (userData['location'] == null || userData['location'].isEmpty) {
-//           return 'Location is required';
-//         }
-//         if (userData['gender'] == null || userData['gender'].isEmpty) {
-//           return 'Gender is required';
-//         }
-//         break;
+    final lastNameResult =
+        Validators.validateNameBLoC(user.lastName, s, fieldName: s.lastName);
+    if (!lastNameResult.isValid) return lastNameResult.errorMessage;
 
-//       case UserType.scout:
-//       case UserType.club:
-//       case UserType.institute:
-//       case UserType.other:
-//         // Add validation for other user types as needed
-//         break;
-//     }
-//     return null;
-//   }
+    final emailResult = Validators.validateEmailBLoC(user.email, s);
+    if (!emailResult.isValid) return emailResult.errorMessage;
 
-//   // Register user with appropriate API endpoint
-//   Future<Map<String, dynamic>?> _registerUser({
-//     required UserType userType,
-//     required String email,
-//     required String password,
-//     required Map<String, dynamic> userData,
-//   }) async {
-//     switch (userType) {
-//       case UserType.player:
-//         return await _authRepository.registerPlayer(
-//           email: email,
-//           password: password,
-//           userData: userData,
-//         );
+    final passwordResult =
+        Validators.validatePasswordBLoC(user.password, s);
+    if (!passwordResult.isValid) return passwordResult.errorMessage;
 
-//       case UserType.coach:
-//         return await _authRepository.registerCoach(
-//           email: email,
-//           password: password,
-//           userData: userData,
-//         );
+    final confirmPasswordResult =
+        Validators.validateConfirmPasswordBLoC(user.confirmPassword, s, password: user.password);
+    if (!confirmPasswordResult.isValid) return confirmPasswordResult.errorMessage;
+    // ---------------------------
 
-//       case UserType.scout:
-//         return await _authRepository.registerScout(
-//           email: email,
-//           password: password,
-//           userData: userData,
-//         );
+    final heightResult = Validators.validateHeightBLoC(user.height, s);
+    if (!heightResult.isValid) return heightResult.errorMessage;
 
-//       case UserType.club:
-//         return await _authRepository.registerClub(
-//           email: email,
-//           password: password,
-//           userData: userData,
-//         );
+    final weightResult = Validators.validateWeightBLoC(user.weight, s);
+    if (!weightResult.isValid) return weightResult.errorMessage;
 
-//       case UserType.institute:
-//         return await _authRepository.registerInstitute(
-//           email: email,
-//           password: password,
-//           userData: userData,
-//         );
+    final genderResult = Validators.validateDropdownBLoC(user.gender, s, fieldName: s.gender);
+    if (!genderResult.isValid) return genderResult.errorMessage;
 
-//       case UserType.other:
-//         return await _authRepository.registerOther(
-//           email: email,
-//           password: password,
-//           userData: userData,
-//         );
-//     }
-//   }
+    final locationResult = Validators.validateDropdownBLoC(user.location, s, fieldName: s.location);
+    if (!locationResult.isValid) return locationResult.errorMessage;
 
-//   void _onRegisterReset(RegisterResetEvent event, Emitter<RegisterState> emit) {
-//     emit(RegisterInitialState());
-//   }
+    final sportResult = Validators.validateDropdownBLoC(user.sport, s, fieldName: s.sportProfession);
+    if (!sportResult.isValid) return sportResult.errorMessage;
 
-//   void _onRegisterInit(
-//       InitialRegisterScreenEvent event, Emitter<RegisterState> emit) {
-//     emit(RegisterInitialState());
-//   }
-// }
+    final positionResult = Validators.validateDropdownBLoC(user.position, s, fieldName: s.position);
+    if (!positionResult.isValid) return positionResult.errorMessage;
+
+    return null;
+  }
+
+  // ==================== COACH ====================
+  String? _validateCoachAndScoutData(UserModel user, S s) {
+        // --- Common Validations ---
+    final firstNameResult =
+        Validators.validateNameBLoC(user.firstName, s, fieldName: s.firstName);
+    if (!firstNameResult.isValid) return firstNameResult.errorMessage;
+
+    final lastNameResult =
+        Validators.validateNameBLoC(user.lastName, s, fieldName: s.lastName);
+    if (!lastNameResult.isValid) return lastNameResult.errorMessage;
+
+    final emailResult = Validators.validateEmailBLoC(user.email, s);
+    if (!emailResult.isValid) return emailResult.errorMessage;
+
+    final passwordResult =
+        Validators.validatePasswordBLoC(user.password, s);
+    if (!passwordResult.isValid) return passwordResult.errorMessage;
+
+    final confirmPasswordResult =
+        Validators.validateConfirmPasswordBLoC(user.confirmPassword, s, password: user.password);
+    if (!confirmPasswordResult.isValid) return confirmPasswordResult.errorMessage;
+    
+    final genderResult = Validators.validateDropdownBLoC(user.gender, s, fieldName: s.gender);
+    if (!genderResult.isValid) return genderResult.errorMessage;
+    // ---------------------------
+    final specResult = Validators.validateRequiredBLoC(user.specialization, s, fieldName: s.specializedSport);
+    if (!specResult.isValid) return specResult.errorMessage;
+
+     final locationResult = Validators.validateDropdownBLoC(user.location, s, fieldName: s.location);
+    if (!locationResult.isValid) return locationResult.errorMessage;
+
+    final expResult = Validators.validateRequiredBLoC(user.experienceYears, s, fieldName: s.yearsOfExperience);
+    if (!expResult.isValid) return expResult.errorMessage;
+
+
+    return null;
+  }
+
+  // ==================== CLUB ====================
+  String? _validateClubData(UserModel user, S s) {
+    final clubNameResult =
+        Validators.validateNameBLoC(user.clubName, s, fieldName: s.clubName);
+    if (!clubNameResult.isValid) return clubNameResult.errorMessage;
+
+    final emailResult = Validators.validateEmailBLoC(user.email, s);
+    if (!emailResult.isValid) return emailResult.errorMessage;
+
+    final passwordResult =
+        Validators.validatePasswordBLoC(user.password, s);
+    if (!passwordResult.isValid) return passwordResult.errorMessage;
+
+    final confirmPasswordResult =
+        Validators.validateConfirmPasswordBLoC(user.confirmPassword, s, password: user.password);
+    if (!confirmPasswordResult.isValid) return confirmPasswordResult.errorMessage;
+    
+    final locationResult = Validators.validateDropdownBLoC(user.location, s, fieldName: s.location);
+    if (!locationResult.isValid) return locationResult.errorMessage;
+
+    final dateResult = Validators.validateDateBLoC(user.foundDate, s);
+    if (!dateResult.isValid) return dateResult.errorMessage;
+
+    final sportsResult = Validators.validateListBLoC(user.sports, s, fieldName: s.sport);
+    if (!sportsResult.isValid) return sportsResult.errorMessage;
+
+    return null;
+  }
+
+  // ==================== INSTITUTE ====================
+  String? _validateInstituteData(UserModel user, S s) {
+    final instituteNameResult =
+        Validators.validateNameBLoC(user.instituteName, s, fieldName: s.instituteName);
+    if (!instituteNameResult.isValid) return instituteNameResult.errorMessage;
+
+    final emailResult = Validators.validateEmailBLoC(user.email, s);
+    if (!emailResult.isValid) return emailResult.errorMessage;
+
+    final passwordResult =
+        Validators.validatePasswordBLoC(user.password, s);
+    if (!passwordResult.isValid) return passwordResult.errorMessage;
+
+    final confirmPasswordResult =
+        Validators.validateConfirmPasswordBLoC(user.confirmPassword, s, password: user.password);
+    if (!confirmPasswordResult.isValid) return confirmPasswordResult.errorMessage;
+    
+    final locationResult = Validators.validateDropdownBLoC(user.location, s, fieldName: s.location);
+    if (!locationResult.isValid) return locationResult.errorMessage;
+
+    final industryResult = Validators.validateRequiredBLoC(user.industry, s, fieldName: s.industary);
+    if (!industryResult.isValid) return industryResult.errorMessage;
+
+    return null;
+  }
+}

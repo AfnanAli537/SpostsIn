@@ -519,6 +519,11 @@ class S {
     );
   }
 
+  /// `Sport`
+  String get sport {
+    return Intl.message('Sport', name: 'sport', desc: '', args: []);
+  }
+
   /// `Footballer`
   String get footballer {
     return Intl.message('Footballer', name: 'footballer', desc: '', args: []);
@@ -679,46 +684,6 @@ class S {
     );
   }
 
-  /// `Please enter your {field}`
-  String enterField(Object field) {
-    return Intl.message(
-      'Please enter your $field',
-      name: 'enterField',
-      desc: '',
-      args: [field],
-    );
-  }
-
-  /// `{field} must be at least 2 characters`
-  String fieldTooShort(Object field) {
-    return Intl.message(
-      '$field must be at least 2 characters',
-      name: 'fieldTooShort',
-      desc: '',
-      args: [field],
-    );
-  }
-
-  /// `Invalid {field}`
-  String invalidField(Object field) {
-    return Intl.message(
-      'Invalid $field',
-      name: 'invalidField',
-      desc: '',
-      args: [field],
-    );
-  }
-
-  /// `Please select {field}`
-  String selectField(Object field) {
-    return Intl.message(
-      'Please select $field',
-      name: 'selectField',
-      desc: '',
-      args: [field],
-    );
-  }
-
   /// `Please enter your height`
   String get enterHeight {
     return Intl.message(
@@ -799,9 +764,69 @@ class S {
     );
   }
 
+  /// `Loading`
+  String get loading {
+    return Intl.message('Loading', name: 'loading', desc: '', args: []);
+  }
+
   /// `name`
   String get name {
     return Intl.message('name', name: 'name', desc: '', args: []);
+  }
+
+  /// `number`
+  String get number {
+    return Intl.message('number', name: 'number', desc: '', args: []);
+  }
+
+  /// `field`
+  String get field {
+    return Intl.message('field', name: 'field', desc: '', args: []);
+  }
+
+  /// `Done`
+  String get done {
+    return Intl.message('Done', name: 'done', desc: '', args: []);
+  }
+
+  /// `Please enter your {field}`
+  String enterField(String field) {
+    return Intl.message(
+      'Please enter your $field',
+      name: 'enterField',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `{field} is too short`
+  String fieldTooShort(String field) {
+    return Intl.message(
+      '$field is too short',
+      name: 'fieldTooShort',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `Invalid {field}`
+  String invalidField(String field) {
+    return Intl.message(
+      'Invalid $field',
+      name: 'invalidField',
+      desc: '',
+      args: [field],
+    );
+  }
+
+  /// `Please select a {field}`
+  String selectField(String field) {
+    return Intl.message(
+      'Please select a $field',
+      name: 'selectField',
+      desc: '',
+      args: [field],
+    );
   }
 }
 

@@ -1,14 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sports_in/core/constants/strings_manager.dart';
-import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/view/auth/register/widgets/DatePickerTextField.dart';
+import 'package:sports_in/view/auth/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/register/widgets/radio_dropdown_overlay.dart';
 import 'package:sports_in/view/auth/register/widgets/checkbox_dropdown_overlay.dart';
+import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/view_model/auth/register_bloc/register_bloc.dart';
 
 class ClubRegisterScreen extends StatefulWidget {
   const ClubRegisterScreen({super.key});
@@ -18,8 +22,7 @@ class ClubRegisterScreen extends StatefulWidget {
 }
 
 class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
-
+  late S string;
   final clubNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -30,31 +33,51 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
   List<String>? selectedSports;
   File? selectedImage;
 
-  // Location options
-  List<String> get locationOptions => [
-        StringsManager.algeria(context),
-        StringsManager.egypt(context),
-        StringsManager.morocco(context),
-        StringsManager.tunisia(context),
-        StringsManager.sudan(context),
-      ];
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    string = S.of(context);
+  }
 
-  // Sports options
+  List<String> get locationOptions => [
+    string.algeria,
+    string.egypt,
+    string.morocco,
+    string.tunisia,
+    string.sudan,
+  ];
+
   List<String> get sportProfessionOptions => [
-        StringsManager.football(context),
-        StringsManager.basketball(context),
-        StringsManager.tennis(context),
-        StringsManager.swimming(context),
-      ];
+    string.football,
+    string.basketball,
+    string.tennis,
+    string.swimming,
+  ];
 
   void _onRegister() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(StringsManager.registeredSuccessfully(context)),
-        ),
-      );
-    }
+    // Reset any previous validation errors
+    context.read<RegistrationBloc>().add(const ResetValidationEvent());
+
+    // Create UserModel with all collected data
+    final userData = UserModel(
+      userType: UserType.club,
+      clubName: clubNameController.text.trim(),
+      email: emailController.text.trim(),
+      password: passwordController.text,
+      confirmPassword: confirmPasswordController.text,
+      location: location,
+      foundDate: foundDateController.text,
+      sports: selectedSports,
+      image: selectedImage,
+    );
+
+    // Dispatch event to BLoC with localizations
+    context.read<RegistrationBloc>().add(
+      SubmitRegistrationEvent(
+        userData: userData,
+        localizations: string, // Pass localization object
+      ),
+    );
   }
 
   @override
@@ -73,111 +96,128 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
+      body: BlocConsumer<RegistrationBloc, RegistrationState>(
+        listener: (context, state) async {
+          if (state is RegistrationSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(string.registeredSuccessfully),
+                backgroundColor: Colors.green,
+                duration: const Duration(seconds: 1),
+              ),
+            );
+
+            await Future.delayed(const Duration(seconds: 1));
+
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                (route) => false,
+              );
+            }
+          } else if (state is RegistrationError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is RegistrationLoading;
+          final validationError = state is RegistrationValidationError
+              ? state.message
+              : null;
+
+          return Stack(
             children: [
-              // Title
-              Text(
-                StringsManager.createYourAccount(context),
-                style: theme.textTheme.titleLarge,
-              ),
-              SizedBox(height: 24.h),
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Text(
+                      string.createYourAccount,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                    SizedBox(height: 24.h),
 
-              // Club Image Picker
-              AppImagePicker(onImageSelected: (img) => selectedImage = img),
-              SizedBox(height: 24.h),
+                    AppImagePicker(
+                      onImageSelected: (img) => selectedImage = img,
+                    ),
+                    SizedBox(height: 24.h),
 
-              // Club Name
-              RegisterTextField(
-                controller: clubNameController,
-                labelText: StringsManager.clubName(context),
-                validator: (v) => Validators.validateName(
-                  context,
-                  v,
-                  fieldName: StringsManager.clubName(context).toLowerCase(),
+                    RegisterTextField(
+                      controller: clubNameController,
+                      labelText: string.clubName,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    RegisterTextField(
+                      controller: emailController,
+                      labelText: string.email,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    RegisterTextField(
+                      controller: passwordController,
+                      labelText: string.password,
+                      isPassword: true,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    RegisterTextField(
+                      controller: confirmPasswordController,
+                      labelText: string.confirmPassword,
+                      isConformPassword: true,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    AppDropdownOverlay(
+                      labelText: string.location,
+                      value: location,
+                      options: locationOptions,
+                      onChanged: (val) => setState(() => location = val),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    DatePickerTextField(
+                      controller: foundDateController,
+                      labelText: string.foundDate,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    CheckboxDropdownOverlay(
+                      labelText: string.selectSports,
+                      value: selectedSports ?? [],
+                      options: sportProfessionOptions,
+                      onChanged: (selected) =>
+                          setState(() => selectedSports = selected),
+                    ),
+
+                    SizedBox(height: 20.h),
+                    if (validationError != null)
+                      RegisterErrorMessage(message: validationError),
+
+                    CustomElevatedButton(
+                      text: string.register,
+                      onPressed: isLoading ? null : _onRegister,
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 16.h),
 
-              // Email
-              RegisterTextField(
-                controller: emailController,
-                labelText: StringsManager.email(context),
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) => Validators.validateEmail(context, v),
-              ),
-              SizedBox(height: 16.h),
-
-              // Password
-              RegisterTextField(
-                controller: passwordController,
-                labelText: StringsManager.password(context),
-                isPassword: true,
-                validator: (v) => Validators.validatePassword(context, v),
-              ),
-              SizedBox(height: 16.h),
-
-              // Confirm Password
-              RegisterTextField(
-                controller: confirmPasswordController,
-                labelText: StringsManager.confirmPassword(context),
-                isConformPassword: true,
-                validator: (v) => Validators.validateConfirmPassword(
-                  context,
-                  v,
-                  passwordController.text,
+              // Loading overlay
+              if (isLoading)
+                Container(
+                  color: Colors.black26,
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
-              ),
-              SizedBox(height: 16.h),
-
-              // Location Dropdown
-              AppDropdownOverlay(
-                labelText: StringsManager.location(context),
-                value: location,
-                options: locationOptions,
-                onChanged: (val) => setState(() => location = val),
-                validator: (v) => Validators.validateDropdown(
-                  context,
-                  v,
-                  fieldName: StringsManager.location(context).toLowerCase(),
-                ),
-              ),
-              SizedBox(height: 16.h),
-
-              // Foundation Date Picker
-              DatePickerTextField(
-                controller: foundDateController,
-                labelText: StringsManager.foundDate(context),
-                validator: (v) => Validators.validateDate(context, v),
-              ),
-              SizedBox(height: 16.h),
-
-              // Sports Selection (Checkbox Dropdown)
-              CheckboxDropdownOverlay(
-                labelText: StringsManager.selectSports(context),
-                options: sportProfessionOptions,
-                onChanged: (selected) =>
-                    setState(() => selectedSports = selected),
-                validator: (values) {
-                  if (values == null || values.isEmpty) {
-                    return StringsManager.selectAtLeastOne(context);
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 30.h),
-
-              // Register Button
-              CustomElevatedButton(
-                text: StringsManager.register(context),
-                onPressed: _onRegister,
-              ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }

@@ -22,7 +22,15 @@ dependencies:
   image_picker: ^1.2.0
   dio: ^5.9.0
   flutter_svg: ^2.2.1
-
+  equatable: ^2.0.7
+  
+flutter_intl:
+  enabled: true
+  class_name: S
+  main_locale: en
+  arb_dir: lib/l10n
+  output_dir: lib/generated
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,9 +40,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/svg/
-
-flutter_intl:
-  enabled: true
 
 flutter_launcher_icons:
   android: true

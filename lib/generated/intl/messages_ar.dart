@@ -57,6 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
+    "done": MessageLookupByLibrary.simpleMessage("تم"),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
     "english": MessageLookupByLibrary.simpleMessage("الإنجليزية"),
@@ -72,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "enterWeight": MessageLookupByLibrary.simpleMessage("يرجى إدخال الوزن"),
     "female": MessageLookupByLibrary.simpleMessage("أنثى"),
+    "field": MessageLookupByLibrary.simpleMessage("الحقل"),
     "fieldTooShort": m1,
     "firstName": MessageLookupByLibrary.simpleMessage("الاسم الأول"),
     "football": MessageLookupByLibrary.simpleMessage("كرة القدم"),
@@ -87,8 +89,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "height": MessageLookupByLibrary.simpleMessage("الطول (سم)"),
     "home": MessageLookupByLibrary.simpleMessage("الرئيسية"),
     "industary": MessageLookupByLibrary.simpleMessage("المجال"),
-    "institute": MessageLookupByLibrary.simpleMessage("معهد"),
-    "instituteName": MessageLookupByLibrary.simpleMessage("اسم المعهد"),
+    "institute": MessageLookupByLibrary.simpleMessage("موْسسة"),
+    "instituteName": MessageLookupByLibrary.simpleMessage("اسم الموْسسة"),
     "invalidAge": MessageLookupByLibrary.simpleMessage("يرجى إدخال عمر صالح"),
     "invalidEmail": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال بريد إلكتروني صالح",
@@ -104,6 +106,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "معرفة هدفك تساعدنا على تخصيص تجربتك",
     ),
     "lastName": MessageLookupByLibrary.simpleMessage("اسم العائلة"),
+    "loading": MessageLookupByLibrary.simpleMessage("جار التحميل"),
     "location": MessageLookupByLibrary.simpleMessage("الموقع"),
     "login": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
@@ -119,6 +122,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
     "next": MessageLookupByLibrary.simpleMessage("التالي"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
+    "number": MessageLookupByLibrary.simpleMessage("الرقم"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رقم واحد",
     ),
@@ -143,9 +147,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
     ),
-    "scout": MessageLookupByLibrary.simpleMessage("كشاف"),
+    "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
     "selectField": m3,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
+    "selectSports": MessageLookupByLibrary.simpleMessage("اختر رياضة"),
     "shortPassword": MessageLookupByLibrary.simpleMessage(
       "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     ),
@@ -157,6 +162,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "specializedSport": MessageLookupByLibrary.simpleMessage(
       "الرياضة المتخصصة",
     ),
+    "sport": MessageLookupByLibrary.simpleMessage("رياضة"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("المهنة الرياضية"),
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
     "swimmer": MessageLookupByLibrary.simpleMessage("سبّاح"),

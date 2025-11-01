@@ -41,9 +41,9 @@
 
   "player": "لاعب",
   "coach": "مدرب",
-  "scout": "كشاف",
+  "scout": "مستكشف مواهب",
   "club": "نادي",
-  "institute": "معهد",
+  "institute": "موْسسة",
   "other": "أخرى",
 
   "firstName": "الاسم الأول",
@@ -58,7 +58,7 @@
   "nationality": "الجنسية",
   "yearsOfExperience": "سنوات الخبرة",
 
-  "instituteName": "اسم المعهد",
+  "instituteName": "اسم الموْسسة",
   "industary": "المجال",
   "clubName": "اسم النادي",
   "foundDate": "تاريخ التأسيس يوم/شهر/سنة",
@@ -73,6 +73,8 @@
   "tunisia": "تونس",
   "sudan": "السودان",
 
+  "selectSports": "اختر رياضة",
+  "sport": "رياضة",
   "footballer": "لاعب كرة قدم",
   "basketballer": "لاعب كرة سلة",
   "tennisPlayer": "لاعب تنس",
@@ -112,5 +114,10 @@
   "enterAge": "يرجى إدخال العمر",
   "invalidAge": "يرجى إدخال عمر صالح",
   "enterDate": "يرجى اختيار التاريخ",
-  "name": "الاسم"
+  "loading": "جار التحميل",
+  "name": "الاسم",
+  "number": "الرقم",
+  "field": "الحقل",
+  "done": "تم"
+
 }

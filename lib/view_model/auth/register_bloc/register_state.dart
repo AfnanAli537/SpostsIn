@@ -1,27 +1,39 @@
-// File: lib/blocs/auth/signup/signup_state.dart
-
 part of 'register_bloc.dart';
 
-abstract class RegisterState {}
+abstract class RegistrationState extends Equatable {
+  const RegistrationState();
 
-class RegisterInitialState extends RegisterState {}
-
-class RegisterLoadingState extends RegisterState {}
-
-class RegisterSuccessState extends RegisterState {
-  final String userName;
-  final UserType userType;
-  final String? token;
-
-  RegisterSuccessState({
-    required this.userName,
-    required this.userType,
-    this.token,
-  });
+  @override
+  List<Object?> get props => [];
 }
 
-class RegisterFailureState extends RegisterState {
-  final String error;
+class RegistrationInitial extends RegistrationState {}
 
-  RegisterFailureState(this.error);
+class RegistrationLoading extends RegistrationState {}
+
+class RegistrationSuccess extends RegistrationState {
+  final String? message;
+  
+  const RegistrationSuccess({this.message});
+  
+  @override
+  List<Object?> get props => [message];
+}
+
+class RegistrationValidationError extends RegistrationState {
+  final String message;
+
+  const RegistrationValidationError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class RegistrationError extends RegistrationState {
+  final String message;
+
+  const RegistrationError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

@@ -22,11 +22,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(field) => "Please enter your ${field}";
 
-  static String m1(field) => "${field} must be at least 2 characters";
+  static String m1(field) => "${field} is too short";
 
   static String m2(field) => "Invalid ${field}";
 
-  static String m3(field) => "Please select ${field}";
+  static String m3(field) => "Please select a ${field}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -59,6 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Currently in a Club",
     ),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
+    "done": MessageLookupByLibrary.simpleMessage("Done"),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
@@ -78,6 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please enter your weight",
     ),
     "female": MessageLookupByLibrary.simpleMessage("Female"),
+    "field": MessageLookupByLibrary.simpleMessage("field"),
     "fieldTooShort": m1,
     "firstName": MessageLookupByLibrary.simpleMessage("First name"),
     "football": MessageLookupByLibrary.simpleMessage("Football"),
@@ -112,6 +114,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Knowing your goal helps us tailor your experience",
     ),
     "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
+    "loading": MessageLookupByLibrary.simpleMessage("Loading"),
     "location": MessageLookupByLibrary.simpleMessage("Location"),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
@@ -129,6 +132,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
+    "number": MessageLookupByLibrary.simpleMessage("number"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 number",
     ),
@@ -171,6 +175,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "specializedSport": MessageLookupByLibrary.simpleMessage(
       "Specialized sports",
     ),
+    "sport": MessageLookupByLibrary.simpleMessage("Sport"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("Sport profession"),
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
     "swimmer": MessageLookupByLibrary.simpleMessage("Swimmer"),
