@@ -23,6 +23,8 @@ class ThemeManager {
         onSecondaryFixed: ColorManager.lightAccent,
         onPrimaryFixed: ColorManager.lightTextPrimary,
         onInverseSurface: ColorManager.lightBackground,
+        onSurfaceVariant: ColorManager.lightAccent, 
+        onTertiaryFixed: ColorManager.lightPrimary,
       ),
       scaffoldBackgroundColor: ColorManager.lightBackground,
       appBarTheme: AppBarTheme(
@@ -102,6 +104,10 @@ class ThemeManager {
         onSecondaryFixed: ColorManager.lightPrimary,
         onPrimaryFixed: ColorManager.darkAccent,
         onInverseSurface: ColorManager.lightPrimary,
+        onSurfaceVariant: ColorManager.darkPrimary, 
+        onTertiaryFixed: ColorManager.darkAccent,
+
+
       ),
       scaffoldBackgroundColor: ColorManager.darkBackground,
 

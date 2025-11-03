@@ -5,11 +5,15 @@
 
   "next": "Next",
   "skip": "Skip",
-  "back": "Previous",
-  "getStarted": "Get Started",
-
-
- 
+  "back": "Back",
+  "forgotPassword": "Forgot Password",
+  "verify": "Verify",
+  "signIn": "Sign in",
+  "signUp": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "notHaveAccount": "Don't have an account?",
   "alreadyHaveAccount": "Already have an account?",
   "createYourAccount": "Create your Account",
   "fullName": "Full Name",
@@ -26,11 +30,156 @@
   "chats": "Chats",
   "chat": "Chat",
   "profile": "Profile",
-  "create": "create",
 
 
+  "register": "Register",
+  "create": "Create",
+  "registeredSuccessfully": "Registered successfully!",
+  "whatIsYourType": "What Is Your Type?",
+  "knowingYourGoal": "Knowing your goal helps us tailor your experience",
+  "continueText": "CONTINUE",
+  "alreadyHaveAnAccount": "Already have an account?",
 
+
+  "player": "Player",
+  "coach": "Coach",
+  "scout": "Scout",
+  "club": "Club",
+  "institute": "Institute",
+  "other": "Other",
+
+
+  "firstName": "First name",
+  "lastName": "Last name",
+  "height": "Height (cm)",
+  "weight": "Weight (kg)",
+  "gender": "Gender",
+  "location": "Location",
+  "sportProfession": "Sport profession",
+  "specializedSport": "Specialized sports",
+  "position": "Position",
+  "nationality": "Nationality",
+  "yearsOfExperience": "Years of experience",
+
+
+  "instituteName": "Institute name",
+  "industary": "Industry",
+  "clubName": "Club name",
+  "foundDate": "Foundation date dd/mm/yyyy",
+  "currentlyInClub": "Currently in a Club",
+
+  "male": "Male",
+  "female": "Female",
+
+  "algeria": "Algeria",
+  "egypt": "Egypt",
+  "morocco": "Morocco",
+  "tunisia": "Tunisia",
+  "sudan": "Sudan",
+
+  "selectSports": "Select a Sport",
+  "sport": "Sport",
+  "footballer": "Footballer",
+
+  "basketballer": "Basketballer",
+  "tennisPlayer": "Tennis Player",
+  "swimmer": "Swimmer",
+
+  "football": "Football",
+  "basketball": "Basketball",
+  "tennis": "Tennis",
+  "swimming": "Swimming",
+  "volleyball": "Volleyball",  
+  "handball": "Handball",
+
+  "pointGuard": "Point Guard",
+  "shootingGuard": "Shooting Guard",
+  "smallForward": "Small Forward",
+  "powerForward": "Power Forward",
+  "center": "Center",
+
+  "goalkeeper": "Goalkeeper",
+  "defender": "Defender",
+  "midfielder": "Midfielder",
+  "forward": "Forward",
+
+  "setter": "Setter",
+  "outsideHitter": "Outside Hitter",
+  "oppositeHitter": "Opposite Hitter",
+  "middleBlocker": "Middle Blocker",
+  "libero": "Libero",
+
+  "leftWing": "Left Wing",
+  "rightWing": "Right Wing",
+  "leftBack": "Left Back",
+  "centerBack": "Center Back",
+  "rightBack": "Right Back",
+  "pivot": "Pivot",
+
+  "yearsOfExperience0to2": "0-2 years",
+  "yearsOfExperience3to5": "3-5 years",
+  "yearsOfExperience5to10": "6-10 years",
+  "yearsOfExperience10Plus": "10+ years",
+
+
+    "enterEmail": "Please enter your email",
+  "invalidEmail": "Please enter a valid email",
+  "enterPassword": "Please enter your password",
+  "shortPassword": "Password must be at least 6 characters",
+  "passwordsDontMatch": "Passwords do not match",
+  "enterHeight": "Please enter your height",
+  "invalidHeight": "Please enter a valid height (100–250 cm)",
+  "enterWeight": "Please enter your weight",
+  "invalidWeight": "Please enter a valid weight (30–200 kg)",
+  "enterAge": "Please enter your age",
+  "invalidAge": "Please enter a valid age",
+  "enterDate": "Please select a date",
+  "selectAtLeastOne": "Please select at least one sport",
+  "loading": "Loading",
+  "name": "name",
+  "number": "number",
+  "field": "field",
+  "done": "Done",
   
+  "enterField": "Please enter your {field}",
+  "@enterField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "fieldTooShort": "{field} is too short",
+  "@fieldTooShort": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "invalidField": "Invalid {field}",
+  "@invalidField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "selectField": "Please select a {field}",
+  "@selectField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+
+  "getStarted": "Get Started",
+
+
   "onboarding1Title": "Discover Sports Talents",
   "onboarding2Title": "Post Opportunities",
   "onboarding3Title": "Build Your Sports Profile",
@@ -46,14 +195,6 @@
   "emailVerfiy": "Email Verification",
   "continueWith": "or continue with",
   "forgetYourPassword": "Forgot your password?",
-  "email":"Email",
-"password": "Password",
-  "signIn": "Sign in",
-   "verify": "Verify",
-  "login": "Login",
-  "signUp": "Sign Up",
-  "confirmPassword": "Confirm Password",
-  "notHaveAccount": "Don't have an account?",
   "welcome": "Welcome",
    "loginToYourAccount":"Login to your Account",
    "GetYourCode":"Get Your Code !",
