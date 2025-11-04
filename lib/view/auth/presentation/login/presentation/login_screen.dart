@@ -52,14 +52,13 @@ class LoginScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          final isLoading = state is LoginLoading;
-          final validatingError = state is LoginFailure;
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: SingleChildScrollView(
                 child: Form(
-                   key: _formKey,
+                  key: _formKey,
+                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -74,8 +73,7 @@ class LoginScreen extends StatelessWidget {
                         label: string.email,
                         controller: emailController,
                         inputType: TextInputType.emailAddress,
-                        // validator: (_)=>validatingError? state.emailError:null,
-                     validator: (value) => Validators.email(value),
+                        validator: (value) => Validators.email(context:context,value:value),
                       ),
                       SizedBox(height: 16.h),
                       AuthTextField(
@@ -83,8 +81,8 @@ class LoginScreen extends StatelessWidget {
                         label: string.password,
                         controller: passwordController,
                         isPassword: true,
-                        // validator:(_)=>validatingError? state.passwordError:null ,
-                          validator: (value) => Validators.password(value),
+                        validator: (value) => Validators.password(context:context,value:value),
+                      
                       ),
                       Align(
                         alignment: Alignment.topRight,
@@ -99,7 +97,9 @@ class LoginScreen extends StatelessWidget {
                             string.forgetYourPassword,
                             style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                           ),
                         ),
@@ -108,13 +108,16 @@ class LoginScreen extends StatelessWidget {
                       CustomElevatedButton(
                         text: string.signIn,
                         onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    context.read<LoginBloc>().add(
-      LoginButtonPressed(email: email, password: password),
-    );
-  }
+                          if (_formKey.currentState!.validate()) {
+                            final email = emailController.text.trim();
+                            final password = passwordController.text.trim();
+                            context.read<LoginBloc>().add(
+                              LoginButtonPressed(
+                                email: email,
+                                password: password,
+                              ),
+                            );
+                          }
                         },
                       ),
                       SizedBox(height: 38.h),
@@ -127,7 +130,9 @@ class LoginScreen extends StatelessWidget {
                             string.continueWith,
                             style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                           ),
                           Expanded(child: Divider()),
@@ -144,7 +149,9 @@ class LoginScreen extends StatelessWidget {
                             string.notHaveAccount,
                             style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                           ),
                           GestureDetector(
@@ -184,13 +191,15 @@ class LoginScreen extends StatelessWidget {
                               );
                             },
                           ),
-                  
+
                           // 🌐 Language Toggle (Provider-based)
                           CustomAnimatedToggle<String>(
                             values: const ["en", "ar"],
                             initialValue: effectiveLocale.languageCode,
                             onChanged: (lang) {
-                              context.read<LocaleCubit>().setLocale(Locale(lang));
+                              context.read<LocaleCubit>().setLocale(
+                                Locale(lang),
+                              );
                             },
                             iconBuilder: (value, isSelected) {
                               final borderColor = isSelected
@@ -199,7 +208,7 @@ class LoginScreen extends StatelessWidget {
                               final imagePath = value == "en"
                                   ? IconAssets.us
                                   : IconAssets.eg;
-                  
+
                               return Container(
                                 padding: EdgeInsets.all(2.w),
                                 decoration: BoxDecoration(
@@ -230,3 +239,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+  //  validator: (value) => Validators.password(value),
+  //                       // errorText displays the error returned by the Bloc after dispatching the event
+  //                       errorText: validatingError ? state.passwordError : null,
+
+

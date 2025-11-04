@@ -59,6 +59,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "emailVerfiy": MessageLookupByLibrary.simpleMessage(
       "التحقق من البريد الإلكتروني",
     ),
+    "emptyEmail": MessageLookupByLibrary.simpleMessage(
+      "البريد الإلكتروني مطلوب",
+    ),
     "emptyPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور مطلوبة"),
     "english": MessageLookupByLibrary.simpleMessage("إنجليزي"),
     "enterEmailAddressHere": MessageLookupByLibrary.simpleMessage(

@@ -89,7 +89,7 @@
 
   "strongPassword":"Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
 "emptyPassword":"Password is required",
-"emprtEmail":"Email is required",
+"emptyEmail":"Email is required",
 "validEmail":"Enter a valid email"
 
 

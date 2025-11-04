@@ -1,4 +1,4 @@
 class NetworkConfig {
-  static const String baseUrl = "http://localhost:5218/api";
+  static const String baseUrl = "https://sportsin.runasp.net";
   static const Duration timeout = Duration(seconds: 30);
 }

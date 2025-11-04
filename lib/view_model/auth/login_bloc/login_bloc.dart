@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
-import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/data/repo/auth_repo.dart';
 part 'login_event.dart';
 part 'login_state.dart';
@@ -19,18 +18,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginButtonPressed event,
     Emitter<LoginState> emit,
   ) async {
-   final emailError = Validators.email(event.email);
-    if (emailError != null) {
-    emit(LoginFailure(emailError: emailError));
-      return;
-    }
-
-    final passwordError = Validators.password(event.password);
-    if (passwordError != null) {
-      emit(LoginFailure(passwordError:passwordError));
-      return;
-    }
-
     emit(LoginLoading());
     try {
       final response = await repository.login(

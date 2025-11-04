@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailVerfiy": MessageLookupByLibrary.simpleMessage("Email Verification"),
-    "emprtEmail": MessageLookupByLibrary.simpleMessage("Email is required"),
+    "emptyEmail": MessageLookupByLibrary.simpleMessage("Email is required"),
     "emptyPassword": MessageLookupByLibrary.simpleMessage(
       "Password is required",
     ),
