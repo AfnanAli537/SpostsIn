@@ -130,7 +130,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
     "goalkeeper": MessageLookupByLibrary.simpleMessage("Goalkeeper"),
+    "gymnast": MessageLookupByLibrary.simpleMessage("Gymnast"),
+    "gymnastics": MessageLookupByLibrary.simpleMessage("Gymnastics"),
     "handball": MessageLookupByLibrary.simpleMessage("Handball"),
+    "handballPlayer": MessageLookupByLibrary.simpleMessage("Handball Player"),
     "height": MessageLookupByLibrary.simpleMessage("Height (cm)"),
     "home": MessageLookupByLibrary.simpleMessage("Home"),
     "industary": MessageLookupByLibrary.simpleMessage("Industry"),
@@ -239,6 +242,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Password is required",
     ),
+    "passwordMinLength": MessageLookupByLibrary.simpleMessage(
+      "Password must be at least 8 characters.",
+    ),
+    "passwordNeedsLowercase": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one lowercase letter.",
+    ),
+    "passwordNeedsNumber": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one number.",
+    ),
+    "passwordNeedsSpecialChar": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one special character (!@#\$%^&* etc).",
+    ),
+    "passwordNeedsUppercase": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one uppercase letter.",
+    ),
     "passwordsDonotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
@@ -265,6 +283,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
     "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
+    "select": MessageLookupByLibrary.simpleMessage("Select"),
     "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
       "Please select at least one sport",
     ),
@@ -282,9 +301,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sharing Your Information",
     ),
     "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
-    "shortPassword": MessageLookupByLibrary.simpleMessage(
-      "Password must be at least 6 characters",
-    ),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
@@ -301,10 +317,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
     ),
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
-    "swimmer": MessageLookupByLibrary.simpleMessage("Swimmer"),
-    "swimming": MessageLookupByLibrary.simpleMessage("Swimming"),
-    "tennis": MessageLookupByLibrary.simpleMessage("Tennis"),
-    "tennisPlayer": MessageLookupByLibrary.simpleMessage("Tennis Player"),
+    "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
+    "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
     "tunisia": MessageLookupByLibrary.simpleMessage("Tunisia"),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
@@ -318,6 +332,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "volleyball": MessageLookupByLibrary.simpleMessage("Volleyball"),
+    "volleyballer": MessageLookupByLibrary.simpleMessage("Volleyballer"),
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "whatIsYourType": MessageLookupByLibrary.simpleMessage(

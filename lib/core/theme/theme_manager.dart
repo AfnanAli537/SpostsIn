@@ -25,6 +25,7 @@ class ThemeManager {
         onInverseSurface: ColorManager.lightBackground,
         onSurfaceVariant: ColorManager.lightAccent, 
         onTertiaryFixed: ColorManager.lightPrimary,
+        
       ),
       scaffoldBackgroundColor: ColorManager.lightBackground,
       appBarTheme: AppBarTheme(

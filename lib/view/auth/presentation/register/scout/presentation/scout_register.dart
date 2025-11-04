@@ -5,9 +5,10 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
+// import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -43,37 +44,6 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
     super.didChangeDependencies();
     string = S.of(context);
   }
-  // Gender options list
-  List<String> get genderOptions => [
-        string.male,
-        string.female,
-      ];
-
-  // Location options list
-  List<String> get locationOptions => [
-        string.algeria,
-        string.egypt,
-        string.morocco,
-        string.tunisia,
-        string.sudan,
-      ];
-
-  // Years of experience options list
-  List<String> get yearsOfExperienceOptions => [
-        string.yearsOfExperience0to2,
-        string.yearsOfExperience3to5,
-        string.yearsOfExperience5to10,
-        string.yearsOfExperience10Plus,
-      ];
-
-  // Sport name options list
-  List<String> get sportNameOptions => [
-        string.football,
-        string.basketball,
-        string.tennis,
-        string.swimming,
-      ];
-
  
   void _onRegister() {
     setState(() {
@@ -152,9 +122,9 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
         },
         builder: (context, state) {
            final isLoading = state is RegistrationLoading;
-          final validationError = state is RegistrationValidationError
-              ? state.message
-              : null;
+          // final validationError = state is RegistrationValidationError
+          //     ? state.message
+          //     : null;
           return Stack(
             children: [
               SingleChildScrollView(
@@ -239,7 +209,7 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
                     AppDropdownOverlay(
                       labelText: string.gender,
                       value: gender,
-                      options: genderOptions,
+                      options: RegisterLists.genderOptions(string),
                       onChanged: (val) => setState(() => gender = val),
                         showError: _showValidationErrors,validator: (v) => Validators.validateDropdown(
                         context,
@@ -256,7 +226,7 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
                       leftField: AppDropdownOverlay(
                         labelText: string.specializedSport,
                         value: sportName,
-                        options: sportNameOptions,
+                        options: RegisterLists.sportNameOptions(string),
                         onChanged: (val) => setState(() => sportName = val),
                         showError: _showValidationErrors,validator: (v) => Validators.validateDropdown(
                         context,
@@ -268,7 +238,7 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
                       rightField: AppDropdownOverlay(
                         labelText: string.location,
                         value: location,
-                        options: locationOptions,
+                        options: RegisterLists.locationOptions(string),
                         onChanged: (val) => setState(() => location = val),
                         showError: _showValidationErrors,validator: (v) => Validators.validateDropdown(
                         context,
@@ -285,7 +255,7 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
                     AppDropdownOverlay(
                       labelText: string.yearsOfExperience,
                       value: yearsOfExperience,
-                      options: yearsOfExperienceOptions,
+                      options: RegisterLists.yearsOfExperienceOptions(string),
                       onChanged: (val) => setState(() => yearsOfExperience = val),
                         showError: _showValidationErrors,
                         validator: (v) => Validators.validateDropdown(
@@ -297,8 +267,8 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
                     ),
                 
                     SizedBox(height: 20.h),
-                    if (validationError != null)
-                      RegisterErrorMessage(message: validationError),
+                    // if (validationError != null)
+                    //   RegisterErrorMessage(message: validationError),
 
                     CustomElevatedButton(
                       text: string.create,

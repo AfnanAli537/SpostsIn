@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/data/repo/auth_repository.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart'; 
@@ -101,9 +102,14 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
 
     final sportResult = Validators.validateDropdownBLoC(user.sport, s, fieldName: s.sportProfession);
     if (!sportResult.isValid) return sportResult.errorMessage;
-
-    final positionResult = Validators.validateDropdownBLoC(user.position, s, fieldName: s.position);
-    if (!positionResult.isValid) return positionResult.errorMessage;
+    if (RegisterLists.isTeamSport(s, user.sport)) {
+  final positionResult = Validators.validateDropdownBLoC(
+    user.position,
+    s,
+    fieldName: s.position,
+  );
+  if (!positionResult.isValid) return positionResult.errorMessage;
+}
 
     return null;
   }

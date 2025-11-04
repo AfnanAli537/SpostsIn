@@ -5,9 +5,10 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
+// import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -39,16 +40,6 @@ class _OthersRegisterScreenState extends State<OthersRegisterScreen> {
     super.didChangeDependencies();
     string = S.of(context);
   }
-
-  List<String> get genderOptions => [string.male, string.female];
-
-  List<String> get locationOptions => [
-    string.algeria,
-    string.egypt,
-    string.morocco,
-    string.tunisia,
-    string.sudan,
-  ];
 
   void _onRegister() {
     setState(() {
@@ -124,9 +115,9 @@ class _OthersRegisterScreenState extends State<OthersRegisterScreen> {
         },
         builder: (context, state) {
           final isLoading = state is RegistrationLoading;
-          final validationError = state is RegistrationValidationError
-              ? state.message
-              : null;
+          // final validationError = state is RegistrationValidationError
+          //     ? state.message
+          //     : null;
 
           return Stack(
             children: [
@@ -211,7 +202,7 @@ class _OthersRegisterScreenState extends State<OthersRegisterScreen> {
                     AppDropdownOverlay(
                       labelText: string.gender,
                       value: gender,
-                      options: genderOptions,
+                      options: RegisterLists.genderOptions(string),
                       onChanged: (val) => setState(() => gender = val),
                        validator: (v) => Validators.validateDropdown(
                         context,
@@ -227,7 +218,7 @@ class _OthersRegisterScreenState extends State<OthersRegisterScreen> {
                     AppDropdownOverlay(
                       labelText: string.location,
                       value: location,
-                      options: locationOptions,
+                      options: RegisterLists.locationOptions(string),
                       onChanged: (val) => setState(() => location = val),
                       validator: (v) => Validators.validateDropdown(
                         context,
@@ -239,8 +230,8 @@ class _OthersRegisterScreenState extends State<OthersRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    if (validationError != null)
-                      RegisterErrorMessage(message: validationError),
+                    // if (validationError != null)
+                    //   RegisterErrorMessage(message: validationError),
 
                     // Register Button
                     CustomElevatedButton(

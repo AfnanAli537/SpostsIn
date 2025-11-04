@@ -5,9 +5,10 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
+// import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,14 +39,6 @@ class _InstituteRegisterScreenState extends State<InstituteRegisterScreen> {
     super.didChangeDependencies();
     string = S.of(context);
   }
-
-  List<String> get locationOptions => [
-    string.algeria,
-    string.egypt,
-    string.morocco,
-    string.tunisia,
-    string.sudan,
-  ];
 
   void _onRegister() {
     setState(() {
@@ -120,9 +113,9 @@ class _InstituteRegisterScreenState extends State<InstituteRegisterScreen> {
         },
         builder: (context, state) {
           final isLoading = state is RegistrationLoading;
-          final validationError = state is RegistrationValidationError
-              ? state.message
-              : null;
+          // final validationError = state is RegistrationValidationError
+          //     ? state.message
+          //     : null;
           return Stack(
             children: [
               SingleChildScrollView(
@@ -193,7 +186,7 @@ class _InstituteRegisterScreenState extends State<InstituteRegisterScreen> {
                     AppDropdownOverlay(
                       labelText: string.location,
                       value: location,
-                      options: locationOptions,
+                      options: RegisterLists.locationOptions(string),
                       onChanged: (val) => setState(() => location = val),
                       showError: _showValidationErrors,
                        validator: (v) => Validators.validateDropdown(
@@ -218,8 +211,8 @@ class _InstituteRegisterScreenState extends State<InstituteRegisterScreen> {
 
                     ),
                     SizedBox(height: 20.h),
-                    if (validationError != null)
-                      RegisterErrorMessage(message: validationError),
+                    // if (validationError != null)
+                    //   RegisterErrorMessage(message: validationError),
                       
                     CustomElevatedButton(
                       text: string.register,

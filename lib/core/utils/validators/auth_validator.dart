@@ -21,11 +21,38 @@ class Validators {
     return null;
   }
 
-  /// Password validation (UI layer)
+  /// Password validation with strong password requirements (UI layer)
   static String? validatePassword(BuildContext? context, String? value) {
     final s = _tryLocalization(context);
-    if (value == null || value.isEmpty) return s?.enterPassword ?? 'Please enter your password.';
-    if (value.length < 6) return s?.shortPassword ?? 'Password must be at least 6 characters.';
+    
+    if (value == null || value.isEmpty) {
+      return s?.enterPassword ?? 'Please enter your password.';
+    }
+    
+    if (value.length < 8) {
+      return s?.passwordMinLength ?? 'Password must be at least 8 characters.';
+    }
+    
+    // Check for at least one uppercase letter
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return s?.passwordNeedsUppercase ?? 'Password must contain at least one uppercase letter.';
+    }
+    
+    // Check for at least one lowercase letter
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return s?.passwordNeedsLowercase ?? 'Password must contain at least one lowercase letter.';
+    }
+    
+    // Check for at least one digit
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return s?.passwordNeedsNumber ?? 'Password must contain at least one number.';
+    }
+    
+    // Check for at least one special character
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]').hasMatch(value)) {
+      return s?.passwordNeedsSpecialChar ?? 'Password must contain at least one special character.';
+    }
+    
     return null;
   }
 
@@ -100,7 +127,8 @@ class Validators {
     }
     return null;
   }
-  /// List validation (BLoC layer)
+  
+  /// List validation (UI layer)
   static String? validateList(BuildContext? context, List<String>? value, {String? fieldName}) {
     final s = _tryLocalization(context);
     final name = fieldName ??  s?.field ?? 'field';
@@ -131,14 +159,46 @@ class Validators {
     return ValidationResult.success();
   }
 
-  /// Password validation (BLoC layer)
+  /// Password validation with strong password requirements (BLoC layer)
   static ValidationResult validatePasswordBLoC(String? value, S localizations) {
     if (value == null || value.isEmpty) {
       return ValidationResult.error(localizations.passwordIsRequired);
     }
-    if (value.length < 6) {
-      return ValidationResult.error(localizations.shortPassword);
+    
+    if (value.length < 8) {
+      return ValidationResult.error(
+        localizations.passwordMinLength
+      );
     }
+    
+    // Check for at least one uppercase letter
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return ValidationResult.error(
+        localizations.passwordNeedsUppercase
+      );
+    }
+    
+    // Check for at least one lowercase letter
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return ValidationResult.error(
+        localizations.passwordNeedsLowercase
+      );
+    }
+    
+    // Check for at least one digit
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return ValidationResult.error(
+        localizations.passwordNeedsNumber
+      );
+    }
+    
+    // Check for at least one special character
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]').hasMatch(value)) {
+      return ValidationResult.error(
+        localizations.passwordNeedsSpecialChar
+      );
+    }
+    
     return ValidationResult.success();
   }
 

@@ -14,6 +14,7 @@ class RegisterTwoFieldsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(child: leftField),
         SizedBox(width: 10.w),

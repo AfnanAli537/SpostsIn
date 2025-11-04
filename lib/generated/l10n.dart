@@ -529,6 +529,16 @@ class S {
     return Intl.message('Footballer', name: 'footballer', desc: '', args: []);
   }
 
+  /// `Handball Player`
+  String get handballPlayer {
+    return Intl.message(
+      'Handball Player',
+      name: 'handballPlayer',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Basketballer`
   String get basketballer {
     return Intl.message(
@@ -539,19 +549,29 @@ class S {
     );
   }
 
-  /// `Tennis Player`
-  String get tennisPlayer {
+  /// `Volleyballer`
+  String get volleyballer {
     return Intl.message(
-      'Tennis Player',
-      name: 'tennisPlayer',
+      'Volleyballer',
+      name: 'volleyballer',
       desc: '',
       args: [],
     );
   }
 
-  /// `Swimmer`
-  String get swimmer {
-    return Intl.message('Swimmer', name: 'swimmer', desc: '', args: []);
+  /// `Teakwando Player`
+  String get teakwandoPlayer {
+    return Intl.message(
+      'Teakwando Player',
+      name: 'teakwandoPlayer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gymnast`
+  String get gymnast {
+    return Intl.message('Gymnast', name: 'gymnast', desc: '', args: []);
   }
 
   /// `Football`
@@ -559,19 +579,14 @@ class S {
     return Intl.message('Football', name: 'football', desc: '', args: []);
   }
 
+  /// `Handball`
+  String get handball {
+    return Intl.message('Handball', name: 'handball', desc: '', args: []);
+  }
+
   /// `Basketball`
   String get basketball {
     return Intl.message('Basketball', name: 'basketball', desc: '', args: []);
-  }
-
-  /// `Tennis`
-  String get tennis {
-    return Intl.message('Tennis', name: 'tennis', desc: '', args: []);
-  }
-
-  /// `Swimming`
-  String get swimming {
-    return Intl.message('Swimming', name: 'swimming', desc: '', args: []);
   }
 
   /// `Volleyball`
@@ -579,9 +594,14 @@ class S {
     return Intl.message('Volleyball', name: 'volleyball', desc: '', args: []);
   }
 
-  /// `Handball`
-  String get handball {
-    return Intl.message('Handball', name: 'handball', desc: '', args: []);
+  /// `Teakwando`
+  String get teakwando {
+    return Intl.message('Teakwando', name: 'teakwando', desc: '', args: []);
+  }
+
+  /// `Gymnastics`
+  String get gymnastics {
+    return Intl.message('Gymnastics', name: 'gymnastics', desc: '', args: []);
   }
 
   /// `Point Guard`
@@ -784,11 +804,51 @@ class S {
     );
   }
 
-  /// `Password must be at least 6 characters`
-  String get shortPassword {
+  /// `Password must be at least 8 characters.`
+  String get passwordMinLength {
     return Intl.message(
-      'Password must be at least 6 characters',
-      name: 'shortPassword',
+      'Password must be at least 8 characters.',
+      name: 'passwordMinLength',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must contain at least one uppercase letter.`
+  String get passwordNeedsUppercase {
+    return Intl.message(
+      'Password must contain at least one uppercase letter.',
+      name: 'passwordNeedsUppercase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must contain at least one lowercase letter.`
+  String get passwordNeedsLowercase {
+    return Intl.message(
+      'Password must contain at least one lowercase letter.',
+      name: 'passwordNeedsLowercase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must contain at least one number.`
+  String get passwordNeedsNumber {
+    return Intl.message(
+      'Password must contain at least one number.',
+      name: 'passwordNeedsNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must contain at least one special character (!@#$%^&* etc).`
+  String get passwordNeedsSpecialChar {
+    return Intl.message(
+      'Password must contain at least one special character (!@#\$%^&* etc).',
+      name: 'passwordNeedsSpecialChar',
       desc: '',
       args: [],
     );
@@ -882,6 +942,11 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Select`
+  String get select {
+    return Intl.message('Select', name: 'select', desc: '', args: []);
   }
 
   /// `Loading`

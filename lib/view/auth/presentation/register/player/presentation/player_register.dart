@@ -6,8 +6,8 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
-import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -24,9 +24,9 @@ class PlayerRegisterScreen extends StatefulWidget {
 
 class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
   late S string;
-  bool _showValidationErrors = false; // ✅ Controls when to show field errors
+  bool _showValidationErrors = false;
+  File? selectedImage;
 
-  // Controllers
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
@@ -35,13 +35,11 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
   final heightController = TextEditingController();
   final weightController = TextEditingController();
 
-  // Dropdown values
   String? gender;
   String? location;
-  String? sportPosition;
+  String? sport;
   String? position;
   bool hasClub = false;
-  File? selectedImage;
 
   @override
   void didChangeDependencies() {
@@ -49,110 +47,44 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
     string = S.of(context);
   }
 
-  // Gender options list
-  List<String> get genderOptions => [string.male, string.female];
-
-  // Location options list
-  List<String> get locationOptions => [
-    string.algeria,
-    string.egypt,
-    string.morocco,
-    string.tunisia,
-    string.sudan,
-  ];
-
-  // Sport Profession options list
-  List<String> get sportProfessionOptions => [
-    string.football,
-    string.basketball,
-    string.volleyball,
-    string.handball,
-  ];
-
-  // Dynamic position options based on selected sport
-  List<String> get positionOptions {
-    if (sportPosition == null) return [];
-
-    if (sportPosition == string.football) {
-      return [
-        string.goalkeeper,
-        string.defender,
-        string.midfielder,
-        string.forward,
-      ];
-    } else if (sportPosition == string.basketball) {
-      return [
-        string.pointGuard,
-        string.shootingGuard,
-        string.smallForward,
-        string.powerForward,
-        string.center,
-      ];
-    } else if (sportPosition == string.volleyball) {
-      return [
-        string.setter,
-        string.outsideHitter,
-        string.oppositeHitter,
-        string.middleBlocker,
-        string.libero,
-      ];
-    } else if (sportPosition == string.handball) {
-      return [
-        string.goalkeeper,
-        string.leftWing,
-        string.rightWing,
-        string.leftBack,
-        string.centerBack,
-        string.rightBack,
-        string.pivot,
-      ];
-    } 
-
-    return [];
-  }
-
   void _onSportChanged(String? selectedSport) {
     setState(() {
-      sportPosition = selectedSport;
-      // ✅ Reset position when sport changes
-      position = null;
+      sport = selectedSport;
+      // Clear position if switching to non-team sport
+      if (RegisterLists.isTeamSport(string,selectedSport)) {
+        position = null;
+      }
     });
   }
-
-  void _onRegister() {
-    // ✅ Enable field-level validation
+    void _onRegister() {
     setState(() {
       _showValidationErrors = true;
     });
 
-    // Reset any previous BLoC validation errors
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
 
-    // Create UserModel with all collected data
-    final userData = UserModel(
+    final user = UserModel(
       userType: UserType.player,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
       confirmPassword: confirmPasswordController.text,
+      height: heightController.text,
+      weight: weightController.text,
       gender: gender,
       location: location,
-      sport: sportPosition,
+      sport: sport,
       position: position,
-      height: heightController.text.trim(),
-      weight: weightController.text.trim(),
-      hasClub: hasClub,
       image: selectedImage,
     );
 
-    // Dispatch event to BLoC with localizations
     context.read<RegistrationBloc>().add(
-      SubmitRegistrationEvent(
-        userData: userData,
-        localizations: string,
-      ),
-    );
+          SubmitRegistrationEvent(
+            userData: user,
+            localizations: string,
+          ),
+        );
   }
 
   @override
@@ -182,13 +114,8 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.login,
-                (route) => false,
-              );
-            }
+            Navigator.pushNamedAndRemoveUntil(
+                context, AppRoutes.login, (route) => false);
           } else if (state is RegistrationError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -200,9 +127,8 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
         },
         builder: (context, state) {
           final isLoading = state is RegistrationLoading;
-          final validationError = state is RegistrationValidationError
-              ? state.message
-              : null;
+          // final validationError =
+          //     state is RegistrationValidationError ? state.message : null;
 
           return Stack(
             children: [
@@ -221,7 +147,6 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                     ),
                     SizedBox(height: 24.h),
 
-                    // First Name & Last Name
                     RegisterTwoFieldsRow(
                       leftField: RegisterTextField(
                         controller: firstNameController,
@@ -247,7 +172,6 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // Email
                     RegisterTextField(
                       controller: emailController,
                       labelText: string.email,
@@ -258,7 +182,6 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // Password
                     RegisterTextField(
                       controller: passwordController,
                       labelText: string.password,
@@ -269,7 +192,6 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // Confirm Password
                     RegisterTextField(
                       controller: confirmPasswordController,
                       labelText: string.confirmPassword,
@@ -283,7 +205,6 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                     ),
 
                     SizedBox(height: 16.h),
-
                     // Height & Weight
                     RegisterTwoFieldsRow(
                       leftField: RegisterTextField(
@@ -304,11 +225,10 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // Gender
                     AppDropdownOverlay(
                       labelText: string.gender,
                       value: gender,
-                      options: genderOptions,
+                      options: RegisterLists.genderOptions(string),
                       onChanged: (val) => setState(() => gender = val),
                       validator: (v) => Validators.validateDropdown(
                         context,
@@ -320,11 +240,10 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // Location
                     AppDropdownOverlay(
                       labelText: string.location,
                       value: location,
-                      options: locationOptions,
+                      options: RegisterLists.locationOptions(string),
                       onChanged: (val) => setState(() => location = val),
                       validator: (v) => Validators.validateDropdown(
                         context,
@@ -336,74 +255,62 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // Sport Profession
                     AppDropdownOverlay(
                       labelText: string.sportProfession,
-                      value: sportPosition,
-                      options: sportProfessionOptions,
+                      value: sport,
+                      options: RegisterLists.sportProfessionOptions(string),
                       onChanged: _onSportChanged,
                       validator: (v) => Validators.validateDropdown(
                         context,
                         v,
-                        fieldName: string.sportProfession,
+                        fieldName: string.sportProfession.toLowerCase(),
                       ),
                       showError: _showValidationErrors,
                     ),
 
                     SizedBox(height: 16.h),
 
-                    // Position (dynamically changes based on sport)
-                    // ✅ Disabled until sport is selected
-                    AppDropdownOverlay(
-                      labelText: string.position,
-                      value: position,
-                      options: positionOptions,
-                      onChanged: (val) => setState(() => position = val),
-                      validator: (v) => Validators.validateDropdown(
-                        context,
-                        v,
-                        fieldName: string.position.toLowerCase(),
-                      ),
+                    // Only show position field for team sports
+                      if (RegisterLists.isTeamSport(string,sport))
+                        AppDropdownOverlay(
+                          labelText: string.position,
+                          value: position,
+                          options: RegisterLists.positionOptions(string, sport),
+                          onChanged: (val) => setState(() => position = val),
+                          validator: (v) => Validators.validateDropdown(
+                            context,
+                            v,
+                            fieldName: string.position.toLowerCase(),
+                          ),
                       showError: _showValidationErrors,
-                      enabled: sportPosition != null, // ✅ Only enabled if sport selected
-                    ),
 
-                    SizedBox(height: 24.h),
+                        ),
 
-                    // Has Club Checkbox
+                    SizedBox(height: 20.h),
+
                     Row(
                       children: [
                         Checkbox(
                           value: hasClub,
                           activeColor: ColorManager.darkAccent1,
                           onChanged: (value) =>
-                              setState(() => hasClub = value!),
+                              setState(() => hasClub = value ?? false),
                         ),
-                        Text(
-                          string.currentlyInClub,
-                          style: theme.textTheme.bodyMedium,
-                        ),
+                        Text(string.currentlyInClub),
                       ],
                     ),
 
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 12.h),
 
-                    // ✅ BLoC-level error message banner (above button)
-                    if (validationError != null)
-                      RegisterErrorMessage(message: validationError),
-
-                    // Register Button
                     CustomElevatedButton(
                       text: string.register,
                       onPressed: _onRegister,
                     ),
-
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 30.h),
                   ],
                 ),
               ),
 
-              // Loading overlay
               if (isLoading)
                 Container(
                   color: Colors.black26,
