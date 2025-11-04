@@ -191,26 +191,18 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                  color: hasError ? ColorManager.error : ColorManager.darkAccent,
+                  color: ColorManager.darkAccent,
                   width: 1.8.w,
                 ),
               ),
               
-              // ✅ Error border
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: ColorManager.error,
-                  width: 1.5.w,
-                ),
-              ),
             ),
             child: widget.value.isEmpty
                 ? Row(
                     children: [
                       Expanded(
                         child: Text(
-                          'Select options',
+                          S.of(context).select,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: ColorManager.grey,
                           ),
@@ -218,9 +210,7 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
                       ),
                       Icon(
                         Icons.arrow_drop_down_rounded,
-                        color: hasError
-                            ? ColorManager.error
-                            : ColorManager.lightPrimary,
+                        color:Theme.of(context).colorScheme.onError,
                       ),
                     ],
                   )
@@ -272,7 +262,7 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
           Padding(
             padding: EdgeInsets.only(top: 4.h, left: 4.w),
             child: Text(
-              errorText!,
+              errorText,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: ColorManager.error,
               ),

@@ -167,7 +167,7 @@ class LoginScreen extends StatelessWidget {
                                   ),
                             ),
                             onTap: () {
-                              Navigator.pushNamed(
+                              Navigator.pushReplacementNamed(
                                 context,
                                 AppRoutes.userType,
                               );

@@ -7,9 +7,10 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
+// import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -24,7 +25,7 @@ class CoachRegisterScreen extends StatefulWidget {
 
 class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
   late S string;
-    bool _showValidationErrors = false; // ✅ Controls when to show field errors
+  bool _showValidationErrors = false; // ✅ Controls when to show field errors
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -44,30 +45,6 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
     super.didChangeDependencies();
     string = S.of(context);
   }
-
-  List<String> get genderOptions => [string.male, string.female];
-
-  List<String> get locationOptions => [
-    string.algeria,
-    string.egypt,
-    string.morocco,
-    string.tunisia,
-    string.sudan,
-  ];
-
-  List<String> get yearsOfExperienceOptions => [
-    string.yearsOfExperience0to2,
-    string.yearsOfExperience3to5,
-    string.yearsOfExperience5to10,
-    string.yearsOfExperience10Plus,
-  ];
-
-  List<String> get sportNameOptions => [
-    string.football,
-    string.basketball,
-    string.tennis,
-    string.swimming,
-  ];
 
   void _onRegister() {
     setState(() {
@@ -128,12 +105,12 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
               ),
             );
             if (context.mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.login,
-          (route) => false,
-        );
-      }
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                (route) => false,
+              );
+            }
           } else if (state is RegistrationError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -144,10 +121,10 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
           }
         },
         builder: (context, state) {
-           final isLoading = state is RegistrationLoading;
-          final validationError = state is RegistrationValidationError
-              ? state.message
-              : null;
+          final isLoading = state is RegistrationLoading;
+          // final validationError = state is RegistrationValidationError
+          //     ? state.message
+          //     : null;
           return Stack(
             children: [
               SingleChildScrollView(
@@ -159,10 +136,12 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                       style: theme.textTheme.titleLarge,
                     ),
                     SizedBox(height: 24.h),
-                
-                    AppImagePicker(onImageSelected: (img) => selectedImage = img),
+
+                    AppImagePicker(
+                      onImageSelected: (img) => selectedImage = img,
+                    ),
                     SizedBox(height: 24.h),
-                
+
                     // First & Last name
                     RegisterTwoFieldsRow(
                       leftField: RegisterTextField(
@@ -174,23 +153,21 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                           fieldName: string.firstName.toLowerCase(),
                         ),
                         showError: _showValidationErrors,
-
                       ),
                       rightField: RegisterTextField(
                         controller: lastNameController,
                         labelText: string.lastName,
-                         validator: (v) => Validators.validateName(
+                        validator: (v) => Validators.validateName(
                           context,
                           v,
                           fieldName: string.lastName.toLowerCase(),
                         ),
                         showError: _showValidationErrors,
-
                       ),
                     ),
-                
+
                     SizedBox(height: 16.h),
-                
+
                     // Email
                     RegisterTextField(
                       controller: emailController,
@@ -199,9 +176,9 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                       validator: (v) => Validators.validateEmail(context, v),
                       showError: _showValidationErrors,
                     ),
-                
+
                     SizedBox(height: 16.h),
-                
+
                     // Password
                     RegisterTextField(
                       controller: passwordController,
@@ -210,9 +187,9 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                       validator: (v) => Validators.validatePassword(context, v),
                       showError: _showValidationErrors,
                     ),
-                
+
                     SizedBox(height: 16.h),
-                
+
                     // Confirm password
                     RegisterTextField(
                       controller: confirmPasswordController,
@@ -225,14 +202,14 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                       ),
                       showError: _showValidationErrors,
                     ),
-                
+
                     SizedBox(height: 16.h),
-                
+
                     // Gender
                     AppDropdownOverlay(
                       labelText: string.gender,
                       value: gender,
-                      options: genderOptions,
+                      options: RegisterLists.genderOptions(string),
                       onChanged: (val) => setState(() => gender = val),
                       validator: (v) => Validators.validateDropdown(
                         context,
@@ -241,62 +218,64 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                       ),
                       showError: _showValidationErrors,
                     ),
-                
+
                     SizedBox(height: 16.h),
-                
+
                     // Sport + Location
                     RegisterTwoFieldsRow(
                       leftField: AppDropdownOverlay(
                         labelText: string.specializedSport,
                         value: sportName,
-                        options: sportNameOptions,
+                        options: RegisterLists.sportNameOptions(string),
                         onChanged: (val) => setState(() => sportName = val),
                         validator: (v) => Validators.validateDropdown(
-                        context,
-                        v,
-                        fieldName: string.specializedSport,
-                      ),
+                          context,
+                          v,
+                          fieldName: string.specializedSport,
+                        ),
                         showError: _showValidationErrors,
                       ),
                       rightField: AppDropdownOverlay(
                         labelText: string.location,
                         value: location,
-                        options: locationOptions,
+                        options: RegisterLists.locationOptions(string),
                         onChanged: (val) => setState(() => location = val),
                         validator: (v) => Validators.validateDropdown(
-                        context,
-                        v,
-                        fieldName: string.location.toLowerCase(),
-                      ),
+                          context,
+                          v,
+                          fieldName: string.location.toLowerCase(),
+                        ),
                         showError: _showValidationErrors,
                       ),
                     ),
-                
+
                     SizedBox(height: 16.h),
-                
+
                     // Experience
                     AppDropdownOverlay(
                       labelText: string.yearsOfExperience,
                       value: yearsOfExperience,
-                      options: yearsOfExperienceOptions,
-                      onChanged: (val) => setState(() => yearsOfExperience = val),
-                       validator: (v) => Validators.validateDropdown(
+                      options: RegisterLists.yearsOfExperienceOptions(string),
+                      onChanged: (val) =>
+                          setState(() => yearsOfExperience = val),
+                      validator: (v) => Validators.validateDropdown(
                         context,
                         v,
                         fieldName: string.yearsOfExperience,
                       ),
                       showError: _showValidationErrors,
                     ),
-                
+
                     SizedBox(height: 24.h),
-                
+
                     // Currently in club checkbox
                     Row(
                       children: [
                         Checkbox(
                           value: hasClub,
                           activeColor: ColorManager.darkAccent1,
-                          onChanged: (value) => setState(() => hasClub = value!),
+                          onChanged: (value) =>
+                              setState(() => hasClub = value!),
                         ),
                         Text(
                           string.currentlyInClub,
@@ -304,16 +283,15 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                         ),
                       ],
                     ),
-                
+
                     SizedBox(height: 20.h),
-                    if (validationError != null)
-                                           RegisterErrorMessage(message: validationError),
+                    // if (validationError != null)
+                    //   RegisterErrorMessage(message: validationError),
 
                     CustomElevatedButton(
                       text: string.create,
                       onPressed: _onRegister,
                     ),
-                
                   ],
                 ),
               ),

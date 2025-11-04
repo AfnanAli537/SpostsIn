@@ -84,9 +84,7 @@ void didUpdateWidget(RegisterTextField oldWidget) {
           decoration: InputDecoration(
             labelText: widget.labelText,
             labelStyle: theme.textTheme.bodyMedium?.copyWith(
-              color: hasError 
-                  ? ColorManager.error 
-                  : (_focusNode.hasFocus ? ColorManager.darkAccent : Colors.grey),
+              color:(_focusNode.hasFocus ? ColorManager.darkAccent : Colors.grey),
             ),
             contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
             
@@ -103,29 +101,11 @@ void didUpdateWidget(RegisterTextField oldWidget) {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide(
-                color: hasError ? ColorManager.error : ColorManager.darkAccent,
+                color: ColorManager.darkAccent,
                 width: 1.8.w,
               ),
             ),
-            
-            // ✅ Error border (explicit)
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(
-                color: ColorManager.error,
-                width: 1.5.w,
-              ),
-            ),
-            
-            // ✅ Focused error border
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-              borderSide: BorderSide(
-                color: ColorManager.error,
-                width: 1.8.w,
-              ),
-            ),
-            
+
             suffixIcon: (widget.isPassword)
                 ? IconButton(
                     onPressed: () => setState(() => _obscure = !_obscure),
@@ -134,7 +114,7 @@ void didUpdateWidget(RegisterTextField oldWidget) {
                       width: 28.w,
                       height: 28.spMin,
                       colorFilter: ColorFilter.mode(
-                        hasError ? ColorManager.error : theme.colorScheme.onError,
+                       theme.colorScheme.onError,
                         BlendMode.srcIn,
                       ),
                     ),

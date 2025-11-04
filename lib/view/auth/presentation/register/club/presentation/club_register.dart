@@ -5,9 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/utils/validators/auth_validator.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/DatePickerTextField.dart';
-import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
+// import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/checkbox_dropdown_overlay.dart';
@@ -41,21 +42,6 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
     super.didChangeDependencies();
     string = S.of(context);
   }
-
-  List<String> get locationOptions => [
-    string.algeria,
-    string.egypt,
-    string.morocco,
-    string.tunisia,
-    string.sudan,
-  ];
-
-  List<String> get sportProfessionOptions => [
-    string.football,
-    string.basketball,
-    string.tennis,
-    string.swimming,
-  ];
 
   void _onRegister() {
     setState(() {
@@ -133,10 +119,9 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
         },
         builder: (context, state) {
           final isLoading = state is RegistrationLoading;
-          final validationError = state is RegistrationValidationError
-              ? state.message
-              : null;
-
+          // final validationError = state is RegistrationValidationError
+          //     ? state.message
+          //     : null;
           return Stack(
             children: [
               SingleChildScrollView(
@@ -200,7 +185,7 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
                     AppDropdownOverlay(
                       labelText: string.location,
                       value: location,
-                      options: locationOptions,
+                      options: RegisterLists.locationOptions(string),
                       onChanged: (val) => setState(() => location = val),
                       validator: (v) => Validators.validateDropdown(
                         context,
@@ -225,7 +210,7 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
                     CheckboxDropdownOverlay(
                       labelText: string.selectSports,
                       value: selectedSports ?? [],
-                      options: sportProfessionOptions,
+                      options: RegisterLists.sportProfessionOptions(string),
                       validator: (v) => Validators.validateList(
                         context,
                         v,
@@ -237,8 +222,8 @@ class _ClubRegisterScreenState extends State<ClubRegisterScreen> {
                     ),
 
                     SizedBox(height: 20.h),
-                    if (validationError != null)
-                      RegisterErrorMessage(message: validationError),
+                    // if (validationError != null)
+                    //   RegisterErrorMessage(message: validationError),
                     CustomElevatedButton(
                       text: string.register,
                       onPressed: _onRegister,

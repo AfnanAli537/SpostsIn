@@ -63,7 +63,15 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
     // SafeArea(
     //   child: 
       Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          leading: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      color: Theme.of(context).colorScheme.onError,
+                      onPressed: (){
+                         Navigator.pushReplacementNamed(context, AppRoutes.login);
+                      },
+                    ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -115,21 +123,6 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
               ),
       
               SizedBox(height: 16.h),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Text(
-              //       string.alreadyHaveAnAccount(context),
-              //       style: Theme.of(context).textTheme.bodyMedium,
-              //     ),
-              //     const SizedBox(width: 10),
-              //     TextButton(
-              //       onPressed: () => Navigator.pop(context),
-              //       child: Text(string.login(context)),
-              //     ),
-              //   ],
-              // ),
-              // SizedBox(height: 6.h),
       
               SizedBox(
                 width: double.infinity,

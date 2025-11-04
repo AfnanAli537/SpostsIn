@@ -116,9 +116,7 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
               decoration: InputDecoration(
                 labelText: widget.labelText,
                 labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                  color: hasError
-                      ? ColorManager.error
-                      : (_focusNode.hasFocus
+                  color:(_focusNode.hasFocus
                           ? ColorManager.darkAccent1
                           : Colors.grey),
                 ),
@@ -140,32 +138,13 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.r),
                   borderSide: BorderSide(
-                    color: hasError ? ColorManager.error : ColorManager.darkAccent,
-                    width: 1.8.w,
-                  ),
-                ),
-                
-                // ✅ Error border
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  borderSide: BorderSide(
-                    color: ColorManager.error,
-                    width: 1.5.w,
-                  ),
-                ),
-                
-                // ✅ Focused error border
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  borderSide: BorderSide(
-                    color: ColorManager.error,
+                    color: ColorManager.darkAccent,
                     width: 1.8.w,
                   ),
                 ),
                 
                 suffixIcon: Icon(
                   Icons.calendar_today,
-                  color: hasError ? ColorManager.error : null,
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class AppDropdownOverlay extends StatelessWidget {
   final String labelText;
@@ -24,7 +25,7 @@ class AppDropdownOverlay extends StatelessWidget {
 
   void _showOverlay(BuildContext context) {
     if (!enabled) return; // ✅ Don't open if disabled
-    
+
     final overlay = Overlay.of(context);
     OverlayEntry? entry;
 
@@ -64,18 +65,27 @@ class AppDropdownOverlay extends StatelessWidget {
                           ),
                           margin: EdgeInsets.symmetric(vertical: 4.h),
                           decoration: BoxDecoration(
-                            color: isSelected ? ColorManager.darkAccent : null,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onSurfaceVariant
+                                : null,
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           child: ListTile(
                             title: Text(
                               opt,
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
                             ),
                             trailing: Radio<String>(
                               value: opt,
                               groupValue: value,
-                              activeColor: ColorManager.lightPrimary,
+                              activeColor: Theme.of(
+                                context,
+                              ).colorScheme.onTertiaryFixed,
                               onChanged: (val) {
                                 onChanged(val!);
                                 entry?.remove();
@@ -100,7 +110,7 @@ class AppDropdownOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     // ✅ Validate if showError is true
     final errorText = showError && validator != null ? validator!(value) : null;
     final hasError = errorText != null;
@@ -111,7 +121,9 @@ class AppDropdownOverlay extends StatelessWidget {
         Opacity(
           opacity: enabled ? 1.0 : 0.5, // ✅ Visual feedback when disabled
           child: GestureDetector(
-            onTap: enabled ? () => _showOverlay(context) : null, // ✅ Only tap if enabled
+            onTap: enabled
+                ? () => _showOverlay(context)
+                : null, // ✅ Only tap if enabled
             child: AbsorbPointer(
               absorbing: !enabled, // ✅ Prevent interaction when disabled
               child: InputDecorator(
@@ -120,35 +132,30 @@ class AppDropdownOverlay extends StatelessWidget {
                   labelStyle: theme.textTheme.bodyMedium?.copyWith(
                     color: !enabled
                         ? Colors.grey.shade400
-                        : (hasError ? ColorManager.error : ColorManager.darkAccent1),
+                        : (hasError
+                              ? ColorManager.error
+                              : ColorManager.darkAccent1),
                   ),
-                  
+
                   // ✅ Normal border
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: !enabled
                           ? Colors.grey.shade300
-                          : (hasError ? ColorManager.error : ColorManager.darkAccent1),
+                          : (hasError
+                                ? ColorManager.error
+                                : ColorManager.darkAccent1),
                       width: hasError ? 1.5.w : 1.2.w,
                     ),
                   ),
-                  
+
                   // ✅ Focused border
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: hasError ? ColorManager.error : ColorManager.darkAccent,
+                      color: ColorManager.darkAccent,
                       width: 1.8.w,
-                    ),
-                  ),
-                  
-                  // ✅ Error border
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: ColorManager.error,
-                      width: 1.5.w,
                     ),
                   ),
                 ),
@@ -156,19 +163,19 @@ class AppDropdownOverlay extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        value ?? 'Select',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: !enabled
-                              ? Colors.grey.shade400
-                              : (value == null ? Colors.grey : Colors.black),
-                        ),
+                        value ?? S.of(context).select,
+                        style: value == null
+                            ? theme.textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onError,
+                              )
+                            : theme.textTheme.bodyMedium,
                       ),
                     ),
                     Icon(
                       Icons.arrow_drop_down_rounded,
                       color: !enabled
                           ? Colors.grey.shade400
-                          : ColorManager.lightPrimary,
+                          : Theme.of(context).colorScheme.onError,
                     ),
                   ],
                 ),
@@ -176,13 +183,13 @@ class AppDropdownOverlay extends StatelessWidget {
             ),
           ),
         ),
-        
+
         // ✅ Error text below dropdown
         if (hasError)
           Padding(
             padding: EdgeInsets.only(top: 4.h, left: 4.w),
             child: Text(
-              errorText!,
+              errorText,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: ColorManager.error,
               ),
