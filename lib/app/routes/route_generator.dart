@@ -11,6 +11,16 @@ import 'package:sports_in/view/onboarding/presentation/onboarding_screen.dart';
 import 'package:sports_in/view/onboarding/presentation/privacy_policy_screen.dart';
 import 'package:sports_in/view_model/auth/login_bloc/login_bloc.dart';
 import 'package:sports_in/view_model/onboarding_bloc/onboarding_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:sports_in/data/repo/auth_repository.dart';
+import 'package:sports_in/view/auth/presentation/register/player/presentation/player_register.dart';
+import 'package:sports_in/view/auth/presentation/register/club/presentation/club_register.dart';
+import 'package:sports_in/view/auth/presentation/register/coach/presentation/coach_register.dart';
+import 'package:sports_in/view/auth/presentation/register/institute/presentation/institute_register.dart';
+import 'package:sports_in/view/auth/presentation/register/other/presentation/other_register.dart';
+import 'package:sports_in/view/auth/presentation/register/scout/presentation/scout_register.dart';
+import 'package:sports_in/view/user_type/presentation/user_type_screen.dart';
+import 'package:sports_in/view_model/auth/register_bloc/register_bloc.dart';
 
 abstract class RoutesManager {
   static Route? router(RouteSettings settings) {
@@ -55,6 +65,62 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => ResetPasswordScreen(),
+            );
+        }
+      case AppRoutes.userType:
+        {
+          return CupertinoPageRoute(builder: (context) => UserTypeScreen());
+        }
+      case AppRoutes.playerRegister:
+        return CupertinoPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => RegistrationBloc(RegistrationRepository()),
+            child: const PlayerRegisterScreen(),
+          ),
+        );
+      case AppRoutes.coachRegister:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => BlocProvider(
+              create: (_) => RegistrationBloc(RegistrationRepository()),
+              child: const CoachRegisterScreen(),
+            ),
+          );
+        }
+      case AppRoutes.instituteRegister:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => BlocProvider(
+              create: (_) => RegistrationBloc(RegistrationRepository()),
+              child: const InstituteRegisterScreen(),
+            ),
+          );
+        }
+      case AppRoutes.otherRegister:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => BlocProvider(
+              create: (_) => RegistrationBloc(RegistrationRepository()),
+              child: const OthersRegisterScreen(),
+            ),
+          );
+        }
+      case AppRoutes.scoutRegister:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => BlocProvider(
+              create: (_) => RegistrationBloc(RegistrationRepository()),
+              child: const ScoutRegisterScreen(),
+            ),
+          );
+        }
+      case AppRoutes.clubRegister:
+        {
+          return CupertinoPageRoute(
+            builder: (context) => BlocProvider(
+              create: (_) => RegistrationBloc(RegistrationRepository()),
+              child: const ClubRegisterScreen(),
+            ),
           );
         }
     }

@@ -164,7 +164,12 @@ class LoginScreen extends StatelessWidget {
                                     ).colorScheme.onPrimaryFixed,
                                   ),
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushReplacementNamed(
+                                context,
+                                AppRoutes.userType,
+                              );
+                            },
                           ),
                         ],
                       ),

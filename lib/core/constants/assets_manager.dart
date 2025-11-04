@@ -29,5 +29,12 @@ class svgAssets{
     static const String email = '${base}email.svg';
     static const String facebook = '${base}facebook.svg';
      static const String google = '${base}google.svg';
+      static const String player = '${base}athlete.svg';
+  static const String club = '${base}club.svg';
+  static const String coach = '${base}coach.svg';
+  static const String scout = '${base}locate.svg';
+  static const String institute = '${base}organization.svg';
+  static const String other = '${base}person.svg';
+
 
 }

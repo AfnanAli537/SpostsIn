@@ -20,6 +20,8 @@ class ColorManager {
   static const Color borderCircular = Color(0xFF709900);
   static const Color darkfilled =Color(0xFF232121);
 
+  static const Color darkAccent1 = Color(0xFF709900);
+
   static const Color success = Color(0xFF4CAF50);
   static const Color error = Color(0xFFE53935);
   static const Color warning = Color(0xFFFFA000);

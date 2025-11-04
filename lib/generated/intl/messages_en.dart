@@ -20,6 +20,14 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(field) => "Please enter your ${field}";
+
+  static String m1(field) => "${field} is too short";
+
+  static String m2(field) => "Invalid ${field}";
+
+  static String m3(field) => "Please select a ${field}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "GetYourCode": MessageLookupByLibrary.simpleMessage("Get Your Code !"),
@@ -27,11 +35,19 @@ class MessageLookup extends MessageLookupByLibrary {
       "Verify and proceed",
     ),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
+    "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Already have an account?",
     ),
+    "alreadyHaveAnAccount": MessageLookupByLibrary.simpleMessage(
+      "Already have an account?",
+    ),
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
-    "back": MessageLookupByLibrary.simpleMessage("Previous"),
+    "back": MessageLookupByLibrary.simpleMessage("Back"),
+    "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
+    "basketballer": MessageLookupByLibrary.simpleMessage("Basketballer"),
+    "center": MessageLookupByLibrary.simpleMessage("Center"),
+    "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
       "We may update this Privacy Policy from time to time. Any significant changes will be communicated through the app.",
     ),
@@ -40,6 +56,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "chat": MessageLookupByLibrary.simpleMessage("Chat"),
     "chats": MessageLookupByLibrary.simpleMessage("Chats"),
+    "club": MessageLookupByLibrary.simpleMessage("Club"),
+    "clubName": MessageLookupByLibrary.simpleMessage("Club name"),
+    "coach": MessageLookupByLibrary.simpleMessage("Coach"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage("Confirm Password"),
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Confirm password is required",
@@ -49,11 +68,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("Contact Us"),
     "continueButton": MessageLookupByLibrary.simpleMessage("CONTINUE"),
+    "continueText": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueWith": MessageLookupByLibrary.simpleMessage("or continue with"),
-    "create": MessageLookupByLibrary.simpleMessage("create"),
+    "create": MessageLookupByLibrary.simpleMessage("Create"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage(
       "Create your Account",
     ),
+    "currentlyInClub": MessageLookupByLibrary.simpleMessage(
+      "Currently in a Club",
+    ),
+    "defender": MessageLookupByLibrary.simpleMessage("Defender"),
+    "done": MessageLookupByLibrary.simpleMessage("Done"),
+    "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailVerfiy": MessageLookupByLibrary.simpleMessage("Email Verification"),
     "emptyEmail": MessageLookupByLibrary.simpleMessage("Email is required"),
@@ -61,50 +87,114 @@ class MessageLookup extends MessageLookupByLibrary {
       "Password is required",
     ),
     "english": MessageLookupByLibrary.simpleMessage("English"),
+    "enterAge": MessageLookupByLibrary.simpleMessage("Please enter your age"),
+    "enterDate": MessageLookupByLibrary.simpleMessage("Please select a date"),
+    "enterEmail": MessageLookupByLibrary.simpleMessage(
+      "Please enter your email",
+    ),
     "enterEmailAddressHere": MessageLookupByLibrary.simpleMessage(
       "Enter Email Address here",
     ),
     "enterEmailAssociated": MessageLookupByLibrary.simpleMessage(
       "Enter Email Address associated with your account",
     ),
+    "enterField": m0,
+    "enterHeight": MessageLookupByLibrary.simpleMessage(
+      "Please enter your height",
+    ),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
       "Enter your new password",
     ),
+    "enterPassword": MessageLookupByLibrary.simpleMessage(
+      "Please enter your password",
+    ),
+    "enterWeight": MessageLookupByLibrary.simpleMessage(
+      "Please enter your weight",
+    ),
+    "female": MessageLookupByLibrary.simpleMessage("Female"),
+    "field": MessageLookupByLibrary.simpleMessage("field"),
+    "fieldTooShort": m1,
+    "firstName": MessageLookupByLibrary.simpleMessage("First name"),
+    "football": MessageLookupByLibrary.simpleMessage("Football"),
+    "footballer": MessageLookupByLibrary.simpleMessage("Footballer"),
     "forgetPassword": MessageLookupByLibrary.simpleMessage("Forget Password"),
     "forgetYourPassword": MessageLookupByLibrary.simpleMessage(
       "Forgot your password?",
     ),
+    "forgotPassword": MessageLookupByLibrary.simpleMessage("Forgot Password"),
+    "forward": MessageLookupByLibrary.simpleMessage("Forward"),
+    "foundDate": MessageLookupByLibrary.simpleMessage(
+      "Foundation date dd/mm/yyyy",
+    ),
     "fullName": MessageLookupByLibrary.simpleMessage("Full Name"),
+    "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
+    "goalkeeper": MessageLookupByLibrary.simpleMessage("Goalkeeper"),
+    "gymnast": MessageLookupByLibrary.simpleMessage("Gymnast"),
+    "gymnastics": MessageLookupByLibrary.simpleMessage("Gymnastics"),
+    "handball": MessageLookupByLibrary.simpleMessage("Handball"),
+    "handballPlayer": MessageLookupByLibrary.simpleMessage("Handball Player"),
+    "height": MessageLookupByLibrary.simpleMessage("Height (cm)"),
     "home": MessageLookupByLibrary.simpleMessage("Home"),
+    "industary": MessageLookupByLibrary.simpleMessage("Industry"),
     "informationBody": MessageLookupByLibrary.simpleMessage(
       "When you use SportsIn, we may collect the following types of information:\n\n• Personal data: your name, email, profile photo, sports skills, and interests.\n• Activity data: posts, messages, likes, and other interactions.\n• Device data: device type, operating system, and IP address.",
     ),
     "informationTitle": MessageLookupByLibrary.simpleMessage(
       "Information We Collect",
     ),
+    "institute": MessageLookupByLibrary.simpleMessage("Institute"),
+    "instituteName": MessageLookupByLibrary.simpleMessage("Institute name"),
     "introductionBody": MessageLookupByLibrary.simpleMessage(
       "SportsIn is a professional social platform for athletes, coaches, and sports clubs to connect, share experiences, and discover opportunities.",
     ),
     "introductionTitle": MessageLookupByLibrary.simpleMessage("Introduction"),
+    "invalidAge": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid age",
+    ),
+    "invalidEmail": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid email",
+    ),
+    "invalidField": m2,
+    "invalidHeight": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid height (100–250 cm)",
+    ),
+    "invalidWeight": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid weight (30–200 kg)",
+    ),
+    "knowingYourGoal": MessageLookupByLibrary.simpleMessage(
+      "Knowing your goal helps us tailor your experience",
+    ),
+    "lastName": MessageLookupByLibrary.simpleMessage("Last name"),
     "lastUpdated": MessageLookupByLibrary.simpleMessage(
       "Last updated: 11 October 2025",
     ),
-    "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "leftBack": MessageLookupByLibrary.simpleMessage("Left Back"),
+    "leftWing": MessageLookupByLibrary.simpleMessage("Left Wing"),
+    "libero": MessageLookupByLibrary.simpleMessage("Libero"),
+    "loading": MessageLookupByLibrary.simpleMessage("Loading"),
+    "location": MessageLookupByLibrary.simpleMessage("Location"),
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "Login to your Account",
     ),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 lowercase letter",
     ),
+    "male": MessageLookupByLibrary.simpleMessage("Male"),
+    "middleBlocker": MessageLookupByLibrary.simpleMessage("Middle Blocker"),
+    "midfielder": MessageLookupByLibrary.simpleMessage("Midfielder"),
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "At least 8 characters long",
     ),
+    "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
+    "name": MessageLookupByLibrary.simpleMessage("name"),
+    "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
+    "number": MessageLookupByLibrary.simpleMessage("number"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 number",
     ),
@@ -139,9 +229,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboarding5Title": MessageLookupByLibrary.simpleMessage(
       "Connect & Communicate",
     ),
+    "oppositeHitter": MessageLookupByLibrary.simpleMessage("Opposite Hitter"),
+    "other": MessageLookupByLibrary.simpleMessage("Other"),
     "otpHint": MessageLookupByLibrary.simpleMessage(
       "please enter 4 digits code that send to yor email address",
     ),
+    "outsideHitter": MessageLookupByLibrary.simpleMessage("Outside Hitter"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordHintDesc": MessageLookupByLibrary.simpleMessage(
       "Your new password must be different than the previous password",
@@ -149,36 +242,84 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Password is required",
     ),
+    "passwordMinLength": MessageLookupByLibrary.simpleMessage(
+      "Password must be at least 8 characters.",
+    ),
+    "passwordNeedsLowercase": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one lowercase letter.",
+    ),
+    "passwordNeedsNumber": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one number.",
+    ),
+    "passwordNeedsSpecialChar": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one special character (!@#\$%^&* etc).",
+    ),
+    "passwordNeedsUppercase": MessageLookupByLibrary.simpleMessage(
+      "Password must contain at least one uppercase letter.",
+    ),
     "passwordsDonotMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
+    "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
+      "Passwords do not match",
+    ),
+    "pivot": MessageLookupByLibrary.simpleMessage("Pivot"),
+    "player": MessageLookupByLibrary.simpleMessage("Player"),
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "Please enter a strong password",
     ),
+    "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
+    "position": MessageLookupByLibrary.simpleMessage("Position"),
+    "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
     "privacyPolicyTitle": MessageLookupByLibrary.simpleMessage(
       "Privacy & Policy",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "register": MessageLookupByLibrary.simpleMessage("Register"),
+    "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Registered successfully!",
+    ),
     "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+    "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
+    "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
+    "scout": MessageLookupByLibrary.simpleMessage("Scout"),
+    "select": MessageLookupByLibrary.simpleMessage("Select"),
+    "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
+      "Please select at least one sport",
+    ),
+    "selectField": m3,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
+    "selectSports": MessageLookupByLibrary.simpleMessage("Select a Sport"),
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Send verification code",
     ),
+    "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
     ),
     "sharingInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Sharing Your Information",
     ),
+    "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
+    "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 special character",
     ),
+    "specializedSport": MessageLookupByLibrary.simpleMessage(
+      "Specialized sports",
+    ),
+    "sport": MessageLookupByLibrary.simpleMessage("Sport"),
+    "sportProfession": MessageLookupByLibrary.simpleMessage("Sport profession"),
     "strongPassword": MessageLookupByLibrary.simpleMessage(
       "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
     ),
+    "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
+    "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
+    "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
+    "tunisia": MessageLookupByLibrary.simpleMessage("Tunisia"),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
     ),
@@ -190,6 +331,23 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
+    "volleyball": MessageLookupByLibrary.simpleMessage("Volleyball"),
+    "volleyballer": MessageLookupByLibrary.simpleMessage("Volleyballer"),
+    "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
+    "whatIsYourType": MessageLookupByLibrary.simpleMessage(
+      "What Is Your Type?",
+    ),
+    "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
+      "Years of experience",
+    ),
+    "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 years"),
+    "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(
+      "10+ years",
+    ),
+    "yearsOfExperience3to5": MessageLookupByLibrary.simpleMessage("3-5 years"),
+    "yearsOfExperience5to10": MessageLookupByLibrary.simpleMessage(
+      "6-10 years",
+    ),
   };
 }

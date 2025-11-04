@@ -17,15 +17,24 @@ dependencies:
   google_fonts: ^6.3.2
   flutter_bloc: ^9.1.1
   shared_preferences: ^2.5.3
-  smooth_page_indicator: ^1.2.0
-  flutter_svg: ^2.2.1
-  dio: ^5.9.0
+  smooth_page_indicator: ^1.2.00
   get_it: ^8.2.0
   provider: ^6.1.5+1
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
-
+  image_picker: ^1.2.0
+  dio: ^5.9.0
+  flutter_svg: ^2.2.1
+  equatable: ^2.0.7
+  
+# flutter_intl:
+#   enabled: true
+#   class_name: S
+#   main_locale: en
+#   arb_dir: lib/l10n
+#   output_dir: lib/generated
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -44,4 +53,3 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icons/app_icon.png"
-  
