@@ -16,6 +16,7 @@ class AuthTextField extends StatefulWidget {
   final String? prefixSvg;
   final String? Function(String?)? validator;
   // final  obscuringCharacter;
+  
 
   const AuthTextField({
     super.key,
@@ -51,6 +52,7 @@ class _AppTextFieldState extends State<AuthTextField> {
       decoration: InputDecoration(
         labelText: widget.label ?? widget.hintText,
         hintText: widget.label == null ? widget.hintText : null,
+         errorMaxLines: 3,
         prefixIcon: widget.prefixSvg != null
             ? Padding(
                 padding: EdgeInsets.all(12.w),

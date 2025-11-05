@@ -250,7 +250,7 @@ class ThemeManager {
       ),
       errorBorder:OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide(color: ColorManager.errorColor, width: 2.w),
+        borderSide: BorderSide(color: ColorManager.errorColor, width: 1.w),
       ), 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.r),

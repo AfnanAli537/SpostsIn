@@ -1445,10 +1445,10 @@ class S {
   }
 
   /// `Email is required`
-  String get emprtEmail {
+  String get emptyEmail {
     return Intl.message(
       'Email is required',
-      name: 'emprtEmail',
+      name: 'emptyEmail',
       desc: '',
       args: [],
     );
