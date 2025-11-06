@@ -73,7 +73,7 @@ class LoginScreen extends StatelessWidget {
                         label: string.email,
                         controller: emailController,
                         inputType: TextInputType.emailAddress,
-                        validator: (value) => Validators.email(context:context,value:value),
+                        validator: (value) => Validators.validateEmail(context,value),
                       ),
                       SizedBox(height: 16.h),
                       AuthTextField(
@@ -81,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                         label: string.password,
                         controller: passwordController,
                         isPassword: true,
-                        validator: (value) => Validators.password(context:context,value:value),
+                        validator: (value) => Validators.validatePassword(context,value),
                       
                       ),
                       Align(

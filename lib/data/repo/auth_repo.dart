@@ -1,5 +1,6 @@
 import 'package:sports_in/data/interfaces/i_auth_data_source.dart';
 import 'package:sports_in/data/models/login_response_model.dart';
+import 'package:sports_in/data/models/user_model.dart';
 
 
 class AuthRepo {
@@ -11,4 +12,6 @@ class AuthRepo {
   }
   Future<void> logout() => dataSource.logout();
   Future<Map<String,dynamic>?> getCachedUser() => dataSource.getCachedUser();
+
+   Future<bool> registerUser(UserModel user) => dataSource.registerUser(user);
 }

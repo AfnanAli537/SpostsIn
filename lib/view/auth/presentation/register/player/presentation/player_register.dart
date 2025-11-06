@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/utils/validators/auth_validator.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/data/models/player_dto.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -34,6 +34,7 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
   final confirmPasswordController = TextEditingController();
   final heightController = TextEditingController();
   final weightController = TextEditingController();
+  final ageController = TextEditingController();
 
   String? gender;
   String? location;
@@ -62,26 +63,36 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
     });
 
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
-
-    final user = UserModel(
-      userType: UserType.player,
+    if (gender == null || location == null || sport == null) {
+      debugPrint("Validation failed: Required dropdowns are empty.");
+      return; 
+    }else if(position == null && RegisterLists.sportHasPositions(sport)){
+      debugPrint("Validation failed: Required position is empty.");
+      return; 
+    }
+    final int? parsedHeight = int.tryParse(heightController.text.trim());
+    final int? parsedWeight = int.tryParse(weightController.text.trim());
+    final int? parsedAge = int.tryParse(ageController.text.trim());
+    final player = PlayerDto(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      height: heightController.text,
-      weight: weightController.text,
-      gender: gender,
-      location: location,
-      sport: sport,
+      height: parsedHeight,
+      weight: parsedWeight,
+      age: parsedAge,
+      gender: gender!,
+      location: location!,
+      sportName: sport!,
       position: position,
-      image: selectedImage,
+       hasClub: hasClub,
+      // image: selectedImage,
     );
 
     context.read<RegistrationBloc>().add(
           SubmitRegistrationEvent(
-            userData: user,
+            userData: player,
             localizations: string,
           ),
         );
@@ -224,8 +235,7 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                     ),
 
                     SizedBox(height: 16.h),
-
-                    AppDropdownOverlay(
+                    RegisterTwoFieldsRow(leftField: AppDropdownOverlay(
                       labelText: string.gender,
                       value: gender,
                       options: RegisterLists.genderOptions(string),
@@ -236,7 +246,14 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                         fieldName: string.gender.toLowerCase(),
                       ),
                       showError: _showValidationErrors,
-                    ),
+                    ), rightField: RegisterTextField(
+                        controller: ageController,
+                        labelText: string.age,
+                        keyboardType: TextInputType.number,
+                        validator: (v) => Validators.validateAge(context, v),
+                        showError: _showValidationErrors,
+                      ),),
+                   
 
                     SizedBox(height: 16.h),
 
@@ -254,7 +271,6 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                     ),
 
                     SizedBox(height: 16.h),
-
                     AppDropdownOverlay(
                       labelText: string.sportProfession,
                       value: sport,
@@ -266,7 +282,7 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
                         fieldName: string.sportProfession.toLowerCase(),
                       ),
                       showError: _showValidationErrors,
-                    ),
+                    ),                   
 
                     SizedBox(height: 16.h),
 

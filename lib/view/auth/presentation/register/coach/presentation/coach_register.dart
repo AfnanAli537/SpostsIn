@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/utils/validators/auth_validator.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/data/models/coach_dto.dart';
 import 'package:sports_in/generated/l10n.dart';
 // import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
@@ -47,26 +47,31 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
   }
 
   void _onRegister() {
+     debugPrint("🟢 Create pressed");
     setState(() {
       _showValidationErrors = true;
     });
     // Reset any previous validation errors
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
+ if (gender == null || location == null || sportName == null) {
+      debugPrint("Validation failed: Required dropdowns are empty.");
+      return; 
+  }
+    final int? parsedExperience = int.tryParse(yearsOfExperienceController.text.trim());
 
     // Create UserModel with all collected data
-    final userData = UserModel(
-      userType: UserType.coach,
+    final userData = CoachDto(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      gender: gender,
-      location: location,
-      specialization: sportName,
-      experienceYears: yearsOfExperience,
+      gender: gender!,
+      location: location!,
+      sportName: sportName!,
+      yearsOfExperience: parsedExperience!,
       hasClub: hasClub,
-      image: selectedImage,
+      // image: selectedImage,
     );
 
     // Dispatch event to BLoC with localizations
@@ -76,6 +81,7 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
         localizations: string, // Pass localization object
       ),
     );
+     debugPrint("🚀 Event dispatched");
   }
 
   @override
@@ -252,19 +258,26 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
                     SizedBox(height: 16.h),
 
                     // Experience
-                    AppDropdownOverlay(
-                      labelText: string.yearsOfExperience,
-                      value: yearsOfExperience,
-                      options: RegisterLists.yearsOfExperienceOptions(string),
-                      onChanged: (val) =>
-                          setState(() => yearsOfExperience = val),
-                      validator: (v) => Validators.validateDropdown(
-                        context,
-                        v,
-                        fieldName: string.yearsOfExperience,
+                    // AppDropdownOverlay(
+                    //   labelText: string.yearsOfExperience,
+                    //   value: yearsOfExperience,
+                    //   options: RegisterLists.yearsOfExperienceOptions(string),
+                    //   onChanged: (val) =>
+                    //       setState(() => yearsOfExperience = val),
+                    //   validator: (v) => Validators.validateDropdown(
+                    //     context,
+                    //     v,
+                    //     fieldName: string.yearsOfExperience,
+                    //   ),
+                    //   showError: _showValidationErrors,
+                    // ),
+                    RegisterTextField(
+                        controller: yearsOfExperienceController,
+                        labelText: string.yearsOfExperience,
+                        keyboardType: TextInputType.number,
+                        validator: (v) => Validators.validateExperience(context, v),
+                        showError: _showValidationErrors,
                       ),
-                      showError: _showValidationErrors,
-                    ),
 
                     SizedBox(height: 24.h),
 

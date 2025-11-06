@@ -2,6 +2,7 @@ import 'package:sports_in/generated/l10n.dart';
 
 /// Provides static dropdown data for the Player Registration screen.
 class RegisterLists {
+    // Gender options list
   static List<String> genderOptions(S s) => [
         s.male,
         s.female,
@@ -14,8 +15,6 @@ class RegisterLists {
         s.tunisia,
         s.sudan,
       ];
-    // Gender options list
-
 
   // Years of experience options list
   static List<String> yearsOfExperienceOptions (S s) => [
@@ -36,7 +35,7 @@ class RegisterLists {
 
       ];
 
-
+  // Sport Profession list
   static List<String> sportProfessionOptions(S s) => [
         s.footballer,
         s.basketballer,
@@ -46,8 +45,6 @@ class RegisterLists {
         s.gymnast,
       ];
 
-  /// Returns position list based on sport type.
-  /// Uses the actual localized sport values for comparison.
   static List<String> positionOptions(S s, String? sport) {
     if (sport == null) return [];
     
@@ -99,14 +96,8 @@ class RegisterLists {
     return [];
   }
 
-  /// Sports that require selecting a position.
-  /// Checks if the sport is a team sport that needs a position.
   static bool sportHasPositions(String? sport) {
     if (sport == null) return false;
-    
-    // Get a temporary localization context to compare
-    // This is a simplified approach - ideally you'd pass S from the widget
-    // For now, we'll use a string-based approach
     
     final teamSportKeywords = [
       'football',
