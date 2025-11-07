@@ -11,6 +11,7 @@ class ScoutDto extends UserModel {
     required int? yearsOfExperience,
     required String sportName,
     required String gender,
+    super.image
   }) : super(
           userType: UserType.scout,
           experienceYears: yearsOfExperience,
@@ -20,6 +21,7 @@ class ScoutDto extends UserModel {
 
   @override
   Map<String, dynamic> toJson() => {
+        // "pfp": image,
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,

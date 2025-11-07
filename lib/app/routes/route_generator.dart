@@ -100,7 +100,7 @@ abstract class RoutesManager {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
               create: (_) => RegistrationBloc(sl<AuthRepo>()),
-              child: const OthersRegisterScreen(),
+              child: OthersRegisterScreen(),
             ),
           );
         }

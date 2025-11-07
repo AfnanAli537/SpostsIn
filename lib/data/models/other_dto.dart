@@ -10,6 +10,8 @@ class OtherDto extends UserModel {
     required String super.firstName,
     required String super.lastName,
     required String gender,
+    super.image
+
   }) : super(
           userType: UserType.others,
           gender: gender,
@@ -17,6 +19,8 @@ class OtherDto extends UserModel {
 
   @override
   Map<String, dynamic> toJson() => {
+        // "pfp": image,
+
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,

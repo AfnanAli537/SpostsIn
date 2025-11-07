@@ -1,9 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
+// import 'package:sports_in/core/utils/validators/validate_register_logic.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/data/repo/auth_repo.dart';
-import 'package:sports_in/core/utils/validators/regex.dart'; 
 import 'package:sports_in/generated/l10n.dart'; 
 
 part 'register_event.dart';

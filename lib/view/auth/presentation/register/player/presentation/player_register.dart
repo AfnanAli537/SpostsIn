@@ -86,8 +86,8 @@ class _PlayerRegisterScreenState extends State<PlayerRegisterScreen> {
       location: location!,
       sportName: sport!,
       position: position,
-       hasClub: hasClub,
-      // image: selectedImage,
+      hasClub: hasClub,
+      image: selectedImage,
     );
 
     context.read<RegistrationBloc>().add(

@@ -16,6 +16,7 @@ class PlayerDto extends UserModel {
     required String super.gender,
     required super.hasClub,
     super.position,
+    super.image
   }) : super(
           userType: UserType.player,
           sport: sportName
@@ -23,6 +24,7 @@ class PlayerDto extends UserModel {
 
   @override
   Map<String, dynamic> toJson() => {
+        // "pfp": image,
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,

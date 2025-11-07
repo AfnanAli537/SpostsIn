@@ -10,6 +10,8 @@ class ClubDto extends UserModel {
     required String super.clubName,
     required String foundationDate,
     required List<String?> sportTypes,
+    super.image
+
   }) : super(
           userType: UserType.club,
           foundDate: foundationDate,
@@ -18,6 +20,7 @@ class ClubDto extends UserModel {
 
   @override
   Map<String, dynamic> toJson() => {
+        // "pfp": image,
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,

@@ -9,12 +9,15 @@ class InstituteDto extends UserModel {
     required super.location,
     required super.instituteName,
     required super.industry,
+    super.image
+
   }) : super(
           userType: UserType.institute,
         );
 
   @override
   Map<String, dynamic> toJson() => {
+        // "pfp": image,
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,
