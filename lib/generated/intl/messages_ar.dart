@@ -34,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "احصل على الرمز الخاص بك!",
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
+    "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
@@ -100,6 +101,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterEmailAssociated": MessageLookupByLibrary.simpleMessage(
       "أدخل عنوان البريد الإلكتروني المرتبط بحسابك",
     ),
+    "enterExperience": MessageLookupByLibrary.simpleMessage(
+      "يرجى إدخال عدد سنين الخبرة",
+    ),
     "enterField": m0,
     "enterHeight": MessageLookupByLibrary.simpleMessage("يرجى إدخال الطول"),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
@@ -147,7 +151,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "سبورتس إن هي منصة اجتماعية احترافية للرياضيين والمدربين والأندية الرياضية للتواصل ومشاركة الخبرات واكتشاف الفرص.",
     ),
     "introductionTitle": MessageLookupByLibrary.simpleMessage("المقدمة"),
-    "invalidAge": MessageLookupByLibrary.simpleMessage("يرجى إدخال عمر صالح"),
+    "invalidAge": MessageLookupByLibrary.simpleMessage(
+      "يرجى إدخال عمر صالح (5-99)",
+    ),
     "invalidEmail": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال بريد إلكتروني صالح",
     ),

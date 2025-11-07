@@ -34,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage(
       "Verify and proceed",
     ),
+    "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
@@ -98,6 +99,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterEmailAssociated": MessageLookupByLibrary.simpleMessage(
       "Enter Email Address associated with your account",
     ),
+    "enterExperience": MessageLookupByLibrary.simpleMessage(
+      "Please enter your Experience years.",
+    ),
     "enterField": m0,
     "enterHeight": MessageLookupByLibrary.simpleMessage(
       "Please enter your height",
@@ -150,10 +154,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "introductionTitle": MessageLookupByLibrary.simpleMessage("Introduction"),
     "invalidAge": MessageLookupByLibrary.simpleMessage(
-      "Please enter a valid age",
+      "Please enter a valid age (5-99)",
     ),
     "invalidEmail": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid email",
+    ),
+    "invalidExperience": MessageLookupByLibrary.simpleMessage(
+      "Please enter your Experience years.",
     ),
     "invalidField": m2,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(

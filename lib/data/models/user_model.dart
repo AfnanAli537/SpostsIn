@@ -24,12 +24,14 @@ class UserModel extends Equatable {
   // Player-specific
   final String? sport;
   final String? position;
-  final String? height;
-  final String? weight;
+  final int? height;
+  final int? weight;
+  final int? age;
   final bool? hasClub;
 
   // Coach-specific
-  final String? experienceYears;
+  final int? experienceYears;
+  // final String? experienceYears;
   final String? specialization;
 
   // Scout-specific
@@ -58,6 +60,7 @@ class UserModel extends Equatable {
     this.position,
     this.height,
     this.weight,
+    this.age,
     this.hasClub,
     this.experienceYears,
     this.specialization,
@@ -82,11 +85,12 @@ class UserModel extends Equatable {
     String? sport,
     String? position,
     String? birthDate,
-    String? height,
-    String? weight,
+    int? height,
+    int? weight,
+    int? age,
     String? nationality,
     bool? hasClub,
-    String? experienceYears,
+    int? experienceYears,
     String? specialization,
     String? agencyName,
     String? clubName,
@@ -109,6 +113,7 @@ class UserModel extends Equatable {
       position: position ?? this.position,
       height: height ?? this.height,
       weight: weight ?? this.weight,
+      age: age ?? this.age,
       hasClub: hasClub ?? this.hasClub,
       experienceYears: experienceYears ?? this.experienceYears,
       specialization: specialization ?? this.specialization,
@@ -136,6 +141,7 @@ class UserModel extends Equatable {
       if (position != null) 'position': position,
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
+      if (age != null) 'age': age,
       if (hasClub != null) 'hasClub': hasClub,
       if (experienceYears != null) 'experienceYears': experienceYears,
       if (specialization != null) 'specialization': specialization,
@@ -162,6 +168,7 @@ class UserModel extends Equatable {
         position,
         height,
         weight,
+        age,
         hasClub,
         experienceYears,
         specialization,

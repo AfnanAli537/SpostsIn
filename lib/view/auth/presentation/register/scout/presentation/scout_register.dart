@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/core/utils/validators/auth_validator.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/data/models/scout_dto.dart';
 import 'package:sports_in/generated/l10n.dart';
 // import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
@@ -36,7 +36,6 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
   String? yearsOfExperience;
   String? location;
   String? gender;
-  bool hasClub = false;
   File? selectedImage;
 
   @override
@@ -46,26 +45,29 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
   }
  
   void _onRegister() {
+     debugPrint("🟢 Create pressed");
     setState(() {
       _showValidationErrors = true;
     });
     // Reset any previous validation errors
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
-
+ if (gender == null || location == null || sportName == null) {
+      debugPrint("Validation failed: Required dropdowns are empty.");
+      return; 
+  }
+    final int? parsedExperience = int.tryParse(yearsOfExperienceController.text.trim());
     // Create UserModel with all collected data
-    final userData = UserModel(
-      userType: UserType.scout,
+    final userData = ScoutDto(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      gender: gender,
-      location: location,
-      specialization: sportName,
-      experienceYears: yearsOfExperience,
-      hasClub: hasClub,
-      image: selectedImage,
+      gender: gender!,
+      location: location!,
+      sportName: sportName!,
+      yearsOfExperience: parsedExperience,
+      // image: selectedImage,
     );
 
     // Dispatch event to BLoC with localizations
@@ -75,6 +77,7 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
         localizations: string, // Pass localization object
       ),
     );
+     debugPrint("🚀 Event dispatched");
   }
 
 
@@ -250,21 +253,15 @@ class _ScoutRegisterScreenState extends State<ScoutRegisterScreen> {
                     ),
                 
                     SizedBox(height: 16.h),
-                
-                    // Experience
-                    AppDropdownOverlay(
-                      labelText: string.yearsOfExperience,
-                      value: yearsOfExperience,
-                      options: RegisterLists.yearsOfExperienceOptions(string),
-                      onChanged: (val) => setState(() => yearsOfExperience = val),
+
+                    RegisterTextField(
+                        controller: yearsOfExperienceController,
+                        labelText: string.yearsOfExperience,
+                        keyboardType: TextInputType.number,
+                        validator: (v) => Validators.validateExperience(context, v),
                         showError: _showValidationErrors,
-                        validator: (v) => Validators.validateDropdown(
-                        context,
-                        v,
-                        fieldName: string.yearsOfExperience,
                       ),
 
-                    ),
                 
                     SizedBox(height: 20.h),
                     // if (validationError != null)

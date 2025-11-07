@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/core/utils/validators/auth_validator.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/data/models/institute_dto.dart';
 import 'package:sports_in/generated/l10n.dart';
 // import 'package:sports_in/view/auth/presentation/register/widgets/error_message.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
@@ -46,17 +46,19 @@ class _InstituteRegisterScreenState extends State<InstituteRegisterScreen> {
     });
     // Reset any previous validation errors
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
-
+ if (location == null) {
+      debugPrint("Validation failed: Required dropdowns are empty.");
+      return; 
+  }
     // Create UserModel with all collected data
-    final userData = UserModel(
-      userType: UserType.institute,
+    final userData = InstituteDto(
       instituteName: instituteNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      location: location,
+      location: location!,
       industry: industryController.text.trim(),
-      image: selectedImage,
+      // image: selectedImage,
     );
 
     // Dispatch event to BLoC with localizations
