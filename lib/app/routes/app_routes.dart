@@ -6,8 +6,6 @@ abstract class AppRoutes{
   static const String forgetPassword = '/forgetPassword';
   static const String otp = '/otp';
   static const String resetPassword = '/resetPassword';
-
-
   static const String userType = '/user-type';
   static const String playerRegister = '/player-register';
   static const String coachRegister = '/coach-register';

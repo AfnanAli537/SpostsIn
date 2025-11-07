@@ -64,6 +64,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Confirm password is required",
     ),
+    "connectionTimedOut": MessageLookupByLibrary.simpleMessage(
+      "Connection timed out. Please try again.",
+    ),
     "contactBody": MessageLookupByLibrary.simpleMessage(
       "If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app",
     ),
@@ -159,6 +162,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidEmail": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid email",
     ),
+    "invalidEmailOrPassword": MessageLookupByLibrary.simpleMessage(
+      "Invalid email or password.",
+    ),
     "invalidExperience": MessageLookupByLibrary.simpleMessage(
       "Please enter your Experience years.",
     ),
@@ -181,6 +187,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "libero": MessageLookupByLibrary.simpleMessage("Libero"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading"),
     "location": MessageLookupByLibrary.simpleMessage("Location"),
+    "loginSuccess": MessageLookupByLibrary.simpleMessage(
+      "Welcome back,let’s get started!",
+    ),
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "Login to your Account",
     ),
@@ -198,6 +207,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
+    "noInternetConnection": MessageLookupByLibrary.simpleMessage(
+      "No Internet Connection",
+    ),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
@@ -286,7 +298,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Registered successfully!",
     ),
+    "requestCancelled": MessageLookupByLibrary.simpleMessage(
+      "Request was cancelled.",
+    ),
     "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+    "resourceNotFound": MessageLookupByLibrary.simpleMessage(
+      "Resource not found.",
+    ),
     "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
     "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
@@ -300,6 +318,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Send verification code",
     ),
+    "serverError": MessageLookupByLibrary.simpleMessage(
+      "Server error. Please try again later.",
+    ),
     "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
@@ -310,8 +331,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
+    "signingIn": MessageLookupByLibrary.simpleMessage("Signing in..."),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
     "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
+    "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
+      "Something went wrong. Please try again.",
+    ),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 special character",
     ),
@@ -327,6 +352,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
     "tunisia": MessageLookupByLibrary.simpleMessage("Tunisia"),
+    "unauthorized": MessageLookupByLibrary.simpleMessage(
+      "Unauthorized. Please check your credentials.",
+    ),
+    "unexpectedError": MessageLookupByLibrary.simpleMessage(
+      "Unexpected error occurred.",
+    ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
     ),

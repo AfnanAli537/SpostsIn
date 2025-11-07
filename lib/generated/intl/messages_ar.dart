@@ -66,6 +66,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "تأكيد كلمة المرور مطلوب",
     ),
+    "connectionTimedOut": MessageLookupByLibrary.simpleMessage(
+      "انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى.",
+    ),
     "contactBody": MessageLookupByLibrary.simpleMessage(
       "إذا كانت لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا عبر البريد الإلكتروني: support@sportsin.app",
     ),
@@ -157,6 +160,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidEmail": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال بريد إلكتروني صالح",
     ),
+    "invalidEmailOrPassword": MessageLookupByLibrary.simpleMessage(
+      "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    ),
     "invalidField": m2,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال طول صالح (100–250 سم)",
@@ -176,6 +182,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "libero": MessageLookupByLibrary.simpleMessage("ليبرو (Libero)"),
     "loading": MessageLookupByLibrary.simpleMessage("جار التحميل"),
     "location": MessageLookupByLibrary.simpleMessage("الموقع"),
+    "loginSuccess": MessageLookupByLibrary.simpleMessage(
+      "مرحبًا بعودتك، هيا نبدأ!",
+    ),
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "سجّل الدخول إلى حسابك",
     ),
@@ -195,6 +204,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
     "newPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور الجديدة"),
     "next": MessageLookupByLibrary.simpleMessage("التالي"),
+    "noInternetConnection": MessageLookupByLibrary.simpleMessage(
+      "لا يوجد اتصال بالإنترنت.",
+    ),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
     "number": MessageLookupByLibrary.simpleMessage("الرقم"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
@@ -285,8 +297,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
     ),
+    "requestCancelled": MessageLookupByLibrary.simpleMessage("تم إلغاء الطلب."),
     "resetPassword": MessageLookupByLibrary.simpleMessage(
       "إعادة تعيين كلمة المرور",
+    ),
+    "resourceNotFound": MessageLookupByLibrary.simpleMessage(
+      "المورد غير موجود.",
     ),
     "rightBack": MessageLookupByLibrary.simpleMessage("ظهير أيمن"),
     "rightWing": MessageLookupByLibrary.simpleMessage("جناح أيمن"),
@@ -298,6 +314,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "إرسال رمز التحقق",
     ),
+    "serverError": MessageLookupByLibrary.simpleMessage(
+      "خطأ في الخادم. يرجى المحاولة لاحقًا.",
+    ),
     "setter": MessageLookupByLibrary.simpleMessage("موزع (Setter)"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "نحن لا نشارك بياناتك الشخصية مع أطراف ثالثة إلا في الحالات التالية:\n\n• الامتثال للالتزامات القانونية أو الطلبات الرسمية.\n• لتقديم الخدمات من خلال شركاء موثوقين (مثل خدمات التحليلات أو الإشعارات).",
@@ -308,9 +327,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "signIn": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
     "signUp": MessageLookupByLibrary.simpleMessage("إنشاء حساب"),
+    "signingIn": MessageLookupByLibrary.simpleMessage("جارٍ تسجيل الدخول..."),
     "skip": MessageLookupByLibrary.simpleMessage("تخطي"),
     "smallForward": MessageLookupByLibrary.simpleMessage(
       "مهاجم صغير (Small Forward)",
+    ),
+    "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
+      "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
     ),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رمز خاص واحد",
@@ -327,6 +350,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
     "tunisia": MessageLookupByLibrary.simpleMessage("تونس"),
+    "unauthorized": MessageLookupByLibrary.simpleMessage(
+      "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
+    ),
+    "unexpectedError": MessageLookupByLibrary.simpleMessage(
+      "حدث خطأ غير متوقع.",
+    ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",
     ),

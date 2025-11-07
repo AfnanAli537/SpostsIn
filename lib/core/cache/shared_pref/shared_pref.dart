@@ -47,7 +47,6 @@ class SharedPref {
   static Future<void> saveToken(String token) async {
     await _prefs.setString(StringKeys.tokenKey, token);
   }
-
   static Future<String?> getToken() async {
     return _prefs.getString(StringKeys.tokenKey);
   }
@@ -55,12 +54,9 @@ class SharedPref {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);
   }
-   
   static Future<void> saveExpiryDate(String expiryDate) async {
     await _prefs.setString(StringKeys.expireData, expiryDate);
   }
-
-
   static Future<String?> getExpiryDate() async {
     return _prefs.getString(StringKeys.expireData);
   }

@@ -12,7 +12,6 @@ class NetworkChecker {
     } on SocketException catch (_) {
       return false;
     } catch (_) {
-      /// Any unexpected errors
       return false;
     }
   }
