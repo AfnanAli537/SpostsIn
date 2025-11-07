@@ -22,6 +22,7 @@ class S {
       return S(); // fallback minimal instance
     }
   }
+///////////
 
   static S? _current;
 
