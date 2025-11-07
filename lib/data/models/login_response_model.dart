@@ -7,10 +7,8 @@ class LoginResponse {
   final String? email;
   final UserName? name;
   final DateTime? expiresAt;
-  final  Error? error;
 
   LoginResponse({
-    this.error, 
     required this.isSuccess,
     required this.message,
      this.token,

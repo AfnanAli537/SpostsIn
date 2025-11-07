@@ -6,7 +6,10 @@ class Endpoints {
   static const String signUpClub = "/api/Auth/register/club";
   static const String signUpInstitute = "/api/Auth/register/institute";
   static const String signUpOther = "/api/Auth/register/other";
-
+  
+  static const String  sendOtp= "/api/Auth/register/sendOTP";
+  static const String verifyOtp  = "/api/Auth/register/VERIFYotp";
+  static const String resetPassword  = "/api/Auth/register/RESETpassword";
   static const String googleSignUp = "/auth/google";
 
 }

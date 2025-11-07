@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
+import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/view/auth/widgets/auth_text_form_feild.dart';
@@ -27,7 +28,8 @@ class ForgetPasswordScreen extends StatelessWidget {
               AuthTitle(title: string.forgetPassword, subtitle:string.enterEmailAddressHere ,
               hintDesc:string.enterEmailAssociated),
               const SizedBox(height: 24),
-              AuthTextField(label: string.email, controller: emailController,prefixSvg: svgAssets.email,inputType: TextInputType.emailAddress,),
+              AuthTextField(validator:  (value) =>
+                            Validators.validateEmail(context, value),label: string.email, controller: emailController,prefixSvg: svgAssets.email,inputType: TextInputType.emailAddress,),
               const SizedBox(height: 24),
               CustomElevatedButton(text:string.sendVerificationCode , onPressed: () {Navigator.pushNamed(context, AppRoutes.otp);}),
             ],

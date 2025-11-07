@@ -7,7 +7,7 @@ Map<String, dynamic> buildRequestBodyIsolate(UserModel user) {
 }
 
 Map<String, dynamic> _buildRequestBody(UserModel user) {
-  final s = S.currentOrFallback;
+  final s = S.current;
 
   final genderEnum = user.gender != null
       ? EnumMapper.fromLabel(EnumMapper.genderLabels(s), user.gender!)

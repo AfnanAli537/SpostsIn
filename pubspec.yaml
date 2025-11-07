@@ -12,7 +12,7 @@ dependencies:
   animated_toggle_switch: ^0.8.5
   flutter_screenutil: ^5.9.3
   flutter_launcher_icons: ^0.14.4
-  toast: ^0.3.0
+  fluttertoast: ^8.2.4
   flutter_native_splash: ^2.4.7
   google_fonts: ^6.3.2
   flutter_bloc: ^9.1.1

@@ -14,15 +14,6 @@ import 'intl/messages_all.dart';
 
 class S {
   S();
-///////////Safe localization
-  static S get currentOrFallback {
-    try {
-      return S.current;
-    } catch (_) {
-      return S(); // fallback minimal instance
-    }
-  }
-///////////
 
   static S? _current;
 
@@ -1493,6 +1484,111 @@ class S {
     return Intl.message(
       'Enter a valid email',
       name: 'validEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Signing in...`
+  String get signingIn {
+    return Intl.message('Signing in...', name: 'signingIn', desc: '', args: []);
+  }
+
+  /// `Welcome back,let’s get started!`
+  String get loginSuccess {
+    return Intl.message(
+      'Welcome back,let’s get started!',
+      name: 'loginSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection timed out. Please try again.`
+  String get connectionTimedOut {
+    return Intl.message(
+      'Connection timed out. Please try again.',
+      name: 'connectionTimedOut',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request was cancelled.`
+  String get requestCancelled {
+    return Intl.message(
+      'Request was cancelled.',
+      name: 'requestCancelled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unexpected error occurred.`
+  String get unexpectedError {
+    return Intl.message(
+      'Unexpected error occurred.',
+      name: 'unexpectedError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Something went wrong. Please try again.`
+  String get somethingWentWrong {
+    return Intl.message(
+      'Something went wrong. Please try again.',
+      name: 'somethingWentWrong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid email or password.`
+  String get invalidEmailOrPassword {
+    return Intl.message(
+      'Invalid email or password.',
+      name: 'invalidEmailOrPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unauthorized. Please check your credentials.`
+  String get unauthorized {
+    return Intl.message(
+      'Unauthorized. Please check your credentials.',
+      name: 'unauthorized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resource not found.`
+  String get resourceNotFound {
+    return Intl.message(
+      'Resource not found.',
+      name: 'resourceNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Server error. Please try again later.`
+  String get serverError {
+    return Intl.message(
+      'Server error. Please try again later.',
+      name: 'serverError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Internet Connection`
+  String get noInternetConnection {
+    return Intl.message(
+      'No Internet Connection',
+      name: 'noInternetConnection',
       desc: '',
       args: [],
     );
