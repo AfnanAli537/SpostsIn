@@ -1,0 +1,37 @@
+
+import 'package:sports_in/data/models/user_model.dart';
+
+/// 🧑‍🏫 Coach DTO
+class CoachDto extends UserModel {
+  const CoachDto({
+    required super.email,
+    required super.password,
+    required super.confirmPassword,
+    required String super.location,
+    required String super.firstName,
+    required String super.lastName,
+    required int? yearsOfExperience,
+    required String sportName,
+    required String super.gender,
+    required super.hasClub,
+  }) : super(
+          userType: UserType.coach,
+          experienceYears: yearsOfExperience,
+          sport: sportName,
+        );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "email": email,
+        "password": password,
+        "confirmPassword": confirmPassword,
+        "location": location,
+        "firstName": firstName,
+        "lastName": lastName,
+        "yearsOfExperience": experienceYears?? 0,
+        "sportName": sport ,
+        "gender":gender,
+        "club": hasClub ?? false
+      };
+}
+

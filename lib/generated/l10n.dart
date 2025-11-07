@@ -14,6 +14,14 @@ import 'intl/messages_all.dart';
 
 class S {
   S();
+///////////Safe localization
+  static S get currentOrFallback {
+    try {
+      return S.current;
+    } catch (_) {
+      return S(); // fallback minimal instance
+    }
+  }
 
   static S? _current;
 
@@ -387,6 +395,11 @@ class S {
   /// `Gender`
   String get gender {
     return Intl.message('Gender', name: 'gender', desc: '', args: []);
+  }
+
+  /// `Age`
+  String get age {
+    return Intl.message('Age', name: 'age', desc: '', args: []);
   }
 
   /// `Location`
@@ -914,11 +927,31 @@ class S {
     );
   }
 
-  /// `Please enter a valid age`
+  /// `Please enter a valid age (5-99)`
   String get invalidAge {
     return Intl.message(
-      'Please enter a valid age',
+      'Please enter a valid age (5-99)',
       name: 'invalidAge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your Experience years.`
+  String get enterExperience {
+    return Intl.message(
+      'Please enter your Experience years.',
+      name: 'enterExperience',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your Experience years.`
+  String get invalidExperience {
+    return Intl.message(
+      'Please enter your Experience years.',
+      name: 'invalidExperience',
       desc: '',
       args: [],
     );
