@@ -1,4 +1,3 @@
-// lib/core/enums/user_enums.dart
 
 /// Enum for Gender
 enum Gender {

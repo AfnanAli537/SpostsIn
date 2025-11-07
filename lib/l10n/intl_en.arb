@@ -240,7 +240,19 @@
   "strongPassword":"Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
 "emptyPassword":"Password is required",
 "emptyEmail":"Email is required",
-"validEmail":"Enter a valid email"
+"validEmail":"Enter a valid email",
+"signingIn":"Signing in...",
+"loginSuccess":"Welcome back,let’s get started!",
 
+
+  "connectionTimedOut": "Connection timed out. Please try again.",
+  "requestCancelled": "Request was cancelled.",
+  "unexpectedError": "Unexpected error occurred.",
+  "somethingWentWrong": "Something went wrong. Please try again.",
+  "invalidEmailOrPassword": "Invalid email or password.",
+  "unauthorized": "Unauthorized. Please check your credentials.",
+  "resourceNotFound": "Resource not found.",
+  "serverError": "Server error. Please try again later.",
+  "noInternetConnection":"No Internet Connection"
 
 }
