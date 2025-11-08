@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/utils/helper/localization_helper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -34,8 +36,10 @@ class PlayerRegisterScreen extends StatelessWidget {
   final positionNotifier = ValueNotifier<String?>(null);
   final hasClubNotifier = ValueNotifier<bool>(false);
   final imageNotifier = ValueNotifier<File?>(null);
-  
-  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(AutovalidateMode.disabled);
+
+  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(
+    AutovalidateMode.disabled,
+  );
 
   void _onSportChanged(String? selectedSport, S string) {
     sportNotifier.value = selectedSport;
@@ -46,21 +50,19 @@ class PlayerRegisterScreen extends StatelessWidget {
 
   void _onRegister(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
-    
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    if (genderNotifier.value == null || 
-        locationNotifier.value == null || 
+    if (genderNotifier.value == null ||
+        locationNotifier.value == null ||
         sportNotifier.value == null) {
-      debugPrint("Validation failed: Required dropdowns are empty.");
       return;
     }
 
-    if (positionNotifier.value == null && 
+    if (positionNotifier.value == null &&
         RegisterLists.sportHasPositions(sportNotifier.value)) {
-      debugPrint("Validation failed: Required position is empty.");
       return;
     }
 
@@ -88,10 +90,7 @@ class PlayerRegisterScreen extends StatelessWidget {
     );
 
     context.read<RegistrationBloc>().add(
-      SubmitRegistrationEvent(
-        userData: player,
-        localizations: string,
-      ),
+      SubmitRegistrationEvent(userData: player),
     );
   }
 
@@ -104,12 +103,24 @@ class PlayerRegisterScreen extends StatelessWidget {
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
+          if (state is RegistrationLoading) {
+            // Show loading indicator
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
+            );
+          }
+
           if (state is RegistrationSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(string.registeredSuccessfully),
-                backgroundColor: Colors.green,
-              ),
+            // Dismiss loading
+            Navigator.of(context).pop();
+            Fluttertoast.showToast(
+              msg: string.loginSuccess,
+              backgroundColor: Colors.green,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
             );
             if (context.mounted) {
               Navigator.pushNamedAndRemoveUntil(
@@ -118,18 +129,24 @@ class PlayerRegisterScreen extends StatelessWidget {
                 (route) => false,
               );
             }
-          } else if (state is RegistrationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
+          }
+
+          if (state is RegistrationError) {
+            Navigator.of(context).pop();
+            final msg = string.getErrorMessage(
+              state.errorKey,
+              fallback: state.fallbackMessage,
+            );
+
+            Fluttertoast.showToast(
+              msg: msg,
+              backgroundColor: Colors.red,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
             );
           }
         },
         builder: (context, state) {
-          final isLoading = state is RegistrationLoading;
-
           return Stack(
             children: [
               SafeArea(
@@ -151,7 +168,8 @@ class PlayerRegisterScreen extends StatelessWidget {
                               SizedBox(height: 24.h),
 
                               AppImagePicker(
-                                onImageSelected: (img) => imageNotifier.value = img,
+                                onImageSelected: (img) =>
+                                    imageNotifier.value = img,
                               ),
                               SizedBox(height: 24.h),
 
@@ -206,11 +224,12 @@ class PlayerRegisterScreen extends StatelessWidget {
                                 controller: confirmPasswordController,
                                 labelText: string.confirmPassword,
                                 isConformPassword: true,
-                                validator: (v) => Validators.validateConfirmPassword(
-                                  context: context,
-                                  value: v,
-                                  password: passwordController.text,
-                                ),
+                                validator: (v) =>
+                                    Validators.validateConfirmPassword(
+                                      context: context,
+                                      value: v,
+                                      password: passwordController.text,
+                                    ),
                               ),
 
                               SizedBox(height: 16.h),
@@ -245,13 +264,18 @@ class PlayerRegisterScreen extends StatelessWidget {
                                     return AppDropdownOverlay(
                                       labelText: string.gender,
                                       value: gender,
-                                      options: RegisterLists.genderOptions(string),
-                                      onChanged: (val) => genderNotifier.value = val,
-                                      validator: (v) => Validators.validateDropdown(
-                                        context: context,
-                                        value: v,
-                                        fieldName: string.gender.toLowerCase(),
+                                      options: RegisterLists.genderOptions(
+                                        string,
                                       ),
+                                      onChanged: (val) =>
+                                          genderNotifier.value = val,
+                                      validator: (v) =>
+                                          Validators.validateDropdown(
+                                            context: context,
+                                            value: v,
+                                            fieldName: string.gender
+                                                .toLowerCase(),
+                                          ),
                                     );
                                   },
                                 ),
@@ -274,13 +298,18 @@ class PlayerRegisterScreen extends StatelessWidget {
                                   return AppDropdownOverlay(
                                     labelText: string.location,
                                     value: location,
-                                    options: RegisterLists.locationOptions(string),
-                                    onChanged: (val) => locationNotifier.value = val,
-                                    validator: (v) => Validators.validateDropdown(
-                                      context: context,
-                                      value: v,
-                                      fieldName: string.location.toLowerCase(),
+                                    options: RegisterLists.locationOptions(
+                                      string,
                                     ),
+                                    onChanged: (val) =>
+                                        locationNotifier.value = val,
+                                    validator: (v) =>
+                                        Validators.validateDropdown(
+                                          context: context,
+                                          value: v,
+                                          fieldName: string.location
+                                              .toLowerCase(),
+                                        ),
                                   );
                                 },
                               ),
@@ -293,13 +322,19 @@ class PlayerRegisterScreen extends StatelessWidget {
                                   return AppDropdownOverlay(
                                     labelText: string.sportProfession,
                                     value: sport,
-                                    options: RegisterLists.sportProfessionOptions(string),
-                                    onChanged: (val) => _onSportChanged(val, string),
-                                    validator: (v) => Validators.validateDropdown(
-                                      context: context,
-                                      value: v,
-                                      fieldName: string.sportProfession.toLowerCase(),
-                                    ),
+                                    options:
+                                        RegisterLists.sportProfessionOptions(
+                                          string,
+                                        ),
+                                    onChanged: (val) =>
+                                        _onSportChanged(val, string),
+                                    validator: (v) =>
+                                        Validators.validateDropdown(
+                                          context: context,
+                                          value: v,
+                                          fieldName: string.sportProfession
+                                              .toLowerCase(),
+                                        ),
                                   );
                                 },
                               ),
@@ -309,7 +344,10 @@ class PlayerRegisterScreen extends StatelessWidget {
                               ValueListenableBuilder<String?>(
                                 valueListenable: sportNotifier,
                                 builder: (context, sport, _) {
-                                  if (!RegisterLists.isTeamSport(string, sport)) {
+                                  if (!RegisterLists.isTeamSport(
+                                    string,
+                                    sport,
+                                  )) {
                                     return const SizedBox.shrink();
                                   }
                                   return ValueListenableBuilder<String?>(
@@ -318,13 +356,19 @@ class PlayerRegisterScreen extends StatelessWidget {
                                       return AppDropdownOverlay(
                                         labelText: string.position,
                                         value: position,
-                                        options: RegisterLists.positionOptions(string, sport),
-                                        onChanged: (val) => positionNotifier.value = val,
-                                        validator: (v) => Validators.validateDropdown(
-                                          context: context,
-                                          value: v,
-                                          fieldName: string.position.toLowerCase(),
+                                        options: RegisterLists.positionOptions(
+                                          string,
+                                          sport,
                                         ),
+                                        onChanged: (val) =>
+                                            positionNotifier.value = val,
+                                        validator: (v) =>
+                                            Validators.validateDropdown(
+                                              context: context,
+                                              value: v,
+                                              fieldName: string.position
+                                                  .toLowerCase(),
+                                            ),
                                       );
                                     },
                                   );
@@ -334,7 +378,10 @@ class PlayerRegisterScreen extends StatelessWidget {
                               ValueListenableBuilder<String?>(
                                 valueListenable: sportNotifier,
                                 builder: (context, sport, _) {
-                                  if (!RegisterLists.isTeamSport(string, sport)) {
+                                  if (!RegisterLists.isTeamSport(
+                                    string,
+                                    sport,
+                                  )) {
                                     return const SizedBox.shrink();
                                   }
                                   return SizedBox(height: 20.h);
@@ -350,7 +397,8 @@ class PlayerRegisterScreen extends StatelessWidget {
                                         value: hasClub,
                                         activeColor: ColorManager.darkAccent1,
                                         onChanged: (value) =>
-                                            hasClubNotifier.value = value ?? false,
+                                            hasClubNotifier.value =
+                                                value ?? false,
                                       ),
                                       Text(string.currentlyInClub),
                                     ],
@@ -373,12 +421,6 @@ class PlayerRegisterScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
-              if (isLoading)
-                Container(
-                  color: Colors.black26,
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
             ],
           );
         },

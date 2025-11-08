@@ -21,7 +21,7 @@ class LottieAssets {
 class JsonAssets {
   static const String base = 'assets/json/';
 }
-class svgAssets{
+class SvgAssets{
    static const String base = 'assets/svg/';
     static const String eyeOpen = '${base}eye_open.svg';
     static const String eyeClosed = '${base}eye-closed.svg';

@@ -80,7 +80,7 @@ class _AppTextFieldState extends State<AuthTextField> {
             ? IconButton(
                 onPressed: () => setState(() => _obscure = !_obscure),
                 icon: SvgPicture.asset(
-                  _obscure ? svgAssets.eyeClosed : svgAssets.eyeOpen,
+                  _obscure ? SvgAssets.eyeClosed : SvgAssets.eyeOpen,
                   width: 30.w,
                   height: 30.spMin,
                   colorFilter: ColorFilter.mode(

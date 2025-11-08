@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/utils/helper/localization_helper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -39,7 +41,6 @@ class ClubRegisterScreen extends StatelessWidget {
     }
 
     if (locationNotifier.value == null) {
-      debugPrint("Validation failed: Required dropdowns are empty.");
       return;
     }
 
@@ -58,7 +59,6 @@ class ClubRegisterScreen extends StatelessWidget {
     context.read<RegistrationBloc>().add(
       SubmitRegistrationEvent(
         userData: userData,
-        localizations: string,
       ),
     );
   }
@@ -71,18 +71,26 @@ class ClubRegisterScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
-        listener: (context, state) async {
-          if (state is RegistrationSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(string.registeredSuccessfully),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 1),
-              ),
+        listener: (context, state) {
+          if (state is RegistrationLoading) {
+            // Show loading indicator
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
             );
+          }
 
-            await Future.delayed(const Duration(seconds: 1));
-
+          if (state is RegistrationSuccess) {
+            // Dismiss loading
+            Navigator.of(context).pop();
+            Fluttertoast.showToast(
+              msg: string.loginSuccess,
+              backgroundColor: Colors.green,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
+            );
             if (context.mounted) {
               Navigator.pushNamedAndRemoveUntil(
                 context,
@@ -90,17 +98,24 @@ class ClubRegisterScreen extends StatelessWidget {
                 (route) => false,
               );
             }
-          } else if (state is RegistrationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
+          }
+
+          if (state is RegistrationError) {
+            Navigator.of(context).pop();
+            final msg = string.getErrorMessage(
+              state.errorKey, 
+              fallback: state.fallbackMessage,
+            );
+
+            Fluttertoast.showToast(
+              msg: msg,
+              backgroundColor: Colors.red,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
             );
           }
-        },
-        builder: (context, state) {
-          final isLoading = state is RegistrationLoading;
+        },    
+           builder: (context, state) {
 
           return Stack(
             children: [
@@ -232,12 +247,6 @@ class ClubRegisterScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
-              if (isLoading)
-                Container(
-                  color: Colors.black26,
-                  child: const Center(child: CircularProgressIndicator()),
-             ),
             ],
           );
         },

@@ -229,5 +229,17 @@
   "unauthorized": "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
   "resourceNotFound": "المورد غير موجود.",
   "serverError": "خطأ في الخادم. يرجى المحاولة لاحقًا.",
-  "noInternetConnection": "لا يوجد اتصال بالإنترنت."
+  "noInternetConnection": "لا يوجد اتصال بالإنترنت.",
+
+  "registrationSuccessful": "تم التسجيل بنجاح!",
+  "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+  "validationError": "خطأ في التحقق. يرجى التحقق من المدخلات.",
+  "emailAlreadyExists": "هذا البريد الإلكتروني مسجل بالفعل",
+  "invalidPassword": "كلمة المرور غير صحيحة",
+  "passwordMismatch": "كلمات المرور غير متطابقة",
+  "badRequest": "طلب غير صالح",
+  "forbidden": "الوصول محظور",
+  "conflict": "حدث تعارض في البيانات",
+  "serviceUnavailable": "الخدمة غير متاحة مؤقتاً",
+  "userNotFound": "المستخدم غير موجود"
 }

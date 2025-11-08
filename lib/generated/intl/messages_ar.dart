@@ -45,6 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("العربية"),
     "back": MessageLookupByLibrary.simpleMessage("رجوع"),
+    "badRequest": MessageLookupByLibrary.simpleMessage("طلب غير صالح"),
     "basketball": MessageLookupByLibrary.simpleMessage("كرة السلة"),
     "basketballer": MessageLookupByLibrary.simpleMessage("لاعب كرة السلة"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
@@ -66,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "تأكيد كلمة المرور مطلوب",
     ),
+    "conflict": MessageLookupByLibrary.simpleMessage("حدث تعارض في البيانات"),
     "connectionTimedOut": MessageLookupByLibrary.simpleMessage(
       "انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى.",
     ),
@@ -85,6 +87,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "done": MessageLookupByLibrary.simpleMessage("تم"),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
+    "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "هذا البريد الإلكتروني مسجل بالفعل",
+    ),
     "emailVerfiy": MessageLookupByLibrary.simpleMessage(
       "التحقق من البريد الإلكتروني",
     ),
@@ -122,6 +127,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "firstName": MessageLookupByLibrary.simpleMessage("الاسم الأول"),
     "football": MessageLookupByLibrary.simpleMessage("كرة القدم"),
     "footballer": MessageLookupByLibrary.simpleMessage("لاعب كرة القدم"),
+    "forbidden": MessageLookupByLibrary.simpleMessage("الوصول محظور"),
     "forgetPassword": MessageLookupByLibrary.simpleMessage("نسيت كلمة المرور"),
     "forgetYourPassword": MessageLookupByLibrary.simpleMessage(
       "هل نسيت كلمة المرور؟",
@@ -166,6 +172,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidField": m2,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال طول صالح (100–250 سم)",
+    ),
+    "invalidPassword": MessageLookupByLibrary.simpleMessage(
+      "كلمة المرور غير صحيحة",
     ),
     "invalidWeight": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال وزن صالح (30–200 كجم)",
@@ -259,6 +268,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordMinLength": MessageLookupByLibrary.simpleMessage(
       "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
     ),
+    "passwordMismatch": MessageLookupByLibrary.simpleMessage(
+      "كلمات المرور غير متطابقة",
+    ),
     "passwordNeedsLowercase": MessageLookupByLibrary.simpleMessage(
       "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
     ),
@@ -297,6 +309,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
     ),
+    "registrationFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+    ),
+    "registrationSuccessful": MessageLookupByLibrary.simpleMessage(
+      "تم التسجيل بنجاح!",
+    ),
     "requestCancelled": MessageLookupByLibrary.simpleMessage("تم إلغاء الطلب."),
     "resetPassword": MessageLookupByLibrary.simpleMessage(
       "إعادة تعيين كلمة المرور",
@@ -316,6 +334,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "serverError": MessageLookupByLibrary.simpleMessage(
       "خطأ في الخادم. يرجى المحاولة لاحقًا.",
+    ),
+    "serviceUnavailable": MessageLookupByLibrary.simpleMessage(
+      "الخدمة غير متاحة مؤقتاً",
     ),
     "setter": MessageLookupByLibrary.simpleMessage("موزع (Setter)"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
@@ -365,8 +386,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "useInfoTitle": MessageLookupByLibrary.simpleMessage(
       "كيفية استخدام معلوماتك",
     ),
+    "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
     "validEmail": MessageLookupByLibrary.simpleMessage(
       "أدخل بريدًا إلكترونيًا صالحًا",
+    ),
+    "validationError": MessageLookupByLibrary.simpleMessage(
+      "خطأ في التحقق. يرجى التحقق من المدخلات.",
     ),
     "verify": MessageLookupByLibrary.simpleMessage("تحقق"),
     "volleyball": MessageLookupByLibrary.simpleMessage("كرة الطائرة"),

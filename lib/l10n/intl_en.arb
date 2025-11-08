@@ -253,6 +253,21 @@
   "unauthorized": "Unauthorized. Please check your credentials.",
   "resourceNotFound": "Resource not found.",
   "serverError": "Server error. Please try again later.",
-  "noInternetConnection":"No Internet Connection"
+  "noInternetConnection":"No Internet Connection",
+
+
+
+  "registrationSuccessful": "Registration successful!",
+  "registrationFailed": "Registration failed. Please try again.",
+  "validationError": "Validation error. Please check your inputs.",
+  "emailAlreadyExists": "This email is already registered",
+  "invalidPassword": "Invalid password",
+  "passwordMismatch": "Passwords do not match",
+  "badRequest": "Invalid request",
+  "forbidden": "Access forbidden",
+  "conflict": "Data conflict occurred",
+  "serviceUnavailable": "Service temporarily unavailable",
+  "userNotFound": "User not found"
+
 
 }

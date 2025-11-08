@@ -23,12 +23,12 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
     super.didChangeDependencies();
     string = S.of(context);
     userTypes = [
-      {'key': 'player', 'label': string.player, 'icon': svgAssets.player},
-      {'key': 'coach', 'label': string.coach, 'icon': svgAssets.coach},
-      {'key': 'scout', 'label': string.scout, 'icon': svgAssets.scout},
-      {'key': 'club', 'label': string.club, 'icon': svgAssets.club},
-      {'key': 'institute', 'label': string.institute, 'icon': svgAssets.institute},
-      {'key': 'other', 'label': string.other, 'icon': svgAssets.other},
+      {'key': 'player', 'label': string.player, 'icon': SvgAssets.player},
+      {'key': 'coach', 'label': string.coach, 'icon': SvgAssets.coach},
+      {'key': 'scout', 'label': string.scout, 'icon': SvgAssets.scout},
+      {'key': 'club', 'label': string.club, 'icon': SvgAssets.club},
+      {'key': 'institute', 'label': string.institute, 'icon': SvgAssets.institute},
+      {'key': 'other', 'label': string.other, 'icon': SvgAssets.other},
     ];
   }
 
