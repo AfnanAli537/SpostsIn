@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
@@ -13,6 +15,7 @@ class ResetPasswordScreen extends StatelessWidget {
 
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,37 +24,63 @@ class ResetPasswordScreen extends StatelessWidget {
         resizeToAvoidBottomInset: true,
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding:  EdgeInsets.all(24.0.h),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AuthTitle(
-                title: string.resetPassword,
-                subtitle: string.enterNewPassword,
-                hintDesc: string.passwordHintDesc,
-              ),
-              const SizedBox(height: 24),
-              AuthTextField(
-               validator:  (value) =>
-                            Validators.validatePassword(context, value),
-                prefixSvg: svgAssets.lockOn,
-                label:string.newPassword ,
-                controller: newPasswordController,
-                isPassword: true,
-              ),
-              const SizedBox(height: 16),
-              AuthTextField(
-                prefixIcon: Icons.password_outlined,
-                label: string.confirmPassword,
-                controller: confirmPasswordController,
-                isConfirmPassword: true,
-                validator:  (value) =>
-                            Validators.validateConfirmPassword(context, value,newPasswordController.text),
-              ),
-              const SizedBox(height: 32),
-              CustomElevatedButton(text: string.ok, onPressed: () {Navigator.pushReplacementNamed(context, AppRoutes.login);}),
-            ],
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUnfocus, 
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AuthTitle(
+                  title: string.resetPassword,
+                  subtitle: string.enterNewPassword,
+                  hintDesc: string.passwordHintDesc,
+                ),
+                 SizedBox(height: 24.h),
+                AuthTextField(
+                 validator:  (value) =>
+                              Validators.validatePassword(context, value),
+                  prefixSvg: svgAssets.lockOn,
+                  label:string.newPassword ,
+                  controller: newPasswordController,
+                  isPassword: true,
+                ),
+                 SizedBox(height: 16.h),
+                AuthTextField(
+                  prefixIcon: Icons.password_outlined,
+                  label: string.confirmPassword,
+                  controller: confirmPasswordController,
+                  isConfirmPassword: true,
+                  validator:  (value) =>
+                              Validators.validateConfirmPassword(context, value,newPasswordController.text),
+                ),
+                 SizedBox(height: 32.h),
+                
+                CustomElevatedButton(text: string.ok, onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                            // final newPassword = newPasswordController.text.trim();
+                            // final confirmPassword =confirmPasswordController.text.trim();
+      Fluttertoast.showToast(
+                      msg: string.resetPasswordSuccess,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: Colors.green,
+                      toastLength: Toast.LENGTH_LONG,
+                    );
+                  Navigator.pushReplacementNamed(context, AppRoutes.login);
+                    
+                  }
+                  else{
+                       Fluttertoast.showToast(
+                      msg: string.resetPasswordFailure,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: Colors.red,
+                      toastLength: Toast.LENGTH_LONG,
+                    );
+                  }
+                  }),
+              ],
+            ),
           ),
         ),
       ),

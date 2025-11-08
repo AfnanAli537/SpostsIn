@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
@@ -12,6 +13,7 @@ class ForgetPasswordScreen extends StatelessWidget {
   ForgetPasswordScreen({super.key});
 
   final emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +23,27 @@ class ForgetPasswordScreen extends StatelessWidget {
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AuthTitle(title: string.forgetPassword, subtitle:string.enterEmailAddressHere ,
-              hintDesc:string.enterEmailAssociated),
-              const SizedBox(height: 24),
-              AuthTextField(validator:  (value) =>
-                            Validators.validateEmail(context, value),label: string.email, controller: emailController,prefixSvg: svgAssets.email,inputType: TextInputType.emailAddress,),
-              const SizedBox(height: 24),
-              CustomElevatedButton(text:string.sendVerificationCode , onPressed: () {Navigator.pushNamed(context, AppRoutes.otp);}),
-            ],
+          padding:  EdgeInsets.all(24.0.h),
+          child: Form(
+  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUnfocus,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AuthTitle(title: string.forgetPassword, subtitle:string.enterEmailAddressHere ,
+                hintDesc:string.enterEmailAssociated),
+                 SizedBox(height: 24.h),
+                AuthTextField(validator:  (value) =>
+                              Validators.validateEmail(context, value),label: string.email, controller: emailController,prefixSvg: svgAssets.email,inputType: TextInputType.emailAddress,),
+                 SizedBox(height: 24.h),
+                CustomElevatedButton(text:string.sendVerificationCode ,
+                 onPressed: () {
+                   if (_formKey.currentState!.validate()) {
+                            // final email = emailController.text.trim();
+                  Navigator.pushNamed(context, AppRoutes.otp);}
+                  }),
+              ],
+            ),
           ),
         ),
       ),

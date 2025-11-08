@@ -10,6 +10,6 @@ class Endpoints {
   static const String  sendOtp= "/api/Auth/register/sendOTP";
   static const String verifyOtp  = "/api/Auth/register/VERIFYotp";
   static const String resetPassword  = "/api/Auth/register/RESETpassword";
-  static const String googleSignUp = "/auth/google";
+  static const String googleSignUp = "/api/Auth/google-login";
 
 }

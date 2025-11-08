@@ -29,4 +29,6 @@ class AuthRepo {
     newPassword: newPassword,
     confirmPassword: confirmPassword,
   );
+  Future<LoginResponse> loginWithGoogle() =>
+      dataSource.loginWithGoogle();
 }

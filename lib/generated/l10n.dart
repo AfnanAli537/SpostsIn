@@ -1199,11 +1199,31 @@ class S {
     );
   }
 
-  /// `please enter 4 digits code that send to yor email address`
+  /// `please enter 6 digits code that send to yor email address`
   String get otpHint {
     return Intl.message(
-      'please enter 4 digits code that send to yor email address',
+      'please enter 6 digits code that send to yor email address',
       name: 'otpHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter all 6 digits to verify your email`
+  String get otpMsgError {
+    return Intl.message(
+      'Please enter all 6 digits to verify your email',
+      name: 'otpMsgError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your email has been verified successfully`
+  String get otpMsgSuccess {
+    return Intl.message(
+      'Your email has been verified successfully',
+      name: 'otpMsgSuccess',
       desc: '',
       args: [],
     );
@@ -1224,6 +1244,26 @@ class S {
     return Intl.message(
       'Reset Password',
       name: 'resetPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your password has been reset successfully`
+  String get resetPasswordSuccess {
+    return Intl.message(
+      'Your password has been reset successfully',
+      name: 'resetPasswordSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to reset password. Please try again`
+  String get resetPasswordFailure {
+    return Intl.message(
+      'Failed to reset password. Please try again',
+      name: 'resetPasswordFailure',
       desc: '',
       args: [],
     );
