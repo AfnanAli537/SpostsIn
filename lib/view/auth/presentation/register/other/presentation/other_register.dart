@@ -1,264 +1,3 @@
-// import 'dart:io';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:sports_in/app/routes/app_routes.dart';
-// import 'package:sports_in/core/utils/validators/regex.dart';
-// import 'package:sports_in/core/widgets/app_image_picker.dart';
-// import 'package:sports_in/core/widgets/custom_elevated_button.dart';
-// import 'package:sports_in/data/data_sources/register_lists.dart';
-// import 'package:sports_in/data/models/other_dto.dart';
-// import 'package:sports_in/generated/l10n.dart';
-// import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
-// import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
-// import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:sports_in/view_model/auth/register_bloc/register_bloc.dart';
-
-// class OthersRegisterScreen extends StatefulWidget {
-//   const OthersRegisterScreen({super.key});
-
-//   @override
-//   State<OthersRegisterScreen> createState() => _OthersRegisterScreenState();
-// }
-
-// class _OthersRegisterScreenState extends State<OthersRegisterScreen> {
-//   late S string;
-//   bool _showValidationErrors = false; // ✅ Controls when to show field errors
-
-//   final firstNameController = TextEditingController();
-//   final lastNameController = TextEditingController();
-//   final emailController = TextEditingController();
-//   final passwordController = TextEditingController();
-//   final confirmPasswordController = TextEditingController();
-//   String? gender;
-//   String? location;
-//   File? selectedImage;
-
-//   @override
-//   void didChangeDependencies() {
-//     super.didChangeDependencies();
-//     string = S.of(context);
-//   }
-
-//   void _onRegister() {
-//     setState(() {
-//       _showValidationErrors = true;
-//     });
-    
-//     // Reset any previous validation errors
-//     context.read<RegistrationBloc>().add(const ResetValidationEvent());
-//  if (gender == null || location == null ) {
-//       debugPrint("Validation failed: Required dropdowns are empty.");
-//       return; 
-//   }
-//     // Create UserModel with all collected data
-//     final userData = OtherDto(
-//       firstName: firstNameController.text.trim(),
-//       lastName: lastNameController.text.trim(),
-//       email: emailController.text.trim(),
-//       password: passwordController.text,
-//       confirmPassword: confirmPasswordController.text,
-//       gender: gender!,
-//       location: location!,
-//       // image: selectedImage,
-//     );
-
-//     // Dispatch event to BLoC with localizations
-//     context.read<RegistrationBloc>().add(
-//       SubmitRegistrationEvent(
-//         userData: userData,
-//         localizations: string, // Pass localization object
-//       ),
-//     );
-//   }
-
-//   @override
-//   void dispose() {
-//     firstNameController.dispose();
-//     lastNameController.dispose();
-//     emailController.dispose();
-//     passwordController.dispose();
-//     confirmPasswordController.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-
-//     return Scaffold(
-//       appBar: AppBar(),
-//       body: BlocConsumer<RegistrationBloc, RegistrationState>(
-//         listener: (context, state) {
-//           if (state is RegistrationSuccess) {
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(
-//                 content: Text(string.registeredSuccessfully),
-//                 backgroundColor: Colors.green,
-//               ),
-//             );
-//             // Navigate to next screen or pop
-//             // Navigator.pushReplacementNamed(context, '/home');
-//             if (context.mounted) {
-//               Navigator.pushNamedAndRemoveUntil(
-//                 context,
-//                 AppRoutes.login,
-//                 (route) => false,
-//               );
-//             }
-//           } else if (state is RegistrationError) {
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(
-//                 content: Text(state.message),
-//                 backgroundColor: Colors.red,
-//               ),
-//             );
-//           }
-//         },
-//         builder: (context, state) {
-//           final isLoading = state is RegistrationLoading;
-//           // final validationError = state is RegistrationValidationError
-//           //     ? state.message
-//           //     : null;
-
-//           return Stack(
-//             children: [
-//               SingleChildScrollView(
-//                 padding: const EdgeInsets.all(20),
-//                 child: Column(
-//                   children: [
-//                     Text(
-//                       string.createYourAccount,
-//                       style: theme.textTheme.titleLarge,
-//                     ),
-//                     SizedBox(height: 24.h),
-
-//                     AppImagePicker(
-//                       onImageSelected: (img) => selectedImage = img,
-//                     ),
-//                     SizedBox(height: 24.h),
-
-//                     // First Name & Last Name
-//                     RegisterTwoFieldsRow(
-//                       leftField: RegisterTextField(
-//                         controller: firstNameController,
-//                         labelText: string.firstName,
-//                         showError: _showValidationErrors,
-//                         validator: (v) => Validators.validateName(
-//                           context,
-//                           v,
-//                           fieldName: string.firstName.toLowerCase(),
-//                         ),
-//                       ),
-//                       rightField: RegisterTextField(
-//                         controller: lastNameController,
-//                         labelText: string.lastName,
-//                         showError: _showValidationErrors,
-//                         validator: (v) => Validators.validateName(
-//                           context,
-//                           v,
-//                           fieldName: string.lastName.toLowerCase(),
-//                         ),
-//                       ),
-//                     ),
-
-//                     SizedBox(height: 16.h),
-
-//                     // Email
-//                     RegisterTextField(
-//                       controller: emailController,
-//                       labelText: string.email,
-//                       keyboardType: TextInputType.emailAddress,
-//                       validator: (v) => Validators.validateEmail(context, v),
-//                       showError: _showValidationErrors,
-//                     ),
-
-//                     SizedBox(height: 16.h),
-
-//                     // Password
-//                     RegisterTextField(
-//                       controller: passwordController,
-//                       labelText: string.password,
-//                       isPassword: true,
-//                       validator: (v) => Validators.validatePassword(context, v),
-//                       showError: _showValidationErrors,
-//                     ),
-
-//                     SizedBox(height: 16.h),
-
-//                     // Confirm Password
-//                     RegisterTextField(
-//                       controller: confirmPasswordController,
-//                       labelText: string.confirmPassword,
-//                       isConformPassword: true,
-//                       validator: (v) => Validators.validateConfirmPassword(
-//                         context,
-//                         v,
-//                         passwordController.text,
-//                       ),
-//                       showError: _showValidationErrors,
-//                     ),
-//                     SizedBox(height: 16.h),
-
-//                     // Gender
-//                     AppDropdownOverlay(
-//                       labelText: string.gender,
-//                       value: gender,
-//                       options: RegisterLists.genderOptions(string),
-//                       onChanged: (val) => setState(() => gender = val),
-//                        validator: (v) => Validators.validateDropdown(
-//                         context,
-//                         v,
-//                         fieldName: string.gender.toLowerCase(),
-//                       ),
-//                       showError: _showValidationErrors,
-//                     ),
-
-//                     SizedBox(height: 16.h),
-
-//                     // Location
-//                     AppDropdownOverlay(
-//                       labelText: string.location,
-//                       value: location,
-//                       options: RegisterLists.locationOptions(string),
-//                       onChanged: (val) => setState(() => location = val),
-//                       validator: (v) => Validators.validateDropdown(
-//                         context,
-//                         v,
-//                         fieldName: string.location.toLowerCase(),
-//                       ),
-//                       showError: _showValidationErrors,
-//                     ),
-
-//                     SizedBox(height: 16.h),
-
-//                     // if (validationError != null)
-//                     //   RegisterErrorMessage(message: validationError),
-
-//                     // Register Button
-//                     CustomElevatedButton(
-//                       text: string.register,
-//                       onPressed: _onRegister,
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               // Loading overlay
-//               if (isLoading)
-//                 Container(
-//                   color: Colors.black26,
-//                   child: const Center(child: CircularProgressIndicator()),
-//                 ),
-//             ],
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -289,29 +28,23 @@ class OthersRegisterScreen extends StatelessWidget {
   final genderNotifier = ValueNotifier<String?>(null);
   final locationNotifier = ValueNotifier<String?>(null);
   final imageNotifier = ValueNotifier<File?>(null);
+  
+  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(AutovalidateMode.disabled);
 
   void _onRegister(BuildContext context, S string) {
-    // Validate form
+    autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
+    
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Check dropdowns separately (since they're not standard form fields)
     if (genderNotifier.value == null || locationNotifier.value == null) {
       debugPrint("Validation failed: Required dropdowns are empty.");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please fill all required fields"),
-          backgroundColor: Colors.red,
-        ),
-      );
       return;
     }
 
-    // Reset any previous validation errors
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
 
-    // Create UserModel with all collected data
     final userData = OtherDto(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
@@ -320,10 +53,9 @@ class OthersRegisterScreen extends StatelessWidget {
       confirmPassword: confirmPasswordController.text,
       gender: genderNotifier.value!,
       location: locationNotifier.value!,
-      // image: imageNotifier.value,
+      image: imageNotifier.value,
     );
 
-    // Dispatch event to BLoC with localizations
     context.read<RegistrationBloc>().add(
       SubmitRegistrationEvent(
         userData: userData,
@@ -374,10 +106,13 @@ class OthersRegisterScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      child: Column(
+                    child: ValueListenableBuilder<AutovalidateMode>(
+                      valueListenable: autoValidateNotifier,
+                      builder: (context, autoValidateMode, _) {
+                        return Form(
+                          key: _formKey,
+                          autovalidateMode: autoValidateMode,
+                          child: Column(
                         children: [
                           Text(
                             string.createYourAccount,
@@ -397,8 +132,8 @@ class OthersRegisterScreen extends StatelessWidget {
                               controller: firstNameController,
                               labelText: string.firstName,
                               validator: (v) => Validators.validateName(
-                                context,
-                                v,
+                                context: context,
+                                value: v,
                                 fieldName: string.firstName.toLowerCase(),
                               ),
                             ),
@@ -406,8 +141,8 @@ class OthersRegisterScreen extends StatelessWidget {
                               controller: lastNameController,
                               labelText: string.lastName,
                               validator: (v) => Validators.validateName(
-                                context,
-                                v,
+                                context: context,
+                                value: v,
                                 fieldName: string.lastName.toLowerCase(),
                               ),
                             ),
@@ -420,7 +155,7 @@ class OthersRegisterScreen extends StatelessWidget {
                             controller: emailController,
                             labelText: string.email,
                             keyboardType: TextInputType.emailAddress,
-                            validator: (v) => Validators.validateEmail(context, v),
+                            validator: (v) => Validators.validateEmail(context: context, value: v),
                           ),
 
                           SizedBox(height: 16.h),
@@ -430,7 +165,7 @@ class OthersRegisterScreen extends StatelessWidget {
                             controller: passwordController,
                             labelText: string.password,
                             isPassword: true,
-                            validator: (v) => Validators.validatePassword(context, v),
+                            validator: (v) => Validators.validatePassword(context: context, value: v),
                           ),
 
                           SizedBox(height: 16.h),
@@ -441,9 +176,9 @@ class OthersRegisterScreen extends StatelessWidget {
                             labelText: string.confirmPassword,
                             isConformPassword: true,
                             validator: (v) => Validators.validateConfirmPassword(
-                              context,
-                              v,
-                              passwordController.text,
+                              context: context,
+                              value: v,
+                              password: passwordController.text,
                             ),
                           ),
                           
@@ -459,8 +194,8 @@ class OthersRegisterScreen extends StatelessWidget {
                                 options: RegisterLists.genderOptions(string),
                                 onChanged: (val) => genderNotifier.value = val,
                                 validator: (v) => Validators.validateDropdown(
-                                  context,
-                                  v,
+                                  context: context,
+                                  value: v,
                                   fieldName: string.gender.toLowerCase(),
                                 ),
                               );
@@ -477,13 +212,13 @@ class OthersRegisterScreen extends StatelessWidget {
                                 labelText: string.location,
                                 value: location,
                                 options: RegisterLists.locationOptions(string),
-                                onChanged: (val) => locationNotifier.value = val,
+          onChanged: (val) => locationNotifier.value = val,
                                 validator: (v) => Validators.validateDropdown(
-                                  context,
-                                  v,
+                                  context: context,
+                                  value: v,
                                   fieldName: string.location.toLowerCase(),
                                 ),
-                              );
+                      );
                             },
                           ),
 
@@ -496,10 +231,11 @@ class OthersRegisterScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
+            ),),
 
               // Loading overlay
               if (isLoading)

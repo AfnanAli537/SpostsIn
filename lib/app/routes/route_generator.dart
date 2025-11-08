@@ -73,7 +73,7 @@ abstract class RoutesManager {
         return CupertinoPageRoute(
           builder: (context) => BlocProvider(
             create: (_) => RegistrationBloc(sl<AuthRepo>()),
-            child: const PlayerRegisterScreen(),
+            child: PlayerRegisterScreen(),
           ),
         );
       case AppRoutes.coachRegister:
@@ -81,7 +81,7 @@ abstract class RoutesManager {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
               create: (_) => RegistrationBloc(sl<AuthRepo>()),
-              child: const CoachRegisterScreen(),
+              child: CoachRegisterScreen(),
             ),
           );
         }
@@ -90,7 +90,7 @@ abstract class RoutesManager {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
               create: (_) => RegistrationBloc(sl<AuthRepo>()),
-              child: const InstituteRegisterScreen(),
+              child: InstituteRegisterScreen(),
             ),
           );
         }
@@ -108,7 +108,7 @@ abstract class RoutesManager {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
               create: (_) => RegistrationBloc(sl<AuthRepo>()),
-              child: const ScoutRegisterScreen(),
+              child: ScoutRegisterScreen(),
             ),
           );
         }
@@ -117,7 +117,7 @@ abstract class RoutesManager {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
               create: (_) => RegistrationBloc(sl<AuthRepo>()),
-              child: const ClubRegisterScreen(),
+              child: ClubRegisterScreen(),
             ),
           );
         }

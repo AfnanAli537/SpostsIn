@@ -25,6 +25,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
   switch (user.userType) {
     case UserType.player:
       return clean({
+        "image": user.image,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -44,6 +45,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
     case UserType.coach:
     case UserType.scout:
       return clean({
+        "image": user.image,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -64,6 +66,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
           .toList();
 
       return clean({
+        "image": user.image,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -76,6 +79,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
 
     case UserType.institute:
       return clean({
+        "image": user.image,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -87,6 +91,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
 
     case UserType.others:
       return clean({
+        "image": user.image,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,

@@ -91,7 +91,7 @@ Future<LoginResponse> login({
     return null; 
   }
     
-  @override
+    @override
   Future<bool> registerUser(UserModel user) async {
     final hasConnection = await NetworkChecker.hasInternetConnection();
     if (!hasConnection) throw Exception('No Internet Connection');
@@ -99,10 +99,8 @@ Future<LoginResponse> login({
     try {
       final endpoint = getEndpointForUserType(user.userType);
       final data = await compute(buildRequestBodyIsolate, user);
-      // debugPrint("📤 Registering to $endpoint with data: $data");
 
       final response = await apiClient.post(endpoint, data: data);
-      // debugPrint("📩 Response: ${response.statusCode} ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = response.data;
@@ -122,8 +120,9 @@ Future<LoginResponse> login({
         }
         return true;
       }
-throw Exception("error");
+
       //Non-success HTTP code (e.g. 400, 500)
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       // throw ApiErrorHandler.handleStatusCode(response.statusCode);
     } on DioException catch (dioError) {
       debugPrint("Dio exception: ${dioError.response?.data}");
@@ -140,12 +139,11 @@ throw Exception("error");
           throw Exception(data['message']);
         }
       }
-throw Exception("error");
-      // throw ApiErrorHandler.handleDioError(dioError);
+
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
     } catch (e) {
       debugPrint("Unknown exception: $e");
-      // throw ApiErrorHandler.handleUnknownError(e);
-      throw Exception("error");
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
     }
   }
   @override

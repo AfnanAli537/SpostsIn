@@ -29,7 +29,7 @@ class ForgetPasswordScreen extends StatelessWidget {
               hintDesc:string.enterEmailAssociated),
               const SizedBox(height: 24),
               AuthTextField(validator:  (value) =>
-                            Validators.validateEmail(context, value),label: string.email, controller: emailController,prefixSvg: svgAssets.email,inputType: TextInputType.emailAddress,),
+                            Validators.validateEmail(context:context, value:value),label: string.email, controller: emailController,prefixSvg: svgAssets.email,inputType: TextInputType.emailAddress,),
               const SizedBox(height: 24),
               CustomElevatedButton(text:string.sendVerificationCode , onPressed: () {Navigator.pushNamed(context, AppRoutes.otp);}),
             ],
