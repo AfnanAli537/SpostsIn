@@ -252,6 +252,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "otpMsgSuccess": MessageLookupByLibrary.simpleMessage(
       "تم التحقق من بريدك الإلكتروني بنجاح",
     ),
+    "otpSentSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "تم إرسال رمز التحقق بنجاح! يرجى التحقق من بريدك الإلكتروني.",
+    ),
     "outsideHitter": MessageLookupByLibrary.simpleMessage(
       "مهاجم خارجي (Outside Hitter)",
     ),

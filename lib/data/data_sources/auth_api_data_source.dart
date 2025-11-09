@@ -18,123 +18,73 @@ class AuthApiDataSource implements IAuthDataSource {
   final ApiClient apiClient;
   AuthApiDataSource(this.apiClient);
 
-@override
-Future<LoginResponse> login({
-  required BuildContext context,
-  required String email,
-  required String password,
-}) async {
-  try {
-    final response = await apiClient.post(
-      Endpoints.login,
-      data: {
-        'email': email,
-        'password': password,
-      },
-    );
+  @override
+  Future<LoginResponse> login({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await apiClient.post(
+        Endpoints.login,
+        data: {'email': email, 'password': password},
+      );
 
-    if (response.statusCode == 200 && response.data != null) {
-      return LoginResponse.fromJson(response.data);
-    } 
-    else {
-      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      if (response.statusCode == 200 && response.data != null) {
+        return LoginResponse.fromJson(response.data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
     }
-  } 
-  on DioException catch (dioError) {
-    throw ApiErrorHandler.handleDioErrorKey(dioError);
   }
-  catch (e) {
-    throw ApiErrorHandler.handleUnknownErrorKey(e);
-  }
-}
 
   @override
-  Future<void> logout() async {
+  Future<void> logout() async {}
+
+  @override
+  Future<Map<String, dynamic>?> getCachedUser() async {
+    return null;
   }
 
- @override
-  Future<Map<String,dynamic>?> getCachedUser() async {
-    return null; 
+  @override
+  Future<LoginResponse> loginWithGoogle() async {
+    try {
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        serverClientId:
+            '101794351369-sdsjn89f50e4mhth41bfaa6qtctb7kf9.apps.googleusercontent.com',
+      );
+      await googleSignIn.signOut();
+      final account = await googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('User cancelled Google Sign-In');
+      }
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+      print("token ==========================$idToken");
+      if (idToken == null || idToken.isEmpty) {
+        throw Exception('Google ID Token missing');
+      }
+      final response = await apiClient.post(
+        Endpoints.googleSignUp,
+        data: {'IdToken': idToken},
+      );
+
+      if (response.statusCode == 200) {
+        return LoginResponse.fromJson(response.data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
   }
-
-
-Future<LoginResponse> loginWithGoogle() async {
-  try {
-    final googleSignIn = GoogleSignIn(
-      scopes: ['email', 'profile'],
-    );
-
-    // Optional: force account picker
-    await googleSignIn.signOut();
-
-    // Show account picker
-    final account = await googleSignIn.signIn();
-    if (account == null) {
-      throw Exception('User cancelled Google Sign-In');
-    }
-
-    // Get ID token
-    final auth = await account.authentication;
-    final idToken = auth.idToken;
-    print("Google ID Token: $idToken");
-    if (idToken == null || idToken.isEmpty) {
-      throw Exception('Google ID Token missing');
-    }
-
-    // Send token to backend
-    final response = await apiClient.post(
-      Endpoints.googleSignUp,
-      data: {'token': idToken},
-    );
-print("Sending to backend: ${{'token': idToken}}");
-print("Backend response: ${response.data}");
-    if (response.statusCode == 200) {
-      return LoginResponse.fromJson(response.data);
-    } else {
-      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-    }
-  } on DioException catch (dioError) {
-    throw ApiErrorHandler.handleDioErrorKey(dioError);
-  } catch (e) {
-    throw e; // BLoC will handle failure toast
-  }
-}
-
-  //  @override 
-
-  //   Future<LoginResponse> loginWithGoogle() async {
-  //   try {
-  //     // Step 1: Initialize Google Sign-In
-  //     await GoogleSignIn.instance.initialize();
-
-  //     // Step 2: Open Google account picker
-  //     final result = await GoogleSignIn.instance.authenticate(
-  //       scopeHint: ['email', 'profile'],
-  //     );
-
-  //     // Step 3: Get ID token
-  //     final idToken = result.authentication.idToken;
-  //     if (idToken == null || idToken.isEmpty) {
-  //       throw Exception('Google ID Token missing');
-  //     }
-
-  //     // Step 4: Send token to backend
-  //     final response = await apiClient.post(
-  //       Endpoints.googleSignUp,
-  //       data: {'token': idToken},
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       return LoginResponse.fromJson(response.data);
-  //     } else {
-  //       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-  //     }
-  //   } on DioException catch (dioError) {
-  //     throw ApiErrorHandler.handleDioErrorKey(dioError);
-  //   } catch (e) {
-  //     throw ApiErrorHandler.handleUnknownErrorKey(e);
-  //   }
-  // }
 
   @override
   Future<bool> registerUser(UserModel user) async {
@@ -163,11 +113,13 @@ print("Backend response: ${response.data}");
             throw Exception(errors.join(', '));
           }
 
-          throw Exception(responseData['message'] ?? 'Unknown registration error.');
+          throw Exception(
+            responseData['message'] ?? 'Unknown registration error.',
+          );
         }
         return true;
       }
-throw Exception("error");
+      throw Exception("error");
       //Non-success HTTP code (e.g. 400, 500)
       // throw ApiErrorHandler.handleStatusCode(response.statusCode);
     } on DioException catch (dioError) {
@@ -185,7 +137,7 @@ throw Exception("error");
           throw Exception(data['message']);
         }
       }
-throw Exception("error");
+      throw Exception("error");
       // throw ApiErrorHandler.handleDioError(dioError);
     } catch (e) {
       debugPrint("Unknown exception: $e");
@@ -193,27 +145,71 @@ throw Exception("error");
       throw Exception("error");
     }
   }
+
   @override
   Future<bool> sendOtp({required String email}) async {
-  final response = await apiClient.post(Endpoints.sendOtp, data: {'email': email});
-  return response.statusCode == 200;
-}
-  @override
-Future<bool> verifyOtp({ required String email,required String otp}) async {
-  final response = await apiClient.post(Endpoints.verifyOtp, data: {
-    'email': email,
-    'otp': otp,
-  });
-  return response.statusCode == 200;
-}
-  @override
-Future<bool> resetPassword({required String email,required String newPassword,required String confirmPassword}) async {
-  final response = await apiClient.post(Endpoints.resetPassword, data: {
-    'email': email,
-    'newPassword': newPassword,
-    'confirmPassword': confirmPassword,
-  });
-  return response.statusCode == 200;
-}
+    try {
+      final response = await apiClient.post(
+        Endpoints.sendOtp,
+        data: {'email': email},
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
+  }
 
+  @override
+  Future<bool> verifyOtp({required String email, required String otp}) async {
+    try {
+      final response = await apiClient.post(
+        Endpoints.verifyOtp,
+        data: {'email': email, 'code': otp},
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
+  }
+
+  @override
+  Future<bool> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      final response = await apiClient.post(
+        Endpoints.resetPassword,
+        data: {
+          'email': email,
+          'code': otp,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        },
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
+  }
 }

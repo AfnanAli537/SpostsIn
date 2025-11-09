@@ -6,7 +6,7 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 
 class LocaleCubit extends Cubit<Locale> {
-
+    Locale defualtLocale=window.locale;
 
   LocaleCubit() : super(window.locale) {
     _loadLocale();
@@ -16,6 +16,7 @@ class LocaleCubit extends Cubit<Locale> {
     final langCode = SharedPref.getString(StringKeys.languageKey);
 
     if (langCode != null && langCode.isNotEmpty) {
+      defualtLocale=Locale(langCode);
       emit(Locale(langCode));
     } else {
       emit(window.locale); 
@@ -24,6 +25,7 @@ class LocaleCubit extends Cubit<Locale> {
 
   Future<void> setLocale(Locale locale) async {
     await SharedPref.setString(StringKeys.languageKey, locale.languageCode);
+    defualtLocale=locale;
     emit(locale);
   }
 }

@@ -33,7 +33,7 @@ class Validators {
   static String? validateEmail(BuildContext? context, String? value) {
     final s = _tryLocalization(context);
     if (value == null || value.isEmpty) return s?.enterEmail ?? 'Please enter your email.';
-    final emailRegex = RegExp(r'^[\w-]+@([\w-]+\.)+[\w]{2,4}$');
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailRegex.hasMatch(value)) return s?.invalidEmail ?? 'Invalid email format.';
     return null;
   }

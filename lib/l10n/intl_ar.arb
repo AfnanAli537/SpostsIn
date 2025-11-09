@@ -197,7 +197,7 @@
   "enterEmailAddressHere": "أدخل عنوان البريد الإلكتروني هنا",
   "enterEmailAssociated": "أدخل عنوان البريد الإلكتروني المرتبط بحسابك",
   "sendVerificationCode": "إرسال رمز التحقق",
-
+ "otpSentSuccessfully": "تم إرسال رمز التحقق بنجاح! يرجى التحقق من بريدك الإلكتروني.",
 
 
 

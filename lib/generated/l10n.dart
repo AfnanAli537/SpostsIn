@@ -1344,6 +1344,16 @@ class S {
     );
   }
 
+  /// `OTP sent successfully! Please check your email.`
+  String get otpSentSuccessfully {
+    return Intl.message(
+      'OTP sent successfully! Please check your email.',
+      name: 'otpSentSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Privacy & Policy`
   String get privacyPolicyTitle {
     return Intl.message(

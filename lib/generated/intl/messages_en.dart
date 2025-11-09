@@ -259,6 +259,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "otpMsgSuccess": MessageLookupByLibrary.simpleMessage(
       "Your email has been verified successfully",
     ),
+    "otpSentSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "OTP sent successfully! Please check your email.",
+    ),
     "outsideHitter": MessageLookupByLibrary.simpleMessage("Outside Hitter"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordHintDesc": MessageLookupByLibrary.simpleMessage(
