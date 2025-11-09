@@ -1,8 +1,7 @@
 import 'package:sports_in/data/models/user_model.dart';
 
-/// 🏟️ Club DTO
-class ClubDto extends UserModel {
-  ClubDto({
+class ClubModel extends UserModel {
+  ClubModel({
     required super.email,
     required super.password,
     required super.confirmPassword,

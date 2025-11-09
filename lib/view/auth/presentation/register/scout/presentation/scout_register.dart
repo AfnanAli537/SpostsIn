@@ -8,7 +8,7 @@ import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
-import 'package:sports_in/data/models/scout_dto.dart';
+import 'package:sports_in/data/models/scout_response_model.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -50,7 +50,7 @@ class ScoutRegisterScreen extends StatelessWidget {
 
     final int? parsedExperience = int.tryParse(yearsOfExperienceController.text.trim());
 
-    final userData = ScoutDto(
+    final userData = ScoutModel(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       email: emailController.text.trim(),
@@ -79,7 +79,6 @@ class ScoutRegisterScreen extends StatelessWidget {
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
           if (state is RegistrationLoading) {
-            // Show loading indicator
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -89,11 +88,10 @@ class ScoutRegisterScreen extends StatelessWidget {
           }
 
           if (state is RegistrationSuccess) {
-            // Dismiss loading
             Navigator.of(context).pop();
 
             Fluttertoast.showToast(
-              msg: string.loginSuccess,
+              msg: string.registrationSuccessful,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,

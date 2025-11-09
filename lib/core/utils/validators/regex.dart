@@ -6,7 +6,7 @@ class Validators {
   static String? validateEmail({required BuildContext context, String? value}) {
     final s = S.of(context);
     if (value == null || value.isEmpty) return s.enterEmail;
-    final emailRegex = RegExp(r'^[\w-]+@([\w-]+\.)+[\w]{2,4}$');
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailRegex.hasMatch(value)) return s.invalidEmail;
     return null;
   }

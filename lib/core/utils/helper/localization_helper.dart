@@ -1,8 +1,6 @@
 import 'package:sports_in/generated/l10n.dart';
 
-/// Extension to get localized error messages from error keys
 extension LocalizationHelper on S {
-  /// Get localized error message based on error key
   String getErrorMessage(String key, {String? fallback}) {
     switch (key) {
       // Network errors
@@ -50,12 +48,10 @@ extension LocalizationHelper on S {
         return userNotFound;
 
       default:
-        // Return fallback message if provided, otherwise the key itself
         return fallback ?? 'An unexpected error occurred';
     }
   }
 
-  /// Get localized success message based on message key
   String getSuccessMessage(String key, {String? fallback}) {
     switch (key) {
       case 'registrationSuccessful':

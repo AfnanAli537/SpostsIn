@@ -1,8 +1,6 @@
 import 'package:sports_in/generated/l10n.dart';
 
-/// Provides static dropdown data for the Player Registration screen.
 class RegisterLists {
-    // Gender options list
   static List<String> genderOptions(S s) => [
         s.male,
         s.female,
@@ -15,16 +13,6 @@ class RegisterLists {
         s.tunisia,
         s.sudan,
       ];
-
-  // Years of experience options list
-  static List<String> yearsOfExperienceOptions (S s) => [
-        s.yearsOfExperience0to2,
-        s.yearsOfExperience3to5,
-        s.yearsOfExperience5to10,
-        s.yearsOfExperience10Plus,
-      ];
-
-  // Sport name options list
   static List<String> sportNameOptions (S s) => [
         s.football,
         s.basketball,
@@ -35,7 +23,6 @@ class RegisterLists {
 
       ];
 
-  // Sport Profession list
   static List<String> sportProfessionOptions(S s) => [
         s.footballer,
         s.basketballer,
@@ -48,7 +35,6 @@ class RegisterLists {
   static List<String> positionOptions(S s, String? sport) {
     if (sport == null) return [];
     
-    // Football positions
     if (sport == s.footballer) {
       return [
         s.goalkeeper,
@@ -58,7 +44,6 @@ class RegisterLists {
       ];
     }
     
-    // Basketball positions
     if (sport == s.basketballer) {
       return [
         s.pointGuard,
@@ -69,7 +54,6 @@ class RegisterLists {
       ];
     }
     
-    // Volleyball positions
     if (sport == s.volleyballer) {
       return [
         s.setter,
@@ -80,7 +64,6 @@ class RegisterLists {
       ];
     }
     
-    // Handball positions
     if (sport == s.handballPlayer) {
       return [
         s.goalkeeper,

@@ -34,4 +34,8 @@ class StringKeys {
   static const String validationError = 'validationError';
   static const String emailAlreadyExists = 'emailAlreadyExists';
   static const String userNotFound = 'userNotFound';
+
+  //cloudenary 
+  static const String uploadPreset = 'Images'; 
+  static const String cloudName = 'dbwnoorb8';
 }

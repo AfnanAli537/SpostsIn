@@ -8,7 +8,7 @@ import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/data/data_sources/register_lists.dart';
-import 'package:sports_in/data/models/institute_dto.dart';
+import 'package:sports_in/data/models/institute_response_model.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/view/auth/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -46,7 +46,7 @@ class InstituteRegisterScreen extends StatelessWidget {
 
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
 
-    final userData = InstituteDto(
+    final userData = InstituteModel(
       instituteName: instituteNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
@@ -71,7 +71,6 @@ class InstituteRegisterScreen extends StatelessWidget {
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
           if (state is RegistrationLoading) {
-            // Show loading indicator
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -81,10 +80,9 @@ class InstituteRegisterScreen extends StatelessWidget {
           }
 
           if (state is RegistrationSuccess) {
-            // Dismiss loading
             Navigator.of(context).pop();
             Fluttertoast.showToast(
-              msg: string.loginSuccess,
+              msg: string.registrationSuccessful,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,

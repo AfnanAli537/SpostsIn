@@ -17,7 +17,7 @@ import 'package:sports_in/view/auth/presentation/register/coach/presentation/coa
 import 'package:sports_in/view/auth/presentation/register/institute/presentation/institute_register.dart';
 import 'package:sports_in/view/auth/presentation/register/other/presentation/other_register.dart';
 import 'package:sports_in/view/auth/presentation/register/scout/presentation/scout_register.dart';
-import 'package:sports_in/view/user_type/presentation/user_type_screen.dart';
+import 'package:sports_in/view/auth/presentation/user_type/presentation/user_type_screen.dart';
 import 'package:sports_in/view_model/auth/register_bloc/register_bloc.dart';
 
 abstract class RoutesManager {

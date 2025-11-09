@@ -3,7 +3,7 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/view/user_type/widgets/type_option_tile.dart';
+import 'package:sports_in/view/auth/presentation/user_type/widgets/type_option_tile.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserTypeScreen extends StatefulWidget {
@@ -60,8 +60,6 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
     final theme = Theme.of(context);
 
     return 
-    // SafeArea(
-    //   child: 
       Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -137,7 +135,6 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
             ],
           ),
         ),
-      // ),
     );
   }
 }

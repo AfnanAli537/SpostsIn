@@ -1,25 +1,24 @@
+
 import 'package:sports_in/data/models/user_model.dart';
 
-/// 🏃 Player DTO
-class PlayerDto extends UserModel {
-  const PlayerDto({
+class CoachModel extends UserModel {
+  const CoachModel({
     required super.email,
     required super.password,
     required super.confirmPassword,
     required String super.location,
     required String super.firstName,
     required String super.lastName,
-    required super.height,
-    required super.weight,
+    required int? yearsOfExperience,
     required String sportName,
-    required super.age,
     required String super.gender,
     required super.hasClub,
-    super.position,
     super.image
+
   }) : super(
-          userType: UserType.player,
-          sport: sportName
+          userType: UserType.coach,
+          experienceYears: yearsOfExperience,
+          sport: sportName,
         );
 
   @override
@@ -31,12 +30,10 @@ class PlayerDto extends UserModel {
         "location": location,
         "firstName": firstName,
         "lastName": lastName,
-        "height":height ?? 0,
-        "weight": weight ?? 0,
-        "sportName":sport,
-        "age": age ?? 0,
-        "gender": gender??"",
-        "hasClub": clubName ?? false,
-        "position": position ?? "",
+        "yearsOfExperience": experienceYears?? 0,
+        "sportName": sport ,
+        "gender":gender,
+        "club": hasClub ?? false
       };
 }
+

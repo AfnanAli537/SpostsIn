@@ -1,22 +1,24 @@
 import 'package:sports_in/data/models/user_model.dart';
-/// 🕵️ Scout DTO
-class ScoutDto extends UserModel {
-  const ScoutDto({
+
+class PlayerModel extends UserModel {
+  const PlayerModel({
     required super.email,
     required super.password,
     required super.confirmPassword,
     required String super.location,
     required String super.firstName,
     required String super.lastName,
-    required int? yearsOfExperience,
+    required super.height,
+    required super.weight,
     required String sportName,
-    required String gender,
+    required super.age,
+    required String super.gender,
+    required super.hasClub,
+    super.position,
     super.image
   }) : super(
-          userType: UserType.scout,
-          experienceYears: yearsOfExperience,
-          sport: sportName,
-          gender: gender,
+          userType: UserType.player,
+          sport: sportName
         );
 
   @override
@@ -28,8 +30,12 @@ class ScoutDto extends UserModel {
         "location": location,
         "firstName": firstName,
         "lastName": lastName,
-        "yearsOfExperience":experienceYears ?? 0,
+        "height":height ?? 0,
+        "weight": weight ?? 0,
         "sportName":sport,
-        "gender": gender,
+        "age": age ?? 0,
+        "gender": gender??"",
+        "hasClub": clubName ?? false,
+        "position": position ?? "",
       };
 }

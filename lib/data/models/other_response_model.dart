@@ -1,28 +1,31 @@
 import 'package:sports_in/data/models/user_model.dart';
 
-/// 🏫 Institute DTO
-class InstituteDto extends UserModel {
-  const InstituteDto({
+class OtherModel extends UserModel {
+  const OtherModel({
     required super.email,
     required super.password,
     required super.confirmPassword,
-    required super.location,
-    required super.instituteName,
-    required super.industry,
+    required String super.location,
+    required String super.firstName,
+    required String super.lastName,
+    required String gender,
     super.image
 
   }) : super(
-          userType: UserType.institute,
+          userType: UserType.others,
+          gender: gender,
         );
 
   @override
   Map<String, dynamic> toJson() => {
         // "pfp": image,
+
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,
         "location": location,
-        "instituteName": instituteName ?? "",
-        "industry": industry ?? "",
+        "firstName": firstName,
+        "lastName": lastName,
+        "gender": gender,
       };
 }
