@@ -279,6 +279,8 @@ Future<bool> registerUser(UserModel user) async {
 
   try {
     final endpoint = getEndpointForUserType(user.userType);
+        debugPrint("========${user}=========");
+
     final data = buildRequestBodyIsolate(user);
 
     final response = await apiClient.post(endpoint, data: data);

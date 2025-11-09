@@ -67,7 +67,7 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
     );
 
     if (picked != null) {
-      final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+      final formattedDate = DateFormat('yyyy-MM-dd', 'en').format(picked);
       widget.controller.text = formattedDate;
     }
   }
