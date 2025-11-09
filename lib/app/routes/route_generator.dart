@@ -70,8 +70,8 @@ abstract class RoutesManager {
         }
       case AppRoutes.resetPassword:
         {
-          final args = settings.arguments as Map<String, dynamic>?;
-          final email = args!['email'] as String;
+          final args = settings.arguments as Map<String, dynamic>;
+          final email = args['email'] as String;
           final otp = args['otp'] as String;
           return CupertinoPageRoute(
             builder: (_) => BlocProvider(

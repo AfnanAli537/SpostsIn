@@ -155,6 +155,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         context.read<ForgotPasswordBloc>().add(
                           VerifyOtpEvent(email: widget.email, otp: code),
                         );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: string.otpMsgError,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: Colors.red,
+                          toastLength: Toast.LENGTH_LONG,
+                        );
                       }
                     },
                   ),
