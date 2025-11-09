@@ -253,7 +253,16 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "other": MessageLookupByLibrary.simpleMessage("أخرى"),
     "otpHint": MessageLookupByLibrary.simpleMessage(
-      "يرجى إدخال رمز مكون من 4 أرقام تم إرساله إلى عنوان بريدك الإلكتروني",
+      "يرجى إدخال رمز مكون من 6 أرقام تم إرساله إلى عنوان بريدك الإلكتروني",
+    ),
+    "otpMsgError": MessageLookupByLibrary.simpleMessage(
+      "الرجاء إدخال جميع الأرقام الستة للتحقق من بريدك الإلكتروني",
+    ),
+    "otpMsgSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم التحقق من بريدك الإلكتروني بنجاح",
+    ),
+    "otpSentSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "تم إرسال رمز التحقق بنجاح! يرجى التحقق من بريدك الإلكتروني.",
     ),
     "outsideHitter": MessageLookupByLibrary.simpleMessage(
       "مهاجم خارجي (Outside Hitter)",
@@ -318,6 +327,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "requestCancelled": MessageLookupByLibrary.simpleMessage("تم إلغاء الطلب."),
     "resetPassword": MessageLookupByLibrary.simpleMessage(
       "إعادة تعيين كلمة المرور",
+    ),
+    "resetPasswordFailure": MessageLookupByLibrary.simpleMessage(
+      "فشل إعادة تعيين كلمة المرور. حاول مرة أخرى",
+    ),
+    "resetPasswordSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم إعادة تعيين كلمة المرور بنجاح",
     ),
     "resourceNotFound": MessageLookupByLibrary.simpleMessage(
       "المورد غير موجود.",

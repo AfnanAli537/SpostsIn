@@ -28,16 +28,12 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final string = S.of(context);
     final themeCubit = context.watch<ThemeCubit>();
-    final localeCubit = context.watch<LocaleCubit>();
 
     final currentMode = themeCubit.state;
     final brightness = MediaQuery.of(context).platformBrightness;
-
     final effectiveMode = currentMode == ThemeMode.system
         ? (brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light)
         : currentMode;
-
-    final effectiveLocale = localeCubit.state;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -52,14 +48,34 @@ class LoginScreen extends StatelessWidget {
             );
             // Navigator.pushReplacementNamed(context, AppRoutes.home);
           } else if (state is LoginFailure) {
-            final msg = TranslateErrorHelper.translateErrorKey(context, state.generalError?? "");
+            final msg = TranslateErrorHelper.translateErrorKey(
+              context,
+              state.generalError ?? "",
+            );
             Fluttertoast.showToast(
-              msg:msg,
+              msg: msg,
               backgroundColor: Colors.red,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
           }
+             if (state is GoogleSignInSuccess) {
+                            Fluttertoast.showToast(
+                              msg: "sucessfull sign in with google",
+                              backgroundColor: Colors.green,
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.TOP,
+                            );
+                           
+                          } else if (state is GoogleSignInFailure) {
+                      
+                            Fluttertoast.showToast(
+                              msg: state.errorKey,
+                              backgroundColor: Colors.red,
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.TOP,
+                            );
+                          }
         },
         builder: (context, state) {
           return SafeArea(
@@ -78,7 +94,7 @@ class LoginScreen extends StatelessWidget {
                         subtitle: string.loginToYourAccount,
                       ),
                       SizedBox(height: 50.h),
-
+          
                       AuthTextField(
                         prefixSvg: SvgAssets.email,
                         label: string.email,
@@ -88,7 +104,7 @@ class LoginScreen extends StatelessWidget {
                             Validators.validateEmail(context: context, value: value),
                       ),
                       SizedBox(height: 16.h),
-
+          
                       AuthTextField(
                         prefixSvg: SvgAssets.lockOn,
                         label: string.password,
@@ -97,7 +113,7 @@ class LoginScreen extends StatelessWidget {
                         validator: (value) =>
                             Validators.validatePassword(context: context, value: value),
                       ),
-
+          
                       Align(
                         alignment: Alignment.topRight,
                         child: TextButton(
@@ -119,21 +135,18 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16.h),
-
+          
                       CustomElevatedButton(
                         text: state is LoginLoading
                             ? string.signingIn
                             : string.signIn,
-                        icon: state is LoginLoading
-                            ? null
-                            : Icons.login_rounded,
                         isLoading: state is LoginLoading,
                         enabled: true,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             final email = emailController.text.trim();
                             final password = passwordController.text.trim();
-
+          
                             context.read<LoginBloc>().add(
                               LoginButtonPressed(
                                 context: context,
@@ -144,9 +157,9 @@ class LoginScreen extends StatelessWidget {
                           }
                         },
                       ),
-
+          
                       SizedBox(height: 38.h),
-
+          
                       Row(
                         spacing: 10,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,11 +173,25 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 16.h),
-
-                      SocialIconButton(svgPath: SvgAssets.google, onTap: () {}),
-
+          
+                     
+                          state is GoogleSignInLoading?
+                         const CircularProgressIndicator():
+                         SocialIconButton(
+                            svgPath: svgAssets.google,
+                            onTap: () {
+                              context.read<LoginBloc>().add(
+                                GoogleSignInRequested(),
+                              );
+                            },
+                          ),
+          
+                         
+                        
+                     
+          
                       SizedBox(height: 24.h),
-
+          
                       Row(
                         spacing: 4,
                         mainAxisSize: MainAxisSize.min,
@@ -193,7 +220,7 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 30.h),
-
+          
                       Column(
                         spacing: 7,
                         mainAxisSize: MainAxisSize.min,
@@ -217,7 +244,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                           CustomAnimatedToggle<String>(
                             values: const ["en", "ar"],
-                            initialValue: effectiveLocale.languageCode,
+                            initialValue: context.read<LocaleCubit>().defualtLocale.languageCode,
                             onChanged: (lang) {
                               context.read<LocaleCubit>().setLocale(
                                 Locale(lang),
@@ -230,7 +257,7 @@ class LoginScreen extends StatelessWidget {
                               final imagePath = value == "en"
                                   ? IconAssets.us
                                   : IconAssets.eg;
-
+          
                               return Container(
                                 padding: EdgeInsets.all(2.w),
                                 decoration: BoxDecoration(

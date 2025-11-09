@@ -9,6 +9,7 @@ import 'package:sports_in/view/auth/presentation/login/presentation/login_screen
 import 'package:sports_in/view/auth/presentation/forget_password/otp_screen.dart';
 import 'package:sports_in/view/onboarding/presentation/onboarding_screen.dart';
 import 'package:sports_in/view/onboarding/presentation/privacy_policy_screen.dart';
+import 'package:sports_in/view_model/auth/forget_password_bloc/forget_password_bloc.dart';
 import 'package:sports_in/view_model/auth/login_bloc/login_bloc.dart';
 import 'package:sports_in/view_model/onboarding_bloc/onboarding_bloc.dart';
 import 'package:sports_in/view/auth/presentation/register/player/presentation/player_register.dart';
@@ -50,20 +51,34 @@ abstract class RoutesManager {
       case AppRoutes.forgetPassword:
         {
           return CupertinoPageRoute(
-            builder: (context) => ForgetPasswordScreen(),
+            builder: (_) => BlocProvider(
+              create: (_) => ForgotPasswordBloc(sl<AuthRepo>()),
+              child: ForgetPasswordScreen(),
+            ),
           );
         }
       case AppRoutes.otp:
         {
+          final email = settings.arguments as String?;
           return CupertinoPageRoute(
-            builder: (context) => EmailVerificationScreen(),
+            builder: (_) => BlocProvider(
+              create: (_) => ForgotPasswordBloc(sl<AuthRepo>()),
+
+              child: EmailVerificationScreen(email: email!),
+            ),
           );
         }
       case AppRoutes.resetPassword:
         {
+          final args = settings.arguments as Map<String, dynamic>;
+          final email = args['email'] as String;
+          final otp = args['otp'] as String;
           return CupertinoPageRoute(
-            builder: (context) => ResetPasswordScreen(),
-            );
+            builder: (_) => BlocProvider(
+              create: (_) => ForgotPasswordBloc(sl<AuthRepo>()),
+              child: ResetPasswordScreen(email: email, otp: otp),
+            ),
+          );
         }
       case AppRoutes.userType:
         {

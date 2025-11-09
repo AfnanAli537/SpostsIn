@@ -207,9 +207,13 @@
   "welcome": "Welcome",
    "loginToYourAccount":"Login to your Account",
    "GetYourCode":"Get Your Code !",
-    "otpHint":"please enter 4 digits code that send to yor email address",
+    "otpHint":"please enter 6 digits code that send to yor email address",
+    "otpMsgError":"Please enter all 6 digits to verify your email",
+    "otpMsgSuccess":"Your email has been verified successfully",
             "VerifyAndProceed"   : "Verify and proceed",
               "resetPassword": "Reset Password",
+               "resetPasswordSuccess": "Your password has been reset successfully",
+  "resetPasswordFailure": "Failed to reset password. Please try again",
   "enterNewPassword": "Enter your new password",
   "passwordHintDesc": "Your new password must be different than the previous password",
   "newPassword": "New Password",
@@ -218,7 +222,7 @@
   "enterEmailAddressHere": "Enter Email Address here",
   "enterEmailAssociated": "Enter Email Address associated with your account",
   "sendVerificationCode": "Send verification code",
-
+"otpSentSuccessfully": "OTP sent successfully! Please check your email.",
 
   "privacyPolicyTitle": "Privacy & Policy",
   "lastUpdated": "Last updated: 11 October 2025",

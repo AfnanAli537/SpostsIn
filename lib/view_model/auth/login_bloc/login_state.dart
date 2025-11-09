@@ -17,3 +17,13 @@ final class LoginFailure extends LoginState {
   final String? generalError;
   LoginFailure({this.generalError});
 }
+class GoogleSignInLoading extends LoginState {}
+class GoogleSignInSuccess extends LoginState {
+  final LoginResponse userData;
+   GoogleSignInSuccess(this.userData);
+}
+
+class GoogleSignInFailure extends LoginState {
+  final String errorKey;
+   GoogleSignInFailure(this.errorKey);
+}

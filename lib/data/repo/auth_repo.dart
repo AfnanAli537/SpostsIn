@@ -22,11 +22,15 @@ class AuthRepo {
       dataSource.verifyOtp(email: email, otp: otp);
   Future<bool> resetPassword(
     String email,
+    String otp,
     String newPassword,
     String confirmPassword,
   ) => dataSource.resetPassword(
     email: email,
+    otp: otp,
     newPassword: newPassword,
     confirmPassword: confirmPassword,
   );
+  Future<LoginResponse> loginWithGoogle() =>
+      dataSource.loginWithGoogle();
 }

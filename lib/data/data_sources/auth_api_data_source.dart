@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
@@ -48,6 +49,42 @@ class AuthApiDataSource implements IAuthDataSource {
   }
 
   @override
+  Future<LoginResponse> loginWithGoogle() async {
+    try {
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        serverClientId:
+            '101794351369-sdsjn89f50e4mhth41bfaa6qtctb7kf9.apps.googleusercontent.com',
+      );
+      await googleSignIn.signOut();
+      final account = await googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('User cancelled Google Sign-In');
+      }
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+      print("token ==========================$idToken");
+      if (idToken == null || idToken.isEmpty) {
+        throw Exception('Google ID Token missing');
+      }
+      final response = await apiClient.post(
+        Endpoints.googleSignUp,
+        data: {'IdToken': idToken},
+      );
+
+      if (response.statusCode == 200) {
+        return LoginResponse.fromJson(response.data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
+  }
+
+@override
   Future<bool> registerUser(UserModel user) async {
     final hasConnection = await NetworkChecker.hasInternetConnection();
 
@@ -129,36 +166,68 @@ class AuthApiDataSource implements IAuthDataSource {
 
   @override
   Future<bool> sendOtp({required String email}) async {
-    final response = await apiClient.post(
-      Endpoints.sendOtp,
-      data: {'email': email},
-    );
-    return response.statusCode == 200;
+    try {
+      final response = await apiClient.post(
+        Endpoints.sendOtp,
+        data: {'email': email},
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
   }
 
   @override
   Future<bool> verifyOtp({required String email, required String otp}) async {
-    final response = await apiClient.post(
-      Endpoints.verifyOtp,
-      data: {'email': email, 'otp': otp},
-    );
-    return response.statusCode == 200;
+    try {
+      final response = await apiClient.post(
+        Endpoints.verifyOtp,
+        data: {'email': email, 'code': otp},
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
   }
 
   @override
   Future<bool> resetPassword({
     required String email,
+    required String otp,
     required String newPassword,
     required String confirmPassword,
   }) async {
-    final response = await apiClient.post(
-      Endpoints.resetPassword,
-      data: {
-        'email': email,
-        'newPassword': newPassword,
-        'confirmPassword': confirmPassword,
-      },
-    );
-    return response.statusCode == 200;
+    try {
+      final response = await apiClient.post(
+        Endpoints.resetPassword,
+        data: {
+          'email': email,
+          'code': otp,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        },
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (dioError) {
+      throw ApiErrorHandler.handleDioErrorKey(dioError);
+    } catch (e) {
+      throw ApiErrorHandler.handleUnknownErrorKey(e);
+    }
   }
 }

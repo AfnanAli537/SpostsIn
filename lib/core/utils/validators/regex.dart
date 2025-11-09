@@ -23,33 +23,6 @@ class Validators {
     }
     return null;
   }
-  // /// Password validation with strong password requirements
-  // static String? validatePassword({required BuildContext context, String? value}) {
-  //   final s = S.of(context);
-  //   if (value == null || value.isEmpty) {
-  //     return s.enterPassword;
-  //   }
-  //   if (value.length < 8) {
-  //     return s.passwordMinLength ;
-  //   }
-  //   // Check for at least one uppercase letter
-  //   if (!RegExp(r'[A-Z]').hasMatch(value)) {
-  //     return s.passwordNeedsUppercase ;
-  //   }
-  //   // Check for at least one lowercase letter
-  //   if (!RegExp(r'[a-z]').hasMatch(value)) {
-  //     return s.passwordNeedsLowercase ;
-  //   }
-  //   // Check for at least one digit
-  //   if (!RegExp(r'[0-9]').hasMatch(value)) {
-  //     return s.passwordNeedsNumber ;
-  //   }
-  //   // Check for at least one special character
-  //   if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]').hasMatch(value)) {
-  //     return s.passwordNeedsSpecialChar ;
-  //   }
-  //   return null;
-  // }
 
   /// Confirm password validation 
   static String? validateConfirmPassword(

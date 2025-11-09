@@ -13,3 +13,4 @@ class LoginButtonPressed extends LoginEvent {
 class CheckLoginStatus extends LoginEvent {}
 
 class LogoutRequested extends LoginEvent {}
+class GoogleSignInRequested extends LoginEvent{}

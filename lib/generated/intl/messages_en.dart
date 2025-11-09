@@ -258,7 +258,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "oppositeHitter": MessageLookupByLibrary.simpleMessage("Opposite Hitter"),
     "other": MessageLookupByLibrary.simpleMessage("Other"),
     "otpHint": MessageLookupByLibrary.simpleMessage(
-      "please enter 4 digits code that send to yor email address",
+      "please enter 6 digits code that send to yor email address",
+    ),
+    "otpMsgError": MessageLookupByLibrary.simpleMessage(
+      "Please enter all 6 digits to verify your email",
+    ),
+    "otpMsgSuccess": MessageLookupByLibrary.simpleMessage(
+      "Your email has been verified successfully",
+    ),
+    "otpSentSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "OTP sent successfully! Please check your email.",
     ),
     "outsideHitter": MessageLookupByLibrary.simpleMessage("Outside Hitter"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
@@ -318,6 +327,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Request was cancelled.",
     ),
     "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+    "resetPasswordFailure": MessageLookupByLibrary.simpleMessage(
+      "Failed to reset password. Please try again",
+    ),
+    "resetPasswordSuccess": MessageLookupByLibrary.simpleMessage(
+      "Your password has been reset successfully",
+    ),
     "resourceNotFound": MessageLookupByLibrary.simpleMessage(
       "Resource not found.",
     ),
