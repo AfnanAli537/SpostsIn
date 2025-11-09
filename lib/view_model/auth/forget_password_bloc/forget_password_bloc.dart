@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:sports_in/data/repo/auth_repo.dart'; 
 part 'forget_password_event.dart';
@@ -21,12 +22,15 @@ class ForgotPasswordBloc extends Bloc<ForgetPasswordBlocEvent, ForgetPasswordBlo
     try {
       final success = await authRepo.sendOtp(event.email);
       if (success) {
-        emit(OtpSentSuccess(event.email));
-      } else {
-        emit(ForgotPasswordFailure("Failed to send OTP."));
-      }
-    } catch (e) {
-      emit(ForgotPasswordFailure(e.toString()));
+        emit(OtpSentSuccess(email:event.email));
+      } 
+    } 
+    on DioException catch (e) {
+    emit(ForgotPasswordFailure(
+      message: "${e.message}  :${e.error }",
+    ));
+  } catch (e) {
+      emit(ForgotPasswordFailure(message: e.toString()));
     }
   }
 
@@ -36,12 +40,15 @@ class ForgotPasswordBloc extends Bloc<ForgetPasswordBlocEvent, ForgetPasswordBlo
     try {
       final verified = await authRepo.verifyOtp(event.email, event.otp);
       if (verified) {
-        emit(OtpVerifiedSuccess(event.email));
-      } else {
-        emit(ForgotPasswordFailure("Invalid OTP."));
-      }
-    } catch (e) {
-      emit(ForgotPasswordFailure(e.toString()));
+        emit(OtpVerifiedSuccess( email:event.email,otp: event.otp));
+      } 
+    } 
+       on DioException catch (e) {
+    emit(ForgotPasswordFailure(
+      message: "${e.message}  :${e.error }",
+    ));
+  }catch (e) {
+      emit(ForgotPasswordFailure(message:e.toString()));
     }
   }
 
@@ -51,16 +58,20 @@ class ForgotPasswordBloc extends Bloc<ForgetPasswordBlocEvent, ForgetPasswordBlo
     try {
       final reset = await authRepo.resetPassword(
         event.email,
+        event.otp,
         event.newPassword,
         event.confirmPassword,
       );
       if (reset) {
         emit(PasswordResetSuccess());
-      } else {
-        emit(ForgotPasswordFailure("Failed to reset password."));
-      }
-    } catch (e) {
-      emit(ForgotPasswordFailure(e.toString()));
+      } 
+    } 
+       on DioException catch (e) {
+    emit(ForgotPasswordFailure(
+      message: "${e.message}  :${e.error }",
+    ));
+  }catch (e) {
+      emit(ForgotPasswordFailure(message:  e.toString()));
     }
   }
 }

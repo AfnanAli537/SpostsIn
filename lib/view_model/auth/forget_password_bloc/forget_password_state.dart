@@ -9,17 +9,18 @@ class ForgotPasswordLoading extends ForgetPasswordBlocState {}
 
 class OtpSentSuccess extends ForgetPasswordBlocState {
   final String email;
-  OtpSentSuccess(this.email);
+  OtpSentSuccess({required this.email});
 }
 
 class OtpVerifiedSuccess extends ForgetPasswordBlocState {
   final String email;
-  OtpVerifiedSuccess(this.email);
+  final String otp;
+  OtpVerifiedSuccess({required this.otp, required this.email});
 }
 
 class PasswordResetSuccess extends ForgetPasswordBlocState {}
 
 class ForgotPasswordFailure extends ForgetPasswordBlocState {
   final String message;
-  ForgotPasswordFailure(this.message);
+  ForgotPasswordFailure({ required this.message});
 }

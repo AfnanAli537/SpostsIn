@@ -75,20 +75,6 @@ import 'package:dio/dio.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 
 class ApiErrorHandler {
-  /// Returns a localization key for the error.
-  //  static String handleErrorKey(Object error) {
-  //   // 🌐 Handle your custom no-internet or general network errors
-  //   if (error is SocketException) {
-  //     return StringKeys.noInternetConnection;
-  //   }
-
-  //   if (error is DioException) {
-  //     return handleDioErrorKey(error);
-  //   }
-
-  //   // For anything else
-  //   return StringKeys.unexpectedError;
-  // }
   
    static String handleDioErrorKey(DioException error) {
     if (error.error is SocketException) {

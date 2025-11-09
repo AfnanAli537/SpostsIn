@@ -14,6 +14,7 @@ class SportsIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var locale=context.watch<LocaleCubit>().defualtLocale;
     return ScreenUtilInit(
       designSize: const Size(393, 841),
       splitScreenMode: true,
@@ -21,37 +22,33 @@ class SportsIn extends StatelessWidget {
       builder: (context, _) {
         return BlocBuilder<ThemeCubit, ThemeMode>(
           builder: (context, themeMode) {
-            return BlocBuilder<LocaleCubit, Locale>(
-              builder: (context, locale) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 1300),
-                   switchInCurve: Curves.easeInCirc,
-                  switchOutCurve: Curves.easeInOutCirc,
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  ),
-                  child: MaterialApp(
-                    key: ValueKey(locale.languageCode),
-                    debugShowCheckedModeBanner: false,
-                    theme: ThemeManager.lightTheme,
-                    darkTheme: ThemeManager.darkTheme,
-                    themeAnimationCurve: Curves.easeInCirc,
-                    themeAnimationDuration: const Duration(milliseconds: 1000),
-                    themeMode: themeMode,
-                    initialRoute: initialRoute,
-                    onGenerateRoute: RoutesManager.router,
-                    localizationsDelegates: const [
-                      S.delegate,
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                    ],
-                    supportedLocales: S.delegate.supportedLocales,
-                    locale: locale,
-                  ),
-                );
-              },
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 1300),
+              switchInCurve: Curves.easeInCirc,
+              switchOutCurve: Curves.easeInOutCirc,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: child,
+              ),
+              child: MaterialApp(
+                key: ValueKey(locale.languageCode),
+                debugShowCheckedModeBanner: false,
+                theme: ThemeManager.lightTheme,
+                darkTheme: ThemeManager.darkTheme,
+                themeAnimationCurve: Curves.easeInCirc,
+                themeAnimationDuration: const Duration(milliseconds: 1000),
+                themeMode: themeMode,
+                initialRoute: initialRoute,
+                onGenerateRoute: RoutesManager.router,
+                localizationsDelegates: const [
+                  S.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: S.delegate.supportedLocales,
+                locale: locale,
+              ),
             );
           },
         );

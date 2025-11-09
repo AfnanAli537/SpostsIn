@@ -11,7 +11,7 @@ abstract class IAuthDataSource {
   Future<bool> registerUser(UserModel user);
   Future<bool> sendOtp({required String email});
   Future<bool> verifyOtp({required String email,required String otp});
-  Future<bool> resetPassword({required String email, required String newPassword,required String confirmPassword});
-
+  Future<bool> resetPassword({required String email, required String otp,required String newPassword,required String confirmPassword});
+  Future<LoginResponse> loginWithGoogle();
   
 }
