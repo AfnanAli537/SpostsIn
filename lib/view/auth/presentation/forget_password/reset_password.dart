@@ -69,8 +69,8 @@ class ResetPasswordScreen extends StatelessWidget {
                     SizedBox(height: 24.h),
                     AuthTextField(
                       validator: (value) =>
-                          Validators.validatePassword(context, value),
-                      prefixSvg: svgAssets.lockOn,
+                          Validators.validatePassword(context:context, value:value),
+                      prefixSvg: SvgAssets.lockOn,
                       label: string.newPassword,
                       controller: newPasswordController,
                       isPassword: true,
@@ -82,9 +82,9 @@ class ResetPasswordScreen extends StatelessWidget {
                       controller: confirmPasswordController,
                       isConfirmPassword: true,
                       validator: (value) => Validators.validateConfirmPassword(
-                        context,
-                        value,
-                        newPasswordController.text,
+                        context: context,
+                        value: value,
+                        password: newPasswordController.text,
                       ),
                     ),
                     SizedBox(height: 32.h),

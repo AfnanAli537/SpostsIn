@@ -1,8 +1,6 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/api_client.dart';
@@ -86,63 +84,83 @@ class AuthApiDataSource implements IAuthDataSource {
     }
   }
 
-  @override
+@override
   Future<bool> registerUser(UserModel user) async {
     final hasConnection = await NetworkChecker.hasInternetConnection();
-    if (!hasConnection) throw Exception('No Internet Connection');
+
+    if (!hasConnection) {
+      throw ApiException(
+        message: 'No Internet Connection',
+        key: StringKeys.noInternetConnection,
+      );
+    }
 
     try {
       final endpoint = getEndpointForUserType(user.userType);
-      final data = await compute(buildRequestBodyIsolate, user);
-      // debugPrint("📤 Registering to $endpoint with data: $data");
+      final data = await buildRequestBodyIsolate(user);
 
       final response = await apiClient.post(endpoint, data: data);
-      // debugPrint("📩 Response: ${response.statusCode} ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = response.data;
-
         if (responseData is Map<String, dynamic> &&
-            responseData.containsKey('isSuccess')) {
-          final isSuccess = responseData['isSuccess'] == true;
-
-          if (isSuccess) return true;
-
-          final errors = responseData['errors'];
-          if (errors is List && errors.isNotEmpty) {
-            throw Exception(errors.join(', '));
-          }
-
-          throw Exception(
-            responseData['message'] ?? 'Unknown registration error.',
-          );
+            responseData['isSuccess'] == true) {
+          return true;
         }
-        return true;
+        throw ApiException(
+          message: responseData?['message'] ?? 'Registration failed',
+          key: StringKeys.validationError,
+        );
       }
-      throw Exception("error");
-      //Non-success HTTP code (e.g. 400, 500)
-      // throw ApiErrorHandler.handleStatusCode(response.statusCode);
-    } on DioException catch (dioError) {
-      debugPrint("Dio exception: ${dioError.response?.data}");
 
+      throw ApiException(
+        message: 'Server responded with code ${response.statusCode}',
+        key: ApiErrorHandler.handleStatusCodeKey(
+          response.statusCode,
+          isRegister: true,
+        ),
+      );
+    } on DioException catch (dioError) {
       final data = dioError.response?.data;
       if (data is Map<String, dynamic>) {
-        if (data.containsKey('errors')) {
-          final errors = data['errors'];
-          if (errors is List && errors.isNotEmpty) {
-            throw Exception(errors.join(', '));
+        String? errorMessage;
+        String errorKey = StringKeys.validationError;
+
+        if (data['errors'] is List) {
+          final errors = data['errors'] as List;
+          if (errors.isNotEmpty) {
+            errorMessage = errors.join(', ');
+
+            final errorString = errorMessage.toLowerCase();
+            if (errorString.contains('email') &&
+                (errorString.contains('exist') ||
+                    errorString.contains('already'))) {
+              errorKey = StringKeys.emailAlreadyExists;
+            }
           }
         }
-        if (data.containsKey('message')) {
-          throw Exception(data['message']);
+
+        if (errorMessage == null && data['message'] != null) {
+          errorMessage = data['message'].toString();
+        }
+
+        if (errorMessage != null) {
+          throw ApiException(message: errorMessage, key: errorKey);
         }
       }
-      throw Exception("error");
-      // throw ApiErrorHandler.handleDioError(dioError);
+
+      final key = ApiErrorHandler.handleDioErrorKey(dioError, isRegister: true);
+      throw ApiException(
+        message: dioError.message ?? 'Request failed',
+        key: key,
+      );
     } catch (e) {
-      debugPrint("Unknown exception: $e");
-      // throw ApiErrorHandler.handleUnknownError(e);
-      throw Exception("error");
+      if (e is ApiException) rethrow;
+
+      throw ApiException(
+        message: e.toString(),
+        key: StringKeys.unexpectedError,
+      );
     }
   }
 

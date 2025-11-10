@@ -96,22 +96,22 @@ class LoginScreen extends StatelessWidget {
                       SizedBox(height: 50.h),
           
                       AuthTextField(
-                        prefixSvg: svgAssets.email,
+                        prefixSvg: SvgAssets.email,
                         label: string.email,
                         controller: emailController,
                         inputType: TextInputType.emailAddress,
                         validator: (value) =>
-                            Validators.validateEmail(context, value),
+                            Validators.validateEmail(context: context, value: value),
                       ),
                       SizedBox(height: 16.h),
           
                       AuthTextField(
-                        prefixSvg: svgAssets.lockOn,
+                        prefixSvg: SvgAssets.lockOn,
                         label: string.password,
                         controller: passwordController,
                         isPassword: true,
                         validator: (value) =>
-                            Validators.validatePassword(context, value),
+                            Validators.validatePassword(context: context, value: value),
                       ),
           
                       Align(
@@ -178,7 +178,7 @@ class LoginScreen extends StatelessWidget {
                           state is GoogleSignInLoading?
                          const CircularProgressIndicator():
                          SocialIconButton(
-                            svgPath: svgAssets.google,
+                            svgPath: SvgAssets.google,
                             onTap: () {
                               context.read<LoginBloc>().add(
                                 GoogleSignInRequested(),

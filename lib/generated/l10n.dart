@@ -1643,6 +1643,116 @@ class S {
       args: [],
     );
   }
+
+  /// `Registration successful!`
+  String get registrationSuccessful {
+    return Intl.message(
+      'Registration successful!',
+      name: 'registrationSuccessful',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration failed. Please try again.`
+  String get registrationFailed {
+    return Intl.message(
+      'Registration failed. Please try again.',
+      name: 'registrationFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Validation error. Please check your inputs.`
+  String get validationError {
+    return Intl.message(
+      'Validation error. Please check your inputs.',
+      name: 'validationError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This email is already registered`
+  String get emailAlreadyExists {
+    return Intl.message(
+      'This email is already registered',
+      name: 'emailAlreadyExists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid password`
+  String get invalidPassword {
+    return Intl.message(
+      'Invalid password',
+      name: 'invalidPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passwords do not match`
+  String get passwordMismatch {
+    return Intl.message(
+      'Passwords do not match',
+      name: 'passwordMismatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid request`
+  String get badRequest {
+    return Intl.message(
+      'Invalid request',
+      name: 'badRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access forbidden`
+  String get forbidden {
+    return Intl.message(
+      'Access forbidden',
+      name: 'forbidden',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Data conflict occurred`
+  String get conflict {
+    return Intl.message(
+      'Data conflict occurred',
+      name: 'conflict',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Service temporarily unavailable`
+  String get serviceUnavailable {
+    return Intl.message(
+      'Service temporarily unavailable',
+      name: 'serviceUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User not found`
+  String get userNotFound {
+    return Intl.message(
+      'User not found',
+      name: 'userNotFound',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

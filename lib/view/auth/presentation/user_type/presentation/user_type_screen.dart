@@ -3,7 +3,7 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/view/user_type/widgets/type_option_tile.dart';
+import 'package:sports_in/view/auth/presentation/user_type/widgets/type_option_tile.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserTypeScreen extends StatefulWidget {
@@ -23,12 +23,12 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
     super.didChangeDependencies();
     string = S.of(context);
     userTypes = [
-      {'key': 'player', 'label': string.player, 'icon': svgAssets.player},
-      {'key': 'coach', 'label': string.coach, 'icon': svgAssets.coach},
-      {'key': 'scout', 'label': string.scout, 'icon': svgAssets.scout},
-      {'key': 'club', 'label': string.club, 'icon': svgAssets.club},
-      {'key': 'institute', 'label': string.institute, 'icon': svgAssets.institute},
-      {'key': 'other', 'label': string.other, 'icon': svgAssets.other},
+      {'key': 'player', 'label': string.player, 'icon': SvgAssets.player},
+      {'key': 'coach', 'label': string.coach, 'icon': SvgAssets.coach},
+      {'key': 'scout', 'label': string.scout, 'icon': SvgAssets.scout},
+      {'key': 'club', 'label': string.club, 'icon': SvgAssets.club},
+      {'key': 'institute', 'label': string.institute, 'icon': SvgAssets.institute},
+      {'key': 'other', 'label': string.other, 'icon': SvgAssets.other},
     ];
   }
 
@@ -60,8 +60,6 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
     final theme = Theme.of(context);
 
     return 
-    // SafeArea(
-    //   child: 
       Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -137,7 +135,6 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
             ],
           ),
         ),
-      // ),
     );
   }
 }

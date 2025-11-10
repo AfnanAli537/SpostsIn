@@ -1,17 +1,24 @@
+import 'package:sports_in/core/utils/helper/image_helper.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-Map<String, dynamic> buildRequestBodyIsolate(UserModel user) {
+Future<Map<String, dynamic>> buildRequestBodyIsolate(UserModel user) async {
   return _buildRequestBody(user);
 }
 
-Map<String, dynamic> _buildRequestBody(UserModel user) {
-  final s = S.current;
-
+Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
+  S? s;
+  try {
+    s = S.current;
+  } catch (_) {
+    s = null;
+  }
+final String imageUrl = await CloudinaryService.uploadImage(user.image);
   final genderEnum = user.gender != null
       ? EnumMapper.fromLabel(EnumMapper.genderLabels(s), user.gender!)
       : null;
+
   final sportEnum = user.sport != null
       ? EnumMapper.fromLabel(EnumMapper.sportLabels(s), user.sport!)
       : null;
@@ -25,6 +32,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
   switch (user.userType) {
     case UserType.player:
       return clean({
+        "image": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -44,6 +52,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
     case UserType.coach:
     case UserType.scout:
       return clean({
+        "image": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -64,6 +73,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
           .toList();
 
       return clean({
+        "image": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -76,6 +86,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
 
     case UserType.institute:
       return clean({
+        "image": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -87,6 +98,7 @@ Map<String, dynamic> _buildRequestBody(UserModel user) {
 
     case UserType.others:
       return clean({
+        "image": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
