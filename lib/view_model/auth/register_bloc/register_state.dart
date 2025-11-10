@@ -2,7 +2,7 @@ part of 'register_bloc.dart';
 
 abstract class RegistrationState extends Equatable {
   const RegistrationState();
-
+  
   @override
   List<Object?> get props => [];
 }
@@ -12,28 +12,27 @@ class RegistrationInitial extends RegistrationState {}
 class RegistrationLoading extends RegistrationState {}
 
 class RegistrationSuccess extends RegistrationState {
-  final String? message;
-  
-  const RegistrationSuccess({this.message});
-  
-  @override
-  List<Object?> get props => [message];
-}
+  final String messageKey;
+  final String? fallbackMessage;
 
-class RegistrationValidationError extends RegistrationState {
-  final String message;
-
-  const RegistrationValidationError(this.message);
+  const RegistrationSuccess({
+    required this.messageKey,
+    this.fallbackMessage,
+  });
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [messageKey, fallbackMessage];
 }
 
 class RegistrationError extends RegistrationState {
-  final String message;
+  final String errorKey;
+  final String? fallbackMessage;
 
-  const RegistrationError(this.message);
+  const RegistrationError({
+    required this.errorKey,
+    this.fallbackMessage,
+  });
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [errorKey, fallbackMessage];
 }

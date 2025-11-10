@@ -45,6 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
+    "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
     "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
     "basketballer": MessageLookupByLibrary.simpleMessage("Basketballer"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
@@ -64,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Confirm password is required",
     ),
+    "conflict": MessageLookupByLibrary.simpleMessage("Data conflict occurred"),
     "connectionTimedOut": MessageLookupByLibrary.simpleMessage(
       "Connection timed out. Please try again.",
     ),
@@ -85,6 +87,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "done": MessageLookupByLibrary.simpleMessage("Done"),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
+    "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "This email is already registered",
+    ),
     "emailVerfiy": MessageLookupByLibrary.simpleMessage("Email Verification"),
     "emptyEmail": MessageLookupByLibrary.simpleMessage("Email is required"),
     "emptyPassword": MessageLookupByLibrary.simpleMessage(
@@ -124,6 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "firstName": MessageLookupByLibrary.simpleMessage("First name"),
     "football": MessageLookupByLibrary.simpleMessage("Football"),
     "footballer": MessageLookupByLibrary.simpleMessage("Footballer"),
+    "forbidden": MessageLookupByLibrary.simpleMessage("Access forbidden"),
     "forgetPassword": MessageLookupByLibrary.simpleMessage("Forget Password"),
     "forgetYourPassword": MessageLookupByLibrary.simpleMessage(
       "Forgot your password?",
@@ -172,6 +178,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid height (100–250 cm)",
     ),
+    "invalidPassword": MessageLookupByLibrary.simpleMessage("Invalid password"),
     "invalidWeight": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid weight (30–200 kg)",
     ),
@@ -273,6 +280,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordMinLength": MessageLookupByLibrary.simpleMessage(
       "Password must be at least 8 characters.",
     ),
+    "passwordMismatch": MessageLookupByLibrary.simpleMessage(
+      "Passwords do not match",
+    ),
     "passwordNeedsLowercase": MessageLookupByLibrary.simpleMessage(
       "Password must contain at least one lowercase letter.",
     ),
@@ -307,6 +317,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Registered successfully!",
     ),
+    "registrationFailed": MessageLookupByLibrary.simpleMessage(
+      "Registration failed. Please try again.",
+    ),
+    "registrationSuccessful": MessageLookupByLibrary.simpleMessage(
+      "Registration successful!",
+    ),
     "requestCancelled": MessageLookupByLibrary.simpleMessage(
       "Request was cancelled.",
     ),
@@ -335,6 +351,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "serverError": MessageLookupByLibrary.simpleMessage(
       "Server error. Please try again later.",
+    ),
+    "serviceUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Service temporarily unavailable",
     ),
     "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
@@ -382,7 +401,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "useInfoTitle": MessageLookupByLibrary.simpleMessage(
       "How We Use Your Information",
     ),
+    "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
+    "validationError": MessageLookupByLibrary.simpleMessage(
+      "Validation error. Please check your inputs.",
+    ),
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "volleyball": MessageLookupByLibrary.simpleMessage("Volleyball"),
     "volleyballer": MessageLookupByLibrary.simpleMessage("Volleyballer"),

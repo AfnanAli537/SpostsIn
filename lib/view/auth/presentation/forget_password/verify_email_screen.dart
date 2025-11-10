@@ -66,7 +66,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                     SizedBox(height: 24.h),
                     AuthTextField(
                       validator: (value) =>
-                          Validators.validateEmail(context, value),
+                          Validators.validateEmail(context:context, value:value),,
                       label: string.email,
                       controller: emailController,
                       prefixSvg: svgAssets.email,

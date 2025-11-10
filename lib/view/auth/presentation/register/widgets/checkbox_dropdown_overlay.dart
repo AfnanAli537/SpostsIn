@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
-
 class CheckboxDropdownOverlay extends StatefulWidget {
   final String labelText;
   final List<String> value;
   final List<String> options;
   final ValueChanged<List<String>> onChanged;
   final String? Function(List<String>?)? validator;
-  final bool showError; // ✅ Controls red border
 
   const CheckboxDropdownOverlay({
     super.key,
@@ -19,7 +17,6 @@ class CheckboxDropdownOverlay extends StatefulWidget {
     required this.options,
     required this.onChanged,
     this.validator,
-    this.showError = false,
   });
 
   @override
@@ -28,6 +25,22 @@ class CheckboxDropdownOverlay extends StatefulWidget {
 }
 
 class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
+  final GlobalKey<FormFieldState<List<String>>> _fieldKey = GlobalKey<FormFieldState<List<String>>>();
+
+  @override
+  void didUpdateWidget(CheckboxDropdownOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update FormField value when widget value changes
+    if (oldWidget.value != widget.value) {
+      // Defer the update until after the build phase
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _fieldKey.currentState?.didChange(widget.value);
+        }
+      });
+    }
+  }
+
   void _showOverlay(BuildContext context) {
     final overlay = Overlay.of(context);
     OverlayEntry? entry;
@@ -129,7 +142,7 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
                           ),
                         ),
                         SizedBox(height: 4.h),
-                        SizedBox(
+                                                  SizedBox(
                           width: double.infinity,
                           child: CustomElevatedButton(
                             text: S.of(context).done,
@@ -158,65 +171,83 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    // ✅ Validate if showError is true
-    final errorText =
-        widget.showError && widget.validator != null
-            ? widget.validator!(widget.value)
-            : null;
-    final hasError = errorText != null;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () => _showOverlay(context),
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: widget.labelText,
-              labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                color: hasError ? ColorManager.error : ColorManager.darkAccent1,
-              ),
-              
-              // ✅ Normal border
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: hasError ? ColorManager.error : ColorManager.darkAccent1,
-                  width: hasError ? 1.5.w : 1.2.w,
+    return FormField<List<String>>(
+      key: _fieldKey,
+      initialValue: widget.value,
+      validator: widget.validator,
+      builder: (FormFieldState<List<String>> field) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () => _showOverlay(context),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: widget.labelText,
+                  labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                    color: field.hasError
+                        ? ColorManager.error
+                        : ColorManager.darkAccent1,
+                  ),
+                  errorMaxLines: 3,
+                  
+                  // Enabled border
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: ColorManager.darkAccent1,
+                      width: 1.2.w,
+                    ),
+                  ),
+                  
+                  // Focused border
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: ColorManager.darkAccent,
+                      width: 1.8.w,
+                    ),
+                  ),
+                  
+                  // Error border
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: ColorManager.error,
+                      width: 1.5.w,
+                    ),
+                  ),
+                  
+                  // Focused error border
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: ColorManager.error,
+                      width: 1.8.w,
+                    ),
+                  ),
+                  
+                  errorText: field.errorText,
                 ),
-              ),
-              
-              // ✅ Focused border
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: ColorManager.darkAccent,
-                  width: 1.8.w,
-                ),
-              ),
-              
-            ),
-            child: widget.value.isEmpty
-                ? Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          S.of(context).select,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: ColorManager.grey,
+                child: widget.value.isEmpty
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              S.of(context).select,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: ColorManager.grey,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color:Theme.of(context).colorScheme.onError,
-                      ),
-                    ],
-                  )
-                : Stack(
-                    children: [
-                      Wrap(
+                          Icon(
+                            Icons.arrow_drop_down_rounded,
+                            color: Theme.of(context).colorScheme.onError,
+                          ),
+                        ],
+                      )
+                    : Wrap(
                         spacing: 8.w,
                         runSpacing: 4.h,
                         children: widget.value
@@ -252,23 +283,11 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
                             )
                             .toList(),
                       ),
-                    ],
-                  ),
-          ),
-        ),
-        
-        // ✅ Error text below dropdown
-        if (hasError)
-          Padding(
-            padding: EdgeInsets.only(top: 4.h, left: 4.w),
-            child: Text(
-              errorText,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: ColorManager.error,
               ),
             ),
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

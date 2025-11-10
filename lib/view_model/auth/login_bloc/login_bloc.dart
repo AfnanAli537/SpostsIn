@@ -2,7 +2,8 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:meta/meta.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/data/models/login_response_model.dart';
 import 'package:sports_in/data/repo/auth_repo.dart';

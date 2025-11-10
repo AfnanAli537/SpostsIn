@@ -1,12 +1,10 @@
 import 'package:sports_in/core/enums/register_enums.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// Centralized enum ↔ label ↔ id mapping.
 class EnumMapper {
-  // ---- Gender ----
-  static Map<Gender, String> genderLabels(S s) => {
-        Gender.male: s.male,
-        Gender.female: s.female,
+  static Map<Gender, String> genderLabels([S? s]) => {
+        Gender.male: s?.male ?? 'Male',
+        Gender.female: s?.female ?? 'Female',
       };
 
   static int getGenderId(Gender type) {
@@ -18,14 +16,13 @@ class EnumMapper {
     }
   }
 
-  // ---- Sports ----
-  static Map<SportType, String> sportLabels(S s) => {
-        SportType.football: s.football,
-        SportType.basketball: s.basketball,
-        SportType.volleyball: s.volleyball,
-        SportType.handball: s.handball,
-        SportType.teakwando: s.teakwando,
-        SportType.gymnastics: s.gymnastics,
+  static Map<SportType, String> sportLabels([S? s]) => {
+        SportType.football: s?.football ?? 'Football',
+        SportType.basketball: s?.basketball ?? 'Basketball',
+        SportType.volleyball: s?.volleyball ?? 'Volleyball',
+        SportType.handball: s?.handball ?? 'Handball',
+        SportType.teakwando: s?.teakwando ?? 'Teakwando',
+        SportType.gymnastics: s?.gymnastics ?? 'Gymnastics',
       };
 
   static int getSportId(SportType type) {
@@ -44,12 +41,12 @@ class EnumMapper {
         return 6;
     }
   }
-  // ---- Generic label → enum lookup ----
+
   static T? fromLabel<T>(Map<T, String> map, String label) {
     try {
-      return map.entries
-          .firstWhere((entry) => entry.value == label)
-          .key;
+      return map.entries.firstWhere(
+        (entry) => entry.value.toLowerCase() == label.toLowerCase(),
+      ).key;
     } catch (_) {
       return null;
     }
