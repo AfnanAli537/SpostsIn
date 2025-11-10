@@ -178,7 +178,7 @@ class LoginScreen extends StatelessWidget {
                           state is GoogleSignInLoading?
                          const CircularProgressIndicator():
                          SocialIconButton(
-                            svgPath: svgAssets.google,
+                            svgPath: SvgAssets.google,
                             onTap: () {
                               context.read<LoginBloc>().add(
                                 GoogleSignInRequested(),

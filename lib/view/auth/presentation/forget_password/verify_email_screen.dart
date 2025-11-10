@@ -66,10 +66,10 @@ class ForgetPasswordScreen extends StatelessWidget {
                     SizedBox(height: 24.h),
                     AuthTextField(
                       validator: (value) =>
-                          Validators.validateEmail(context:context, value:value),,
+                          Validators.validateEmail(context:context, value:value),
                       label: string.email,
                       controller: emailController,
-                      prefixSvg: svgAssets.email,
+                      prefixSvg: SvgAssets.email,
                       inputType: TextInputType.emailAddress,
                     ),
                     SizedBox(height: 24.h),
