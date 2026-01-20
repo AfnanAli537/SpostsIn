@@ -3,7 +3,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:meta/meta.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/data/models/login_response_model.dart';
 import 'package:sports_in/data/repo/auth_repo.dart';
@@ -11,6 +11,7 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  final sharedPref = getIt<SharedPref>();
   final AuthRepo repository;
 
   LoginBloc(this.repository) : super(LoginInitial()) {
@@ -33,7 +34,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
         final token =response.token;
          if (token != null && token.isNotEmpty) {
-        await SharedPref.saveToken(token); 
+        await sharedPref.saveToken(token); 
          print('Token saved: $token');
       }
       emit(LoginSuccess(response.token));
@@ -47,8 +48,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     CheckLoginStatus event,
     Emitter<LoginState> emit,
   ) async {
-    final token = await SharedPref.getToken();
-    final expiryString = await SharedPref.getExpiryDate();
+    final token = await sharedPref.getToken();
+    final expiryString = await sharedPref.getExpiryDate();
 
     if (token == null || expiryString == null) {
       emit(LoginInitial());
@@ -57,7 +58,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     final expiryDate = DateTime.tryParse(expiryString);
     if (expiryDate == null || DateTime.now().isAfter(expiryDate)) {
-      await SharedPref.clearToken();
+      await sharedPref.clearToken();
       emit(LoginInitial());
     } else {
       emit(LoginSuccess(token));
@@ -69,7 +70,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LogoutRequested event,
     Emitter<LoginState> emit,
   ) async {
-    await SharedPref.clearToken();
+    await sharedPref.clearToken();
     emit(LoginInitial());
   }
 

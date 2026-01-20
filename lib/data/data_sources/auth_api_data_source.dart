@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
@@ -11,7 +12,7 @@ import 'package:sports_in/core/utils/helper/register_build_request_body.dart';
 import 'package:sports_in/data/models/login_response_model.dart';
 import 'package:sports_in/data/models/user_model.dart';
 import '../interfaces/i_auth_data_source.dart';
-
+@LazySingleton(as: IAuthDataSource)
 class AuthApiDataSource implements IAuthDataSource {
   final ApiClient apiClient;
   AuthApiDataSource(this.apiClient);

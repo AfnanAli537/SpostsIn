@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sports_in/app/di/dependency_injection.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/data/repo/auth_repo.dart';
 import 'package:sports_in/view/auth/presentation/forget_password/verify_email_screen.dart';
@@ -28,7 +28,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => LoginBloc(sl<AuthRepo>()),
+              create: (_) => LoginBloc(getIt<AuthRepo>()),
               child: LoginScreen(),
             ),
           );
@@ -52,7 +52,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => ForgotPasswordBloc(sl<AuthRepo>()),
+              create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
               child: ForgetPasswordScreen(),
             ),
           );
@@ -62,7 +62,7 @@ abstract class RoutesManager {
           final email = settings.arguments as String?;
           return CupertinoPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => ForgotPasswordBloc(sl<AuthRepo>()),
+              create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
 
               child: EmailVerificationScreen(email: email!),
             ),
@@ -75,7 +75,7 @@ abstract class RoutesManager {
           final otp = args['otp'] as String;
           return CupertinoPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => ForgotPasswordBloc(sl<AuthRepo>()),
+              create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
               child: ResetPasswordScreen(email: email, otp: otp),
             ),
           );
@@ -87,7 +87,7 @@ abstract class RoutesManager {
       case AppRoutes.playerRegister:
         return CupertinoPageRoute(
           builder: (context) => BlocProvider(
-            create: (_) => RegistrationBloc(sl<AuthRepo>()),
+            create: (_) => RegistrationBloc(getIt<AuthRepo>()),
             child: PlayerRegisterScreen(),
           ),
         );
@@ -95,7 +95,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(sl<AuthRepo>()),
+              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
               child: CoachRegisterScreen(),
             ),
           );
@@ -104,7 +104,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(sl<AuthRepo>()),
+              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
               child: InstituteRegisterScreen(),
             ),
           );
@@ -113,7 +113,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(sl<AuthRepo>()),
+              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
               child: OthersRegisterScreen(),
             ),
           );
@@ -122,7 +122,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(sl<AuthRepo>()),
+              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
               child: ScoutRegisterScreen(),
             ),
           );
@@ -131,7 +131,7 @@ abstract class RoutesManager {
         {
           return CupertinoPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(sl<AuthRepo>()),
+              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
               child: ClubRegisterScreen(),
             ),
           );

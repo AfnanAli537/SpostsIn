@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
-
+@injectable
 class ThemeCubit extends Cubit<ThemeMode> {
+final SharedPref sharedPref ;
 
-
-  ThemeCubit() : super(ThemeMode.system) {
+  ThemeCubit(this.sharedPref) : super(ThemeMode.system) {
     _loadTheme();
   }
 
   Future<void> _loadTheme() async {
-    final mode = SharedPref.getString(StringKeys.themeKey);
+    final mode = sharedPref.getString(StringKeys.themeKey);
 
     if (mode == 'light') {
       emit(ThemeMode.light);
@@ -23,12 +24,12 @@ class ThemeCubit extends Cubit<ThemeMode> {
   }
 
   Future<void> setTheme(ThemeMode mode) async {
-    await SharedPref.setString(StringKeys.themeKey, mode.name);
+    await sharedPref.setString(StringKeys.themeKey, mode.name);
     emit(mode);
   }
 
   Future<void> resetToSystem() async {
-    await SharedPref.setString(StringKeys.themeKey, 'system');
+    await sharedPref.setString(StringKeys.themeKey, 'system');
     emit(ThemeMode.system);
   }
 }

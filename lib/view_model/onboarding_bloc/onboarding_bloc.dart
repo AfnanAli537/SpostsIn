@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 
 
@@ -7,6 +8,7 @@ part 'onboarding_event.dart';
 part 'onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
+ final sharedPref = getIt<SharedPref>();
   OnboardingBloc() : super(OnboardingLoading()) {
     on<LoadOnboardingEvent>(_onLoad );
     on<NextPageEvent>(_onNext);
@@ -42,7 +44,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   void _onSkip(SkipEvent event, Emitter<OnboardingState> emit)async {
     if (state is OnboardingLoaded) {
-      await SharedPref.setOnboardingCompleted(true);
+      await sharedPref.setOnboardingCompleted(true);
       emit(OnboardingCompleted());
       
     }
@@ -55,7 +57,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     }
  }
   void _onComplete(CompleteOnboardingEvent event, Emitter<OnboardingState> emit)async {
-    await SharedPref.setOnboardingCompleted(true);
+    await sharedPref.setOnboardingCompleted(true);
     emit(OnboardingCompleted());
   }
 

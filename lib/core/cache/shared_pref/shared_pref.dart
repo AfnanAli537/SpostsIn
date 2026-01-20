@@ -1,64 +1,64 @@
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 
+@lazySingleton
 class SharedPref {
-  static  late SharedPreferences _prefs;
+  final SharedPreferences _prefs;
 
+  SharedPref(this._prefs);
 
-  ///onboarding
- static Future<void> init() async {
-   _prefs = await SharedPreferences.getInstance();
-}
-  static Future<void> setOnboardingCompleted(bool value) async {
+  /// onboarding
+  Future<void> setOnboardingCompleted(bool value) async {
     await _prefs.setBool(StringKeys.onboardingKey, value);
   }
 
- static bool getOnboardingCompleted() {
+  bool getOnboardingCompleted() {
     return _prefs.getBool(StringKeys.onboardingKey) ?? false;
   }
- 
- ///privacy policy
- static Future<void> setPrivacySeen(bool value) async {
+
+  /// privacy policy
+  Future<void> setPrivacySeen(bool value) async {
     await _prefs.setBool(StringKeys.privacyKey, value);
   }
 
-  static bool getPrivacySeen() {
+  bool getPrivacySeen() {
     return _prefs.getBool(StringKeys.privacyKey) ?? false;
   }
 
-
-/// general for theme & localization
-
-  static Future setString(String key, String value) async {
+  /// general
+  Future<void> setString(String key, String value) async {
     await _prefs.setString(key, value);
   }
 
- static  String? getString(String key) {
+  String? getString(String key) {
     return _prefs.getString(key);
   }
 
-
-/// general clear 
- static  Future clear() async {
-    await _prefs.clear();
-  }
-
-///token
-  static Future<void> saveToken(String token) async {
+  /// token
+  Future<void> saveToken(String token) async {
     await _prefs.setString(StringKeys.tokenKey, token);
   }
-  static Future<String?> getToken() async {
+
+  String? getToken() {
     return _prefs.getString(StringKeys.tokenKey);
   }
-  static Future<void> clearToken() async {
+
+  Future<void> clearToken() async {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);
   }
-  static Future<void> saveExpiryDate(String expiryDate) async {
+
+  Future<void> saveExpiryDate(String expiryDate) async {
     await _prefs.setString(StringKeys.expireData, expiryDate);
   }
-  static Future<String?> getExpiryDate() async {
+
+  String? getExpiryDate() {
     return _prefs.getString(StringKeys.expireData);
   }
-}
 
+  /// clear all
+  Future<void> clear() async {
+    await _prefs.clear();
+  }
+}
