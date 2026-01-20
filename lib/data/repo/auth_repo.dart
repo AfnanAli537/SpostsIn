@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/data/interfaces/i_auth_data_source.dart';
-import 'package:sports_in/data/models/login_response_model.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/features/login/model/login_response_model.dart';
+import 'package:sports_in/features/register/models/user_model.dart';
 @lazySingleton
 class AuthRepo {
   final IAuthDataSource dataSource;

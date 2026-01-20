@@ -18,9 +18,9 @@ import 'package:sports_in/core/network/api_client.dart' as _i694;
 import 'package:sports_in/data/data_sources/auth_api_data_source.dart' as _i172;
 import 'package:sports_in/data/interfaces/i_auth_data_source.dart' as _i470;
 import 'package:sports_in/data/repo/auth_repo.dart' as _i472;
-import 'package:sports_in/view_model/language_cubit/language_cubit.dart'
+import 'package:sports_in/core/config/language_cubit/language_cubit.dart'
     as _i632;
-import 'package:sports_in/view_model/theme_cubit/theme_cubit.dart' as _i1015;
+import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart' as _i1015;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt

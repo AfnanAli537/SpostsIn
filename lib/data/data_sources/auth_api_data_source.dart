@@ -9,8 +9,8 @@ import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/core/network/network_checker.dart';
 import 'package:sports_in/core/utils/helper/auth_api_helper.dart';
 import 'package:sports_in/core/utils/helper/register_build_request_body.dart';
-import 'package:sports_in/data/models/login_response_model.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/features/login/model/login_response_model.dart';
+import 'package:sports_in/features/register/models/user_model.dart';
 import '../interfaces/i_auth_data_source.dart';
 @LazySingleton(as: IAuthDataSource)
 class AuthApiDataSource implements IAuthDataSource {

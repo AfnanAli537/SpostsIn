@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/sports_in.dart';
-import 'package:sports_in/view_model/language_cubit/language_cubit.dart';
-import 'package:sports_in/view_model/theme_cubit/theme_cubit.dart';
+import 'package:sports_in/core/config/language_cubit/language_cubit.dart';
+import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,5 +1,5 @@
 import 'package:sports_in/core/utils/helper/image_helper.dart';
-import 'package:sports_in/data/models/user_model.dart';
+import 'package:sports_in/features/register/models/user_model.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/generated/l10n.dart';
 

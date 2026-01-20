@@ -8,8 +8,8 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/theme/theme_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:sports_in/view_model/language_cubit/language_cubit.dart';
-import 'package:sports_in/view_model/theme_cubit/theme_cubit.dart';
+import 'package:sports_in/core/config/language_cubit/language_cubit.dart';
+import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';
 
 class SportsIn extends StatelessWidget {
   const SportsIn({super.key});
