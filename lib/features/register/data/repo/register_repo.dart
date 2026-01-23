@@ -1,0 +1,11 @@
+import 'package:injectable/injectable.dart';
+import 'package:sports_in/features/register/data/interface/i_register_data_source.dart';
+import 'package:sports_in/features/register/models/user_model.dart';
+@lazySingleton
+class RegisterRepo {
+  final IRegisterDataSource dataSource;
+  RegisterRepo(this.dataSource);
+
+  Future<bool> register(UserModel user) =>
+      dataSource.registerUser(user);
+}

@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/features/login/data/repo/login_repo.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
-import 'package:sports_in/data/repo/auth_repo.dart';
 part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final sharedPref = getIt<SharedPref>();
-  final AuthRepo repository;
+  final LoginRepo repository;
 
   LoginBloc(this.repository) : super(LoginInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);

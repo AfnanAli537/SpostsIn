@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
+import 'package:sports_in/features/register/data/repo/register_repo.dart';
 import 'package:sports_in/features/register/models/user_model.dart';
-import 'package:sports_in/data/repo/auth_repo.dart';
 
 part 'register_event.dart';
 part 'register_state.dart';
 
 class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
-  final AuthRepo repository;
+  final RegisterRepo repository;
 
   RegistrationBloc(this.repository) : super(RegistrationInitial()) {
     on<SubmitRegistrationEvent>(_onSubmitRegistration);
@@ -24,7 +24,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
 
     try {
       emit(RegistrationLoading());
-      final success = await repository.registerUser(user);
+      final success = await repository.register(user);
 
       if (success) {
         emit(const RegistrationSuccess(messageKey: 'registrationSuccessful'));

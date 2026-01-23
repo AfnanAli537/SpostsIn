@@ -7,7 +7,7 @@ import 'package:sports_in/core/utils/helper/localization_helper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
-import 'package:sports_in/data/data_sources/register_lists.dart';
+import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
 import 'package:sports_in/features/register/models/institute_response_model.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';

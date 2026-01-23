@@ -3,12 +3,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
-import 'package:sports_in/data/repo/auth_repo.dart'; 
+import 'package:sports_in/features/forget_password/data/repo/forget_password_repo.dart'; 
 part 'forget_password_event.dart';
 part 'forget_password_state.dart';
 
 class ForgotPasswordBloc extends Bloc<ForgetPasswordBlocEvent, ForgetPasswordBlocState> {
-  final AuthRepo authRepo;
+  final ForgetPasswordRepo authRepo;
 
   ForgotPasswordBloc(this.authRepo) : super(ForgotPasswordInitial()) {
     on<SendOtpEvent>(_onSendOtp);

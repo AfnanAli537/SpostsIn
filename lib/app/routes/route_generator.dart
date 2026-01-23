@@ -1,142 +1,283 @@
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:sports_in/app/di/injection.dart';
+// import 'package:sports_in/app/routes/app_routes.dart';
+// import 'package:sports_in/data/repo/auth_repo.dart';
+// import 'package:sports_in/features/forget_password/view/presentation/verify_email_screen.dart';
+// import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
+// import 'package:sports_in/features/login/view/presentation/login_screen.dart';
+// import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
+// import 'package:sports_in/features/onboarding/view/presentation/onboarding_screen.dart';
+// import 'package:sports_in/features/onboarding/view/presentation/privacy_policy_screen.dart';
+// import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+// import 'package:sports_in/features/login/view_model/login_bloc/login_bloc.dart';
+// import 'package:sports_in/features/onboarding/view_model/onboarding_bloc/onboarding_bloc.dart';
+// import 'package:sports_in/features/register/view/presentation/register/presentation/player_register.dart';
+// import 'package:sports_in/features/register/view/presentation/register/presentation/club_register.dart';
+// import 'package:sports_in/features/register/view/presentation/register/presentation/coach_register.dart';
+// import 'package:sports_in/features/register/view/presentation/register/presentation/institute_register.dart';
+// import 'package:sports_in/features/register/view/presentation/register/presentation/other_register.dart';
+// import 'package:sports_in/features/register/view/presentation/register/presentation/scout_register.dart';
+// import 'package:sports_in/features/register/view/presentation/user_type/presentation/user_type_screen.dart';
+// import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
+
+// abstract class RoutesManager {
+//   static Route? router(RouteSettings settings) {
+//     switch (settings.name) {
+//       case AppRoutes.login:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => BlocProvider(
+//               create: (_) => LoginBloc(getIt<AuthRepo>()),
+//               child: LoginScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.privacyPolicy:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => PrivacyPolicyScreen(),
+//           );
+//         }
+//       case AppRoutes.onboarding:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (_) => BlocProvider(
+//               create: (_) => OnboardingBloc(),
+//               child: OnboardingScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.forgetPassword:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (_) => BlocProvider(
+//               create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
+//               child: ForgetPasswordScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.otp:
+//         {
+//           final email = settings.arguments as String?;
+//           return CupertinoPageRoute(
+//             builder: (_) => BlocProvider(
+//               create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
+
+//               child: EmailVerificationScreen(email: email!),
+//             ),
+//           );
+//         }
+//       case AppRoutes.resetPassword:
+//         {
+//           final args = settings.arguments as Map<String, dynamic>;
+//           final email = args['email'] as String;
+//           final otp = args['otp'] as String;
+//           return CupertinoPageRoute(
+//             builder: (_) => BlocProvider(
+//               create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
+//               child: ResetPasswordScreen(email: email, otp: otp),
+//             ),
+//           );
+//         }
+//       case AppRoutes.userType:
+//         {
+//           return CupertinoPageRoute(builder: (context) => UserTypeScreen());
+//         }
+//       case AppRoutes.playerRegister:
+//         return CupertinoPageRoute(
+//           builder: (context) => BlocProvider(
+//             create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+//             child: PlayerRegisterScreen(),
+//           ),
+//         );
+//       case AppRoutes.coachRegister:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => BlocProvider(
+//               create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+//               child: CoachRegisterScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.instituteRegister:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => BlocProvider(
+//               create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+//               child: InstituteRegisterScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.otherRegister:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => BlocProvider(
+//               create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+//               child: OthersRegisterScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.scoutRegister:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => BlocProvider(
+//               create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+//               child: ScoutRegisterScreen(),
+//             ),
+//           );
+//         }
+//       case AppRoutes.clubRegister:
+//         {
+//           return CupertinoPageRoute(
+//             builder: (context) => BlocProvider(
+//               create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+//               child: ClubRegisterScreen(),
+//             ),
+//           );
+//         }
+//     }
+//     return null;
+//   }
+// }
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/data/repo/auth_repo.dart';
-import 'package:sports_in/features/forget_password/view/presentation/verify_email_screen.dart';
-import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
+import 'package:sports_in/features/login/data/repo/login_repo.dart';
 import 'package:sports_in/features/login/view/presentation/login_screen.dart';
-import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
-import 'package:sports_in/features/onboarding/view/presentation/onboarding_screen.dart';
-import 'package:sports_in/features/onboarding/view/presentation/privacy_policy_screen.dart';
-import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
 import 'package:sports_in/features/login/view_model/login_bloc/login_bloc.dart';
-import 'package:sports_in/features/onboarding/view_model/onboarding_bloc/onboarding_bloc.dart';
+import 'package:sports_in/features/forget_password/data/repo/forget_password_repo.dart';
+import 'package:sports_in/features/forget_password/view/presentation/verify_email_screen.dart';
+import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
+import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
+import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+import 'package:sports_in/features/register/data/repo/register_repo.dart';
+import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
+import 'package:sports_in/features/register/view/presentation/user_type/presentation/user_type_screen.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/player_register.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/club_register.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/coach_register.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/institute_register.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/other_register.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/scout_register.dart';
-import 'package:sports_in/features/register/view/presentation/user_type/presentation/user_type_screen.dart';
-import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
+import 'package:sports_in/features/onboarding/view/presentation/onboarding_screen.dart';
+import 'package:sports_in/features/onboarding/view/presentation/privacy_policy_screen.dart';
+import 'package:sports_in/features/onboarding/view_model/onboarding_bloc/onboarding_bloc.dart';
 
 abstract class RoutesManager {
-  static Route? router(RouteSettings settings) {
+  static Route<dynamic>? router(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.login:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => LoginBloc(getIt<AuthRepo>()),
-              child: LoginScreen(),
-            ),
-          );
-        }
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => LoginBloc(getIt<LoginRepo>()),
+            child: LoginScreen(),
+          ),
+        );
       case AppRoutes.privacyPolicy:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => PrivacyPolicyScreen(),
-          );
-        }
+        return CupertinoPageRoute(
+          builder: (_) => PrivacyPolicyScreen(),
+        );
       case AppRoutes.onboarding:
-        {
-          return CupertinoPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => OnboardingBloc(),
-              child: OnboardingScreen(),
-            ),
-          );
-        }
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => OnboardingBloc(),
+            child: OnboardingScreen(),
+          ),
+        );
       case AppRoutes.forgetPassword:
-        {
-          return CupertinoPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
-              child: ForgetPasswordScreen(),
-            ),
-          );
-        }
-      case AppRoutes.otp:
-        {
-          final email = settings.arguments as String?;
-          return CupertinoPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
+            child: ForgetPasswordScreen(),
+          ),
+        );
 
-              child: EmailVerificationScreen(email: email!),
-            ),
-          );
-        }
+      case AppRoutes.otp:
+        final email = settings.arguments as String;
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
+            child: EmailVerificationScreen(email: email),
+          ),
+        );
+
       case AppRoutes.resetPassword:
-        {
-          final args = settings.arguments as Map<String, dynamic>;
-          final email = args['email'] as String;
-          final otp = args['otp'] as String;
-          return CupertinoPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => ForgotPasswordBloc(getIt<AuthRepo>()),
-              child: ResetPasswordScreen(email: email, otp: otp),
+        final args = settings.arguments as Map<String, dynamic>;
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
+            child: ResetPasswordScreen(
+              email: args['email'],
+              otp: args['otp'],
             ),
-          );
-        }
+          ),
+        );
       case AppRoutes.userType:
-        {
-          return CupertinoPageRoute(builder: (context) => UserTypeScreen());
-        }
+        return CupertinoPageRoute(
+          builder: (_) => UserTypeScreen(),
+        );
+
       case AppRoutes.playerRegister:
         return CupertinoPageRoute(
-          builder: (context) => BlocProvider(
-            create: (_) => RegistrationBloc(getIt<AuthRepo>()),
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                RegistrationBloc(getIt<RegisterRepo>()),
             child: PlayerRegisterScreen(),
           ),
         );
+
       case AppRoutes.coachRegister:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
-              child: CoachRegisterScreen(),
-            ),
-          );
-        }
-      case AppRoutes.instituteRegister:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
-              child: InstituteRegisterScreen(),
-            ),
-          );
-        }
-      case AppRoutes.otherRegister:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
-              child: OthersRegisterScreen(),
-            ),
-          );
-        }
-      case AppRoutes.scoutRegister:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
-              child: ScoutRegisterScreen(),
-            ),
-          );
-        }
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                RegistrationBloc(getIt<RegisterRepo>()),
+            child: CoachRegisterScreen(),
+          ),
+        );
+
       case AppRoutes.clubRegister:
-        {
-          return CupertinoPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => RegistrationBloc(getIt<AuthRepo>()),
-              child: ClubRegisterScreen(),
-            ),
-          );
-        }
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                RegistrationBloc(getIt<RegisterRepo>()),
+            child: ClubRegisterScreen(),
+          ),
+        );
+
+      case AppRoutes.instituteRegister:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                RegistrationBloc(getIt<RegisterRepo>()),
+            child: InstituteRegisterScreen(),
+          ),
+        );
+
+      case AppRoutes.otherRegister:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                RegistrationBloc(getIt<RegisterRepo>()),
+            child: OthersRegisterScreen(),
+          ),
+        );
+
+      case AppRoutes.scoutRegister:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                RegistrationBloc(getIt<RegisterRepo>()),
+            child: ScoutRegisterScreen(),
+          ),
+        );
     }
+
     return null;
   }
 }
+
