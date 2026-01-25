@@ -80,39 +80,30 @@ class CoachRegisterScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
-        listener: (context, state) {
-          if (state is RegistrationLoading) {
-            // Show loading indicator
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) =>
-                  const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (state is RegistrationSuccess) {
-            Navigator.of(context).pop();
+                listener: (context, state) {
+          // Navigate to OTP screen after OTP is sent
+          if (state is RegistrationOtpSent) {
             Fluttertoast.showToast(
-              msg: string.registrationSuccessful,
+              msg: string.otpSentSuccessfully,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.login,
-                (route) => false,
-              );
-            }
+
+            // Navigate to OTP verification screen
+            Navigator.pushNamed(
+              context,
+              AppRoutes.registrationOtp,
+              arguments: {
+                'email': state.email,
+                'userData': state.userData,
+              },
+            );
           }
 
           if (state is RegistrationError) {
-            Navigator.of(context).pop();
-
             final msg = string.getErrorMessage(
-              state.errorKey, 
+              state.errorKey,
               fallback: state.fallbackMessage,
             );
 
@@ -123,7 +114,7 @@ class CoachRegisterScreen extends StatelessWidget {
               gravity: ToastGravity.TOP,
             );
           }
-        },              
+        },             
         builder: (context, state) {
 
           return Stack(
@@ -302,9 +293,13 @@ class CoachRegisterScreen extends StatelessWidget {
                               SizedBox(height: 20.h),
 
                               CustomElevatedButton(
-                                text: string.create,
-                                onPressed: () => _onRegister(context, string),
-                              ),
+                            text: state is RegistrationLoading
+                                ? string.loading
+                                : string.create,
+                            isLoading: state is RegistrationLoading,
+                            enabled: true,
+                            onPressed: () => _onRegister(context, string),
+                          ),
                             ],
                           ),
                         );

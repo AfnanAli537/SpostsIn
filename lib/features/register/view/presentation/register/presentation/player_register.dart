@@ -103,34 +103,24 @@ class PlayerRegisterScreen extends StatelessWidget {
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
-          if (state is RegistrationLoading) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) =>
-                  const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (state is RegistrationSuccess) {
-            Navigator.of(context).pop();
+          // Navigate to OTP screen after OTP is sent
+          if (state is RegistrationOtpSent) {
             Fluttertoast.showToast(
-              msg: string.registrationSuccessful,
+              msg: string.otpSentSuccessfully,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.login,
-                (route) => false,
-              );
-            }
+
+            // Navigate to OTP verification screen
+            Navigator.pushNamed(
+              context,
+              AppRoutes.registrationOtp,
+              arguments: {'email': state.email, 'userData': state.userData},
+            );
           }
 
           if (state is RegistrationError) {
-            Navigator.of(context).pop();
             final msg = string.getErrorMessage(
               state.errorKey,
               fallback: state.fallbackMessage,
@@ -145,281 +135,280 @@ class PlayerRegisterScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return Stack(
-            children: [
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SingleChildScrollView(
-                    child: ValueListenableBuilder<AutovalidateMode>(
-                      valueListenable: autoValidateNotifier,
-                      builder: (context, autoValidateMode, _) {
-                        return Form(
-                          key: _formKey,
-                          autovalidateMode: autoValidateMode,
-                          child: Column(
-                            children: [
-                              Text(
-                                string.createYourAccount,
-                                style: theme.textTheme.titleLarge,
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: ValueListenableBuilder<AutovalidateMode>(
+                  valueListenable: autoValidateNotifier,
+                  builder: (context, autoValidateMode, _) {
+                    return Form(
+                      key: _formKey,
+                      autovalidateMode: autoValidateMode,
+                      child: Column(
+                        children: [
+                          Text(
+                            string.createYourAccount,
+                            style: theme.textTheme.titleLarge,
+                          ),
+                          SizedBox(height: 24.h),
+          
+                          AppImagePicker(
+                            onImageSelected: (img) =>
+                                imageNotifier.value = img,
+                          ),
+                          SizedBox(height: 24.h),
+          
+                          RegisterTwoFieldsRow(
+                            leftField: RegisterTextField(
+                              controller: firstNameController,
+                              labelText: string.firstName,
+                              validator: (v) => Validators.validateName(
+                                context: context,
+                                value: v,
+                                fieldName: string.firstName.toLowerCase(),
                               ),
-                              SizedBox(height: 24.h),
-
-                              AppImagePicker(
-                                onImageSelected: (img) =>
-                                    imageNotifier.value = img,
+                            ),
+                            rightField: RegisterTextField(
+                              controller: lastNameController,
+                              labelText: string.lastName,
+                              validator: (v) => Validators.validateName(
+                                context: context,
+                                value: v,
+                                fieldName: string.lastName.toLowerCase(),
                               ),
-                              SizedBox(height: 24.h),
-
-                              RegisterTwoFieldsRow(
-                                leftField: RegisterTextField(
-                                  controller: firstNameController,
-                                  labelText: string.firstName,
-                                  validator: (v) => Validators.validateName(
-                                    context: context,
-                                    value: v,
-                                    fieldName: string.firstName.toLowerCase(),
-                                  ),
-                                ),
-                                rightField: RegisterTextField(
-                                  controller: lastNameController,
-                                  labelText: string.lastName,
-                                  validator: (v) => Validators.validateName(
-                                    context: context,
-                                    value: v,
-                                    fieldName: string.lastName.toLowerCase(),
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              RegisterTextField(
-                                controller: emailController,
-                                labelText: string.email,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (v) => Validators.validateEmail(
+                            ),
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          RegisterTextField(
+                            controller: emailController,
+                            labelText: string.email,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (v) => Validators.validateEmail(
+                              context: context,
+                              value: v,
+                            ),
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          RegisterTextField(
+                            controller: passwordController,
+                            labelText: string.password,
+                            isPassword: true,
+                            validator: (v) => Validators.validatePassword(
+                              context: context,
+                              value: v,
+                            ),
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          RegisterTextField(
+                            controller: confirmPasswordController,
+                            labelText: string.confirmPassword,
+                            isConformPassword: true,
+                            validator: (v) =>
+                                Validators.validateConfirmPassword(
                                   context: context,
                                   value: v,
+                                  password: passwordController.text,
                                 ),
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          RegisterTwoFieldsRow(
+                            leftField: RegisterTextField(
+                              controller: heightController,
+                              labelText: string.height,
+                              keyboardType: TextInputType.number,
+                              validator: (v) => Validators.validateHeight(
+                                context: context,
+                                value: v,
                               ),
-
-                              SizedBox(height: 16.h),
-
-                              RegisterTextField(
-                                controller: passwordController,
-                                labelText: string.password,
-                                isPassword: true,
-                                validator: (v) => Validators.validatePassword(
-                                  context: context,
-                                  value: v,
+                            ),
+                            rightField: RegisterTextField(
+                              controller: weightController,
+                              labelText: string.weight,
+                              keyboardType: TextInputType.number,
+                              validator: (v) => Validators.validateWeight(
+                                context: context,
+                                value: v,
+                              ),
+                            ),
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          RegisterTwoFieldsRow(
+                            leftField: ValueListenableBuilder<String?>(
+                              valueListenable: genderNotifier,
+                              builder: (context, gender, _) {
+                                return AppDropdownOverlay(
+                                  labelText: string.gender,
+                                  value: gender,
+                                  options: RegisterLists.genderOptions(
+                                    string,
+                                  ),
+                                  onChanged: (val) =>
+                                      genderNotifier.value = val,
+                                  validator: (v) =>
+                                      Validators.validateDropdown(
+                                        context: context,
+                                        value: v,
+                                        fieldName: string.gender
+                                            .toLowerCase(),
+                                      ),
+                                );
+                              },
+                            ),
+                            rightField: RegisterTextField(
+                              controller: ageController,
+                              labelText: string.age,
+                              keyboardType: TextInputType.number,
+                              validator: (v) => Validators.validateAge(
+                                context: context,
+                                value: v,
+                              ),
+                            ),
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          ValueListenableBuilder<String?>(
+                            valueListenable: locationNotifier,
+                            builder: (context, location, _) {
+                              return AppDropdownOverlay(
+                                labelText: string.location,
+                                value: location,
+                                options: RegisterLists.locationOptions(
+                                  string,
                                 ),
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              RegisterTextField(
-                                controller: confirmPasswordController,
-                                labelText: string.confirmPassword,
-                                isConformPassword: true,
+                                onChanged: (val) =>
+                                    locationNotifier.value = val,
                                 validator: (v) =>
-                                    Validators.validateConfirmPassword(
+                                    Validators.validateDropdown(
                                       context: context,
                                       value: v,
-                                      password: passwordController.text,
+                                      fieldName: string.location
+                                          .toLowerCase(),
                                     ),
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              RegisterTwoFieldsRow(
-                                leftField: RegisterTextField(
-                                  controller: heightController,
-                                  labelText: string.height,
-                                  keyboardType: TextInputType.number,
-                                  validator: (v) => Validators.validateHeight(
-                                    context: context,
-                                    value: v,
-                                  ),
-                                ),
-                                rightField: RegisterTextField(
-                                  controller: weightController,
-                                  labelText: string.weight,
-                                  keyboardType: TextInputType.number,
-                                  validator: (v) => Validators.validateWeight(
-                                    context: context,
-                                    value: v,
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              RegisterTwoFieldsRow(
-                                leftField: ValueListenableBuilder<String?>(
-                                  valueListenable: genderNotifier,
-                                  builder: (context, gender, _) {
-                                    return AppDropdownOverlay(
-                                      labelText: string.gender,
-                                      value: gender,
-                                      options: RegisterLists.genderOptions(
-                                        string,
-                                      ),
-                                      onChanged: (val) =>
-                                          genderNotifier.value = val,
-                                      validator: (v) =>
-                                          Validators.validateDropdown(
-                                            context: context,
-                                            value: v,
-                                            fieldName: string.gender
-                                                .toLowerCase(),
-                                          ),
-                                    );
-                                  },
-                                ),
-                                rightField: RegisterTextField(
-                                  controller: ageController,
-                                  labelText: string.age,
-                                  keyboardType: TextInputType.number,
-                                  validator: (v) => Validators.validateAge(
-                                    context: context,
-                                    value: v,
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              ValueListenableBuilder<String?>(
-                                valueListenable: locationNotifier,
-                                builder: (context, location, _) {
-                                  return AppDropdownOverlay(
-                                    labelText: string.location,
-                                    value: location,
-                                    options: RegisterLists.locationOptions(
+                              );
+                            },
+                          ),
+          
+                          SizedBox(height: 16.h),
+          
+                          ValueListenableBuilder<String?>(
+                            valueListenable: sportNotifier,
+                            builder: (context, sport, _) {
+                              return AppDropdownOverlay(
+                                labelText: string.sportProfession,
+                                value: sport,
+                                options:
+                                    RegisterLists.sportProfessionOptions(
                                       string,
                                     ),
-                                    onChanged: (val) =>
-                                        locationNotifier.value = val,
-                                    validator: (v) =>
-                                        Validators.validateDropdown(
-                                          context: context,
-                                          value: v,
-                                          fieldName: string.location
-                                              .toLowerCase(),
-                                        ),
-                                  );
-                                },
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              ValueListenableBuilder<String?>(
-                                valueListenable: sportNotifier,
-                                builder: (context, sport, _) {
-                                  return AppDropdownOverlay(
-                                    labelText: string.sportProfession,
-                                    value: sport,
-                                    options:
-                                        RegisterLists.sportProfessionOptions(
-                                          string,
-                                        ),
-                                    onChanged: (val) =>
-                                        _onSportChanged(val, string),
-                                    validator: (v) =>
-                                        Validators.validateDropdown(
-                                          context: context,
-                                          value: v,
-                                          fieldName: string.sportProfession
-                                              .toLowerCase(),
-                                        ),
-                                  );
-                                },
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              ValueListenableBuilder<String?>(
-                                valueListenable: sportNotifier,
-                                builder: (context, sport, _) {
-                                  if (!RegisterLists.isTeamSport(
-                                    string,
-                                    sport,
-                                  )) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return ValueListenableBuilder<String?>(
-                                    valueListenable: positionNotifier,
-                                    builder: (context, position, _) {
-                                      return AppDropdownOverlay(
-                                        labelText: string.position,
-                                        value: position,
-                                        options: RegisterLists.positionOptions(
-                                          string,
-                                          sport,
-                                        ),
-                                        onChanged: (val) =>
-                                            positionNotifier.value = val,
-                                        validator: (v) =>
-                                            Validators.validateDropdown(
-                                              context: context,
-                                              value: v,
-                                              fieldName: string.position
-                                                  .toLowerCase(),
-                                            ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-
-                              ValueListenableBuilder<String?>(
-                                valueListenable: sportNotifier,
-                                builder: (context, sport, _) {
-                                  if (!RegisterLists.isTeamSport(
-                                    string,
-                                    sport,
-                                  )) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return SizedBox(height: 20.h);
-                                },
-                              ),
-
-                              ValueListenableBuilder<bool>(
-                                valueListenable: hasClubNotifier,
-                                builder: (context, hasClub, _) {
-                                  return Row(
-                                    children: [
-                                      Checkbox(
-                                        value: hasClub,
-                                        activeColor: ColorManager.darkAccent1,
-                                        onChanged: (value) =>
-                                            hasClubNotifier.value =
-                                                value ?? false,
-                                      ),
-                                      Text(string.currentlyInClub),
-                                    ],
-                                  );
-                                },
-                              ),
-
-                              SizedBox(height: 12.h),
-
-                              CustomElevatedButton(
-                                text: string.register,
-                                onPressed: () => _onRegister(context, string),
-                              ),
-                              SizedBox(height: 30.h),
-                            ],
+                                onChanged: (val) =>
+                                    _onSportChanged(val, string),
+                                validator: (v) =>
+                                    Validators.validateDropdown(
+                                      context: context,
+                                      value: v,
+                                      fieldName: string.sportProfession
+                                          .toLowerCase(),
+                                    ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
+          
+                          SizedBox(height: 16.h),
+          
+                          ValueListenableBuilder<String?>(
+                            valueListenable: sportNotifier,
+                            builder: (context, sport, _) {
+                              if (!RegisterLists.isTeamSport(
+                                string,
+                                sport,
+                              )) {
+                                return const SizedBox.shrink();
+                              }
+                              return ValueListenableBuilder<String?>(
+                                valueListenable: positionNotifier,
+                                builder: (context, position, _) {
+                                  return AppDropdownOverlay(
+                                    labelText: string.position,
+                                    value: position,
+                                    options: RegisterLists.positionOptions(
+                                      string,
+                                      sport,
+                                    ),
+                                    onChanged: (val) =>
+                                        positionNotifier.value = val,
+                                    validator: (v) =>
+                                        Validators.validateDropdown(
+                                          context: context,
+                                          value: v,
+                                          fieldName: string.position
+                                              .toLowerCase(),
+                                        ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+          
+                          ValueListenableBuilder<String?>(
+                            valueListenable: sportNotifier,
+                            builder: (context, sport, _) {
+                              if (!RegisterLists.isTeamSport(
+                                string,
+                                sport,
+                              )) {
+                                return const SizedBox.shrink();
+                              }
+                              return SizedBox(height: 20.h);
+                            },
+                          ),
+          
+                          ValueListenableBuilder<bool>(
+                            valueListenable: hasClubNotifier,
+                            builder: (context, hasClub, _) {
+                              return Row(
+                                children: [
+                                  Checkbox(
+                                    value: hasClub,
+                                    activeColor: ColorManager.darkAccent1,
+                                    onChanged: (value) =>
+                                        hasClubNotifier.value =
+                                            value ?? false,
+                                  ),
+                                  Text(string.currentlyInClub),
+                                ],
+                              );
+                            },
+                          ),
+          
+                          SizedBox(height: 12.h),
+          
+                          CustomElevatedButton(
+                            text: state is RegistrationLoading
+                                ? string.loading
+                                : string.create,
+                            isLoading: state is RegistrationLoading,
+                            enabled: true,
+                            onPressed: () => _onRegister(context, string),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
+            ),
           );
         },
       ),

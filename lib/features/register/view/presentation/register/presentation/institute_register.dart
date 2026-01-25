@@ -70,33 +70,27 @@ class InstituteRegisterScreen extends StatelessWidget {
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
-          if (state is RegistrationLoading) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) =>
-                  const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (state is RegistrationSuccess) {
-            Navigator.of(context).pop();
+          // Navigate to OTP screen after OTP is sent
+          if (state is RegistrationOtpSent) {
             Fluttertoast.showToast(
-              msg: string.registrationSuccessful,
+              msg: string.otpSentSuccessfully,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.login,
-                (route) => false,
-              );
-            }
+
+            // Navigate to OTP verification screen
+            Navigator.pushNamed(
+              context,
+              AppRoutes.registrationOtp,
+              arguments: {
+                'email': state.email,
+                'userData': state.userData,
+              },
+            );
           }
+
           if (state is RegistrationError) {
-            Navigator.of(context).pop();
             final msg = string.getErrorMessage(
               state.errorKey,
               fallback: state.fallbackMessage,
@@ -111,125 +105,125 @@ class InstituteRegisterScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return Stack(
-            children: [
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SingleChildScrollView(
-                    child: ValueListenableBuilder<AutovalidateMode>(
-                      valueListenable: autoValidateNotifier,
-                      builder: (context, autoValidateMode, _) {
-                        return Form(
-                          key: _formKey,
-                          autovalidateMode: autoValidateMode,
-                          child: Column(
-                            children: [
-                              Text(
-                                string.createYourAccount,
-                                style: theme.textTheme.titleLarge,
-                              ),
-                              SizedBox(height: 24.h),
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: ValueListenableBuilder<AutovalidateMode>(
+                  valueListenable: autoValidateNotifier,
+                  builder: (context, autoValidateMode, _) {
+                    return Form(
+                      key: _formKey,
+                      autovalidateMode: autoValidateMode,
+                      child: Column(
+                        children: [
+                          Text(
+                            string.createYourAccount,
+                            style: theme.textTheme.titleLarge,
+                          ),
+                          SizedBox(height: 24.h),
 
-                              AppImagePicker(
-                                onImageSelected: (img) =>
-                                    imageNotifier.value = img,
-                              ),
-                              SizedBox(height: 24.h),
+                          AppImagePicker(
+                            onImageSelected: (img) =>
+                                imageNotifier.value = img,
+                          ),
+                          SizedBox(height: 24.h),
 
-                              RegisterTextField(
-                                controller: instituteNameController,
-                                labelText: string.instituteName,
-                                validator: (v) => Validators.validateName(
+                          RegisterTextField(
+                            controller: instituteNameController,
+                            labelText: string.instituteName,
+                            validator: (v) => Validators.validateName(
+                              context: context,
+                              value: v,
+                              fieldName: string.instituteName.toLowerCase(),
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+
+                          RegisterTextField(
+                            controller: emailController,
+                            labelText: string.email,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (v) => Validators.validateEmail(
+                              context: context,
+                              value: v,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+
+                          RegisterTextField(
+                            controller: passwordController,
+                            labelText: string.password,
+                            isPassword: true,
+                            validator: (v) => Validators.validatePassword(
+                              context: context,
+                              value: v,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+
+                          RegisterTextField(
+                            controller: confirmPasswordController,
+                            labelText: string.confirmPassword,
+                            isConformPassword: true,
+                            validator: (v) =>
+                                Validators.validateConfirmPassword(
                                   context: context,
                                   value: v,
-                                  fieldName: string.instituteName.toLowerCase(),
+                                  password: passwordController.text,
                                 ),
-                              ),
-                              SizedBox(height: 16.h),
+                          ),
+                          SizedBox(height: 16.h),
 
-                              RegisterTextField(
-                                controller: emailController,
-                                labelText: string.email,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (v) => Validators.validateEmail(
-                                  context: context,
-                                  value: v,
+                          ValueListenableBuilder<String?>(
+                            valueListenable: locationNotifier,
+                            builder: (context, location, _) {
+                              return AppDropdownOverlay(
+                                labelText: string.location,
+                                value: location,
+                                options: RegisterLists.locationOptions(
+                                  string,
                                 ),
-                              ),
-                              SizedBox(height: 16.h),
-
-                              RegisterTextField(
-                                controller: passwordController,
-                                labelText: string.password,
-                                isPassword: true,
-                                validator: (v) => Validators.validatePassword(
-                                  context: context,
-                                  value: v,
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-
-                              RegisterTextField(
-                                controller: confirmPasswordController,
-                                labelText: string.confirmPassword,
-                                isConformPassword: true,
+                                onChanged: (val) =>
+                                    locationNotifier.value = val,
                                 validator: (v) =>
-                                    Validators.validateConfirmPassword(
+                                    Validators.validateDropdown(
                                       context: context,
                                       value: v,
-                                      password: passwordController.text,
+                                      fieldName: string.location
+                                          .toLowerCase(),
                                     ),
-                              ),
-                              SizedBox(height: 16.h),
-
-                              ValueListenableBuilder<String?>(
-                                valueListenable: locationNotifier,
-                                builder: (context, location, _) {
-                                  return AppDropdownOverlay(
-                                    labelText: string.location,
-                                    value: location,
-                                    options: RegisterLists.locationOptions(
-                                      string,
-                                    ),
-                                    onChanged: (val) =>
-                                        locationNotifier.value = val,
-                                    validator: (v) =>
-                                        Validators.validateDropdown(
-                                          context: context,
-                                          value: v,
-                                          fieldName: string.location
-                                              .toLowerCase(),
-                                        ),
-                                  );
-                                },
-                              ),
-                              SizedBox(height: 16.h),
-
-                              RegisterTextField(
-                                controller: industryController,
-                                labelText: string.industary,
-                                validator: (v) => Validators.validateName(
-                                  context: context,
-                                  value: v,
-                                  fieldName: string.industary.toLowerCase(),
-                                ),
-                              ),
-                              SizedBox(height: 20.h),
-
-                              CustomElevatedButton(
-                                text: string.register,
-                                onPressed: () => _onRegister(context, string),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                          SizedBox(height: 16.h),
+
+                          RegisterTextField(
+                            controller: industryController,
+                            labelText: string.industary,
+                            validator: (v) => Validators.validateName(
+                              context: context,
+                              value: v,
+                              fieldName: string.industary.toLowerCase(),
+                            ),
+                          ),
+                          SizedBox(height: 20.h),
+
+                          CustomElevatedButton(
+                            text: state is RegistrationLoading
+                                ? string.loading
+                                : string.create,
+                            isLoading: state is RegistrationLoading,
+                            enabled: true,
+                            onPressed: () => _onRegister(context, string),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
+            ),
           );
         },
       ),

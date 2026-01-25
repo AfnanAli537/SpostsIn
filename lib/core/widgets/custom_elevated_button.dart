@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String text;
@@ -49,7 +50,9 @@ class CustomElevatedButton extends StatelessWidget {
           Text(
             text,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSecondaryFixed,
+                  color: isButtonEnabled 
+                      ? Theme.of(context).colorScheme.onSecondaryFixed
+                      : ColorManager.lightTextSecondary,
                   fontWeight: FontWeight.w600,
                 ),
           ),

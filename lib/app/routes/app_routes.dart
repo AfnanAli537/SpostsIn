@@ -13,4 +13,6 @@ abstract class AppRoutes{
   static const String otherRegister = '/other-register';
   static const String scoutRegister = '/scout-register';
   static const String clubRegister = '/club-register';
+
+  static const String registrationOtp = '/registration-otp';
 }
