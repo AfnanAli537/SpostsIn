@@ -1,4 +1,4 @@
-abstract class AppRoutes{
+abstract class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String onboarding = '/onboarding';
@@ -13,10 +13,6 @@ abstract class AppRoutes{
   static const String otherRegister = '/other-register';
   static const String scoutRegister = '/scout-register';
   static const String clubRegister = '/club-register';
-
   static const String registrationOtp = '/registration-otp';
   static const String mainLayout = '/mainLayout';
-  static const String initialResolver = '/initial-resolver';
-
-
 }

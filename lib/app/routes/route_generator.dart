@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/app/routes/route_detect.dart';
 import 'package:sports_in/features/login/data/repo/login_repo.dart';
 import 'package:sports_in/features/login/view/presentation/login_screen.dart';
 import 'package:sports_in/features/login/view_model/login_bloc/login_bloc.dart';
@@ -70,7 +69,7 @@ abstract class RoutesManager {
             child: ResetPasswordScreen(email: args['email'], otp: args['otp']),
           ),
         );
-        
+
       case AppRoutes.userType:
         return CupertinoPageRoute(builder: (_) => UserTypeScreen());
 
@@ -134,17 +133,9 @@ abstract class RoutesManager {
           ),
         );
       case AppRoutes.mainLayout:
-        return CupertinoPageRoute(
-          builder: (_) => CustomBottomNav(),
-        );
-        case AppRoutes.initialResolver:
-  return CupertinoPageRoute(
-    builder: (_) => const InitialResolverScreen(),
-  );
-
-
+        return CupertinoPageRoute(builder: (_) => CustomBottomNav());
     }
-   
+
     return null;
   }
 }
