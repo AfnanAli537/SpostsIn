@@ -223,7 +223,7 @@
   "enterEmailAssociated": "Enter Email Address associated with your account",
   "sendVerificationCode": "Send verification code",
 "otpSentSuccessfully": "OTP sent successfully! Please check your email.",
-
+"tokenEX":"Session expired, please login again",
   "privacyPolicyTitle": "Privacy & Policy",
   "lastUpdated": "Last updated: 11 October 2025",
   "introductionTitle": "Introduction",

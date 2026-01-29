@@ -385,6 +385,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
+    "tokenEX": MessageLookupByLibrary.simpleMessage(
+      "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
+    ),
     "tunisia": MessageLookupByLibrary.simpleMessage("تونس"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",

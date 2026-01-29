@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -107,7 +109,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
 
               CustomElevatedButton(
                 text: string.continueButton,
-                onPressed: () {
+                onPressed: () async{
+                  await getIt<SharedPref>().setPrivacySeen(true);
                   Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
                 },
                 enabled: _isAgreed,

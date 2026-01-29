@@ -1354,6 +1354,16 @@ class S {
     );
   }
 
+  /// `Session expired, please login again`
+  String get tokenEX {
+    return Intl.message(
+      'Session expired, please login again',
+      name: 'tokenEX',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Privacy & Policy`
   String get privacyPolicyTitle {
     return Intl.message(

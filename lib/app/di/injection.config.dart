@@ -71,7 +71,8 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i472.AuthRepo(gh<_i470.IAuthDataSource>()),
     );
     gh.lazySingleton<_i257.LoginRepo>(
-      () => _i257.LoginRepo(gh<_i712.ILoginDataSource>()),
+      () =>
+          _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
     gh.factory<_i185.LocaleCubit>(
       () => _i185.LocaleCubit(gh<_i414.SharedPref>()),

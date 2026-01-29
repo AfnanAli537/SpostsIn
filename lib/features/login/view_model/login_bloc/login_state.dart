@@ -27,3 +27,4 @@ class GoogleSignInFailure extends LoginState {
   final String errorKey;
    GoogleSignInFailure(this.errorKey);
 }
+class TokenExpired extends LoginState {}

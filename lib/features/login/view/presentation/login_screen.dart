@@ -39,14 +39,34 @@ class LoginScreen extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
+//           if (state is TokenExpired) {
+//   Navigator.pushReplacementNamed(context, AppRoutes.login);
+//          Fluttertoast.showToast(
+//               msg:string.tokenEX ,
+//               backgroundColor: Colors.red,
+//               toastLength: Toast.LENGTH_LONG,
+//               gravity: ToastGravity.TOP,
+//             );
+// }
           if (state is LoginSuccess) {
+    //         Navigator.of(context, rootNavigator: true)
+    // .pushNamedAndRemoveUntil(
+    //   AppRoutes.mainLayout,
+    //   (route) => false,
+    // );
+      Navigator.of(context).pushNamedAndRemoveUntil(
+    AppRoutes.mainLayout,
+    (route) => false,
+  );
+
+            // Navigator.pushReplacementNamed(context, AppRoutes.mainLayout);
             Fluttertoast.showToast(
               msg: string.loginSuccess,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            // Navigator.pushReplacementNamed(context, AppRoutes.home);
+          
           } else if (state is LoginFailure) {
             final msg = TranslateErrorHelper.translateErrorKey(
               context,
@@ -149,7 +169,7 @@ class LoginScreen extends StatelessWidget {
           
                             context.read<LoginBloc>().add(
                               LoginButtonPressed(
-                                context: context,
+                                // context: context,
                                 email: email,
                                 password: password,
                               ),

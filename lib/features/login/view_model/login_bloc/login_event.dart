@@ -6,8 +6,8 @@ sealed class LoginEvent {}
 class LoginButtonPressed extends LoginEvent {
   final String email;
   final String password;
-  final BuildContext context;
-  LoginButtonPressed({required this.context, required this.email, required this.password});
+  // final BuildContext context;
+  LoginButtonPressed({required this.email, required this.password});
 }
 
 class CheckLoginStatus extends LoginEvent {}
