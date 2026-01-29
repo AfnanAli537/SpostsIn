@@ -13,6 +13,7 @@ import 'package:sports_in/features/forget_password/view/presentation/reset_passw
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
 import 'package:sports_in/features/main/main_layout/main_layout.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
+import 'package:sports_in/features/register/view/presentation/registration_otp/registration_otp_screen.dart';
 import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
 import 'package:sports_in/features/register/view/presentation/user_type/presentation/user_type_screen.dart';
 import 'package:sports_in/features/register/view/presentation/register/presentation/player_register.dart';
@@ -36,9 +37,7 @@ abstract class RoutesManager {
           ),
         );
       case AppRoutes.privacyPolicy:
-        return CupertinoPageRoute(
-          builder: (_) => PrivacyPolicyScreen(),
-        );
+        return CupertinoPageRoute(builder: (_) => PrivacyPolicyScreen());
       case AppRoutes.onboarding:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
@@ -49,8 +48,7 @@ abstract class RoutesManager {
       case AppRoutes.forgetPassword:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
+            create: (_) => ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
             child: ForgetPasswordScreen(),
           ),
         );
@@ -59,8 +57,7 @@ abstract class RoutesManager {
         final email = settings.arguments as String;
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
+            create: (_) => ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
             child: EmailVerificationScreen(email: email),
           ),
         );
@@ -69,24 +66,30 @@ abstract class RoutesManager {
         final args = settings.arguments as Map<String, dynamic>;
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
-            child: ResetPasswordScreen(
-              email: args['email'],
-              otp: args['otp'],
-            ),
+            create: (_) => ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
+            child: ResetPasswordScreen(email: args['email'], otp: args['otp']),
           ),
         );
+        
       case AppRoutes.userType:
+        return CupertinoPageRoute(builder: (_) => UserTypeScreen());
+
+      case AppRoutes.registrationOtp:
+        final args = settings.arguments as Map<String, dynamic>;
         return CupertinoPageRoute(
-          builder: (_) => UserTypeScreen(),
+          builder: (_) => BlocProvider(
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
+            child: RegistrationOtpScreen(
+              email: args['email'],
+              userData: args['userData'],
+            ),
+          ),
         );
 
       case AppRoutes.playerRegister:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                RegistrationBloc(getIt<RegisterRepo>()),
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
             child: PlayerRegisterScreen(),
           ),
         );
@@ -94,8 +97,7 @@ abstract class RoutesManager {
       case AppRoutes.coachRegister:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                RegistrationBloc(getIt<RegisterRepo>()),
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
             child: CoachRegisterScreen(),
           ),
         );
@@ -103,8 +105,7 @@ abstract class RoutesManager {
       case AppRoutes.clubRegister:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                RegistrationBloc(getIt<RegisterRepo>()),
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
             child: ClubRegisterScreen(),
           ),
         );
@@ -112,8 +113,7 @@ abstract class RoutesManager {
       case AppRoutes.instituteRegister:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                RegistrationBloc(getIt<RegisterRepo>()),
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
             child: InstituteRegisterScreen(),
           ),
         );
@@ -121,8 +121,7 @@ abstract class RoutesManager {
       case AppRoutes.otherRegister:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                RegistrationBloc(getIt<RegisterRepo>()),
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
             child: OthersRegisterScreen(),
           ),
         );
@@ -130,8 +129,7 @@ abstract class RoutesManager {
       case AppRoutes.scoutRegister:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                RegistrationBloc(getIt<RegisterRepo>()),
+            create: (_) => RegistrationBloc(getIt<RegisterRepo>()),
             child: ScoutRegisterScreen(),
           ),
         );
@@ -150,4 +148,3 @@ abstract class RoutesManager {
     return null;
   }
 }
-

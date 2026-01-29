@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
+
 class ApiException implements Exception {
   final String message;
   final String key;
@@ -11,8 +12,9 @@ class ApiException implements Exception {
   @override
   String toString() => key; 
 }
+
 class ApiErrorHandler {
-   static String handleDioErrorKey(DioException error, {bool isRegister=false}) {
+  static String handleDioErrorKey(DioException error, {bool isRegister = false}) {
     if (error.error is SocketException) {
       return StringKeys.noInternetConnection;
     }
@@ -24,21 +26,23 @@ class ApiErrorHandler {
 
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode;
-         final   String key = _keyForStatus(statusCode);
+        final String key = _keyForStatus(statusCode, isRegister: isRegister);
 
         return key;
       case DioExceptionType.cancel:
         return StringKeys.requestCancelled;
 
       default:
-        return error.response as String;
+        return StringKeys.unexpectedError;
     }
   }
 
-  static String _keyForStatus(int? statusCode,  {bool isRegister=false}) {
+  static String _keyForStatus(int? statusCode, {bool isRegister = false}) {
     switch (statusCode) {
       case 400:
-        return isRegister == true? StringKeys.emailAlreadyExists: StringKeys.invalidEmailOrPassword;
+        return isRegister == true 
+            ? StringKeys.emailAlreadyExists 
+            : StringKeys.invalidEmailOrPassword;
       case 401:
         return StringKeys.unauthorized;
       case 404:
@@ -52,7 +56,7 @@ class ApiErrorHandler {
     }
   }
 
-  static String handleStatusCodeKey(int? statusCode,  {bool isRegister=false}) {
+  static String handleStatusCodeKey(int? statusCode, {bool isRegister = false}) {
     return _keyForStatus(statusCode, isRegister: isRegister);
   }
 
