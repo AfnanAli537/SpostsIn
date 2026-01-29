@@ -1,0 +1,1 @@
+enum HomeTab { forYou, posts, courses, opportunities }
