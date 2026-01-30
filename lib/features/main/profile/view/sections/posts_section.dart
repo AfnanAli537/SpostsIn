@@ -8,11 +8,11 @@ class PostsSection extends StatelessWidget {
   final Function(Post)? onPostTap;
 
   const PostsSection({
-    Key? key,
+    super.key,
     required this.posts,
     this.onShowAll,
     this.onPostTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

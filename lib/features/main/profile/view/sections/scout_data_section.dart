@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../model/profile_model.dart';
 
-class CoachDataSection extends StatelessWidget {
-  final CoachSpecificData data;
+class ScoutDataSection extends StatelessWidget {
+  final ScoutSpecificData data;
 
-  const CoachDataSection({
+  const ScoutDataSection({
     super.key,
     required this.data,
   });

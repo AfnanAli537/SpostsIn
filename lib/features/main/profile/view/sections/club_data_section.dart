@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../model/profile_model.dart';
 
-class CoachDataSection extends StatelessWidget {
-  final CoachSpecificData data;
+class ClubDataSection extends StatelessWidget {
+  final ClubSpecificData data;
 
-  const CoachDataSection({
+  const ClubDataSection({
     super.key,
     required this.data,
   });
@@ -16,11 +16,10 @@ class CoachDataSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (data.specializedSport != null)
-            _buildInfoRow('Specialized sport', data.specializedSport!),
-          if (data.yearsOfExperience != null)
-            _buildInfoRow('Years of experience', 
-              data.yearsOfExperience.toString()),
+          if (data.foundedYear != null)
+            _buildInfoRow('Foundation date', data.foundedYear!),
+          if (data.sport != null)
+            _buildInfoRow('Sports', data.sport!),
         ],
       ),
     );

@@ -8,11 +8,11 @@ class OpportunitiesSection extends StatelessWidget {
   final Function(Opportunity)? onOpportunityTap;
 
   const OpportunitiesSection({
-    Key? key,
+    super.key,
     required this.opportunities,
     this.onShowAll,
     this.onOpportunityTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -9,12 +9,12 @@ class InterestsSection extends StatelessWidget {
   final Function(Interest, bool)? onFollowToggle;
 
   const InterestsSection({
-    Key? key,
+    super.key,
     required this.interests,
     this.onShowAll,
     this.onConnectToggle,
     this.onFollowToggle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,11 +8,11 @@ class CoursesSection extends StatelessWidget {
   final Function(Course)? onCourseTap;
 
   const CoursesSection({
-    Key? key,
+    super.key,
     required this.courses,
     this.onShowAll,
     this.onCourseTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

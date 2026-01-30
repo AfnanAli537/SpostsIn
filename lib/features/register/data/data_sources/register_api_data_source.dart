@@ -18,7 +18,7 @@ class RegisterApiDataSource implements IRegisterDataSource {
   Future<bool> sendRegistrationOtp(String email) async {
     try {
       final response = await apiClient.post(
-        Endpoints.sendOtp,
+        Endpoints.sendVerifyRegisterOtp,
         data: {'email': email},
       );
       
@@ -42,7 +42,7 @@ class RegisterApiDataSource implements IRegisterDataSource {
   Future<bool> verifyRegistrationOtp(String email, String otp) async {
     try {
       final response = await apiClient.post(
-        Endpoints.verifyOtp,
+        Endpoints.verifyRegisterOtp,
         data: {'email': email, 'code': otp},
       );
       
