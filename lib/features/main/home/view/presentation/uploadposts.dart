@@ -1,6 +1,11 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'dart:io';
+
+import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 
 class UploadContentScreen extends StatefulWidget {
   const UploadContentScreen({super.key});
@@ -96,217 +101,144 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Upload Area
-              GestureDetector(
-                onTap: _showPickerOptions,
-                child: Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[400]!,
-                      width: 2,
-                      strokeAlign: BorderSide.strokeAlignInside,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
+      GestureDetector(
+  onTap: _showPickerOptions,
+  child: DottedBorder(
+    options: RoundedRectDottedBorderOptions(
+      color: Colors.grey[400]!,
+      strokeWidth: 2,
+      dashPattern: const [20, 6],
+      radius: const Radius.circular(12),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 200,
+        width: double.infinity,
+        color: Colors.white,
+        child: _selectedFile == null
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.cloud_upload_outlined,
+                    size: 60,
+                    color: Colors.grey[600],
                   ),
-                  child: _selectedFile == null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cloud_upload_outlined,
-                              size: 60,
-                              color: Colors.grey[600],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Upload an Image or video',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[800],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Maximum file size is 50 MB',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                          ],
-                        )
-                      : Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.file(
-                                _selectedFile!,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedFile = null;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black54,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                  const SizedBox(height: 12),
+                  Text(
+                    'Upload an Image or video',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Maximum file size is 200 MB',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              )
+            : Stack(
+                children: [
+                  Image.file(
+                    _selectedFile!,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedFile = null;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
                         ),
-                ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 32),
+      ),
+    ),
+  ),
+),
+    const SizedBox(height: 28),
 
               // Title Field
-              const Text(
+              Text(
                 'Title',
-                style: TextStyle(
-                  fontSize: 14,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
+              AuthTextField(
                 controller: _titleController,
-                decoration: InputDecoration(
-                  hintText: 'Football Coach - Youth Academy',
-                  hintStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF1D2D3D),
-                      width: 1.5,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                ),
-              ),
+                hintText: "Enter Your Title.",       ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Description Field
-              const Text(
+               Text(
                 'Description',
-                style: TextStyle(
-                  fontSize: 14,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _descriptionController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText:
-                      'Cairo Falcons FC is opening its doors for 3-day professional tryout for talented athletes. This is your chance to be one of Egypt\'s leading clubs and compete in the national league.',
-                  hintStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF1D2D3D),
-                      width: 1.5,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                ),
-              ),
+              AuthTextField(controller:
+               _descriptionController,
+               hintText:   'Enter Your Description...',
+               maxLines: 5,
+               ),
+            
 
               const SizedBox(height: 40),
 
               // Post Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle post action
-                    if (_titleController.text.isNotEmpty &&
-                        _descriptionController.text.isNotEmpty) {
-                      // Post logic here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Post created successfully!'),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fill all fields'),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1D2D3D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Post',
-                    style: TextStyle(
-                      color: Color(0xFFD4E157),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+              CustomElevatedButton(
+                onPressed: () {
+                  // Handle post action
+                  if (_titleController.text.isNotEmpty &&
+                      _descriptionController.text.isNotEmpty) {
+                    // Post logic here
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Post created successfully!'),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill all fields'),
+                      ),
+                    );
+                  }
+                }, text: 'Post',
+               
               ),
             ],
           ),

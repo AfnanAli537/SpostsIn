@@ -37,18 +37,27 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   iconColor: const Color(0xFFFFA726),
                   title: 'Create Post',
                   onTap: () {
+  Navigator.of(context, rootNavigator: true).pop();
+  Navigator.of(context, rootNavigator: true).push(
+    MaterialPageRoute(
+      builder: (_) => const UploadContentScreen(),
+    ),
+  );
+},
+
+//                   onTap: () {
                   
-                    // Navigate to create post
-Navigator.of(context).push(
-  MaterialPageRoute(
-    builder: (context) => const UploadContentScreen(),
+//                     // Navigate to create post
+// Navigator.of(context).push(
+//   MaterialPageRoute(
+//     builder: (context) => const UploadContentScreen(),
 
-  ),
-);
-    //  Navigator.pop(context);
+//   ),
+// );
+//     //  Navigator.pop(context);
 
 
-                  },
+//                   },
                 ),
                 const SizedBox(height: 16),
                 _buildOptionCard(

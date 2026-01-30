@@ -165,6 +165,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: Theme.of(context).colorScheme.surface,
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
@@ -185,7 +186,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
           boxShadow: [
             BoxShadow(
               color: Color(0xFF1D2D3D),
-              blurRadius: 12,
+              blurRadius: 2,
               offset: Offset(0, 4),
             ),
           ],

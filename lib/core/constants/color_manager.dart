@@ -9,6 +9,7 @@ class ColorManager {
   static const Color lightTextPrimary = Color(0xFF000000);
   static const Color lightTextSecondary = Color(0xFF707070);
   static const Color ligthfilled =Color(0xFF6F6F6F);
+  static const Color yellow =Color(0xFFA6C10B);
 
   static const Color darkPrimary = Color(0xFFB9D1E4);
   static const Color darkAccent = Color(0xFFC6FF00);

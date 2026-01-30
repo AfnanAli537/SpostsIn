@@ -1,82 +1,3 @@
-// import 'package:flutter/material.dart';
-
-// class PostWidget extends StatelessWidget {
-//   final String userName;
-//   final String timeAgo;
-//   final String desc;
-//   final String title;
-//   final String? mediaUrl;
-//   final int likes;
-//   final int comments;
-
-//   const PostWidget({
-//     super.key,
-//     required this.userName,
-//     required this.timeAgo,
-//     required this.desc,
-//     required this.title,
-//     required this.mediaUrl,
-//     required this.likes,
-//     required this.comments,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return 
-//     // Shimmer.fromColors(
-//     //   baseColor: Colors.grey.shade300,
-//     //   highlightColor: Colors.grey.shade100,
-//     //   enabled: false,
-//     //   child:
-//        Card(
-//         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(12),
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.all(16),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Row(
-//                 children: [
-//                   CircleAvatar(
-//                     radius: 20,
-//                     backgroundColor: Colors.grey[300],
-//                   ),
-//                   const SizedBox(width: 12),
-//                   Expanded(
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Container(height: 14, width: 120, color: Colors.grey),
-//                         const SizedBox(height: 6),
-//                         Container(height: 10, width: 80, color: Colors.grey),
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               const SizedBox(height: 16),
-//               Container(height: 12, color: Colors.grey),
-//               const SizedBox(height: 8),
-//               Container(height: 12, width: 200, color: Colors.grey),
-//               const SizedBox(height: 16),
-//               Container(
-//                 height: 200,
-//                 decoration: BoxDecoration(
-//                   color: Colors.grey,
-//                   borderRadius: BorderRadius.circular(8),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       // ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:sports_in/features/main/home/view/presentation/comments.dart';
 import 'package:sports_in/features/main/home/view/presentation/likes.dart';
@@ -106,6 +27,8 @@ class PostWidget extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
+      // color: backgroundColor: Theme.of(context).colorScheme.surface, ,
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -114,7 +37,6 @@ class PostWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User Info Section
             Row(
               children: [
                 CircleAvatar(
@@ -160,19 +82,19 @@ class PostWidget extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Title
-            if (title.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
+            // // Title
+            // if (title.isNotEmpty)
+            //   Padding(
+            //     padding: const EdgeInsets.only(bottom: 8),
+            //     child: Text(
+            //       title,
+            //       style: const TextStyle(
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.w600,
+            //         color: Colors.black,
+            //       ),
+            //     ),
+            //   ),
 
             // Description
             Text(
@@ -272,11 +194,17 @@ class PostWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         InkWell(
                           onTap: (){
-                                Navigator.of(context).push(
-  MaterialPageRoute(
-    builder: (context) => const LikesScreen(),
+                             showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const LikesBottomSheet(),
+  );
+  //                               Navigator.of(context).push(
+  // MaterialPageRoute(
+  //   builder: (context) => const LikesScreen(),
 
-                             ) );
+  //                            ) );
                           },
                           child: Text(
                             likes.toString(),
@@ -303,28 +231,41 @@ class PostWidget extends StatelessWidget {
                       horizontal: 8,
                       vertical: 4,
                     ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                        icon: Icon(Icons.chat_bubble_outline),
-                          color: Colors.grey[600],
-                          onPressed: () {
-                            Navigator.of(context).push(
-  MaterialPageRoute(
-    builder: (context) => const CommentsScreen(),
+                    child: InkWell(
+                      onTap: (){   
+                      
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const CommentsBottomSheet(),
+  );
 
-                             ) );
-                          },
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          comments.toString(),
-                          style: TextStyle(
+
+    
+  //                        Navigator.of(context).push(
+  // MaterialPageRoute(
+  //   builder: (context) => const CommentsScreen(),
+
+  //                            ) );
+                             },
+                      child: Row(
+                        children: [
+                          Icon(
+                          Icons.chat_bubble_outline,
                             color: Colors.grey[600],
-                            fontSize: 14,
+                          
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Text(
+                            comments.toString(),
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -339,3 +280,66 @@ class PostWidget extends StatelessWidget {
     );
   }
 }
+
+
+// class PostWidget extends StatelessWidget {
+//   final String userName;
+//   final String title;
+//   final String desc;
+//   final String? mediaUrl;
+//   final int likes;
+//   final int comments;
+//   final bool isLiked;
+//   final bool showHighlight; // new
+//   final VoidCallback? onLike;
+//   final Function(String) onComment;
+//   final String timeAgo;
+
+//   const PostWidget({
+//     super.key,
+//     required this.userName,
+//     required this.title,
+//     required this.desc,
+//     required this.mediaUrl,
+//     required this.likes,
+//     required this.comments,
+//     required this.isLiked,
+//      this.onLike,
+//     required this.onComment,
+//     this.showHighlight = false,
+//      required  this.timeAgo,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Card(
+//       color: showHighlight ? Colors.yellow[100] : Colors.white,
+//       child: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(userName, style: const TextStyle(fontWeight: FontWeight.bold)),
+//             const SizedBox(height: 4),
+//             Text(title, style: const TextStyle(fontSize: 16)),
+//             const SizedBox(height: 8),
+//             Text(desc),
+//             if (mediaUrl.isNotEmpty) Image.network(mediaUrl),
+//             Row(
+//               children: [
+//                 IconButton(
+//                   icon: Icon(isLiked ? Icons.favorite : Icons.favorite_border),
+//                   onPressed: onLike,
+//                 ),
+//                 Text('$likes'),
+//                 const SizedBox(width: 16),
+//                 Icon(Icons.comment),
+//                 Text('$comments'),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

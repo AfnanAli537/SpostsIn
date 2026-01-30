@@ -19,8 +19,6 @@ class PostShimmerWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              /// 🔹 User Info
               Row(
                 children: [
                   const CircleAvatar(
@@ -31,28 +29,21 @@ class PostShimmerWidget extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _shimmerBox(width: 120, height: 14), // username
+                      _shimmerBox(width: 120, height: 14),
                       const SizedBox(height: 6),
-                      _shimmerBox(width: 80, height: 10), // time ago
+                      _shimmerBox(width: 80, height: 10), 
                     ],
                   ),
                 ],
               ),
 
               const SizedBox(height: 16),
-
-              /// 🔹 Title
               _shimmerBox(width: double.infinity, height: 14),
               const SizedBox(height: 8),
-
-              /// 🔹 Description
               _shimmerBox(width: double.infinity, height: 12),
               const SizedBox(height: 6),
               _shimmerBox(width: 220, height: 12),
-
               const SizedBox(height: 16),
-
-              /// 🔹 Image (mediaUrl)
               Container(
                 height: 200,
                 width: double.infinity,
@@ -61,19 +52,16 @@ class PostShimmerWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-
               const SizedBox(height: 16),
-
-              /// 🔹 Likes & Comments
               Row(
                 children: [
-                  _shimmerBox(width: 20, height: 20), // like icon
+                  _shimmerBox(width: 20, height: 20), 
                   const SizedBox(width: 6),
-                  _shimmerBox(width: 30, height: 12), // likes count
+                  _shimmerBox(width: 30, height: 12), 
                   const SizedBox(width: 16),
-                  _shimmerBox(width: 20, height: 20), // comment icon
+                  _shimmerBox(width: 20, height: 20), 
                   const SizedBox(width: 6),
-                  _shimmerBox(width: 30, height: 12), // comments count
+                  _shimmerBox(width: 30, height: 12), 
                 ],
               ),
             ],
