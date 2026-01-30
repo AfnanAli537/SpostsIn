@@ -5,12 +5,13 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/features/main/home/data/interface/post_interface.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
+import 'package:sports_in/core/network/api_client.dart';
 
 @LazySingleton(as: PostsRepository)
 class PostsRemoteDataSourceImpl implements PostsRepository {
-  final Dio dio;
+  final ApiClient apiClient;  // ✅ Use ApiClient
 
-  PostsRemoteDataSourceImpl({required this.dio});
+  PostsRemoteDataSourceImpl({required this.apiClient});
 
   @override
   Future<List<PostModel>> getAllPosts({
@@ -18,23 +19,30 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     int pageSize = 10,
   }) async {
     try {
-      final response = await dio.get(
+      final response = await apiClient.get(  // ✅ Use apiClient
         Endpoints.allPosts,
-        queryParameters: {
+        params: {
           'pageNumber': pageNumber,
           'pageSize': pageSize,
         },
       );
 
+      print('📦 Response status: ${response.statusCode}');
+      print('📦 Response data: ${response.data}');
+
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
         return items.map((json) => PostModel.fromJson(json)).toList();
       }
-print('📦 Response status: ${response.statusCode}');
-print('📦 Response data: ${response.data}');
+
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
+      print('❌ Dio Error: ${e.message}');
+      print('❌ Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
+    } catch (e) {
+      print('❌ Unknown Error: $e');
+      rethrow;
     }
   }
 
@@ -42,7 +50,7 @@ print('📦 Response data: ${response.data}');
   Future<void> likePost({required String postId}) async {
     try {
       final url = Endpoints.putLike.replaceFirst('{id}', postId);
-      final response = await dio.put(url);
+      final response = await apiClient.put(url);  // ✅
 
       if (response.statusCode != 200) {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
@@ -59,7 +67,7 @@ print('📦 Response data: ${response.data}');
   }) async {
     try {
       final url = Endpoints.putComment.replaceFirst('{id}', postId);
-      final response = await dio.put(
+      final response = await apiClient.put(  // ✅
         url,
         data: {'text': comment},
       );
@@ -79,7 +87,7 @@ print('📦 Response data: ${response.data}');
     required String mediaUrl,
   }) async {
     try {
-      final response = await dio.post(
+      final response = await apiClient.post(  // ✅
         Endpoints.postPost,
         data: {
           'title': title,
@@ -102,10 +110,8 @@ print('📦 Response data: ${response.data}');
     required String comment,
   }) async {
     try {
-      final url =
-          Endpoints.editComment.replaceFirst('{commentId}', commentId);
-
-      final response = await dio.put(
+      final url = Endpoints.editComment.replaceFirst('{commentId}', commentId);
+      final response = await apiClient.put(  // ✅
         url,
         data: {'text': comment},
       );
@@ -121,10 +127,8 @@ print('📦 Response data: ${response.data}');
   @override
   Future<void> deleteComment({required String commentId}) async {
     try {
-      final url =
-          Endpoints.deletComment.replaceFirst('{commentId}', commentId);
-
-      final response = await dio.delete(url);
+      final url = Endpoints.deletComment.replaceFirst('{commentId}', commentId);
+      final response = await apiClient.delete(url);  // ✅
 
       if (response.statusCode != 200) {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);

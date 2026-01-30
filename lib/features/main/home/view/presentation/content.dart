@@ -130,7 +130,7 @@ class BuildContent extends StatelessWidget {
 
             if (state is PostsLoaded) {
               final posts = state.posts.take(3).toList();
-
+              print(posts);
               return SliverList(
                 delegate: SliverChildListDelegate([
                   Padding(
