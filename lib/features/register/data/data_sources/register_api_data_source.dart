@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
@@ -17,12 +18,15 @@ class RegisterApiDataSource implements IRegisterDataSource {
   @override
   Future<bool> sendRegistrationOtp(String email) async {
     try {
+      debugPrint("registered user email: $email");
+
       final response = await apiClient.post(
         Endpoints.sendVerifyRegisterOtp,
-        data: {'email': email},
+        params: {'email': email},
       );
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint("OTP sent successfully for email: $email");
         return true;
       }
       throw ApiException(
@@ -30,6 +34,8 @@ class RegisterApiDataSource implements IRegisterDataSource {
         key: StringKeys.validationError,
       );
     } on DioException catch (e) {
+      debugPrint("OTP sent failed for email: $e");
+
       final errorKey = ApiErrorHandler.handleDioErrorKey(e, isRegister: true);
       throw ApiException(
         message: e.message ?? 'Failed to send OTP',
@@ -43,10 +49,11 @@ class RegisterApiDataSource implements IRegisterDataSource {
     try {
       final response = await apiClient.post(
         Endpoints.verifyRegisterOtp,
-        data: {'email': email, 'code': otp},
+        params: {'email': email, 'code': otp},
       );
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint("OTP verified successfully for email: $email");
         return true;
       }
       throw ApiException(
@@ -71,6 +78,7 @@ class RegisterApiDataSource implements IRegisterDataSource {
       final response = await apiClient.post(endpoint, data: body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint("User registered successfully");
         return response.data['isSuccess'] == true;
       }
       throw ApiException(

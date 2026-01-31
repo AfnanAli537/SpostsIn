@@ -54,7 +54,9 @@ class ProfileHeader extends StatelessWidget {
                           color: const Color(0xFF1E3A5F),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: IconButton(
+                        child: Row( children:[
+                          Text('Edit', style: const TextStyle(color: Colors.white)),
+                          IconButton(
                           icon: const Icon(Icons.edit, color: Colors.white, size: 16),
                           onPressed: onEditPressed,
                           constraints: const BoxConstraints(
@@ -63,6 +65,9 @@ class ProfileHeader extends StatelessWidget {
                           ),
                           padding: const EdgeInsets.all(8),
                         ),
+                        
+                        ]
+                        )
                       ),
                   ],
                 ),

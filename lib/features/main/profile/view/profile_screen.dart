@@ -36,74 +36,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        // backgroundColor: Colors.white,
-        // elevation: 0,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.menu_rounded, color: Colors.black),
-        //   onPressed: () => {},
-        // ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.notifications, color: Colors.black),
-        //     onPressed: () {
-        //       //Todo notifications screen
-        //     },
-        //   ),
-        // ],
-      ),
-      body: BlocConsumer<ProfileBloc, ProfileState>(
-        listener: (context, state) {
-          if (state is ProfileActionSuccess) {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(
-            //     content: Text(state.message),
-            //     backgroundColor: Colors.green,
-            //     duration: const Duration(seconds: 2),
-            //   ),
-            // );
-          } else if (state is ProfileActionError) {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(
-            //     content: Text(state.message),
-            //     backgroundColor: Colors.red,
-            //     duration: const Duration(seconds: 2),
-            //   ),
-            // );
-          }
-        },
-        builder: (context, state) {
-          if (state is ProfileLoading) {
-            return _buildShimmerLoading();
-          } else if (state is ProfileError) {
-            return _buildErrorState(state.message);
-          } else if (state is ProfileLoaded ||
-              state is ProfileActionLoading ||
-              state is ProfileActionSuccess ||
-              state is ProfileActionError) {
-            final profile = state is ProfileLoaded
-                ? state.profile
-                : state is ProfileActionLoading
-                ? state.profile
-                : state is ProfileActionSuccess
-                ? state.profile
-                : (state as ProfileActionError).profile;
+    return BlocConsumer<ProfileBloc, ProfileState>(
+          listener: (context, state) {
+            if (state is ProfileActionSuccess) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text(state.message),
+              //     backgroundColor: Colors.green,
+              //     duration: const Duration(seconds: 2),
+              //   ),
+              // );
+            } else if (state is ProfileActionError) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text(state.message),
+              //     backgroundColor: Colors.red,
+              //     duration: const Duration(seconds: 2),
+              //   ),
+              // );
+            }
+          },
+          builder: (context, state) {
+            if (state is ProfileLoading) {
+              return _buildShimmerLoading();
+            } else if (state is ProfileError) {
+              return _buildErrorState(state.message);
+            } else if (state is ProfileLoaded ||
+                state is ProfileActionLoading ||
+                state is ProfileActionSuccess ||
+                state is ProfileActionError) {
+              final profile = state is ProfileLoaded
+                  ? state.profile
+                  : state is ProfileActionLoading
+                  ? state.profile
+                  : state is ProfileActionSuccess
+                  ? state.profile
+                  : (state as ProfileActionError).profile;
 
-            final isOwnProfile = state is ProfileLoaded
-                ? state.isOwnProfile
-                : false;
+              final isOwnProfile = state is ProfileLoaded
+                  ? state.isOwnProfile
+                  : false;
 
-            final isLoading = state is ProfileActionLoading;
+              final isLoading = state is ProfileActionLoading;
 
-            return _buildProfileContent(profile, isOwnProfile, isLoading);
-          }
+              return _buildProfileContent(profile, isOwnProfile, isLoading);
+            }
 
-          return const SizedBox.shrink();
-        },
-      ),
-    );
+            return const SizedBox.shrink();
+          },
+        );
+
+
   }
 
   Widget _buildShimmerLoading() {
@@ -137,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileDescription(description: fakeProfile.description),
             const SizedBox(height: 16),
             ProfileStatsWidget(stats: fakeProfile.stats),
-            const Divider(height: 1,color: Colors.grey,),
+            const Divider(height: 1, color: Colors.grey),
             const SizedBox(height: 16),
 
             // Shimmer for sections
@@ -218,7 +201,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             ProfileDescription(description: profile.description),
 
-
             // Show Connect and Follow buttons for other users
             // if (!isOwnProfile)
             //   Padding(
@@ -265,7 +247,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             //       ],
             //     ),
             //   ),
-
             const SizedBox(height: 8),
 
             if (isLoading)
@@ -278,7 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             else
               ...ProfileSectionFactory.buildSections(
                 profile: profile,
-                isOwnProfile:isOwnProfile,
+                isOwnProfile: isOwnProfile,
                 onPostsShowAll: () {},
                 onOpportunitiesShowAll: () {},
                 onCoursesShowAll: () {},

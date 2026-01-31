@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sports_in/features/main/profile/data/data_sources/mock_profile_data.dart';
-import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
-import 'package:sports_in/features/main/profile/view/profile_screen.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-
+import 'package:sports_in/features/main/profile/view/my_profile_screen.dart';
 
 class CustomBottomNav extends StatefulWidget {
   const CustomBottomNav({super.key});
@@ -16,27 +11,13 @@ class CustomBottomNav extends StatefulWidget {
 class _CustomBottomNavState extends State<CustomBottomNav> {
   int _currentIndex = 0;
 
-  late final List<Widget> _screens;
+  final List<Widget> _pages = [
+    const Center(child: Text("Home")),
+    const Center(child: Text("Search")),
+    const Center(child: Text("Messages")),
 
-  @override
-  void initState() {
-    super.initState();
-
-    _screens = [
-      const HomeScreen(),
-      const SearchScreen(),
-      const ChatScreen(),
-
-      BlocProvider(
-        create: (context) => ProfileBloc(
-          ProfileRepo(
-            MockProfileData(),
-          ),
-        ),
-        child: const ProfileScreen(),
-      ),
-    ];
-  }
+    My_ProfileScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -47,106 +28,78 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   Color _iconColor(int index) {
     return _currentIndex == index
         ? const Color(0xFF1D2D3D)
-        : Colors.blueGrey;
+        : const Color(0xFFB0BEC5);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFB0BEC5),
-
-      // 🔑 THIS is what keeps the bottom nav visible
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: IndexedStack(index: _currentIndex, children: _pages),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // action button click
-        },
-        backgroundColor: const Color(0xFF1D2D3D),
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Color(0xFFD4E157), size: 35),
+      floatingActionButton: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1D2D3D), Color(0xFF2C3E50)],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF1D2D3D),
+              blurRadius: 2,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          onPressed: () {
+            //  showCreateOptionsBottomSheet(context);
+          },
+          child: const Icon(Icons.add, color: Colors.white, size: 32),
+        ),
       ),
 
       bottomNavigationBar: BottomAppBar(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        height: 80,
-        color: Colors.white,
         shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
+        notchMargin: 8,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: Icon(Icons.home_filled,
-                  color: _iconColor(0), size: 30),
-              onPressed: () => _onItemTapped(0),
-            ),
-            IconButton(
-              icon: Icon(Icons.search,
-                  color: _iconColor(1), size: 30),
-              onPressed: () => _onItemTapped(1),
-            ),
-            const SizedBox(width: 40),
-            IconButton(
-              icon: Icon(Icons.chat_bubble_outline,
-                  color: _iconColor(2), size: 28),
-              onPressed: () => _onItemTapped(2),
-            ),
-            IconButton(
-              icon: Icon(Icons.person_pin_circle_outlined,
-                  color: _iconColor(3), size: 30),
-              onPressed: () => _onItemTapped(3),
-            ),
+            _buildNavItem(Icons.home, 0),
+            _buildNavItem(Icons.search, 1),
+            const SizedBox(width: 60),
+            _buildNavItem(Icons.chat_bubble_outline, 2),
+            _buildNavItem(Icons.person_outline, 3),
           ],
         ),
       ),
     );
   }
-}
 
+  Widget _buildNavItem(IconData icon, int index) {
+    final isSelected = _currentIndex == index;
 
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Home Screen',
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Search Screen',
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Chat Screen',
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () => _onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: _iconColor(index), size: 26),
+          const SizedBox(height: 4),
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isSelected ? const Color(0xFF1D2D3D) : Colors.transparent,
+            ),
+          ),
+        ],
       ),
     );
   }
