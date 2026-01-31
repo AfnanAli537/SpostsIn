@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
 
@@ -6,13 +7,17 @@ class AnalyzedVideosSection extends StatelessWidget {
   final List<AnalyzedVideoReport> videos;
   final VoidCallback? onShowAll;
   final Function(AnalyzedVideoReport)? onVideoTap;
+  final ThemeData theme;
+  final S string;
 
   const AnalyzedVideosSection({
-    Key? key,
+    super.key,
     required this.videos,
     this.onShowAll,
     this.onVideoTap,
-  }) : super(key: key);
+    required this.theme,
+    required this.string,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,7 @@ class AnalyzedVideosSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: 'Analyzed videos reports',
+          title: string.analyzedVideosReports,
           onShowAllPressed: onShowAll,
         ),
         ListView.builder(
@@ -44,14 +49,17 @@ class AnalyzedVideosSection extends StatelessWidget {
                       child: Container(
                         height: 180,
                         width: double.infinity,
-                        color: Colors.grey[200],
+                        color: theme.colorScheme.surfaceVariant,
                         child: Image.network(
                           video.thumbnailUrl,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(Icons.play_circle_outline, 
-                                color: Colors.grey, size: 50),
+                            return Center(
+                              child: Icon(
+                                Icons.play_circle_outline,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                size: 50,
+                              ),
                             );
                           },
                         ),
@@ -71,12 +79,12 @@ class AnalyzedVideosSection extends StatelessWidget {
                           _buildStatChip(
                             icon: Icons.speed,
                             label: video.speed,
-                            color: Colors.blue,
+                            color: theme.colorScheme.primary,
                           ),
                           _buildStatChip(
                             icon: Icons.directions_run,
                             label: video.distance,
-                            color: Colors.purple,
+                            color: theme.colorScheme.secondary,
                           ),
                           _buildStatChip(
                             icon: Icons.local_fire_department,
@@ -95,7 +103,11 @@ class AnalyzedVideosSection extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.more_vert, color: Colors.white, size: 20),
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                           onPressed: () {},
                           constraints: const BoxConstraints(
                             minWidth: 32,
@@ -117,14 +129,14 @@ class AnalyzedVideosSection extends StatelessWidget {
             child: TextButton(
               onPressed: onShowAll,
               style: TextButton.styleFrom(
-                backgroundColor: const Color(0xFF1E3A5F),
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('More details'),
+              child: Text(string.moreDetails),
             ),
           ),
         ),

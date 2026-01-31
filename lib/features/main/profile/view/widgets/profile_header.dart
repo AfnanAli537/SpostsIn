@@ -7,11 +7,11 @@ class ProfileHeader extends StatelessWidget {
   final VoidCallback? onEditPressed;
 
   const ProfileHeader({
-    Key? key,
+    super.key,
     required this.profile,
     required this.isOwnProfile,
     this.onEditPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +50,16 @@ class ProfileHeader extends StatelessWidget {
                     ),
                     if (isOwnProfile && onEditPressed != null)
                       Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFF1E3A5F),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Row( children:[
+                        child: Row( 
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children:[
                           Text('Edit', style: const TextStyle(color: Colors.white)),
+
                           IconButton(
                           icon: const Icon(Icons.edit, color: Colors.white, size: 16),
                           onPressed: onEditPressed,
@@ -63,7 +67,7 @@ class ProfileHeader extends StatelessWidget {
                             minWidth: 36,
                             minHeight: 36,
                           ),
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(4),
                         ),
                         
                         ]

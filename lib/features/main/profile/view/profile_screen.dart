@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../view_model/profile_bloc.dart';
 import '../view_model/profile_event.dart';
 import '../view_model/profile_state.dart';
@@ -36,67 +38,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final string = S.of(context);
+
     return BlocConsumer<ProfileBloc, ProfileState>(
-          listener: (context, state) {
-            if (state is ProfileActionSuccess) {
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   SnackBar(
-              //     content: Text(state.message),
-              //     backgroundColor: Colors.green,
-              //     duration: const Duration(seconds: 2),
-              //   ),
-              // );
-            } else if (state is ProfileActionError) {
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   SnackBar(
-              //     content: Text(state.message),
-              //     backgroundColor: Colors.red,
-              //     duration: const Duration(seconds: 2),
-              //   ),
-              // );
-            }
-          },
-          builder: (context, state) {
-            if (state is ProfileLoading) {
-              return _buildShimmerLoading();
-            } else if (state is ProfileError) {
-              return _buildErrorState(state.message);
-            } else if (state is ProfileLoaded ||
-                state is ProfileActionLoading ||
-                state is ProfileActionSuccess ||
-                state is ProfileActionError) {
-              final profile = state is ProfileLoaded
-                  ? state.profile
-                  : state is ProfileActionLoading
+      listener: (context, state) {
+        if (state is ProfileActionSuccess) {
+          Fluttertoast.showToast(
+            msg: state.message,
+            backgroundColor: Colors.green,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
+        } else if (state is ProfileActionError) {
+          Fluttertoast.showToast(
+            msg: state.message,
+            backgroundColor: Colors.red,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is ProfileLoading) {
+          return _buildShimmerLoading(theme);
+        } else if (state is ProfileError) {
+          return _buildErrorState(state.message, theme, string);
+        } else if (state is ProfileLoaded ||
+            state is ProfileActionLoading ||
+            state is ProfileActionSuccess ||
+            state is ProfileActionError) {
+          final profile = state is ProfileLoaded
+              ? state.profile
+              : state is ProfileActionLoading
                   ? state.profile
                   : state is ProfileActionSuccess
-                  ? state.profile
-                  : (state as ProfileActionError).profile;
+                      ? state.profile
+                      : (state as ProfileActionError).profile;
 
-              final isOwnProfile = state is ProfileLoaded
-                  ? state.isOwnProfile
-                  : false;
+          final isOwnProfile = state is ProfileLoaded ? state.isOwnProfile : false;
+          final isLoading = state is ProfileActionLoading;
 
-              final isLoading = state is ProfileActionLoading;
+          return _buildProfileContent(
+            profile,
+            isOwnProfile,
+            isLoading,
+            theme,
+            string,
+          );
+        }
 
-              return _buildProfileContent(profile, isOwnProfile, isLoading);
-            }
-
-            return const SizedBox.shrink();
-          },
-        );
-
-
+        return const SizedBox.shrink();
+      },
+    );
   }
 
-  Widget _buildShimmerLoading() {
-    // Create a fake profile for shimmer
+  Widget _buildShimmerLoading(ThemeData theme) {
     final fakeProfile = ProfileModel(
       id: 'loading',
       name: 'Loading Name',
       role: 'Loading Role',
-      description:
-          'Loading description text that will be replaced with actual content',
+      description: 'Loading description text that will be replaced with actual content',
       userType: UserType.player,
       stats: ProfileStats(
         followers: '0',
@@ -119,30 +121,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileHeader(profile: fakeProfile, isOwnProfile: false),
             ProfileDescription(description: fakeProfile.description),
             const SizedBox(height: 16),
-            ProfileStatsWidget(stats: fakeProfile.stats),
-            const Divider(height: 1, color: Colors.grey),
+            ProfileStatsWidget(stats: fakeProfile.stats, theme: theme, string: S.of(context)),
+            Divider(height: 1, color: theme.dividerColor),
             const SizedBox(height: 16),
-
-            // Shimmer for sections
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(height: 20, width: 150, color: Colors.grey),
-                  const SizedBox(height: 12),
                   Container(
-                    height: 100,
-                    width: double.infinity,
-                    color: Colors.grey,
+                    height: 20,
+                    width: 150,
+                    color: theme.colorScheme.surfaceVariant,
                   ),
-                  const SizedBox(height: 24),
-                  Container(height: 20, width: 120, color: Colors.grey),
                   const SizedBox(height: 12),
                   Container(
                     height: 100,
                     width: double.infinity,
-                    color: Colors.grey,
+                    color: theme.colorScheme.surfaceVariant,
                   ),
                 ],
               ),
@@ -153,25 +149,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildErrorState(String message) {
+  Widget _buildErrorState(String message, ThemeData theme, S string) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 60, color: Colors.red),
+          Icon(
+            Icons.error_outline,
+            size: 60,
+            color: theme.colorScheme.error,
+          ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Error loading profile',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.grey),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 24),
-          ElevatedButton(onPressed: _loadProfile, child: const Text('Retry')),
+          ElevatedButton(
+            onPressed: _loadProfile,
+            child: Text(string.done),
+          ),
         ],
       ),
     );
@@ -181,6 +186,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ProfileModel profile,
     bool isOwnProfile,
     bool isLoading,
+    ThemeData theme,
+    S string,
   ) {
     return RefreshIndicator(
       onRefresh: () async {
@@ -194,61 +201,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileHeader(
               profile: profile,
               isOwnProfile: isOwnProfile,
-              onEditPressed: isOwnProfile
-                  ? () => _navigateToEditProfile(context)
-                  : null,
+              onEditPressed: isOwnProfile ? () => _navigateToEditProfile(context) : null,
+              // onProfileImageTap: widget.userId != null
+              //     ? () => _navigateToUserProfile(context, profile.id)
+              //     : null,
             ),
-
             ProfileDescription(description: profile.description),
-
-            // Show Connect and Follow buttons for other users
-            // if (!isOwnProfile)
-            //   Padding(
-            //     padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 16),
-            //     child: Row(
-            //       children: [
-            //         Expanded(
-            //           child: OutlinedButton(
-            //             onPressed: () {
-            //               // Handle connect
-            //             },
-            //             style: OutlinedButton.styleFrom(
-            //               side: const BorderSide(color: Color(0xFF1E3A5F)),
-            //               padding: const EdgeInsets.symmetric(vertical: 12),
-            //             ),
-            //             child: const Text(
-            //               'Connect',
-            //               style: TextStyle(
-            //                 color: Color(0xFF1E3A5F),
-            //                 fontWeight: FontWeight.w600,
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //         const SizedBox(width: 12),
-            //         Expanded(
-            //           child: ElevatedButton(
-            //             onPressed: () {
-            //               // Handle follow
-            //             },
-            //             style: ElevatedButton.styleFrom(
-            //               backgroundColor: const Color(0xFF1E3A5F),
-            //               padding: const EdgeInsets.symmetric(vertical: 12),
-            //             ),
-            //             child: const Text(
-            //               'Follow',
-            //               style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontWeight: FontWeight.w600,
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
             const SizedBox(height: 8),
-
             if (isLoading)
               const Center(
                 child: Padding(
@@ -260,6 +219,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ...ProfileSectionFactory.buildSections(
                 profile: profile,
                 isOwnProfile: isOwnProfile,
+                theme: theme,
+                string: string,
                 onPostsShowAll: () {},
                 onOpportunitiesShowAll: () {},
                 onCoursesShowAll: () {},
@@ -271,15 +232,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onCourseTap: (course) {},
                 onAchievementTap: (achievement) {},
                 onVideoTap: (video) {},
+                onConnectPressed: () {
+                  context.read<ProfileBloc>().add(ConnectWithUser(profile.id));
+                },
+                onFollowPressed: () {
+                  context.read<ProfileBloc>().add(FollowUser(profile.id));
+                },
                 onConnectToggle: (interest, shouldConnect) {
                   if (shouldConnect) {
-                    context.read<ProfileBloc>().add(
-                      ConnectWithUser(interest.id),
-                    );
+                    context.read<ProfileBloc>().add(ConnectWithUser(interest.id));
                   } else {
-                    context.read<ProfileBloc>().add(
-                      DisconnectFromUser(interest.id),
-                    );
+                    context.read<ProfileBloc>().add(DisconnectFromUser(interest.id));
                   }
                 },
                 onFollowToggle: (interest, shouldFollow) {
@@ -289,8 +252,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context.read<ProfileBloc>().add(UnfollowUser(interest.id));
                   }
                 },
+                onInterestTap: (interest) {
+                  // _navigateToUserProfile(context, interest.id);
+                },
               ),
-
             const SizedBox(height: 24),
           ],
         ),
@@ -301,4 +266,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _navigateToEditProfile(BuildContext context) {
     // Navigate to edit profile screen
   }
+
+  // void _navigateToUserProfile(BuildContext context, String userId) {
+  //   // Navigate to another user's profile
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => Scaffold(
+  //         appBar: AppBar(title: Text(S.of(context).profile)),
+  //         body: BlocProvider(
+  //           create: (context) => ProfileBloc(
+  //             context.read<ProfileBloc>().profileRepo,
+  //           ),
+  //           child: ProfileScreen(userId: userId),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

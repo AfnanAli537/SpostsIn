@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
 
@@ -6,12 +7,16 @@ class CoursesSection extends StatelessWidget {
   final List<Course> courses;
   final VoidCallback? onShowAll;
   final Function(Course)? onCourseTap;
+  final ThemeData theme;
+  final S string;
 
   const CoursesSection({
     super.key,
     required this.courses,
     this.onShowAll,
     this.onCourseTap,
+    required this.theme,
+    required this.string,
   });
 
   @override
@@ -22,7 +27,7 @@ class CoursesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: 'Courses',
+          title: string.courses,
           onShowAllPressed: onShowAll,
         ),
         SizedBox(
@@ -42,14 +47,17 @@ class CoursesSection extends StatelessWidget {
                     child: Container(
                       width: 100,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: theme.colorScheme.surfaceVariant,
                       ),
                       child: Image.network(
                         course.imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(Icons.school, color: Colors.grey),
+                          return Center(
+                            child: Icon(
+                              Icons.school,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           );
                         },
                       ),

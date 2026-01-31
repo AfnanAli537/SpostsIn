@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
 
@@ -6,13 +7,17 @@ class PostsSection extends StatelessWidget {
   final List<Post> posts;
   final VoidCallback? onShowAll;
   final Function(Post)? onPostTap;
+  final ThemeData theme;
+  final S string;
 
   const PostsSection({
-    super.key,
+    Key? key,
     required this.posts,
     this.onShowAll,
     this.onPostTap,
-  });
+    required this.theme,
+    required this.string,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,7 @@ class PostsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: 'Posts',
+          title: string.posts,
           onShowAllPressed: onShowAll,
         ),
         SizedBox(
@@ -42,14 +47,17 @@ class PostsSection extends StatelessWidget {
                     child: Container(
                       width: 100,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: theme.colorScheme.surfaceVariant,
                       ),
                       child: Image.network(
                         post.imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(Icons.image, color: Colors.grey),
+                          return Center(
+                            child: Icon(
+                              Icons.image,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           );
                         },
                       ),

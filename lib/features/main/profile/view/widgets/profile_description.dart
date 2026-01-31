@@ -4,19 +4,20 @@ class ProfileDescription extends StatelessWidget {
   final String description;
 
   const ProfileDescription({
-    Key? key,
+    super.key,
     required this.description,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Text(
         description,
-        style: const TextStyle(
-          fontSize: 14,
-          color: Colors.black87,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface,
           height: 1.4,
         ),
       ),

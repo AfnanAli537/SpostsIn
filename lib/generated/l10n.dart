@@ -1763,6 +1763,171 @@ class S {
       args: [],
     );
   }
+
+  /// `Followers`
+  String get followers {
+    return Intl.message('Followers', name: 'followers', desc: '', args: []);
+  }
+
+  /// `Following`
+  String get following {
+    return Intl.message('Following', name: 'following', desc: '', args: []);
+  }
+
+  /// `Connections`
+  String get connections {
+    return Intl.message('Connections', name: 'connections', desc: '', args: []);
+  }
+
+  /// `Analyzed People`
+  String get analyzedPeople {
+    return Intl.message(
+      'Analyzed People',
+      name: 'analyzedPeople',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect`
+  String get connect {
+    return Intl.message('Connect', name: 'connect', desc: '', args: []);
+  }
+
+  /// `Follow`
+  String get follow {
+    return Intl.message('Follow', name: 'follow', desc: '', args: []);
+  }
+
+  /// `Connected`
+  String get connected {
+    return Intl.message('Connected', name: 'connected', desc: '', args: []);
+  }
+
+  /// `Posts`
+  String get posts {
+    return Intl.message('Posts', name: 'posts', desc: '', args: []);
+  }
+
+  /// `Opportunities`
+  String get opportunities {
+    return Intl.message(
+      'Opportunities',
+      name: 'opportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Courses`
+  String get courses {
+    return Intl.message('Courses', name: 'courses', desc: '', args: []);
+  }
+
+  /// `Achievements`
+  String get achievements {
+    return Intl.message(
+      'Achievements',
+      name: 'achievements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Videos Reports`
+  String get analyzedVideosReports {
+    return Intl.message(
+      'Analyzed Videos Reports',
+      name: 'analyzedVideosReports',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Interests`
+  String get interests {
+    return Intl.message('Interests', name: 'interests', desc: '', args: []);
+  }
+
+  /// `Show all`
+  String get showAll {
+    return Intl.message('Show all', name: 'showAll', desc: '', args: []);
+  }
+
+  /// `More details`
+  String get moreDetails {
+    return Intl.message(
+      'More details',
+      name: 'moreDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Skills`
+  String get skills {
+    return Intl.message('Skills', name: 'skills', desc: '', args: []);
+  }
+
+  /// `Connected successfully!`
+  String get connectionSuccess {
+    return Intl.message(
+      'Connected successfully!',
+      name: 'connectionSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to connect`
+  String get connectionError {
+    return Intl.message(
+      'Failed to connect',
+      name: 'connectionError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Following successfully!`
+  String get followSuccess {
+    return Intl.message(
+      'Following successfully!',
+      name: 'followSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to follow`
+  String get followError {
+    return Intl.message(
+      'Failed to follow',
+      name: 'followError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unfollowed successfully!`
+  String get unfollowSuccess {
+    return Intl.message(
+      'Unfollowed successfully!',
+      name: 'unfollowSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disconnected successfully!`
+  String get disconnectSuccess {
+    return Intl.message(
+      'Disconnected successfully!',
+      name: 'disconnectSuccess',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
 
@@ -7,14 +8,20 @@ class InterestsSection extends StatelessWidget {
   final VoidCallback? onShowAll;
   final Function(Interest, bool)? onConnectToggle;
   final Function(Interest, bool)? onFollowToggle;
+  final Function(Interest)? onInterestTap;
+  final ThemeData theme;
+  final S string;
 
   const InterestsSection({
-    super.key,
+    Key? key,
     required this.interests,
     this.onShowAll,
     this.onConnectToggle,
     this.onFollowToggle,
-  });
+    this.onInterestTap,
+    required this.theme,
+    required this.string,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,73 +31,81 @@ class InterestsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: 'Interests',
+          title: string.interests,
           onShowAllPressed: onShowAll,
         ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: interests.length > 3 ? 3 : interests.length,
+          itemCount: interests.length > 6 ? 6 : interests.length,
           itemBuilder: (context, index) {
             final interest = interests[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundImage: interest.profileImage.isNotEmpty
-                        ? NetworkImage(interest.profileImage)
-                        : null,
-                    child: interest.profileImage.isEmpty
-                        ? Text(
-                            interest.name.isNotEmpty 
-                                ? interest.name[0].toUpperCase() 
-                                : '?',
-                            style: const TextStyle(fontSize: 18),
-                          )
-                        : null,
+                  GestureDetector(
+                    onTap: () => onInterestTap?.call(interest),
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundImage: interest.profileImage.isNotEmpty
+                          ? NetworkImage(interest.profileImage)
+                          : null,
+                      backgroundColor: theme.colorScheme.surfaceVariant,
+                      child: interest.profileImage.isEmpty
+                          ? Text(
+                              interest.name.isNotEmpty
+                                  ? interest.name[0].toUpperCase()
+                                  : '?',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            )
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          interest.name,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                    child: GestureDetector(
+                      onTap: () => onInterestTap?.call(interest),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            interest.name,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          interest.role,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
+                          const SizedBox(height: 2),
+                          Text(
+                            interest.role,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   _buildActionButton(
-                    label: interest.isConnected ? 'Connected' : 'Connect',
+                    label: interest.isConnected ? string.connected : string.connect,
                     isActive: interest.isConnected,
                     onPressed: () => onConnectToggle?.call(
-                      interest, 
+                      interest,
                       !interest.isConnected,
                     ),
                   ),
                   const SizedBox(width: 8),
                   _buildActionButton(
-                    label: interest.isFollowing ? 'Following' : 'Follow',
+                    label: interest.isFollowing ? string.following : string.follow,
                     isActive: interest.isFollowing,
                     isPrimary: true,
                     onPressed: () => onFollowToggle?.call(
-                      interest, 
+                      interest,
                       !interest.isFollowing,
                     ),
                   ),
@@ -113,14 +128,14 @@ class InterestsSection extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        backgroundColor: (isPrimary && !isActive) 
-            ? const Color(0xFF1E3A5F) 
+        backgroundColor: (isPrimary && !isActive)
+            ? theme.colorScheme.primary
             : Colors.transparent,
-        foregroundColor: (isPrimary && !isActive) 
-            ? Colors.white 
-            : const Color(0xFF1E3A5F),
-        side: const BorderSide(
-          color: Color(0xFF1E3A5F),
+        foregroundColor: (isPrimary && !isActive)
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.primary,
+        side: BorderSide(
+          color: theme.colorScheme.primary,
           width: 1.5,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -131,7 +146,9 @@ class InterestsSection extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        style: theme.textTheme.bodySmall?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

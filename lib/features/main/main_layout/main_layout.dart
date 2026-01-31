@@ -16,7 +16,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     const Center(child: Text("Search")),
     const Center(child: Text("Messages")),
 
-    My_ProfileScreen(),
+    MyProfileScreen(),
   ];
 
   void _onItemTapped(int index) {

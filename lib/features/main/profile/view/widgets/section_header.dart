@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
   final VoidCallback? onShowAllPressed;
 
   const SectionHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.onShowAllPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final string = S.of(context);
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
@@ -19,10 +23,9 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           if (onShowAllPressed != null)
@@ -33,11 +36,10 @@ class SectionHeader extends StatelessWidget {
                 minimumSize: const Size(50, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text(
-                'Show all',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.blue,
+              child: Text(
+                string.showAll,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),

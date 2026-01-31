@@ -247,5 +247,29 @@
   "forbidden": "الوصول محظور",
   "conflict": "حدث تعارض في البيانات",
   "serviceUnavailable": "الخدمة غير متاحة مؤقتاً",
-  "userNotFound": "المستخدم غير موجود"
+  "userNotFound": "المستخدم غير موجود",
+
+
+  "following": "متابع",
+  "followers": "يتابع",
+  "connections": "الاتصالات",
+  "analyzedPeople": "الأشخاص المحللون",
+  "connect": "اتصل",
+  "follow": "تابع",
+  "connected": "متصل",
+  "posts": "المنشورات",
+  "opportunities": "الفرص",
+  "courses": "الدورات",
+  "achievements": "الإنجازات",
+  "analyzedVideosReports": "تقارير الفيديو المحللة",
+  "interests": "الاهتمامات",
+  "showAll": "عرض الكل",
+  "moreDetails": "المزيد من التفاصيل",
+  "skills": "المهارات",
+  "connectionSuccess": "تم الاتصال بنجاح!",
+  "connectionError": "فشل الاتصال",
+  "followSuccess": "تمت المتابعة بنجاح!",
+  "followError": "فشلت المتابعة",
+  "unfollowSuccess": "تم إلغاء المتابعة بنجاح!",
+  "disconnectSuccess": "تم قطع الاتصال بنجاح!"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 
 class ProfileStatsWidget extends StatelessWidget {
@@ -7,15 +8,19 @@ class ProfileStatsWidget extends StatelessWidget {
   final VoidCallback? onFollowingPressed;
   final VoidCallback? onConnectionsPressed;
   final VoidCallback? onAnalyzedPeoplePressed;
+  final ThemeData theme;
+  final S string;
 
   const ProfileStatsWidget({
-    Key? key,
+    super.key,
     required this.stats,
     this.onFollowersPressed,
     this.onFollowingPressed,
     this.onConnectionsPressed,
     this.onAnalyzedPeoplePressed,
-  }) : super(key: key);
+    required this.theme,
+    required this.string,
+  });
 
   String _formatCount(String count) {
     final number = int.tryParse(count.replaceAll(',', '')) ?? 0;
@@ -27,44 +32,44 @@ class ProfileStatsWidget extends StatelessWidget {
     return count;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+@override
+Widget build(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem(
-            context,
-            label: 'Followers',
+            label: string.followers,
             value: _formatCount(stats.followers),
             onTap: onFollowersPressed,
           ),
+          const SizedBox(width: 24),
           _buildStatItem(
-            context,
-            label: 'Following',
+            label: string.following,
             value: _formatCount(stats.following),
             onTap: onFollowingPressed,
           ),
+          const SizedBox(width: 24),
           _buildStatItem(
-            context,
-            label: 'Connections',
+            label: string.connections,
             value: _formatCount(stats.connections),
             onTap: onConnectionsPressed,
           ),
+          const SizedBox(width: 24),
           _buildStatItem(
-            context,
-            label: 'Analyzed people',
+            label: string.analyzedPeople,
             value: _formatCount(stats.analyzedPeople),
             onTap: onAnalyzedPeoplePressed,
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildStatItem(
-    BuildContext context, {
+  Widget _buildStatItem({
     required String label,
     required String value,
     VoidCallback? onTap,
@@ -78,18 +83,16 @@ class ProfileStatsWidget extends StatelessWidget {
           children: [
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onTertiaryFixed,
               ),
               textAlign: TextAlign.center,
             ),

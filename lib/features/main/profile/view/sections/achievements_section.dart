@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
 
@@ -6,13 +8,17 @@ class AchievementsSection extends StatelessWidget {
   final List<Achievement> achievements;
   final VoidCallback? onShowAll;
   final Function(Achievement)? onAchievementTap;
+  final ThemeData theme;
+  final S string;
 
   const AchievementsSection({
-    Key? key,
+    super.key,
     required this.achievements,
     this.onShowAll,
     this.onAchievementTap,
-  }) : super(key: key);
+    required this.theme,
+    required this.string,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +27,7 @@ class AchievementsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(
-          title: 'Achievements',
-          onShowAllPressed: onShowAll,
-        ),
+        SectionHeader(title: string.achievements, onShowAllPressed: onShowAll),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -44,12 +47,15 @@ class AchievementsSection extends StatelessWidget {
                       child: Container(
                         width: 50,
                         height: 50,
-                        color: Colors.grey[200],
+                        color: theme.colorScheme.surfaceVariant,
                         child: Image.network(
                           achievement.imageUrl,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.emoji_events, color: Colors.grey);
+                            return Icon(
+                              Icons.emoji_events,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            );
                           },
                         ),
                       ),
@@ -61,19 +67,20 @@ class AchievementsSection extends StatelessWidget {
                         children: [
                           Text(
                             achievement.title,
-                            style: const TextStyle(
-                              fontSize: 15,
+                            style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             achievement.subtitle,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
+                            style: TextStyle(
+                              color: ColorManager.borderCircular,
                             ),
+                            // style: theme.textTheme.bodySmall?.copyWith(
+                            //   color: theme.colorScheme.onSurfaceVariant,
+                            // ),
                           ),
                         ],
                       ),

@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 
 class ClubDataSection extends StatelessWidget {
   final ClubSpecificData data;
+  final ThemeData theme;
+  final S string;
 
   const ClubDataSection({
     super.key,
     required this.data,
+    required this.theme,
+    required this.string,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (data.foundedYear != null)
-            _buildInfoRow('Foundation date', data.foundedYear!),
+            _buildInfoRow(string.foundDate, data.foundedYear!),
           if (data.sport != null)
-            _buildInfoRow('Sports', data.sport!),
+            _buildInfoRow(string.sport, data.sport!),
         ],
       ),
     );
@@ -33,10 +38,9 @@ class ClubDataSection extends StatelessWidget {
         children: [
           Text(
             '$label:',
-            style: const TextStyle(
-              fontSize: 13,
+            style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(width: 18),
@@ -44,9 +48,8 @@ class ClubDataSection extends StatelessWidget {
             child: Text(
               value,
               softWrap: true,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Color.fromARGB(255, 71, 89, 24),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.secondary,
               ),
             ),
           ),
