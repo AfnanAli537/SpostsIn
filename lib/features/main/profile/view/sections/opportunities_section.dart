@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OpportunitiesSection extends StatelessWidget {
   final List<Opportunity> opportunities;
@@ -31,21 +32,21 @@ class OpportunitiesSection extends StatelessWidget {
           onShowAllPressed: onShowAll,
         ),
         SizedBox(
-          height: 100,
+          height: 100.h,
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
             itemCount: opportunities.length > 6 ? 6 : opportunities.length,
             itemBuilder: (context, index) {
               final opportunity = opportunities[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 12),
+                padding: EdgeInsets.only(right: 12.w),
                 child: GestureDetector(
                   onTap: () => onOpportunityTap?.call(opportunity),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     child: Container(
-                      width: 100,
+                      width: 100.w,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceVariant,
                       ),
@@ -68,7 +69,7 @@ class OpportunitiesSection extends StatelessWidget {
             },
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
       ],
     );
   }

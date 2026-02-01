@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PlayerDataSection extends StatelessWidget {
   final PlayerSpecificData data;
@@ -18,7 +19,7 @@ class PlayerDataSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -33,15 +34,15 @@ class PlayerDataSection extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (data.height != null)
-                  _buildInfoRow(string.height, '${data.height} cm'),
+                  _buildInfoRow(string.height, '${data.height}'),
                 if (data.weight != null)
-                  _buildInfoRow(string.weight, '${data.weight} kg'),
+                  _buildInfoRow(string.weight, '${data.weight}'),
                 if (data.age != null)
                   _buildInfoRow(string.age, '${data.age} ${string.yearsOfExperience0to2.split(' ')[1]}'),
               ],
@@ -54,7 +55,7 @@ class PlayerDataSection extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: EdgeInsets.only(bottom: 8.0.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,7 +66,7 @@ class PlayerDataSection extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
           ),
-          const SizedBox(width: 18),
+          SizedBox(width: 18.w),
           Expanded(
             child: Text(
               value,

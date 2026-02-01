@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ScoutDataSection extends StatelessWidget {
   final ScoutSpecificData data;
@@ -17,7 +18,7 @@ class ScoutDataSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 12.0.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -35,7 +36,7 @@ class ScoutDataSection extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: EdgeInsets.only(bottom: 8.0.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -46,7 +47,7 @@ class ScoutDataSection extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
           ),
-          const SizedBox(width: 18),
+          SizedBox(width: 18.w),
           Expanded(
             child: Text(
               value,

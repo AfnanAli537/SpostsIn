@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileStatsWidget extends StatelessWidget {
   final ProfileStats stats;
@@ -35,7 +36,7 @@ class ProfileStatsWidget extends StatelessWidget {
 @override
 Widget build(BuildContext context) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+    padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 16.0.h),
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -45,19 +46,19 @@ Widget build(BuildContext context) {
             value: _formatCount(stats.followers),
             onTap: onFollowersPressed,
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: 24.w),
           _buildStatItem(
             label: string.following,
             value: _formatCount(stats.following),
             onTap: onFollowingPressed,
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: 24.w),
           _buildStatItem(
             label: string.connections,
             value: _formatCount(stats.connections),
             onTap: onConnectionsPressed,
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: 24.w),
           _buildStatItem(
             label: string.analyzedPeople,
             value: _formatCount(stats.analyzedPeople),
@@ -76,9 +77,9 @@ Widget build(BuildContext context) {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(8.r),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 4.0.h),
         child: Column(
           children: [
             Text(
@@ -88,7 +89,7 @@ Widget build(BuildContext context) {
                 color: theme.colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(

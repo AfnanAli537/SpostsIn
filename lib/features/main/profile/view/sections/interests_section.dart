@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InterestsSection extends StatelessWidget {
   final List<Interest> interests;
@@ -37,18 +38,18 @@ class InterestsSection extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           itemCount: interests.length > 6 ? 6 : interests.length,
           itemBuilder: (context, index) {
             final interest = interests[index];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: 12.h),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => onInterestTap?.call(interest),
                     child: CircleAvatar(
-                      radius: 24,
+                      radius: 24.r,
                       backgroundImage: interest.profileImage.isNotEmpty
                           ? NetworkImage(interest.profileImage)
                           : null,
@@ -59,14 +60,14 @@ class InterestsSection extends StatelessWidget {
                                   ? interest.name[0].toUpperCase()
                                   : '?',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.sp,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             )
                           : null,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(
                     child: GestureDetector(
                       onTap: () => onInterestTap?.call(interest),
@@ -80,7 +81,7 @@ class InterestsSection extends StatelessWidget {
                               color: theme.colorScheme.onSurface,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           Text(
                             interest.role,
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -99,7 +100,7 @@ class InterestsSection extends StatelessWidget {
                       !interest.isConnected,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   _buildActionButton(
                     label: interest.isFollowing ? string.following : string.follow,
                     isActive: interest.isFollowing,
@@ -114,7 +115,7 @@ class InterestsSection extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
       ],
     );
   }
@@ -136,12 +137,12 @@ class InterestsSection extends StatelessWidget {
             : theme.colorScheme.primary,
         side: BorderSide(
           color: theme.colorScheme.primary,
-          width: 1.5,
+          width: 1.5.w,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        minimumSize: const Size(80, 32),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        minimumSize: Size(80.w, 32.h),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
       ),
       child: Text(

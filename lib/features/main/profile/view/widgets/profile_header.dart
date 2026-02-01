@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../model/profile_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileHeader extends StatelessWidget {
   final ProfileModel profile;
@@ -16,7 +17,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0.r),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,11 +29,11 @@ class ProfileHeader extends StatelessWidget {
             child: profile.profileImage == null
                 ? Text(
                     profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
                   )
                 : null,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,18 +43,18 @@ class ProfileHeader extends StatelessWidget {
                     Expanded(
                       child: Text(
                         profile.name,
-                        style: const TextStyle(
-                          fontSize: 20,
+                        style: TextStyle(
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                     if (isOwnProfile && onEditPressed != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
                         decoration: BoxDecoration(
                           color: const Color(0xFF1E3A5F),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(16.r),
                         ),
                         child: Row( 
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,13 +62,13 @@ class ProfileHeader extends StatelessWidget {
                           Text('Edit', style: const TextStyle(color: Colors.white)),
 
                           IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.white, size: 16),
+                          icon: Icon(Icons.edit, color: Colors.white, size: 16.sp),
                           onPressed: onEditPressed,
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
+                          constraints:  BoxConstraints(
+                            minWidth: 36.w,
+                            minHeight: 36.h,
                           ),
-                          padding: const EdgeInsets.all(4),
+                          padding: EdgeInsets.all(4.r),
                         ),
                         
                         ]
@@ -75,15 +76,15 @@ class ProfileHeader extends StatelessWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Row(
                   children: [
-                    const Icon(Icons.sports, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
+                    Icon(Icons.sports, size: 14.sp, color: Colors.grey),
+                    SizedBox(width: 4.w),
                     Text(
                       profile.role,
-                      style: const TextStyle(
-                        fontSize: 13,
+                      style: TextStyle(
+                        fontSize: 13.sp,
                         color: Colors.grey,
                       ),
                     ),

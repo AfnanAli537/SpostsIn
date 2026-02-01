@@ -13,6 +13,7 @@ import 'sections/coach_data_section.dart';
 import 'sections/scout_data_section.dart';
 import 'sections/club_data_section.dart';
 import 'sections/institute_data_section.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileSectionFactory {
   static Widget buildUserSpecificDataSection(
@@ -198,12 +199,12 @@ class ProfileSectionFactory {
       theme: theme,
       string: string,
     ));
-    sections.add(Divider(height: 1, color: theme.dividerColor));
+    sections.add(Divider(height: 1.h, color: theme.dividerColor));
 
     if (!isOwnProfile) {
       sections.add(
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 16.h),
           child: Row(
             children: [
               Expanded(
@@ -218,7 +219,7 @@ class ProfileSectionFactory {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Expanded(
                 child: ElevatedButton(
                   onPressed: onFollowPressed,

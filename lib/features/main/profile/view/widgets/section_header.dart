@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -17,7 +18,7 @@ class SectionHeader extends StatelessWidget {
     final string = S.of(context);
     
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 12.0.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -33,7 +34,7 @@ class SectionHeader extends StatelessWidget {
               onPressed: onShowAllPressed,
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
-                minimumSize: const Size(50, 30),
+                minimumSize: Size(50.w, 30.h),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(

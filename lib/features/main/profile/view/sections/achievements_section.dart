@@ -3,6 +3,7 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AchievementsSection extends StatelessWidget {
   final List<Achievement> achievements;
@@ -31,22 +32,22 @@ class AchievementsSection extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           itemCount: achievements.length > 3 ? 3 : achievements.length,
           itemBuilder: (context, index) {
             final achievement = achievements[index];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: 12.h),
               child: InkWell(
                 onTap: () => onAchievementTap?.call(achievement),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.r),
                 child: Row(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       child: Container(
-                        width: 50,
-                        height: 50,
+                        width: 50.w,
+                        height: 50.h,
                         color: theme.colorScheme.surfaceVariant,
                         child: Image.network(
                           achievement.imageUrl,
@@ -60,7 +61,7 @@ class AchievementsSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +73,7 @@ class AchievementsSection extends StatelessWidget {
                               color: theme.colorScheme.onSurface,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           Text(
                             achievement.subtitle,
                             style: TextStyle(
@@ -91,7 +92,7 @@ class AchievementsSection extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
       ],
     );
   }

@@ -11,6 +11,7 @@ import 'widgets/profile_header.dart';
 import 'widgets/profile_description.dart';
 import 'widgets/profile_stats_widget.dart';
 import 'profile_section_factory.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? userId;
@@ -120,23 +121,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             ProfileHeader(profile: fakeProfile, isOwnProfile: false),
             ProfileDescription(description: fakeProfile.description),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             ProfileStatsWidget(stats: fakeProfile.stats, theme: theme, string: S.of(context)),
             Divider(height: 1, color: theme.dividerColor),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 20,
-                    width: 150,
+                    height: 20.h,
+                    width: 150.w,
                     color: theme.colorScheme.surfaceVariant,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Container(
-                    height: 100,
+                    height: 100.h,
                     width: double.infinity,
                     color: theme.colorScheme.surfaceVariant,
                   ),
@@ -156,15 +157,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(
             Icons.error_outline,
-            size: 60,
+            size: 60.sp,
             color: theme.colorScheme.error,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Text(
             'Error loading profile',
             style: theme.textTheme.headlineMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -172,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           ElevatedButton(
             onPressed: _loadProfile,
             child: Text(string.done),
@@ -207,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               //     : null,
             ),
             ProfileDescription(description: profile.description),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             if (isLoading)
               const Center(
                 child: Padding(
@@ -256,7 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // _navigateToUserProfile(context, interest.id);
                 },
               ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
           ],
         ),
       ),

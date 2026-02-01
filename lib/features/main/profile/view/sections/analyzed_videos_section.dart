@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnalyzedVideosSection extends StatelessWidget {
   final List<AnalyzedVideoReport> videos;
@@ -33,21 +34,21 @@ class AnalyzedVideosSection extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           itemCount: videos.length > 2 ? 2 : videos.length,
           itemBuilder: (context, index) {
             final video = videos[index];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: 12.h),
               child: InkWell(
                 onTap: () => onVideoTap?.call(video),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
                 child: Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       child: Container(
-                        height: 180,
+                        height: 180.h,
                         width: double.infinity,
                         color: theme.colorScheme.surfaceVariant,
                         child: Image.network(
@@ -58,7 +59,7 @@ class AnalyzedVideosSection extends StatelessWidget {
                               child: Icon(
                                 Icons.play_circle_outline,
                                 color: theme.colorScheme.onSurfaceVariant,
-                                size: 50,
+                                size: 50.sp,
                               ),
                             );
                           },
@@ -66,9 +67,9 @@ class AnalyzedVideosSection extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      bottom: 12,
-                      left: 12,
-                      right: 12,
+                      bottom: 12.h,
+                      left: 12.w,
+                      right: 12.w,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -103,15 +104,15 @@ class AnalyzedVideosSection extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.more_vert,
                             color: Colors.white,
-                            size: 20,
+                            size: 20.sp,
                           ),
                           onPressed: () {},
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
+                          constraints: BoxConstraints(
+                            minWidth: 32.w,
+                            minHeight: 32.h,
                           ),
                           padding: EdgeInsets.zero,
                         ),
@@ -124,23 +125,23 @@ class AnalyzedVideosSection extends StatelessWidget {
           },
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Center(
             child: TextButton(
               onPressed: onShowAll,
               style: TextButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
               child: Text(string.moreDetails),
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
       ],
     );
   }
@@ -151,20 +152,20 @@ class AnalyzedVideosSection extends StatelessWidget {
     Color? color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: color ?? Colors.black),
-          const SizedBox(width: 4),
+          Icon(icon, size: 14.sp, color: color ?? Colors.black),
+          SizedBox(width: 4.w),
           Text(
             label,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 11.sp,
               fontWeight: FontWeight.w600,
               color: color ?? Colors.black,
             ),
