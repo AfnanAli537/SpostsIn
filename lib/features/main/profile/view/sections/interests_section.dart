@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
+import '../../../../../core/widgets/connect_button.dart';
+import '../../../../../core/widgets/follow_button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InterestsSection extends StatelessWidget {
   final List<Interest> interests;
   final VoidCallback? onShowAll;
-  final Function(Interest, bool)? onConnectToggle;
-  final Function(Interest, bool)? onFollowToggle;
+  final Function(Interest)? onConnectToggle;
+  final Function(Interest)? onFollowToggle;
   final Function(Interest)? onInterestTap;
   final ThemeData theme;
   final S string;
@@ -115,22 +117,20 @@ class InterestsSection extends StatelessWidget {
                           Row(
                             children: [
                               Expanded(
-                                child: _buildConnectButton(
+                                child: ConnectButton(
                                   isConnected: interest.isConnected,
-                                  onPressed: () => onConnectToggle?.call(
-                                    interest,
-                                    !interest.isConnected,
-                                  ),
+                                  onPressed: () => onConnectToggle?.call(interest),
+                                  connectedText: string.connected,
+                                  connectText: string.connect,
                                 ),
                               ),
                               SizedBox(width: 12.w),
                               Expanded(
-                                child: _buildFollowButton(
+                                child: FollowButton(
                                   isFollowing: interest.isFollowing,
-                                  onPressed: () => onFollowToggle?.call(
-                                    interest,
-                                    !interest.isFollowing,
-                                  ),
+                                  onPressed: () => onFollowToggle?.call(interest),
+                                  followingText: string.following,
+                                  followText: string.follow,
                                 ),
                               ),
                             ],
@@ -146,77 +146,6 @@ class InterestsSection extends StatelessWidget {
         ),
         SizedBox(height: 24.h),
       ],
-    );
-  }
-
-  Widget _buildConnectButton({
-    required bool isConnected,
-    required VoidCallback onPressed,
-  }) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        foregroundColor: isConnected
-            ? theme.colorScheme.onSurfaceVariant
-            : theme.colorScheme.primary,
-        side: BorderSide(
-          color: isConnected
-              ? theme.colorScheme.outline
-              : theme.colorScheme.primary,
-          width: 1.w,
-        ),
-        padding: EdgeInsets.symmetric(vertical: 6.h),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-      ),
-      child: Text(
-        isConnected ? string.connected : string.connect,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color:isConnected
-            ? theme.colorScheme.outline
-            : theme.colorScheme.primary,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFollowButton({
-    required bool isFollowing,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isFollowing
-            ? Colors.transparent
-            : theme.colorScheme.primary,
-        foregroundColor: isFollowing
-            ? theme.colorScheme.primary
-            : theme.colorScheme.onTertiary,
-        side: isFollowing
-            ? BorderSide(
-                color: theme.colorScheme.primary,
-                width: 1.5.w,
-              )
-            : null,
-        elevation: 0,
-        padding: EdgeInsets.symmetric(vertical: 6.h),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-      ),
-      child: Text(
-        isFollowing ? string.following : string.follow,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: isFollowing
-            ? theme.colorScheme.primary
-            : theme.colorScheme.onSecondaryFixed,
-        ),
-      ),
     );
   }
 }

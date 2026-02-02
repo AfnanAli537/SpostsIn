@@ -17,4 +17,5 @@ abstract class AppRoutes {
   static const String mainLayout = '/mainLayout';
 
   static const String userProfile = '/user-profile'; 
+  static const String editProfile = '/edit-profile'; 
 }

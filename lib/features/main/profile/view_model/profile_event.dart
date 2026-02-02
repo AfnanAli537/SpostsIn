@@ -4,36 +4,20 @@ class LoadMyProfile extends ProfileEvent {}
 
 class LoadUserProfile extends ProfileEvent {
   final String userId;
-  
   LoadUserProfile(this.userId);
 }
 
-class FollowUser extends ProfileEvent {
+class ToggleFollowUser extends ProfileEvent {
   final String userId;
-  
-  FollowUser(this.userId);
+  ToggleFollowUser(this.userId);
 }
 
-class UnfollowUser extends ProfileEvent {
+class ToggleConnectUser extends ProfileEvent {
   final String userId;
-  
-  UnfollowUser(this.userId);
-}
-
-class ConnectWithUser extends ProfileEvent {
-  final String userId;
-  
-  ConnectWithUser(this.userId);
-}
-
-class DisconnectFromUser extends ProfileEvent {
-  final String userId;
-  
-  DisconnectFromUser(this.userId);
+  ToggleConnectUser(this.userId);
 }
 
 class UpdateProfile extends ProfileEvent {
   final Map<String, dynamic> updateData;
-  
   UpdateProfile(this.updateData);
 }

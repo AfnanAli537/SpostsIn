@@ -59,19 +59,19 @@ class ProfileHeader extends StatelessWidget {
                     if (isOwnProfile && onEditPressed != null)
                       GestureDetector(
                         onTap:
-                            onEditPressed, // Now the whole button area is clickable
+                            onEditPressed, 
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.w,
                             vertical: 8.h,
-                          ), // Added vertical padding for better tap target
+                          ), 
                           decoration: BoxDecoration(
                             color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(16.r),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize
-                                .min, // Shrinks container to fit content width
+                                .min, 
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(

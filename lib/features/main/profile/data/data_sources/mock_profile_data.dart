@@ -11,7 +11,11 @@ class MockProfileData implements IProfileDataSource {
   @override
   Future<ProfileModel> getUserProfile(String userId) async {
     await Future.delayed(const Duration(seconds: 1));
-    return ProfileModel.fromJson(getCoachProfileData()['data']);
+    // Return different profiles based on userId for testing
+    if (userId == 'coach_001') {
+      return ProfileModel.fromJson(getCoachProfileData()['data']);
+    }
+    return ProfileModel.fromJson(_getPlayerProfileData()['data']);
   }
 
   @override
@@ -21,23 +25,63 @@ class MockProfileData implements IProfileDataSource {
   }
 
   @override
-  Future<void> followUser(String userId) async {
+  Future<void> toggleFollow(String userId) async {
     await Future.delayed(const Duration(milliseconds: 300));
+    // Simulate successful toggle
+    print('Mock: Toggled follow for user $userId');
   }
 
   @override
-  Future<void> unfollowUser(String userId) async {
+  Future<void> toggleConnect(String userId) async {
     await Future.delayed(const Duration(milliseconds: 300));
+    // Simulate successful toggle
+    print('Mock: Toggled connect for user $userId');
   }
 
   @override
-  Future<void> connectWithUser(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+  Future<List<Post>> getPosts({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final data = _getPlayerProfileData()['data']['posts'] as List;
+    return data.map((e) => Post.fromJson(e)).toList();
   }
 
   @override
-  Future<void> disconnectFromUser(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+  Future<List<Opportunity>> getOpportunities({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final data = getCoachProfileData()['data']['opportunities'] as List?;
+    if (data == null) return [];
+    return data.map((e) => Opportunity.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<Course>> getCourses({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final data = getCoachProfileData()['data']['courses'] as List?;
+    if (data == null) return [];
+    return data.map((e) => Course.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<Interest>> getInterests({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final data = _getPlayerProfileData()['data']['interests'] as List;
+    return data.map((e) => Interest.fromJson(e)).toList();
   }
 
   static Map<String, dynamic> _getPlayerProfileData() {
@@ -149,7 +193,6 @@ class MockProfileData implements IProfileDataSource {
     };
   }
 
-  // Add other user type data methods
   static Map<String, dynamic> getCoachProfileData() {
     return {
       "success": true,
@@ -160,6 +203,8 @@ class MockProfileData implements IProfileDataSource {
         "role": "Coach - Football",
         "description": "Passionate about sports and continuous improvement. Focused on performance.",
         "userType": "coach",
+        "isConnected": false, // ADD THIS
+        "isFollowing": false, // ADD THIS
         "stats": {
           "followers": "115500",
           "following": "150",
@@ -199,11 +244,11 @@ class MockProfileData implements IProfileDataSource {
         ],
         "interests": [
           {
-            "id": "user_1",
-            "name": "Celeb Reed",
+            "id": "player_001",
+            "name": "Abhishek Patel",
             "role": "Athlete",
-            "profileImage": "https://i.pravatar.cc/100?img=5",
-            "isConnected": true,
+            "profileImage": "https://i.pravatar.cc/100?img=12",
+            "isConnected": false,
             "isFollowing": false
           },
           {
@@ -239,10 +284,10 @@ class MockProfileData implements IProfileDataSource {
             "isFollowing": false
           },
           {
-            "id": "user_6",
-            "name": "John Williams",
+            "id": "user_7",
+            "name": "Alex Brown",
             "role": "Manager",
-            "profileImage": "https://i.pravatar.cc/100?img=10",
+            "profileImage": "https://i.pravatar.cc/100?img=11",
             "isConnected": false,
             "isFollowing": true
           }

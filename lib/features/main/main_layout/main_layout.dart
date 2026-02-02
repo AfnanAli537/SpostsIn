@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/features/main/profile/view/my_profile_screen.dart';
+import 'package:sports_in/features/main/profile/view/presentation/my_profile_screen.dart';
 
 class CustomBottomNav extends StatefulWidget {
   const CustomBottomNav({super.key});

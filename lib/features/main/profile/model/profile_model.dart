@@ -18,6 +18,8 @@ class ProfileModel {
   final ClubSpecificData? clubData;
   final InstituteSpecificData? instituteData;
   final OtherSpecificData? otherData;
+  final bool isConnected; // Track if current user is connected to this profile
+  final bool isFollowing; // Track if current user is following this profile
 
   ProfileModel({
     required this.id,
@@ -39,11 +41,13 @@ class ProfileModel {
     this.clubData,
     this.instituteData,
     this.otherData,
+    this.isConnected = false,
+    this.isFollowing = false,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     final userType = _parseUserType(json['userType'] ?? json['user_type']);
-    
+
     return ProfileModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
@@ -52,27 +56,30 @@ class ProfileModel {
       description: json['description'] ?? '',
       userType: userType,
       stats: ProfileStats.fromJson(json['stats'] ?? {}),
-      posts: (json['posts'] as List?)
-              ?.map((e) => Post.fromJson(e))
-              .toList() ?? [],
-      achievements: (json['achievements'] as List?)
+      posts:
+          (json['posts'] as List?)?.map((e) => Post.fromJson(e)).toList() ?? [],
+      achievements:
+          (json['achievements'] as List?)
               ?.map((e) => Achievement.fromJson(e))
-              .toList() ?? [],
-      analyzedVideos: (json['analyzedVideos'] as List?)
+              .toList() ??
+          [],
+      analyzedVideos:
+          (json['analyzedVideos'] as List?)
               ?.map((e) => AnalyzedVideoReport.fromJson(e))
-              .toList() ?? [],
-      interests: (json['interests'] as List?)
+              .toList() ??
+          [],
+      interests:
+          (json['interests'] as List?)
               ?.map((e) => Interest.fromJson(e))
-              .toList() ?? [],
+              .toList() ??
+          [],
       opportunities: json['opportunities'] != null
           ? (json['opportunities'] as List)
-              .map((e) => Opportunity.fromJson(e))
-              .toList()
+                .map((e) => Opportunity.fromJson(e))
+                .toList()
           : null,
       courses: json['courses'] != null
-          ? (json['courses'] as List)
-              .map((e) => Course.fromJson(e))
-              .toList()
+          ? (json['courses'] as List).map((e) => Course.fromJson(e)).toList()
           : null,
       playerData: userType == UserType.player && json['playerData'] != null
           ? PlayerSpecificData.fromJson(json['playerData'])
@@ -86,12 +93,15 @@ class ProfileModel {
       clubData: userType == UserType.club && json['clubData'] != null
           ? ClubSpecificData.fromJson(json['clubData'])
           : null,
-      instituteData: userType == UserType.institute && json['instituteData'] != null
+      instituteData:
+          userType == UserType.institute && json['instituteData'] != null
           ? InstituteSpecificData.fromJson(json['instituteData'])
           : null,
       otherData: userType == UserType.other && json['otherData'] != null
           ? OtherSpecificData.fromJson(json['otherData'])
           : null,
+      isConnected: json['isConnected'] as bool? ?? false,
+      isFollowing: json['isFollowing'] as bool? ?? false,
     );
   }
 
@@ -133,18 +143,61 @@ class ProfileModel {
       'clubData': clubData?.toJson(),
       'instituteData': instituteData?.toJson(),
       'otherData': otherData?.toJson(),
+      'isConnected': isConnected,
+      'isFollowing': isFollowing,
     };
   }
+
+ProfileModel copyWith({
+  String? id,
+  String? name,
+  String? profileImage,
+  String? role,
+  String? description,
+  UserType? userType,
+  ProfileStats? stats,
+  List<Post>? posts,
+  List<Achievement>? achievements,
+  List<AnalyzedVideoReport>? analyzedVideos,
+  List<Interest>? interests,
+  List<Opportunity>? opportunities,
+  List<Course>? courses,
+  PlayerSpecificData? playerData,
+  CoachSpecificData? coachData,
+  ScoutSpecificData? scoutData,
+  ClubSpecificData? clubData,
+  InstituteSpecificData? instituteData,
+  OtherSpecificData? otherData,
+  bool? isConnected,
+  bool? isFollowing,
+}) {
+  return ProfileModel(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    profileImage: profileImage ?? this.profileImage,
+    role: role ?? this.role,
+    description: description ?? this.description,
+    userType: userType ?? this.userType,
+    stats: stats ?? this.stats,
+    posts: posts ?? this.posts,
+    achievements: achievements ?? this.achievements,
+    analyzedVideos: analyzedVideos ?? this.analyzedVideos,
+    interests: interests ?? this.interests,
+    opportunities: opportunities ?? this.opportunities,
+    courses: courses ?? this.courses,
+    playerData: playerData ?? this.playerData,
+    coachData: coachData ?? this.coachData,
+    scoutData: scoutData ?? this.scoutData,
+    clubData: clubData ?? this.clubData,
+    instituteData: instituteData ?? this.instituteData,
+    otherData: otherData ?? this.otherData,
+    isConnected: isConnected ?? this.isConnected,
+    isFollowing: isFollowing ?? this.isFollowing,
+  );
+}
 }
 
-enum UserType {
-  player,
-  coach,
-  scout,
-  club,
-  institute,
-  other,
-}
+enum UserType { player, coach, scout, club, institute, other }
 
 class ProfileStats {
   final String followers;
@@ -164,8 +217,10 @@ class ProfileStats {
       followers: json['followers']?.toString() ?? '0',
       following: json['following']?.toString() ?? '0',
       connections: json['connections']?.toString() ?? '0',
-      analyzedPeople: json['analyzedPeople']?.toString() ?? 
-                      json['analyzed_people']?.toString() ?? '0',
+      analyzedPeople:
+          json['analyzedPeople']?.toString() ??
+          json['analyzed_people']?.toString() ??
+          '0',
     );
   }
 
@@ -184,11 +239,7 @@ class Post {
   final String imageUrl;
   final String? title;
 
-  Post({
-    required this.id,
-    required this.imageUrl,
-    this.title,
-  });
+  Post({required this.id, required this.imageUrl, this.title});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -199,11 +250,7 @@ class Post {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'imageUrl': imageUrl,
-      'title': title,
-    };
+    return {'id': id, 'imageUrl': imageUrl, 'title': title};
   }
 }
 
@@ -324,11 +371,7 @@ class Opportunity {
   final String imageUrl;
   final String? title;
 
-  Opportunity({
-    required this.id,
-    required this.imageUrl,
-    this.title,
-  });
+  Opportunity({required this.id, required this.imageUrl, this.title});
 
   factory Opportunity.fromJson(Map<String, dynamic> json) {
     return Opportunity(
@@ -339,11 +382,7 @@ class Opportunity {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'imageUrl': imageUrl,
-      'title': title,
-    };
+    return {'id': id, 'imageUrl': imageUrl, 'title': title};
   }
 }
 
@@ -352,11 +391,7 @@ class Course {
   final String imageUrl;
   final String? title;
 
-  Course({
-    required this.id,
-    required this.imageUrl,
-    this.title,
-  });
+  Course({required this.id, required this.imageUrl, this.title});
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
@@ -367,11 +402,7 @@ class Course {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'imageUrl': imageUrl,
-      'title': title,
-    };
+    return {'id': id, 'imageUrl': imageUrl, 'title': title};
   }
 }
 
@@ -402,7 +433,8 @@ class PlayerSpecificData {
       preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
       specializedSport: json['specializedSport'] ?? json['specialized_sport'],
-      yearsOfExperience: json['yearsOfExperience'] ?? json['years_of_experience'],
+      yearsOfExperience:
+          json['yearsOfExperience'] ?? json['years_of_experience'],
     );
   }
 
@@ -435,7 +467,8 @@ class CoachSpecificData {
   factory CoachSpecificData.fromJson(Map<String, dynamic> json) {
     return CoachSpecificData(
       specializedSport: json['specializedSport'] ?? json['specialized_sport'],
-      yearsOfExperience: json['yearsOfExperience'] ?? json['years_of_experience'],
+      yearsOfExperience:
+          json['yearsOfExperience'] ?? json['years_of_experience'],
       certifications: json['certifications'],
       age: json['age']?.toString(),
     );
@@ -465,7 +498,8 @@ class ScoutSpecificData {
   factory ScoutSpecificData.fromJson(Map<String, dynamic> json) {
     return ScoutSpecificData(
       specializedSport: json['specializedSport'] ?? json['specialized_sport'],
-      yearsOfExperience: json['yearsOfExperience'] ?? json['years_of_experience'],
+      yearsOfExperience:
+          json['yearsOfExperience'] ?? json['years_of_experience'],
       organization: json['organization'],
     );
   }
@@ -484,11 +518,7 @@ class ClubSpecificData {
   final String? foundedYear;
   final String? sport;
 
-  ClubSpecificData({
-    this.location,
-    this.foundedYear,
-    this.sport,
-  });
+  ClubSpecificData({this.location, this.foundedYear, this.sport});
 
   factory ClubSpecificData.fromJson(Map<String, dynamic> json) {
     return ClubSpecificData(
@@ -499,11 +529,7 @@ class ClubSpecificData {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'location': location,
-      'foundedYear': foundedYear,
-      'sport': sport,
-    };
+    return {'location': location, 'foundedYear': foundedYear, 'sport': sport};
   }
 }
 
@@ -512,11 +538,7 @@ class InstituteSpecificData {
   final String? foundedYear;
   final String? accreditation;
 
-  InstituteSpecificData({
-    this.location,
-    this.foundedYear,
-    this.accreditation,
-  });
+  InstituteSpecificData({this.location, this.foundedYear, this.accreditation});
 
   factory InstituteSpecificData.fromJson(Map<String, dynamic> json) {
     return InstituteSpecificData(
@@ -538,9 +560,7 @@ class InstituteSpecificData {
 class OtherSpecificData {
   final Map<String, dynamic>? customData;
 
-  OtherSpecificData({
-    this.customData,
-  });
+  OtherSpecificData({this.customData});
 
   factory OtherSpecificData.fromJson(Map<String, dynamic> json) {
     return OtherSpecificData(
@@ -549,8 +569,6 @@ class OtherSpecificData {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'customData': customData,
-    };
+    return {'customData': customData};
   }
 }

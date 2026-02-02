@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/main/profile/view/widgets/profile_stats_widget.dart';
+import 'package:sports_in/core/widgets/connect_button.dart';
+import 'package:sports_in/core/widgets/follow_button.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../model/profile_model.dart';
 import 'sections/posts_section.dart';
 import 'sections/opportunities_section.dart';
@@ -14,7 +16,6 @@ import 'sections/coach_data_section.dart';
 import 'sections/scout_data_section.dart';
 import 'sections/club_data_section.dart';
 import 'sections/institute_data_section.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileSectionFactory {
   static Widget buildUserSpecificDataSection(
@@ -89,8 +90,8 @@ class ProfileSectionFactory {
     Function(Course)? onCourseTap,
     Function(Achievement)? onAchievementTap,
     Function(AnalyzedVideoReport)? onVideoTap,
-    Function(Interest, bool)? onConnectToggle,
-    Function(Interest, bool)? onFollowToggle,
+    Function(Interest)? onConnectToggle,
+    Function(Interest)? onFollowToggle,
     Function(Interest)? onInterestTap,
   }) {
     List<Widget> sections = [];
@@ -171,6 +172,8 @@ class ProfileSectionFactory {
     required bool isOwnProfile,
     required ThemeData theme,
     required S string,
+    bool isConnected = false, // ADD THIS
+    bool isFollowing = false, // ADD THIS
     VoidCallback? onPostsShowAll,
     VoidCallback? onOpportunitiesShowAll,
     VoidCallback? onCoursesShowAll,
@@ -182,8 +185,8 @@ class ProfileSectionFactory {
     Function(Course)? onCourseTap,
     Function(Achievement)? onAchievementTap,
     Function(AnalyzedVideoReport)? onVideoTap,
-    Function(Interest, bool)? onConnectToggle,
-    Function(Interest, bool)? onFollowToggle,
+    Function(Interest)? onConnectToggle,
+    Function(Interest)? onFollowToggle,
     Function(Interest)? onInterestTap,
     VoidCallback? onConnectPressed,
     VoidCallback? onFollowPressed,
@@ -200,37 +203,30 @@ class ProfileSectionFactory {
       theme: theme,
       string: string,
     ));
-    sections.add(Divider(height: 1.h, color: ColorManager.hintTextColor));
+    sections.add(Divider(height: 1, color: theme.colorScheme.onError));
 
     if (!isOwnProfile) {
       sections.add(
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: onConnectPressed,
-                  child: Text(
-                    'Connect', // Will be localized
-                    style: TextStyle(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                child: ConnectButton(
+                  isConnected: isConnected,
+                  onPressed: onConnectPressed ?? () {},
+                  connectedText: string.connected,
+                  connectText: string.connect,
+                  
                 ),
               ),
               SizedBox(width: 12.w),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: onFollowPressed,
-                  child: const Text(
-                    'Follow', // Will be localized
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                child: FollowButton(
+                  isFollowing: isFollowing,
+                  onPressed: onFollowPressed ?? () {},
+                  followingText: string.following,
+                  followText: string.follow,
                 ),
               ),
             ],
