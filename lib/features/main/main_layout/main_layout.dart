@@ -134,7 +134,7 @@ import 'package:sports_in/features/main/home/view/presentation/home_screen.dart'
 import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
 
 class CustomBottomNav extends StatefulWidget {
-  const CustomBottomNav({super.key});
+   CustomBottomNav({super.key});
 
   @override
   State<CustomBottomNav> createState() => _CustomBottomNavState();
@@ -143,7 +143,9 @@ class CustomBottomNav extends StatefulWidget {
 class _CustomBottomNavState extends State<CustomBottomNav> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages =  [
+ 
+
     HomePage(),
     Center(child: Text("Search")),
     Center(child: Text("Messages")),

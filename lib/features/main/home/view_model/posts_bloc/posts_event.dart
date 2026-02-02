@@ -36,18 +36,20 @@ class AddComment extends PostsEvent {
   List<Object?> get props => [postId, comment];
 }
 
+
 class UploadPost extends PostsEvent {
   final String title;
   final String description;
+  final String sport;
   final String? mediaUrl;
 
   const UploadPost({
     required this.title,
     required this.description,
+    required this.sport,
     this.mediaUrl,
   });
-
+  
   @override
-  List<Object?> get props => [title, description, mediaUrl];
+  List<Object?> get props => [title, description, sport];
 }
-

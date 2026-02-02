@@ -32,7 +32,12 @@ dependencies:
   shimmer: ^3.0.0
   dotted_border: ^3.1.0
   video_player: ^2.10.1
-  better_player: ^0.0.84
+  chewie: ^1.13.0
+  better_player_plus: ^1.0.8
+  translator: ^1.0.4+1
+
+
+  
 
   
 # flutter_intl:

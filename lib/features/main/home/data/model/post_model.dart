@@ -54,16 +54,14 @@ class PostModel {
       };
 
   PostModel copyWith({
-    String? title,
-    String? description,
     int? likesCount,
     int? commentsCount,
     bool? isLikedByCurrentUser,
   }) {
     return PostModel(
       id: id,
-      title: title ?? this.title,
-      description: description ?? this.description,
+      title: title,
+      description: description,
       isActive: isActive,
       mediaUrl: mediaUrl,
       createdAt: createdAt,
@@ -74,4 +72,5 @@ class PostModel {
     );
   }
 }
+
 

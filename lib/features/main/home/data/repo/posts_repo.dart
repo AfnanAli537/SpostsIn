@@ -32,16 +32,22 @@ class PostsRepositoryImpl  {
   Future<void> uploadPost({
     required String title,
     required String description,
-    required String mediaUrl,
+     String? mediaUrl,
+    required String sport,
   }) {
     return repo.uploadPost(
       title: title,
       description: description,
-      mediaUrl: mediaUrl,
+      mediaUrl: mediaUrl ,
+      sport:sport,
     );
   }
      Future<void> editComment({ required String commentId, required String comment}){
       return repo.editComment(commentId: commentId, comment: comment);}
    Future<void> deleteComment({ required String commentId}){
     return repo.deleteComment(commentId: commentId);}
+   Future<Map<String, dynamic>> getLikes({required String postId, required int pageNumber,
+     int pageSize= 20,}){
+   return repo.getLikes(postId: postId, pageNumber: pageNumber);
+    }
 }

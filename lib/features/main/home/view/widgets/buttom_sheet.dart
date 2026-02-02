@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/uploadposts.dart';
+import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 
 class CreateOptionsBottomSheet extends StatelessWidget {
   const CreateOptionsBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // final theme = Theme.of(context).colorScheme;
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      decoration: BoxDecoration(
+        // color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Handle bar
           Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 20),
+            padding: EdgeInsets.only(top: 12.h, bottom: 20.h),
             child: Container(
-              width: 100,
-              height: 5,
+              width: 100.w,
+              height: 5.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF1D2D3D),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
             ),
           ),
 
           // Options List
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
                 _buildOptionCard(
@@ -37,29 +43,29 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   iconColor: const Color(0xFFFFA726),
                   title: 'Create Post',
                   onTap: () {
-  Navigator.of(context, rootNavigator: true).pop();
-  Navigator.of(context, rootNavigator: true).push(
-    MaterialPageRoute(
-      builder: (_) => const UploadContentScreen(),
+                    Navigator.of(context, rootNavigator: true).pop();
+                    // Navigator.of(context, rootNavigator: true).push(
+                     // عند فتح الصفحة من CustomBottomNav أو BottomSheet
+Navigator.push(
+  context,
+  MaterialPageRoute(
+        builder: (context) => BlocProvider(
+      create: (_) => PostsBloc(
+        postRepo: getIt<PostsRepositoryImpl>(),
+      ), // reuse existing Bloc
+      child: UploadContentScreen(),
     ),
-  );
-},
+  ),
+);
 
-//                   onTap: () {
-                  
-//                     // Navigate to create post
-// Navigator.of(context).push(
-//   MaterialPageRoute(
-//     builder: (context) => const UploadContentScreen(),
-
-//   ),
-// );
-//     //  Navigator.pop(context);
-
-
-//                   },
+                      // MaterialPageRoute(
+                      //   builder: (_) => const UploadContentScreen(),
+                
+                      // ),  
+                      // );
+                  },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 _buildOptionCard(
                   icon: Icons.star,
                   iconColor: const Color(0xFFFFEE58),
@@ -69,7 +75,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     // Navigate to create achievement
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 _buildOptionCard(
                   icon: Icons.campaign,
                   iconColor: const Color(0xFF90CAF9),
@@ -79,7 +85,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     // Navigate to create opportunity
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 _buildOptionCard(
                   icon: Icons.work_outline,
                   iconColor: const Color(0xFFBCAAA4),
@@ -89,7 +95,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     // Navigate to create advertisement
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 _buildOptionCard(
                   icon: Icons.play_arrow,
                   iconColor: const Color(0xFF9CCC65),
@@ -99,7 +105,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     // Navigate to video analysis
                   },
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30.h),
               ],
             ),
           ),
@@ -116,17 +122,18 @@ class CreateOptionsBottomSheet extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16.r),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: ThemeData().colorScheme.onPrimary,
+          //  ColorManager.borderColor,
+          borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              blurRadius: 10.r,
+              offset: Offset(0, 2.h),
             ),
           ],
         ),
@@ -134,37 +141,34 @@ class CreateOptionsBottomSheet extends StatelessWidget {
           children: [
             // Icon Circle
             Container(
-              width: 50,
-              height: 50,
+              width: 50.w,
+              height: 50.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF1D2D3D),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 26,
-              ),
+              child: Icon(icon, color: iconColor, size: 26.sp),
             ),
-            const SizedBox(width: 20),
-            
+            SizedBox(width: 20.w),
+
             // Title
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1D2D3D),
+
+                  color: const Color(0xFF1D2D3D),
                 ),
               ),
             ),
-            
+
             // Arrow
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
-              color: Color(0xFF1D2D3D),
-              size: 20,
+              color: const Color(0xFF1D2D3D),
+              size: 20.sp,
             ),
           ],
         ),
@@ -173,44 +177,11 @@ class CreateOptionsBottomSheet extends StatelessWidget {
   }
 }
 
-// Example of how to show the bottom sheet
 void showCreateOptionsBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
+    // backgroundColor: Colors.transparent,
     isScrollControlled: true,
     builder: (context) => const CreateOptionsBottomSheet(),
   );
 }
-
-// // Full example with demo button
-// class CreateOptionsDemo extends StatelessWidget {
-//   const CreateOptionsDemo({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.grey[100],
-//       appBar: AppBar(
-//         title: const Text('Create Options Demo'),
-//         centerTitle: true,
-//       ),
-//       body: Center(
-//         child: ElevatedButton(
-//           onPressed: () => showCreateOptionsBottomSheet(context),
-//           style: ElevatedButton.styleFrom(
-//             backgroundColor: const Color(0xFF1D2D3D),
-//             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-//             shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.circular(12),
-//             ),
-//           ),
-//           child: const Text(
-//             'Open Bottom Sheet',
-//             style: TextStyle(fontSize: 16, color: Colors.white),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

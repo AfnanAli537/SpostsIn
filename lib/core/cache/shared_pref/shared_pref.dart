@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
+import 'package:sports_in/features/login/model/login_response_model.dart';
 
 @lazySingleton
 class SharedPref {
   final SharedPreferences _prefs;
 
   SharedPref(this._prefs);
+   SharedPreferences get prefs => _prefs;
 
   /// onboarding
   Future<void> setOnboardingCompleted(bool value) async {
@@ -49,10 +53,6 @@ class SharedPref {
     await _prefs.remove(StringKeys.expireData);
   }
 
-  // Future<void> saveExpiryDate(String expiryDate) async {
-  //   await _prefs.setString(StringKeys.expireData, expiryDate);
-  // }
-
 Future<void> saveExpiryDate(DateTime expiryDate) async {
   await _prefs.setString(
     StringKeys.expireData,
@@ -65,38 +65,6 @@ DateTime? getExpiryDate() {
   return DateTime.tryParse(value);
 }
 
-  // Future<void> saveExpiryDate(DateTime? expiryDate) async {
-  //   if (expiryDate == null) return;
-  //   await _prefs.setString(StringKeys.expireData, expiryDate.toIso8601String());
-  // }
-
-  // String? getExpiryDate() {
-  //   return _prefs.getString(StringKeys.expireData);
-  // }
-
-//   bool isTokenValid() {
-//     final token = getToken();
-//     final expiryString = getExpiryDate();
-
-//     if (token == null || token.isEmpty) {
-//       print ('token ===========null');
-//       return false;
-//       }
-//     if (expiryString == null || expiryString.isEmpty) 
-//    { 
-//     print('exp==========null');
-//     return false;}
-
-//     final expiryDate = DateTime.tryParse(expiryString);
-//     if (expiryDate == null){   print('expD==========null');
-//       return false;}
-// print('Token: $token');
-// print('Expiry: $expiryString');
-// print('Token valid? ${DateTime.now().isBefore(DateTime.tryParse(expiryString)!)}');
-
-//     return DateTime.now().isBefore(expiryDate);
-//   }
-   
    bool isTokenValid() {
   final token = getToken();
   final expiryDate = getExpiryDate();
@@ -112,4 +80,49 @@ DateTime? getExpiryDate() {
   Future<void> clear() async {
     await _prefs.clear();
   }
+  ///user data
+  
+Future<void> saveUserToPrefs(LoginResponse response) async {
+  if (response.token != null) await _prefs.setString('Token', response.token!);
+  if (response.userId != null) await _prefs.setString('userId', response.userId!);
+  if (response.userType != null) await _prefs.setString('userType', response.userType!);
+  if (response.email != null) await _prefs.setString('email', response.email!);
+  if (response.name != null) {
+    await _prefs.setString('name', jsonEncode(response.name!.toJson()));
+  }
+  if (response.expiresAt != null) {
+    await _prefs.setString('expire', response.expiresAt!.toIso8601String());
+  }
+}
+Future<LoginResponse?> getUserFromPrefs() async {
+  final token = _prefs.getString('Token');
+  final userId = _prefs.getString('userId');
+  final userType = _prefs.getString('userType');
+  final email = _prefs.getString('email');
+
+  UserName? name;
+  final nameStr = _prefs.getString('name');
+  if (nameStr != null) {
+    name = UserName.fromJson(jsonDecode(nameStr));
+  }
+
+  DateTime? expiresAt;
+  final expiresAtStr = _prefs.getString('expire');
+  if (expiresAtStr != null) {
+    expiresAt = DateTime.tryParse(expiresAtStr);
+  }
+
+  return LoginResponse(
+    isSuccess: true,
+    message: "Welcome Back",
+    token: token,
+    userId: userId,
+    userType: userType,
+    email: email,
+    name: name,
+    expiresAt: expiresAt,
+  );
+}
+
+
 }

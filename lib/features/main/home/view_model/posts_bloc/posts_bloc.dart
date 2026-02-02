@@ -1,3 +1,4 @@
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sports_in/features/main/home/data/model/author_model.dart';
@@ -16,6 +17,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     on<LikePost>(_onLikePost);
     on<AddComment>(_onAddComment);
     on<UploadPost>(_onUploadPost);
+
   }
 
   final List<PostModel> _posts = [];
@@ -28,7 +30,6 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     _isFetching = true;
 
     try {
-      // if (_currentPage == 1) emit(PostsLoading());
      if (_currentPage == 1) {
   emit(PostsLoading());
   await Future.delayed(const Duration(seconds: 2));
@@ -49,22 +50,39 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       _isFetching = false;
     }
   }
+ void _onLikePost(LikePost event, Emitter<PostsState> emit) async {
+  if (state is! PostsLoaded) return;
 
-  void _onLikePost(LikePost event, Emitter<PostsState> emit) async {
-    final index = _posts.indexWhere((post) => post.id == event.postId);
-    if (index != -1) {
-      final post = _posts[index];
-      post.isLikedByCurrentUser = !post.isLikedByCurrentUser;
-      post.likesCount += post.isLikedByCurrentUser ? 1 : -1;
+  final currentState = state as PostsLoaded;
 
-      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
+  final posts = List<PostModel>.from(currentState.posts);
 
-      // Optional: call API
-      try {
-        await postRepo.likePost(event.postId);
-      } catch (_) {}
-    }
+  final index = posts.indexWhere((p) => p.id == event.postId);
+  if (index == -1) return;
+
+  final post = posts[index];
+
+  // ✅ optimistic update (copyWith only)
+  final updatedPost = post.copyWith(
+    isLikedByCurrentUser: !post.isLikedByCurrentUser,
+    likesCount: post.isLikedByCurrentUser
+        ? post.likesCount - 1
+        : post.likesCount + 1,
+  );
+
+  posts[index] = updatedPost;
+
+  emit(PostsLoaded(posts: posts, hasNextPage: currentState.hasNextPage));
+
+  try {
+    await postRepo.likePost(event.postId);
+  } catch (e) {
+    // ✅ rollback
+    posts[index] = post;
+
+    emit(PostsLoaded(posts: posts, hasNextPage: currentState.hasNextPage));
   }
+}
 
   void _onAddComment(AddComment event, Emitter<PostsState> emit) async {
     final index = _posts.indexWhere((post) => post.id == event.postId);
@@ -78,38 +96,57 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       } catch (_) {}
     }
   }
+  void _onUploadPost(
+  UploadPost event,
+  Emitter<PostsState> emit,
+) async {
 
-  void _onUploadPost(UploadPost event, Emitter<PostsState> emit) async {
-    // You should get current user info from your auth repository
-    final currentUser = AuthorModel(
-      userId: 'current_user_id',
-      fullName: 'Current User',
-      profilePictureUrl: null,
-    );
+  /// validate
+  if (event.title.isEmpty || event.description.isEmpty||event.sport.isEmpty) {
+    emit(PostsError("Please fill all fields"));
+    return;
+  }
 
-    final newPost = PostModel(
-      id: DateTime.now().toString(),
+  final currentUser = AuthorModel(
+    userId: 'current_user_id',
+    fullName: 'Current User',
+    profilePictureUrl: null,
+  );
+
+  /// optimistic UI (يظهر فوراً)
+  final newPost = PostModel(
+    id: DateTime.now().toString(),
+    title: event.title,
+    description: event.description,
+    mediaUrl: event.mediaUrl,
+    createdAt: DateTime.now(),
+    isActive: true,
+    author: currentUser,
+    likesCount: 0,
+    commentsCount: 0,
+    isLikedByCurrentUser: false,
+  );
+
+  _posts.insert(0, newPost);
+
+  emit(PostsLoaded(
+    posts: List.from(_posts),
+    hasNextPage: _hasNextPage,
+  ));
+
+  try {
+    await postRepo.uploadPost(
       title: event.title,
       description: event.description,
-      mediaUrl: event.mediaUrl ?? '',
-      createdAt: DateTime.now(),
-      isActive: true,
-      author: currentUser,
-      likesCount: 0,
-      commentsCount: 0,
-      isLikedByCurrentUser: false,
+      sport: event.sport,
+      mediaUrl: event.mediaUrl!,
     );
+  } catch (e) {
+    /// rollback لو فشل
+    _posts.removeWhere((p) => p.id == newPost.id);
 
-    _posts.insert(0, newPost);
-    emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-
-    // Optional: call API
-    try {
-      await postRepo.uploadPost(
-        title: event.title,
-        description: event.description,
-        mediaUrl: event.mediaUrl ?? '',
-      );
-    } catch (_) {}
+    emit(PostsError("Failed to upload post"));
   }
+}
+
 }

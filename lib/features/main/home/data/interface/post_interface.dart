@@ -11,8 +11,11 @@ abstract class PostsRepository {
   Future<void> uploadPost({
     required String title,
     required String description,
-    required String mediaUrl,
+     String? mediaUrl,
+    required String sport,
   });
    Future<void> editComment({ required String commentId, required String comment});
    Future<void> deleteComment({ required String commentId});
+      Future<Map<String, dynamic>> getLikes({required String postId,required int pageNumber,
+     int pageSize,});
 }

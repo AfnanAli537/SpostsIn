@@ -10,7 +10,6 @@ sealed class PostsState extends Equatable {
 
 class PostsInitial extends PostsState {}
 
-
 class PostsLoading extends PostsState {}
 
 
@@ -36,3 +35,5 @@ class PostsError extends PostsState {
   @override
   List<Object?> get props => [message];
 }
+
+

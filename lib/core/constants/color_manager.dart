@@ -35,10 +35,35 @@ class ColorManager {
   static const Color lightGrey = Color(0xFFE0E0E0);
   static const Color darkGrey = Color(0xFF616161);
   static const Color lightBlack = Color(0xFF292F15);
+  static const Color cardDark =Color(0xFF191919);
+  static const Color cardLight =Color(0xFF6A6A6A);
+
+
   
 static const Color borderColor = Color(0xFF9E9D9D); 
 static const Color hintTextColor = Color(0xFF9E9D9D); 
 static const Color focusColor = Color(0xFF6F6F6F); 
 static const Color errorColor = Colors.red; 
 
+
+
+
+  // Light Mode Colors
+  static const Color lightPrimaryText = Color(0xFF050505);
+  static const Color lightSecondaryText = Color(0xFF65676B);
+  static const Color lightTertiaryText = Color(0xFF8A8D91);
+  static const Color lightDivider = Color(0xFFE4E6EB);
+  static const Color lightIconInactive = Color(0xFF65676B);
+  static const Color lightIconActive = Color(0xFF050505);
+  static const Color lightOverlay = Color(0x80000000); 
+
+
+  // Dark Mode Colors
+  static const Color darkPrimaryText = Color(0xFFE4E6EB);
+  static const Color darkSecondaryText = Color(0xFFB0B3B8);
+  static const Color darkTertiaryText = Color(0xFF8A8D91);
+  static const Color darkDivider = Color(0xFF3E4042);
+  static const Color darkIconInactive = Color(0xFFB0B3B8);
+  static const Color darkIconActive = Color(0xFFE4E6EB);
+  static const Color darkOverlay = Color(0x99000000);
 }

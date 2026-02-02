@@ -1,480 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:better_player_plus/better_player_plus.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/home/data/model/post_model.dart';
+import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/comments.dart';
 import 'package:sports_in/features/main/home/view/presentation/likes.dart';
+import 'package:sports_in/features/main/home/view_model/likes_bloc/likes_bloc.dart';
+import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
+import 'package:translator/translator.dart';
 
 class PostWidget extends StatefulWidget {
-  final String userName;
-  final String timeAgo;
-  final String desc;
-  final String title;
-  final String? mediaUrl;
-  final int likes;
-  final int comments;
+  // final String userName;
+  // final String timeAgo;
+  // final String desc;
+  // final String title;
+  // final String? mediaUrl;
+  // final int likes;
+  // final int comments;
+  // final bool isLikedByCurrentUser;
+  // final String postId;
+  // const PostWidget({
+  //   super.key,
+  //   required this.userName,
+  //   required this.timeAgo,
+  //   required this.desc,
+  //   required this.title,
+  //   required this.mediaUrl,
+  //   required this.likes,
+  //   required this.comments,
+  //   required this.isLikedByCurrentUser,
+  //   required this.postId,
+  // });
+  final PostModel post;
 
-  const PostWidget({
-    super.key,
-    required this.userName,
-    required this.timeAgo,
-    required this.desc,
-    required this.title,
-    required this.mediaUrl,
-    required this.likes,
-    required this.comments,
-  });
+const PostWidget({
+  super.key,
+  required this.post,
+});
+
 
   @override
   State<PostWidget> createState() => _PostWidgetState();
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  VideoPlayerController? _videoController;
+  BetterPlayerController? _betterPlayerController;
   bool _isVideo = false;
   bool _isInitializing = false;
   String? _videoError;
 
+  String? _translatedDesc;
+  bool _isTranslating = false;
+
+  bool _showTranslation = false;
+  final GoogleTranslator _translator = GoogleTranslator();
+
+  late String _deviceLanguage;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initializeMedia();
+  //   _loadDeviceLanguageAndTranslate();
+  // }
   @override
   void initState() {
     super.initState();
     _initializeMedia();
+    _loadDeviceLanguage(); // بس حمل اللغة بدون ترجمة
   }
 
-  Future<void> _initializeMedia() async {
-    if (widget.mediaUrl != null && widget.mediaUrl!.isNotEmpty) {
-      _isVideo = _checkIfVideo(widget.mediaUrl!);
-      
-      if (_isVideo) {
+  Future<void> _loadDeviceLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    _deviceLanguage = prefs.getString('language_code') ?? 'ar';
+    // _translateDescription();
+  }
+
+  Future<void> _translateDescription() async {
+    if (_translatedDesc != null) {
+      // Already translated, just toggle
+      setState(() {
+        _showTranslation = true;
+      });
+      return;
+    }
+
+    setState(() {
+      _isTranslating = true;
+    });
+
+    try {
+      final translation = await _translator.translate(
+        widget.post.description,
+        to: _deviceLanguage,
+      );
+
+      if (mounted) {
         setState(() {
-          _isInitializing = true;
-          _videoError = null;
+          _translatedDesc = translation.text;
+          _isTranslating = false;
+          _showTranslation =
+              true; // show translated by default after translation
         });
-
-        try {
-          _videoController = VideoPlayerController.networkUrl(
-            Uri.parse(widget.mediaUrl!),
-          );
-
-          await _videoController!.initialize();
-          
-          if (mounted) {
-            setState(() {
-              _isInitializing = false;
-            });
-          }
-        } catch (e) {
-          print('Video initialization error: $e');
-          if (mounted) {
-            setState(() {
-              _isInitializing = false;
-              _videoError = 'Failed to load video';
-            });
-          }
-        }
+      }
+    } catch (e) {
+      print('Translation error: $e');
+      if (mounted) {
+        setState(() {
+          _translatedDesc = null;
+          _isTranslating = false;
+          _showTranslation = false;
+        });
       }
     }
   }
 
-  bool _checkIfVideo(String url) {
-    final videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv', '.m3u8'];
-    final lowerUrl = url.toLowerCase();
-    return videoExtensions.any((ext) => lowerUrl.contains(ext));
-  }
-
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.grey[300],
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.userName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.timeAgo,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () {
-                    // Show options menu
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Description
-            Text(
-              widget.desc,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[800],
-                height: 1.4,
-              ),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 16),
-
-            // Media (Image or Video)
-            if (widget.mediaUrl != null && widget.mediaUrl!.isNotEmpty)
-              _isVideo
-                  ? _buildVideoPlayer()
-                  : _buildImageWidget()
-            else
-              _buildPlaceholder(),
-            const SizedBox(height: 16),
-
-            // Like and Comment Section
-            Row(
-              children: [
-                // Like Button
-                InkWell(
-                  onTap: () {
-                    // Handle like
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: 20,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 4),
-                        InkWell(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (_) => const LikesBottomSheet(),
-                            );
-                          },
-                          child: Text(
-                            widget.likes.toString(),
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                // Comment Button
-                InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => const CommentsBottomSheet(),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.chat_bubble_outline,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.comments.toString(),
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVideoPlayer() {
-    // Show error if video failed to load
-    if (_videoError != null) {
-      return Container(
-        width: double.infinity,
-        height: 200,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.video_library_outlined,
-              size: 50,
-              color: Colors.grey[500],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _videoError!,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextButton.icon(
-              onPressed: () {
-                _initializeMedia();
-              },
-              icon: const Icon(Icons.refresh, size: 16),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Show loading while initializing
-    if (_isInitializing || _videoController == null || !_videoController!.value.isInitialized) {
-      return Container(
-        width: double.infinity,
-        height: 200,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    // Show video player
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AspectRatio(
-            aspectRatio: _videoController!.value.aspectRatio,
-            child: VideoPlayer(_videoController!),
-          ),
-          // Play/Pause button overlay
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (_videoController!.value.isPlaying) {
-                    _videoController!.pause();
-                  } else {
-                    _videoController!.play();
-                  }
-                });
-              },
-              child: Container(
-                color: Colors.transparent,
-                child: Center(
-                  child: AnimatedOpacity(
-                    opacity: _videoController!.value.isPlaying ? 0.0 : 1.0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.black45,
-                        shape: BoxShape.circle,
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: const Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildImageWidget() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.network(
-        widget.mediaUrl!,
-        width: double.infinity,
-        height: 200,
-        fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.image_not_supported,
-              size: 50,
-              color: Colors.grey[500],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        Icons.image,
-        size: 50,
-        color: Colors.grey[500],
-      ),
-    );
-  }
-}
-
-
-
-
-
-
-// import 'package:flutter/material.dart';
-// import 'package:chewie/chewie.dart';
-// import 'package:video_player/video_player.dart';
-// import 'package:sports_in/features/main/home/view/presentation/comments.dart';
-// import 'package:sports_in/features/main/home/view/presentation/likes.dart';
-
-// class PostWidget extends StatefulWidget {
-//   final String userName;
-//   final String timeAgo;
-//   final String desc;
-//   final String title;
-//   final String? mediaUrl;
-//   final int likes;
-//   final int comments;
-
-//   const PostWidget({
-//     super.key,
-//     required this.userName,
-//     required this.timeAgo,
-//     required this.desc,
-//     required this.title,
-//     required this.mediaUrl,
-//     required this.likes,
-//     required this.comments,
-//   });
-
-//   @override
-//   State<PostWidget> createState() => _PostWidgetState();
-// }
-
-// class _PostWidgetState extends State<PostWidget> {
-  VideoPlayerController? _videoPlayerController;
-  ChewieController? _chewieController;
-  bool _isVideo = false;
-  bool _isInitializing = false;
-  String? _videoError;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeMedia();
-  }
-
   Future<void> _initializeMedia() async {
-    if (widget.mediaUrl != null && widget.mediaUrl!.isNotEmpty) {
-      _isVideo = _checkIfVideo(widget.mediaUrl!);
-      
+    if (widget.post.mediaUrl != null && widget.post.mediaUrl!.isNotEmpty) {
+      _isVideo = _checkIfVideo(widget.post.mediaUrl!);
+
       if (_isVideo) {
         setState(() {
           _isInitializing = true;
@@ -482,61 +129,101 @@ class _PostWidgetState extends State<PostWidget> {
         });
 
         try {
-          print('🎬 Loading video with Chewie: ${widget.mediaUrl}');
-          
-          // Initialize video player controller
-          _videoPlayerController = VideoPlayerController.networkUrl(
-            Uri.parse(widget.mediaUrl!),
-          );
+          print('🎬 Loading video with better_player_plus: ${widget.post.mediaUrl}');
 
-          await _videoPlayerController!.initialize();
-
-          // Initialize Chewie controller
-          _chewieController = ChewieController(
-            videoPlayerController: _videoPlayerController!,
-            autoPlay: false,
-            looping: false,
-            aspectRatio: _videoPlayerController!.value.aspectRatio,
-            // Material controls (Android style)
-            materialProgressColors: ChewieProgressColors(
-              playedColor: Colors.blue,
-              handleColor: Colors.blueAccent,
-              backgroundColor: Colors.grey,
-              bufferedColor: Colors.lightBlue.withOpacity(0.5),
-            ),
-            placeholder: Container(
-              color: Colors.grey[300],
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            autoInitialize: true,
-            errorBuilder: (context, errorMessage) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 50,
-                      color: Colors.red[300],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Error loading video',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+          // Create data source
+          BetterPlayerDataSource betterPlayerDataSource =
+              BetterPlayerDataSource(
+                BetterPlayerDataSourceType.network,
+                widget.post.mediaUrl!,
+                // Optional: Add caching configuration
+                cacheConfiguration: BetterPlayerCacheConfiguration(
+                  useCache: true,
+                  preCacheSize: 10 * 1024 * 1024, // 10MB pre-cache
+                  maxCacheSize: 50 * 1024 * 1024, // 50MB max cache
+                  maxCacheFileSize: 30 * 1024 * 1024, // 30MB max file size
                 ),
+                // Optional: Add buffering configuration for smoother playback
+                bufferingConfiguration:
+                    const BetterPlayerBufferingConfiguration(
+                      minBufferMs: 2000,
+                      maxBufferMs: 13000,
+                      bufferForPlaybackMs: 500,
+                      bufferForPlaybackAfterRebufferMs: 1000,
+                    ),
               );
-            },
+
+          // Create player configuration
+          final BetterPlayerConfiguration betterPlayerConfiguration =
+              BetterPlayerConfiguration(
+                autoPlay: false,
+                looping: false,
+                aspectRatio: 16 / 9,
+                fit: BoxFit.contain,
+                handleLifecycle: true,
+                autoDetectFullscreenDeviceOrientation: true,
+                controlsConfiguration: const BetterPlayerControlsConfiguration(
+                  enablePlayPause: true,
+                  enableMute: true,
+                  enableFullscreen: true,
+                  enableProgressBar: true,
+                  enableSkips: false,
+                  showControls: true,
+                  showControlsOnInitialize: true,
+                  controlBarColor: Colors.black45,
+                  iconsColor: Colors.white,
+                  progressBarPlayedColor: Colors.blue,
+                  progressBarHandleColor: Colors.blueAccent,
+                  progressBarBackgroundColor: Colors.grey,
+                  progressBarBufferedColor: Color.fromRGBO(173, 216, 230, 0.5),
+                  loadingColor: Colors.blue,
+                ),
+                errorBuilder: (context, errorMessage) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 50.sp,
+                          color: Colors.red[300],
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          'Error loading video',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12.sp,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+
+          // Initialize controller
+          _betterPlayerController = BetterPlayerController(
+            betterPlayerConfiguration,
+            betterPlayerDataSource: betterPlayerDataSource,
           );
 
-          print('✅ Chewie initialized successfully!');
-          
+          // Add event listener for errors
+          _betterPlayerController!.addEventsListener((event) {
+            if (event.betterPlayerEventType ==
+                BetterPlayerEventType.exception) {
+              print('❌ Better Player error: ${event.parameters}');
+              if (mounted) {
+                setState(() {
+                  _videoError = 'Failed to load video';
+                  _isInitializing = false;
+                });
+              }
+            }
+          });
+
+          print('✅ Better Player initialized successfully!');
+
           if (mounted) {
             setState(() {
               _isInitializing = false;
@@ -556,62 +243,64 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   bool _checkIfVideo(String url) {
-    final videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv', '.m3u8'];
+    final videoExtensions = [
+      '.mp4',
+      '.mov',
+      '.avi',
+      '.mkv',
+      '.webm',
+      '.flv',
+      '.m3u8',
+    ];
     final lowerUrl = url.toLowerCase();
     return videoExtensions.any((ext) => lowerUrl.contains(ext)) ||
-           lowerUrl.contains('cloudinary.com/video');
+        lowerUrl.contains('cloudinary.com/video');
   }
 
   @override
   void dispose() {
-    _chewieController?.dispose();
-    _videoPlayerController?.dispose();
+    _betterPlayerController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      // color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 CircleAvatar(
-                  radius: 20,
+                  radius: 20.r,
                   backgroundColor: Colors.grey[300],
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.person, color: Colors.white, size: 24.sp),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.userName,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        widget.post.author.fullName,
+                        style: TextStyle(
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: theme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                       Text(
-                        widget.timeAgo,
+                       widget.post.createdAt.toIso8601String(),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           color: Colors.grey[600],
                         ),
                       ),
@@ -626,29 +315,74 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
+            SizedBox(height: 16.h),
             // Description
             Text(
-              widget.desc,
+              // Show original by default; show translation only if toggled
+              _showTranslation && _translatedDesc != null
+                  ? _translatedDesc! // show translation
+                  : widget.post.description, // otherwise show original
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[800],
+                fontSize: 14.sp,
+                color: theme.onTertiary,
                 height: 1.4,
+                fontStyle: (_showTranslation && _translatedDesc != null)
+                    ? FontStyle.italic
+                    : FontStyle.normal,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 4.h),
 
+            // Translate / See Original button
+            if (_translatedDesc != null || !_showTranslation)
+              TextButton(
+                onPressed: _isTranslating
+                    ? null
+                    : () async {
+                        if (_showTranslation) {
+                          // show original
+                          setState(() {
+                            _showTranslation = false;
+                          });
+                        } else {
+                          // show translation
+                          if (_translatedDesc == null) {
+                            await _translateDescription();
+                          } else {
+                            setState(() {
+                              _showTranslation = true;
+                            });
+                          }
+                        }
+                      },
+                child: _isTranslating
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(
+                        _showTranslation ? 'See Original' : 'Translate',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+              ),
+
+            SizedBox(height: 8.h),
+
+            SizedBox(height: 8.h),
             // Media (Image or Video)
-            if (widget.mediaUrl != null && widget.mediaUrl!.isNotEmpty)
-              _isVideo
-                  ? _buildVideoPlayer()
-                  : _buildImageWidget()
+            if (widget.post.mediaUrl != null && widget.post.mediaUrl!.isNotEmpty)
+              _isVideo ? _buildVideoPlayer() : _buildImageWidget()
             else
-              _buildPlaceholder(),
-            const SizedBox(height: 16),
+              SizedBox.shrink(),
+            // _buildPlaceholder(),
+            SizedBox(height: 16.h),
 
             // Like and Comment Section
             Row(
@@ -658,34 +392,56 @@ class _PostWidgetState extends State<PostWidget> {
                   onTap: () {
                     // Handle like
                   },
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.r),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: 20,
-                          color: Colors.grey[600],
+                        // Heart icon
+                        InkWell(
+                          onTap: () {
+                            context.read<PostsBloc>().add(
+                              LikePost(widget.post.id),
+                            );
+                          },
+                          child: Icon(
+                            widget.post.isLikedByCurrentUser
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 30.sp,
+                            color: widget.post.isLikedByCurrentUser
+                                ? Colors.red
+                                : Colors.grey[600],
+                          ),
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 5.w),
+
+                        // Likes count text
                         InkWell(
                           onTap: () {
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (_) => const LikesBottomSheet(),
+
+                              builder: (bottomSheetContext) {
+                                return BlocProvider(
+                                  create: (_) => LikesBloc(
+                                    postRepo: getIt<PostsRepositoryImpl>(),
+                                  ),
+                                  child: LikesSheet(postId: widget.post.id),
+                                );
+                              },
                             );
                           },
                           child: Text(
-                            widget.likes.toString(),
+                            widget.post.likesCount.toString(),
                             style: TextStyle(
                               color: Colors.grey[600],
-                              fontSize: 14,
+                              fontSize: 30.sp,
                             ),
                           ),
                         ),
@@ -693,7 +449,7 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
 
                 // Comment Button
                 InkWell(
@@ -705,11 +461,11 @@ class _PostWidgetState extends State<PostWidget> {
                       builder: (_) => const CommentsBottomSheet(),
                     );
                   },
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.r),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
                     ),
                     child: Row(
                       children: [
@@ -717,12 +473,12 @@ class _PostWidgetState extends State<PostWidget> {
                           Icons.chat_bubble_outline,
                           color: Colors.grey[600],
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4.w),
                         Text(
-                          widget.comments.toString(),
+                          widget.post.commentsCount.toString(),
                           style: TextStyle(
                             color: Colors.grey[600],
-                            fontSize: 14,
+                            fontSize: 14.sp,
                           ),
                         ),
                       ],
@@ -743,33 +499,30 @@ class _PostWidgetState extends State<PostWidget> {
     if (_videoError != null) {
       return Container(
         width: double.infinity,
-        height: 200,
+        height: 200.h,
         decoration: BoxDecoration(
           color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.video_library_outlined,
-              size: 50,
+              size: 50.sp,
               color: Colors.grey[500],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(
               _videoError!,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 12.sp),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             TextButton.icon(
               onPressed: () {
                 _initializeMedia();
               },
-              icon: const Icon(Icons.refresh, size: 16),
+              icon: Icon(Icons.refresh, size: 16.sp),
               label: const Text('Retry'),
             ),
           ],
@@ -778,54 +531,50 @@ class _PostWidgetState extends State<PostWidget> {
     }
 
     // Show loading while initializing
-    if (_isInitializing || _chewieController == null) {
+    if (_isInitializing || _betterPlayerController == null) {
       return Container(
         width: double.infinity,
-        height: 200,
+        height: 200.h,
         decoration: BoxDecoration(
           color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    // Show Chewie video player
+    // Show Better Player
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(8.r),
       child: AspectRatio(
-        aspectRatio: _videoPlayerController!.value.aspectRatio,
-        child: Chewie(
-          controller: _chewieController!,
-        ),
+        aspectRatio: 16 / 9,
+        child: BetterPlayer(controller: _betterPlayerController!),
       ),
     );
   }
 
   Widget _buildImageWidget() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(8.r),
       child: Image.network(
-        widget.mediaUrl!,
+        widget.post.mediaUrl!,
         width: double.infinity,
-        height: 200,
+        height: 200.h,
         fit: BoxFit.cover,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Container(
             width: double.infinity,
-            height: 200,
+            height: 200.h,
             decoration: BoxDecoration(
               color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
             ),
             child: Center(
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                     : null,
               ),
             ),
@@ -834,14 +583,14 @@ class _PostWidgetState extends State<PostWidget> {
         errorBuilder: (context, error, stackTrace) {
           return Container(
             width: double.infinity,
-            height: 200,
+            height: 200.h,
             decoration: BoxDecoration(
               color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(
               Icons.image_not_supported,
-              size: 50,
+              size: 50.sp,
               color: Colors.grey[500],
             ),
           );
@@ -850,19 +599,19 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Widget _buildPlaceholder() {
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        Icons.image,
-        size: 50,
-        color: Colors.grey[500],
-      ),
-    );
-  }
+  // Widget _buildPlaceholder() {
+  //   return Container(
+  //     width: double.infinity,
+  //     height: 200.h,
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey[300],
+  //       borderRadius: BorderRadius.circular(8.r),
+  //     ),
+  //     child: Icon(
+  //       Icons.image,
+  //       size: 50.sp,
+  //       color: Colors.grey[500],
+  //     ),
+  //   );
+  // }
 }
