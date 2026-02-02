@@ -13,4 +13,15 @@ class Endpoints {
 
   static const String sendVerifyRegisterOtp= "/api/Auth/send-gmail-code";
   static const String verifyRegisterOtp  = "/api/Auth/confirm-gmail-code";
+
+  static const String getProfile = "/api/Profile/get-profile"; // GET with userId param
+  static const String getPosts = "/api/Profile/posts"; // GET with userId, page, pageSize
+  static const String getOpportunities = "/api/Profile/opportunities"; // GET with userId, page, pageSize
+  static const String getCourses = "/api/Profile/courses"; // GET with userId, page, pageSize
+  static const String getAchievements = "/api/Profile/achievements"; // GET with userId
+  static const String getAnalyzedVideos = "/api/Profile/analyzed-videos"; // GET with userId
+  static const String getInterests = "/api/Profile/interests"; // GET with userId, page, pageSize
+  static const String toggleFollow = "/api/Profile/follow"; // POST with userId
+  static const String toggleConnect = "/api/Profile/connect"; // POST with userId
+
 }

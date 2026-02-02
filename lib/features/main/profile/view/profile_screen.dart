@@ -12,6 +12,7 @@ import 'widgets/profile_description.dart';
 import 'widgets/profile_stats_widget.dart';
 import 'profile_section_factory.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? userId;
@@ -119,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileHeader(profile: fakeProfile, isOwnProfile: false),
+            ProfileHeader(profile: fakeProfile, theme: theme, isOwnProfile: false),
             ProfileDescription(description: fakeProfile.description),
             SizedBox(height: 16.h),
             ProfileStatsWidget(stats: fakeProfile.stats, theme: theme, string: S.of(context)),
@@ -196,12 +197,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
+        child: isLoading
+            ? _buildShimmerLoading(theme)
+            : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileHeader(
               profile: profile,
               isOwnProfile: isOwnProfile,
+              theme: theme,
               onEditPressed: isOwnProfile ? () => _navigateToEditProfile(context) : null,
               // onProfileImageTap: widget.userId != null
               //     ? () => _navigateToUserProfile(context, profile.id)
@@ -209,14 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ProfileDescription(description: profile.description),
             SizedBox(height: 8.h),
-            if (isLoading)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else
+            
               ...ProfileSectionFactory.buildSections(
                 profile: profile,
                 isOwnProfile: isOwnProfile,
@@ -254,7 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   }
                 },
                 onInterestTap: (interest) {
-                  // _navigateToUserProfile(context, interest.id);
+                  _navigateToUserProfile(context, interest.id);
                 },
               ),
             SizedBox(height: 24.h),
@@ -268,21 +265,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Navigate to edit profile screen
   }
 
-  // void _navigateToUserProfile(BuildContext context, String userId) {
-  //   // Navigate to another user's profile
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => Scaffold(
-  //         appBar: AppBar(title: Text(S.of(context).profile)),
-  //         body: BlocProvider(
-  //           create: (context) => ProfileBloc(
-  //             context.read<ProfileBloc>().profileRepo,
-  //           ),
-  //           child: ProfileScreen(userId: userId),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _navigateToUserProfile(BuildContext context, String userId) {
+    // // Navigate using named route
+    // Navigator.pushNamed(
+    //   context,
+    //   AppRoutes.userProfile,
+    //   arguments: userId,
+    // );
+  }
+
 }

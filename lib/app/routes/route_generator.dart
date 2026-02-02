@@ -11,6 +11,11 @@ import 'package:sports_in/features/forget_password/view/presentation/otp_screen.
 import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
 import 'package:sports_in/features/main/main_layout/main_layout.dart';
+import 'package:sports_in/features/main/profile/data/data_sources/mock_profile_data.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
+import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
+import 'package:sports_in/features/main/profile/view/profile_screen.dart';
+import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
 import 'package:sports_in/features/register/view/presentation/registration_otp/registration_otp_screen.dart';
 import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
@@ -134,6 +139,19 @@ abstract class RoutesManager {
         );
       case AppRoutes.mainLayout:
         return CupertinoPageRoute(builder: (_) => CustomBottomNav());
+        // User Profile Route
+      case AppRoutes.userProfile:
+        // final userId = settings.arguments as String;
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+        create: (context) => ProfileBloc(
+          ProfileRepo(
+            MockProfileData().getUserProfile("coach_001") as IProfileDataSource,
+          ),
+        ),
+        child: const ProfileScreen(),
+      ),
+        );
     }
 
     return null;

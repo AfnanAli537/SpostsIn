@@ -6,12 +6,14 @@ class ProfileHeader extends StatelessWidget {
   final ProfileModel profile;
   final bool isOwnProfile;
   final VoidCallback? onEditPressed;
+  final ThemeData theme;
 
   const ProfileHeader({
     super.key,
     required this.profile,
     required this.isOwnProfile,
-    this.onEditPressed,
+    this.onEditPressed, 
+    required this.theme,
   });
 
   @override
@@ -28,8 +30,13 @@ class ProfileHeader extends StatelessWidget {
                 : null,
             child: profile.profileImage == null
                 ? Text(
-                    profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-                    style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+                    profile.name.isNotEmpty
+                        ? profile.name[0].toUpperCase()
+                        : '?',
+                    style: TextStyle(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   )
                 : null,
           ),
@@ -50,29 +57,41 @@ class ProfileHeader extends StatelessWidget {
                       ),
                     ),
                     if (isOwnProfile && onEditPressed != null)
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1E3A5F),
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                        child: Row( 
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children:[
-                          Text('Edit', style: const TextStyle(color: Colors.white)),
-
-                          IconButton(
-                          icon: Icon(Icons.edit, color: Colors.white, size: 16.sp),
-                          onPressed: onEditPressed,
-                          constraints:  BoxConstraints(
-                            minWidth: 36.w,
-                            minHeight: 36.h,
+                      GestureDetector(
+                        onTap:
+                            onEditPressed, // Now the whole button area is clickable
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 8.h,
+                          ), // Added vertical padding for better tap target
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(16.r),
                           ),
-                          padding: EdgeInsets.all(4.r),
+                          child: Row(
+                            mainAxisSize: MainAxisSize
+                                .min, // Shrinks container to fit content width
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Edit',
+                                style: TextStyle(
+                                  color: theme.colorScheme.surface,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8.w,
+                              ), // Adds a small gap between text and icon
+                              Icon(
+                                Icons.edit,
+                                  color: theme.colorScheme.surface,
+                                size: 16.sp,
+                              ),
+                            ],
+                          ),
                         ),
-                        
-                        ]
-                        )
                       ),
                   ],
                 ),
@@ -83,10 +102,7 @@ class ProfileHeader extends StatelessWidget {
                     SizedBox(width: 4.w),
                     Text(
                       profile.role,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 13.sp, color: Colors.grey),
                     ),
                   ],
                 ),

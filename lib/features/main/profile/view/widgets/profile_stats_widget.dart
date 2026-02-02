@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,40 +37,43 @@ class ProfileStatsWidget extends StatelessWidget {
 @override
 Widget build(BuildContext context) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 16.0.h),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _buildStatItem(
+    padding: EdgeInsets.symmetric(horizontal: 6.0.w, vertical: 6.0.h),
+    // Removed SingleChildScrollView
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: _buildStatItem(
             label: string.followers,
             value: _formatCount(stats.followers),
             onTap: onFollowersPressed,
           ),
-          SizedBox(width: 24.w),
-          _buildStatItem(
+        ),
+        Expanded(
+          child: _buildStatItem(
             label: string.following,
             value: _formatCount(stats.following),
             onTap: onFollowingPressed,
           ),
-          SizedBox(width: 24.w),
-          _buildStatItem(
+        ),
+        Expanded(
+          child: _buildStatItem(
             label: string.connections,
             value: _formatCount(stats.connections),
             onTap: onConnectionsPressed,
           ),
-          SizedBox(width: 24.w),
-          _buildStatItem(
+        ),
+        Expanded(
+          child: _buildStatItem(
             label: string.analyzedPeople,
             value: _formatCount(stats.analyzedPeople),
             onTap: onAnalyzedPeoplePressed,
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }
-
   Widget _buildStatItem({
     required String label,
     required String value,
@@ -79,7 +83,7 @@ Widget build(BuildContext context) {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8.r),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 4.0.h),
+        padding: EdgeInsets.symmetric(horizontal: 1.0.w, vertical: 4.0.h),
         child: Column(
           children: [
             Text(
@@ -92,8 +96,12 @@ Widget build(BuildContext context) {
             SizedBox(height: 4.h),
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onTertiaryFixed,
+              // style: theme.textTheme.bodySmall?.copyWith(
+              //   color: theme.colorScheme.onTertiaryFixed,
+              // ),
+              style: TextStyle(
+                color: ColorManager.hintTextColor,
+                fontSize: 11.sp,
               ),
               textAlign: TextAlign.center,
             ),

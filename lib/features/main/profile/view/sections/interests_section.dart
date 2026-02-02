@@ -35,120 +35,186 @@ class InterestsSection extends StatelessWidget {
           title: string.interests,
           onShowAllPressed: onShowAll,
         ),
+        SizedBox(height: 16.h),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          itemCount: interests.length > 6 ? 6 : interests.length,
+          itemCount: interests.length > 3 ? 3 : interests.length,
           itemBuilder: (context, index) {
             final interest = interests[index];
-            return Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => onInterestTap?.call(interest),
-                    child: CircleAvatar(
-                      radius: 24.r,
-                      backgroundImage: interest.profileImage.isNotEmpty
-                          ? NetworkImage(interest.profileImage)
-                          : null,
-                      backgroundColor: theme.colorScheme.surfaceVariant,
-                      child: interest.profileImage.isEmpty
-                          ? Text(
-                              interest.name.isNotEmpty
-                                  ? interest.name[0].toUpperCase()
-                                  : '?',
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            )
-                          : null,
-                    ),
+            return Container(
+              margin: EdgeInsets.only(bottom: 16.h),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 2.h),
                   ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: GestureDetector(
+                ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16.r),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
                       onTap: () => onInterestTap?.call(interest),
+                      child: CircleAvatar(
+                        radius: 32.r,
+                        backgroundImage: interest.profileImage.isNotEmpty
+                            ? NetworkImage(interest.profileImage)
+                            : null,
+                        backgroundColor: theme.colorScheme.surfaceVariant,
+                        child: interest.profileImage.isEmpty
+                            ? Text(
+                                interest.name.isNotEmpty
+                                    ? interest.name[0].toUpperCase()
+                                    : '?',
+                                style: TextStyle(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              )
+                            : null,
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            interest.name,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
+                          GestureDetector(
+                            onTap: () => onInterestTap?.call(interest),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  interest.name,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  interest.role,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onTertiary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            interest.role,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
+                          SizedBox(height: 16.h),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildConnectButton(
+                                  isConnected: interest.isConnected,
+                                  onPressed: () => onConnectToggle?.call(
+                                    interest,
+                                    !interest.isConnected,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: _buildFollowButton(
+                                  isFollowing: interest.isFollowing,
+                                  onPressed: () => onFollowToggle?.call(
+                                    interest,
+                                    !interest.isFollowing,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  _buildActionButton(
-                    label: interest.isConnected ? string.connected : string.connect,
-                    isActive: interest.isConnected,
-                    onPressed: () => onConnectToggle?.call(
-                      interest,
-                      !interest.isConnected,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  _buildActionButton(
-                    label: interest.isFollowing ? string.following : string.follow,
-                    isActive: interest.isFollowing,
-                    isPrimary: true,
-                    onPressed: () => onFollowToggle?.call(
-                      interest,
-                      !interest.isFollowing,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 24.h),
       ],
     );
   }
 
-  Widget _buildActionButton({
-    required String label,
-    required bool isActive,
+  Widget _buildConnectButton({
+    required bool isConnected,
     required VoidCallback onPressed,
-    bool isPrimary = false,
   }) {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        backgroundColor: (isPrimary && !isActive)
-            ? theme.colorScheme.primary
-            : Colors.transparent,
-        foregroundColor: (isPrimary && !isActive)
-            ? theme.colorScheme.onPrimary
+        backgroundColor: Colors.transparent,
+        foregroundColor: isConnected
+            ? theme.colorScheme.onSurfaceVariant
             : theme.colorScheme.primary,
         side: BorderSide(
-          color: theme.colorScheme.primary,
-          width: 1.5.w,
+          color: isConnected
+              ? theme.colorScheme.outline
+              : theme.colorScheme.primary,
+          width: 1.w,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        minimumSize: Size(80.w, 32.h),
+        padding: EdgeInsets.symmetric(vertical: 6.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
         ),
       ),
       child: Text(
-        label,
-        style: theme.textTheme.bodySmall?.copyWith(
+        isConnected ? string.connected : string.connect,
+        style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w600,
+          color:isConnected
+            ? theme.colorScheme.outline
+            : theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFollowButton({
+    required bool isFollowing,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isFollowing
+            ? Colors.transparent
+            : theme.colorScheme.primary,
+        foregroundColor: isFollowing
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onTertiary,
+        side: isFollowing
+            ? BorderSide(
+                color: theme.colorScheme.primary,
+                width: 1.5.w,
+              )
+            : null,
+        elevation: 0,
+        padding: EdgeInsets.symmetric(vertical: 6.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+      ),
+      child: Text(
+        isFollowing ? string.following : string.follow,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: isFollowing
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSecondaryFixed,
         ),
       ),
     );

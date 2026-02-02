@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,7 +18,7 @@ class PlayerDataSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,8 +28,11 @@ class PlayerDataSection extends StatelessWidget {
               children: [
                 if (data.position != null)
                   _buildInfoRow(string.position, data.position!),
-                if (data.preferredFoot != null)
-                  _buildInfoRow(string.skills, data.preferredFoot!),
+                if (data.age != null)
+                  _buildInfoRow(string.age, '${data.age} ${string.yearsOfExperience0to2.split(' ')[1]}'),
+                  //TODO the skills fields will be deleted and replace with the age field
+                // if (data.preferredFoot != null)
+                //   _buildInfoRow(string.skills, data.preferredFoot!),
               ],
             ),
           ),
@@ -43,8 +45,6 @@ class PlayerDataSection extends StatelessWidget {
                   _buildInfoRow(string.height, '${data.height}'),
                 if (data.weight != null)
                   _buildInfoRow(string.weight, '${data.weight}'),
-                if (data.age != null)
-                  _buildInfoRow(string.age, '${data.age} ${string.yearsOfExperience0to2.split(' ')[1]}'),
               ],
             ),
           ),
@@ -71,12 +71,9 @@ class PlayerDataSection extends StatelessWidget {
             child: Text(
               value,
               softWrap: true,
-              style: TextStyle(
-                color: ColorManager.borderCircular,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onTertiary,
               ),
-              // style: theme.textTheme.bodySmall?.copyWith(
-              //   color: theme.colorScheme.primary,
-              // ),
             ),
           ),
         ],

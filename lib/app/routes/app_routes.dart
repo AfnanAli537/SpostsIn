@@ -15,4 +15,6 @@ abstract class AppRoutes {
   static const String clubRegister = '/club-register';
   static const String registrationOtp = '/registration-otp';
   static const String mainLayout = '/mainLayout';
+
+  static const String userProfile = '/user-profile'; 
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
@@ -76,12 +75,9 @@ class AchievementsSection extends StatelessWidget {
                           SizedBox(height: 2.h),
                           Text(
                             achievement.subtitle,
-                            style: TextStyle(
-                              color: ColorManager.borderCircular,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onTertiary,
                             ),
-                            // style: theme.textTheme.bodySmall?.copyWith(
-                            //   color: theme.colorScheme.onSurfaceVariant,
-                            // ),
                           ),
                         ],
                       ),

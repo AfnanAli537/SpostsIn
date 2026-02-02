@@ -28,7 +28,7 @@ class MyProfileScreen extends StatelessWidget {
         create: (context) => ProfileBloc(
           ProfileRepo(MockProfileData()),
         ),
-        child: const ProfileScreen(), // 👈 clean reuse
+        child: const ProfileScreen(),
       ),
     );
   }

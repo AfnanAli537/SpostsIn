@@ -2,7 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/repo/profile_repo.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton(as: ProfileBloc)
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepo _profileRepo;
 

@@ -11,7 +11,7 @@ class MockProfileData implements IProfileDataSource {
   @override
   Future<ProfileModel> getUserProfile(String userId) async {
     await Future.delayed(const Duration(seconds: 1));
-    return ProfileModel.fromJson(_getPlayerProfileData()['data']);
+    return ProfileModel.fromJson(getCoachProfileData()['data']);
   }
 
   @override
@@ -155,8 +155,8 @@ class MockProfileData implements IProfileDataSource {
       "success": true,
       "data": {
         "id": "coach_001",
-        "name": "Abhishek Patel",
-        "profileImage": "https://i.pravatar.cc/300?img=12",
+        "name": "Celeb Reed",
+        "profileImage": "https://i.pravatar.cc/300?img=5",
         "role": "Coach - Football",
         "description": "Passionate about sports and continuous improvement. Focused on performance.",
         "userType": "coach",

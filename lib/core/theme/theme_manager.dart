@@ -25,6 +25,7 @@ class ThemeManager {
         onInverseSurface: ColorManager.lightBackground,
         onSurfaceVariant: ColorManager.lightAccent, 
         onTertiaryFixed: ColorManager.lightPrimary,
+        onTertiary: ColorManager.borderCircular,
         
       ),
       scaffoldBackgroundColor: ColorManager.lightBackground,
@@ -107,6 +108,7 @@ class ThemeManager {
         onInverseSurface: ColorManager.lightPrimary,
         onSurfaceVariant: ColorManager.darkPrimary, 
         onTertiaryFixed: ColorManager.darkAccent,
+        onTertiary: ColorManager.darkPrimary,
 
 
       ),

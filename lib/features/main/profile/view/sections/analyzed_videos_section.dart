@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
@@ -38,139 +39,190 @@ class AnalyzedVideosSection extends StatelessWidget {
           itemCount: videos.length > 2 ? 2 : videos.length,
           itemBuilder: (context, index) {
             final video = videos[index];
-            return Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: InkWell(
-                onTap: () => onVideoTap?.call(video),
-                borderRadius: BorderRadius.circular(12.r),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: Container(
-                        height: 180.h,
-                        width: double.infinity,
-                        color: theme.colorScheme.surfaceVariant,
-                        child: Image.network(
-                          video.thumbnailUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.play_circle_outline,
-                                color: theme.colorScheme.onSurfaceVariant,
-                                size: 50.sp,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 12.h,
-                      left: 12.w,
-                      right: 12.w,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildStatChip(
-                            icon: Icons.access_time,
-                            label: video.duration,
-                          ),
-                          _buildStatChip(
-                            icon: Icons.speed,
-                            label: video.speed,
-                            color: theme.colorScheme.primary,
-                          ),
-                          _buildStatChip(
-                            icon: Icons.directions_run,
-                            label: video.distance,
-                            color: theme.colorScheme.secondary,
-                          ),
-                          _buildStatChip(
-                            icon: Icons.local_fire_department,
-                            label: video.calories,
-                            color: Colors.green,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                            size: 20.sp,
-                          ),
-                          onPressed: () {},
-                          constraints: BoxConstraints(
-                            minWidth: 32.w,
-                            minHeight: 32.h,
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            return Container(
+              margin: EdgeInsets.only(bottom: 16.h),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(28.r),
+              ),
+              child: Column(
+                children: [
+                  _buildVideoThumbnail(video),
+                  _buildStatsRow(video),
+                  _buildActionRow(),
+                  SizedBox(height: 16.h),
+                ],
               ),
             );
           },
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Center(
-            child: TextButton(
-              onPressed: onShowAll,
-              style: TextButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-              ),
-              child: Text(string.moreDetails),
-            ),
-          ),
-        ),
-        SizedBox(height: 16.h),
       ],
     );
   }
 
-  Widget _buildStatChip({
-    required IconData icon,
-    required String label,
-    Color? color,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildVideoThumbnail(AnalyzedVideoReport video) {
+    return Padding(
+      padding: EdgeInsets.all(10.w),
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Icon(icon, size: 14.sp, color: color ?? Colors.black),
-          SizedBox(width: 4.w),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w600,
-              color: color ?? Colors.black,
+          // Thumbnail Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24.r),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.network(
+                video.thumbnailUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[300],
+                  child: Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              ),
+            ),
+          ),
+          // Play Button Overlay
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 45.sp),
+          ),
+          // More Vert with background for visibility
+          Positioned(
+            top: 12.h,
+            right: 12.w,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.all(6.w),
+                icon: Icon(Icons.more_horiz, color: Colors.white, size: 20.sp),
+                onPressed: () {},
+              ),
+            ),
+          ),
+          // Volume Icon
+          Positioned(
+            bottom: 12.h,
+            right: 12.w,
+            child: Container(
+              padding: EdgeInsets.all(6.w),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.volume_up, color: Colors.white, size: 14.sp),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStatsRow(AnalyzedVideoReport video) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "1h ago",
+            style: TextStyle(color: Colors.grey[600], fontSize: 12.sp),
+          ),
+          SizedBox(height: 12.h),
+          // The Row that was overflowing - now using Expanded and Flexible
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: _buildStatItem(
+                  Icons.directions_walk, 
+                  "Steps", 
+                  "2890/8k", 
+                  const Color(0xFF546E7A)
+                ),
+              ),
+              Expanded(
+                child: _buildStatItem(
+                  Icons.nightlight_round, 
+                  "Sleep", 
+                  "0h/8h", 
+                  const Color(0xFF3949AB)
+                ),
+              ),
+              Expanded(
+                child: _buildStatItem(
+                  Icons.local_fire_department, 
+                  "Calories", 
+                  "169/800", 
+                  const Color(0xFF66BB6A)
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String label, String value, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 22.sp),
+        SizedBox(width: 6.w),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(color: ColorManager.grey, fontSize: 10.sp),
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.sp,
+                  color: color,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildActionRow() {
+    return Padding(
+      padding: EdgeInsets.only(right: 20.w, top: 12.h),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: ElevatedButton(
+          onPressed: onShowAll,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: theme.colorScheme.primary, 
+            foregroundColor: theme.colorScheme.onSecondaryFixed, 
+            elevation: 0,
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+          ),
+          child: Text(
+            string.moreDetails,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+          ),
+        ),
       ),
     );
   }

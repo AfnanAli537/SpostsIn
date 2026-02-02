@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/main/profile/view/widgets/profile_stats_widget.dart';
 import '../model/profile_model.dart';
@@ -199,7 +200,7 @@ class ProfileSectionFactory {
       theme: theme,
       string: string,
     ));
-    sections.add(Divider(height: 1.h, color: theme.dividerColor));
+    sections.add(Divider(height: 1.h, color: ColorManager.hintTextColor));
 
     if (!isOwnProfile) {
       sections.add(
