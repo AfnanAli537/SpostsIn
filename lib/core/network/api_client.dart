@@ -51,7 +51,7 @@ class ApiClient {
               'Content-Type': 'application/json',
             },
           ),
-        ) {
+        ) {   
     // 👇 THIS PART IS THE MAGIC
     _dio.interceptors.add(
       InterceptorsWrapper(

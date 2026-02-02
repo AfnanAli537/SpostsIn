@@ -28,8 +28,11 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     _isFetching = true;
 
     try {
-      if (_currentPage == 1) emit(PostsLoading());
-
+      // if (_currentPage == 1) emit(PostsLoading());
+     if (_currentPage == 1) {
+  emit(PostsLoading());
+  await Future.delayed(const Duration(seconds: 2));
+}
       final fetchedPosts = await postRepo.getAllPosts(
         pageNumber: _currentPage,
         pageSize: pageSize,

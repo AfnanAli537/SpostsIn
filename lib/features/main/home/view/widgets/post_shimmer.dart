@@ -1,86 +1,135 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-class PostShimmerWidget extends StatelessWidget {
-  const PostShimmerWidget({super.key});
+class PostShimmer extends StatelessWidget {
+  const PostShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade400,
-      highlightColor: Colors.grey.shade200,
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 2,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header (Avatar + Name + Time)
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 20,
-                    backgroundColor: Colors.grey,
+                    backgroundColor: Colors.grey[300],
                   ),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _shimmerBox(width: 120, height: 14),
-                      const SizedBox(height: 6),
-                      _shimmerBox(width: 80, height: 10), 
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          width: 80,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
 
-              const SizedBox(height: 16),
-              _shimmerBox(width: double.infinity, height: 14),
-              const SizedBox(height: 8),
-              _shimmerBox(width: double.infinity, height: 12),
-              const SizedBox(height: 6),
-              _shimmerBox(width: 220, height: 12),
-              const SizedBox(height: 16),
+              // Description lines
               Container(
-                height: 200,
                 width: double.infinity,
+                height: 12,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: 200,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Media placeholder
+              Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Like and Comment buttons
               Row(
                 children: [
-                  _shimmerBox(width: 20, height: 20), 
-                  const SizedBox(width: 6),
-                  _shimmerBox(width: 30, height: 12), 
+                  Container(
+                    width: 60,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                   const SizedBox(width: 16),
-                  _shimmerBox(width: 20, height: 20), 
-                  const SizedBox(width: 6),
-                  _shimmerBox(width: 30, height: 12), 
+                  Container(
+                    width: 60,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  static Widget _shimmerBox({
-    required double width,
-    required double height,
-  }) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade400,
-        borderRadius: BorderRadius.circular(30),
       ),
     );
   }
