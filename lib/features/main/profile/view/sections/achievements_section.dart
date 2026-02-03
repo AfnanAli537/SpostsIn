@@ -76,7 +76,7 @@ class AchievementsSection extends StatelessWidget {
                           Text(
                             achievement.subtitle,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onTertiary,
+                              color: theme.colorScheme.onTertiaryContainer,
                             ),
                           ),
                         ],

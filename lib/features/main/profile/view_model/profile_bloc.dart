@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 import '../model/profile_model.dart';
 
+@injectable
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepo profileRepo;
 

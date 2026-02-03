@@ -53,7 +53,7 @@ class ScoutDataSection extends StatelessWidget {
               value,
               softWrap: true,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onTertiary,
+                color: theme.colorScheme.onTertiaryContainer,
               ),
             ),
           ),

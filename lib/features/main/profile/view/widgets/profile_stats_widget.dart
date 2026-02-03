@@ -96,9 +96,6 @@ Widget build(BuildContext context) {
             SizedBox(height: 4.h),
             Text(
               label,
-              // style: theme.textTheme.bodySmall?.copyWith(
-              //   color: theme.colorScheme.onTertiaryFixed,
-              // ),
               style: TextStyle(
                 color: ColorManager.hintTextColor,
                 fontSize: 11.sp,

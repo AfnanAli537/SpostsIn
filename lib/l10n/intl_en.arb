@@ -272,6 +272,16 @@
   "conflict": "Data conflict occurred",
   "serviceUnavailable": "Service temporarily unavailable",
   "userNotFound": "User not found",
+  
+  "notifications": "Notification",
+  "settings": "Setting",
+  "theme": "Light",
+  "aboutUs": "About us",
+  "contactUs": "Contact us",
+  "logout": "LOG OUT",
+  "logoutConfirmation": "Are you sure you want to logout?",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
 
   "followers": "Followers",
   "following": "Following",

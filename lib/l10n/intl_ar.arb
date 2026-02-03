@@ -248,7 +248,15 @@
   "conflict": "حدث تعارض في البيانات",
   "serviceUnavailable": "الخدمة غير متاحة مؤقتاً",
   "userNotFound": "المستخدم غير موجود",
-
+  "notifications": "الإشعارات",
+  "settings": "الإعدادات",
+  "theme": "الوضع الفاتح",
+  "aboutUs": "معلومات عنا",
+  "contactUs": "اتصل بنا",
+  "logout": "تسجيل الخروج",
+  "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "cancel": "إلغاء",
+  "confirm": "تأكيد",
 
   "following": "متابع",
   "followers": "يتابع",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:sports_in/core/widgets/app_drawer.dart';
 import 'package:sports_in/features/main/profile/data/data_sources/mock_profile_data.dart';
 import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
 import 'package:sports_in/features/main/profile/view/presentation/profile_screen.dart';
@@ -9,21 +10,7 @@ class MyProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: theme.colorScheme.onSurface),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_outlined, color: theme.colorScheme.onSurface),
-            onPressed: () {},
-          ),
-        ],
-      ),
       body: BlocProvider(
         create: (context) => ProfileBloc(
           ProfileRepo(MockProfileData()),

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/assets_manager.dart';
+import 'package:sports_in/core/widgets/app_drawer.dart';
 import 'package:sports_in/features/main/profile/view/presentation/my_profile_screen.dart';
+import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
 
 class CustomBottomNav extends StatefulWidget {
   const CustomBottomNav({super.key});
@@ -10,6 +16,7 @@ class CustomBottomNav extends StatefulWidget {
 
 class _CustomBottomNavState extends State<CustomBottomNav> {
   int _currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> _pages = [
     const Center(child: Text("Home")),
@@ -18,6 +25,12 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
     MyProfileScreen(),
   ];
+  @override
+  void initState() {
+    super.initState();
+    // Load profile ONCE when the main layout is created
+    context.read<ProfileBloc>().add(LoadMyProfile());
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -33,8 +46,48 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      key: _scaffoldKey,
+      backgroundColor: theme.colorScheme.surface,
+
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () =>
+              _scaffoldKey.currentState?.openDrawer(), // Open drawer
+        ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // App Logo from Assets
+            Image.asset(
+              ImageAssets.logo,
+              height: 32.h, // Scaled height
+              width: 32.w,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(width: 8.w),
+            // App Name
+            Text(
+              "SportsIn",
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {},
+          ),
+        ],
+      ),
+
+      drawer: const AppDrawer(),
       body: IndexedStack(index: _currentIndex, children: _pages),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

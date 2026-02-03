@@ -34,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "احصل على الرمز الخاص بك!",
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
+    "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
     "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
@@ -53,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "badRequest": MessageLookupByLibrary.simpleMessage("طلب غير صالح"),
     "basketball": MessageLookupByLibrary.simpleMessage("كرة السلة"),
     "basketballer": MessageLookupByLibrary.simpleMessage("لاعب كرة السلة"),
+    "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
     "centerBack": MessageLookupByLibrary.simpleMessage("صانع لعب (وسط خلفي)"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -66,6 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "club": MessageLookupByLibrary.simpleMessage("نادي"),
     "clubName": MessageLookupByLibrary.simpleMessage("اسم النادي"),
     "coach": MessageLookupByLibrary.simpleMessage("مدرب"),
+    "confirm": MessageLookupByLibrary.simpleMessage("تأكيد"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage(
       "تأكيد كلمة المرور",
     ),
@@ -87,6 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "إذا كانت لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا عبر البريد الإلكتروني: support@sportsin.app",
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("تواصل معنا"),
+    "contactUs": MessageLookupByLibrary.simpleMessage("اتصل بنا"),
     "continueButton": MessageLookupByLibrary.simpleMessage("استمر"),
     "continueText": MessageLookupByLibrary.simpleMessage("استمر"),
     "continueWith": MessageLookupByLibrary.simpleMessage(
@@ -221,6 +225,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "سجّل الدخول إلى حسابك",
     ),
+    "logout": MessageLookupByLibrary.simpleMessage("تسجيل الخروج"),
+    "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+    ),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف صغير واحد",
     ),
@@ -242,6 +250,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "لا يوجد اتصال بالإنترنت.",
     ),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
+    "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
     "number": MessageLookupByLibrary.simpleMessage("الرقم"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رقم واحد",
@@ -381,6 +390,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "الخدمة غير متاحة مؤقتاً",
     ),
     "setter": MessageLookupByLibrary.simpleMessage("موزع (Setter)"),
+    "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "نحن لا نشارك بياناتك الشخصية مع أطراف ثالثة إلا في الحالات التالية:\n\n• الامتثال للالتزامات القانونية أو الطلبات الرسمية.\n• لتقديم الخدمات من خلال شركاء موثوقين (مثل خدمات التحليلات أو الإشعارات).",
     ),
@@ -414,6 +424,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
+    "theme": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),

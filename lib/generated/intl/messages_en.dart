@@ -34,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage(
       "Verify and proceed",
     ),
+    "aboutUs": MessageLookupByLibrary.simpleMessage("About us"),
     "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
@@ -53,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
     "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
     "basketballer": MessageLookupByLibrary.simpleMessage("Basketballer"),
+    "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
     "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -66,6 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "club": MessageLookupByLibrary.simpleMessage("Club"),
     "clubName": MessageLookupByLibrary.simpleMessage("Club name"),
     "coach": MessageLookupByLibrary.simpleMessage("Coach"),
+    "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage("Confirm Password"),
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Confirm password is required",
@@ -87,6 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app",
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("Contact Us"),
+    "contactUs": MessageLookupByLibrary.simpleMessage("Contact us"),
     "continueButton": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueText": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueWith": MessageLookupByLibrary.simpleMessage("or continue with"),
@@ -226,6 +230,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "Login to your Account",
     ),
+    "logout": MessageLookupByLibrary.simpleMessage("LOG OUT"),
+    "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to logout?",
+    ),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 lowercase letter",
     ),
@@ -247,6 +255,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
+    "notifications": MessageLookupByLibrary.simpleMessage("Notification"),
     "number": MessageLookupByLibrary.simpleMessage("number"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 number",
@@ -385,6 +394,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Service temporarily unavailable",
     ),
     "setter": MessageLookupByLibrary.simpleMessage("Setter"),
+    "settings": MessageLookupByLibrary.simpleMessage("Setting"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
     ),
@@ -416,6 +426,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
     "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
+    "theme": MessageLookupByLibrary.simpleMessage("Light"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
     ),

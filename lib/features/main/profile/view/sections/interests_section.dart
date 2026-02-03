@@ -106,7 +106,7 @@ class InterestsSection extends StatelessWidget {
                                 Text(
                                   interest.role,
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onTertiary,
+                                    color: theme.colorScheme.onTertiaryContainer,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),

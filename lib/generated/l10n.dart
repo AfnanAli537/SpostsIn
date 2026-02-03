@@ -1764,6 +1764,61 @@ class S {
     );
   }
 
+  /// `Notification`
+  String get notifications {
+    return Intl.message(
+      'Notification',
+      name: 'notifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Setting`
+  String get settings {
+    return Intl.message('Setting', name: 'settings', desc: '', args: []);
+  }
+
+  /// `Light`
+  String get theme {
+    return Intl.message('Light', name: 'theme', desc: '', args: []);
+  }
+
+  /// `About us`
+  String get aboutUs {
+    return Intl.message('About us', name: 'aboutUs', desc: '', args: []);
+  }
+
+  /// `Contact us`
+  String get contactUs {
+    return Intl.message('Contact us', name: 'contactUs', desc: '', args: []);
+  }
+
+  /// `LOG OUT`
+  String get logout {
+    return Intl.message('LOG OUT', name: 'logout', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to logout?`
+  String get logoutConfirmation {
+    return Intl.message(
+      'Are you sure you want to logout?',
+      name: 'logoutConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
+  }
+
+  /// `Confirm`
+  String get confirm {
+    return Intl.message('Confirm', name: 'confirm', desc: '', args: []);
+  }
+
   /// `Followers`
   String get followers {
     return Intl.message('Followers', name: 'followers', desc: '', args: []);

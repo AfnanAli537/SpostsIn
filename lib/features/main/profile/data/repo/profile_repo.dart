@@ -1,7 +1,9 @@
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 
 import '../interface/i_profile_data_source.dart';
 
+@injectable
 class ProfileRepo {
   final IProfileDataSource _dataSource;
 
