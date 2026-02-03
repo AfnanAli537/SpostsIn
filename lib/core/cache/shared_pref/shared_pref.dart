@@ -48,6 +48,13 @@ class SharedPref {
     return _prefs.getString(StringKeys.tokenKey);
   }
 
+  Future<void> saveUserId(String? userId) async {
+    await _prefs.setString(StringKeys.userIdKey, userId!);
+  }
+
+  String? getUserId() {
+    return _prefs.getString(StringKeys.userIdKey);
+  }
   Future<void> clearToken() async {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);

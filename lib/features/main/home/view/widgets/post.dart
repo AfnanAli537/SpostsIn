@@ -4,6 +4,7 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/comments.dart';
@@ -37,7 +38,7 @@ class PostWidget extends StatefulWidget {
   final PostModel post;
 
 const PostWidget({
-  super.key,
+    super.key,
   required this.post,
 });
 
@@ -72,7 +73,28 @@ class _PostWidgetState extends State<PostWidget> {
     _initializeMedia();
     _loadDeviceLanguage(); // بس حمل اللغة بدون ترجمة
   }
+@override
+  void didUpdateWidget(covariant PostWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
+    // التحقق لو أي بيانات أساسية في البوست اتغيرت من برا (من الـ Bloc)
+    if (widget.post.isLikedByCurrentUser != oldWidget.post.isLikedByCurrentUser ||
+        widget.post.likesCount != oldWidget.post.likesCount ||
+        widget.post.commentsCount != oldWidget.post.commentsCount ||
+        widget.post.description != oldWidget.post.description) {
+      
+      setState(() {
+        // الـ setState الفاضية هنا كافية إنها تخلي الـ Build Method
+        // تشتغل تاني وتسحب القيم الجديدة من widget.post
+      });
+    }
+
+    // ملاحظة إضافية: لو الـ mediaUrl اتغير، ممكن تحتاج تعيد تشغيل الفيديو
+    if (widget.post.mediaUrl != oldWidget.post.mediaUrl) {
+      _betterPlayerController?.dispose();
+      _initializeMedia();
+    }
+  }
   Future<void> _loadDeviceLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     _deviceLanguage = prefs.getString('language_code') ?? 'ar';
@@ -298,7 +320,7 @@ class _PostWidgetState extends State<PostWidget> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                       widget.post.createdAt.toIso8601String(),
+                       formatTimeAgo(DateTime.parse(widget.post.createdAt.toIso8601String())),
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: Colors.grey[600],
@@ -425,7 +447,7 @@ class _PostWidgetState extends State<PostWidget> {
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
+                              backgroundColor: theme.surface,
 
                               builder: (bottomSheetContext) {
                                 return BlocProvider(
@@ -441,7 +463,7 @@ class _PostWidgetState extends State<PostWidget> {
                             widget.post.likesCount.toString(),
                             style: TextStyle(
                               color: Colors.grey[600],
-                              fontSize: 30.sp,
+                              fontSize: 25.sp,
                             ),
                           ),
                         ),
@@ -458,7 +480,7 @@ class _PostWidgetState extends State<PostWidget> {
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (_) => const CommentsBottomSheet(),
+                      builder: (_) =>  CommentsBottomSheet(postId: widget.post.id,),
                     );
                   },
                   borderRadius: BorderRadius.circular(20.r),
@@ -470,15 +492,16 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.chat_bubble_outline,
+                          Icons.comment_outlined,
                           color: Colors.grey[600],
+                          size: 30.sp,
                         ),
                         SizedBox(width: 4.w),
                         Text(
                           widget.post.commentsCount.toString(),
                           style: TextStyle(
                             color: Colors.grey[600],
-                            fontSize: 14.sp,
+                            fontSize: 25.sp,
                           ),
                         ),
                       ],
@@ -615,3 +638,6 @@ class _PostWidgetState extends State<PostWidget> {
   //   );
   // }
 }
+
+
+

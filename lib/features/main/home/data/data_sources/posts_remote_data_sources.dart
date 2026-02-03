@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/features/main/home/data/interface/post_interface.dart';
+import 'package:sports_in/features/main/home/data/model/comment_model.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/features/main/home/data/model/user_model.dart';
@@ -45,102 +46,39 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     }
   }
 
-  @override
-  Future<void> likePost({required String postId}) async {
-    try {
-      final url = Endpoints.putLike.replaceFirst('{id}', postId);
-      final response = await apiClient.put(url);
+@override
+Future<PostModel> likePost({required String postId}) async {
+  try {
+    final url = Endpoints.putLike.replaceFirst('{id}', postId);
+    final response = await apiClient.post(url);
 
-      if (response.statusCode != 200) {
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioErrorKey(e);
+    if (response.statusCode != 200 &&
+    response.statusCode != 201 &&
+    response.statusCode != 204) {
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     }
+
+    // ✅ Return updated post data
+    return PostModel.fromJson(response.data['post']);
+  } on DioException catch (e) {
+    throw ApiErrorHandler.handleDioErrorKey(e);
   }
-
-  @override
-  Future<void> addComment({
-    required String postId,
-    required String comment,
-  }) async {
-    try {
-      final url = Endpoints.putComment.replaceFirst('{id}', postId);
-      final response = await apiClient.put(
-        // ✅
-        url,
-        data: {'text': comment},
-      );
-
-      if (response.statusCode != 200) {
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioErrorKey(e);
-    }
-  }
-
-  @override
-  Future<void> uploadPost({
-    required String description,
-    String? mediaUrl,
-    required String sport,
-    required String title,
-  }) async {
-    try {
-      // final formData = FormData.fromMap({
-      //   'title': title,
-      //   'description': description,
-      //   'SportTypeId': sport,
-
-      //   if (mediaFile != null)
-      //     'file': await MultipartFile.fromFile(
-      //       mediaFile.path,
-      //       filename: mediaFile.path.split('/').last,
-      //     ),
-      // });
-      final response = await apiClient.post(
-        Endpoints.postPost,
-        data: {
-          'title': title,
-          'description': description,
-          'mediaUrl': mediaUrl,
-          'SportTypeId': int.parse(sport),
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioErrorKey(e);
-    }
-    // await dio.post(
-    //   Endpoints.uploadPost,
-    //   data: formData,
-    //   options: Options(
-    //     contentType: 'multipart/form-data',
-    //   ),
-    // );
-  }
+}
 
   // @override
-  // Future<void> uploadPost({
-  //   required String title,
-  //   required String description,
-  //    String? mediaUrl,
-  //    required int sport,
+  // Future<void> addComment({
+  //   required String postId,
+  //   required String comment,
   // }) async {
   //   try {
-  //     final response = await apiClient.post(  // ✅
-  //       Endpoints.postPost,
-  //       data: {
-  //         'title': title,
-  //         'description': description,
-  //         'mediaUrl': mediaUrl,
-  //       },
+  //     final url = Endpoints.putComment.replaceFirst('{id}', postId);
+  //     final response = await apiClient.put(
+  //       // ✅
+  //       url,
+  //       data: {'text': comment},
   //     );
 
-  //     if (response.statusCode != 200 && response.statusCode != 201) {
+  //     if (response.statusCode != 200) {
   //       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
   //     }
   //   } on DioException catch (e) {
@@ -148,40 +86,70 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
   //   }
   // }
 
-  @override
-  Future<void> editComment({
-    required String commentId,
-    required String comment,
-  }) async {
-    try {
-      final url = Endpoints.editComment.replaceFirst('{commentId}', commentId);
-      final response = await apiClient.put(
-        // ✅
-        url,
-        data: {'text': comment},
-      );
-
-      if (response.statusCode != 200) {
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioErrorKey(e);
+@override
+Future<PostModel> uploadPost({
+  required String description,
+  String? mediaUrl,
+  required String sport,
+  required String title,
+}) async {
+  try {
+    final response = await apiClient.post(
+      Endpoints.postPost,
+      data: {
+        'title': title,
+        'description': description,
+        'mediaUrl': mediaUrl,
+        'SportTypeId': int.parse(sport),
+      },
+    );
+    
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     }
+    
+    // ✅ ارجع الـ post اللي السيرفر رجعه
+    return PostModel.fromJson(response.data['post']);
+    
+  } on DioException catch (e) {
+    throw ApiErrorHandler.handleDioErrorKey(e);
   }
+}
 
-  @override
-  Future<void> deleteComment({required String commentId}) async {
-    try {
-      final url = Endpoints.deletComment.replaceFirst('{commentId}', commentId);
-      final response = await apiClient.delete(url); // ✅
+  // @override
+  // Future<CommentModel> editComment({
+  //   required String commentId,
+  //   required String text,
+  // }) async {
+  //   try {
+  //     final url = Endpoints.editComment.replaceFirst('{commentId}', commentId);
+  //     final response = await apiClient.put(
+  //       url,
+  //       data: {'text': text},
+  //     );
 
-      if (response.statusCode != 200) {
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioErrorKey(e);
-    }
-  }
+  //     if (response.statusCode != 200) {
+  //       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+  //     }
+  //   } on DioException catch (e) {
+  //     throw ApiErrorHandler.handleDioErrorKey(e);
+  //   }
+  // }
+
+  // @override
+  // Future<void> deleteComment({required String postId,required String commentId}) async {
+  //   try {
+  //     final url = Endpoints.deletComment.replaceFirst('{commentId}', commentId);
+  //     final response = await apiClient.delete(url); // ✅
+
+  //     if (response.statusCode != 200) {
+  //       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+  //     }
+  //   } on DioException catch (e) {
+  //     throw ApiErrorHandler.handleDioErrorKey(e);
+  //   }
+  // }
+  
   @override
 Future<Map<String, dynamic>> getLikes({
   required String postId,
@@ -222,4 +190,97 @@ Future<Map<String, dynamic>> getLikes({
     rethrow;
   }
 }
+
+@override
+  Future<PaginatedCommentsResponse> getComments({
+    required String postId,
+    int pageNumber = 1,
+    int pageSize = 10,
+  }) async {
+    try {
+      final url = Endpoints.getComments.replaceFirst('{id}', postId);
+      final response = await apiClient.get(
+        url,
+        params: {
+          'pageNumber': pageNumber,
+          'pageSize': pageSize,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return PaginatedCommentsResponse.fromJson(response.data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
+
+  @override
+  Future<CommentModel> addComment({
+    required String postId,
+    required String text,
+  }) async {
+    try {
+      final url = Endpoints.putComment.replaceFirst('{id}', postId);
+      final response = await apiClient.post(
+        url,
+        data: {'text': text},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // ✅ افترض إن السيرفر بيرجع comment واحد
+        return CommentModel.fromJson(response.data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
+
+  @override
+  Future<CommentModel> editComment({
+    required String commentId,
+    required String text,
+  }) async {
+    try {
+      final url = Endpoints.putComment.replaceFirst('{commentId}', commentId);
+      final response = await apiClient.put(
+        url,
+        data: {'text': text},
+      );
+
+      if (response.statusCode == 200) {
+        return CommentModel.fromJson(response.data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
+
+  @override
+  Future<void> deleteComment({
+    required String postId,
+    required String commentId,
+  }) async {
+    try {
+      final url = Endpoints.deletComment
+          .replaceFirst('{id}', postId)
+          .replaceFirst('{commentId}', commentId);
+
+      final response = await apiClient.delete(url);
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
 }
+
+

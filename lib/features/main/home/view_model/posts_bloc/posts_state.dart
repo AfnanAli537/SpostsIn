@@ -37,3 +37,20 @@ class PostsError extends PostsState {
 }
 
 
+// في posts_state.dart
+
+class PostsUploading extends PostsState {
+  final List<PostModel> currentPosts;
+  
+  const PostsUploading(this.currentPosts);
+  
+  @override
+  List<Object?> get props => [currentPosts];
+}
+
+class PostsUploadSuccess extends PostsState {
+  const PostsUploadSuccess();
+  
+  @override
+  List<Object?> get props => [];
+}

@@ -150,6 +150,7 @@ class BuildContent extends StatelessWidget {
                   else
                     ...state.posts.take(1).map(
                       (post) => PostWidget(
+                        key: ValueKey(post.id),
                          post: post,
                       ),
                     ),
@@ -381,6 +382,7 @@ class BuildContent extends StatelessWidget {
                       );
 
                       return PostWidget(
+                        key: ValueKey(posts[index].id),
                         post: post,
                       );
                     },

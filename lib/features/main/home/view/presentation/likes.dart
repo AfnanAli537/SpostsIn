@@ -557,7 +557,7 @@ class _LikesSheetState extends State<LikesSheet> {
         return Container(
           width: double.infinity,
           decoration: const BoxDecoration(
-            color: Colors.white,
+            // color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
@@ -706,7 +706,7 @@ class _LikesSheetState extends State<LikesSheet> {
   Widget _buildShimmerLoading() {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: 10,
+      itemCount: 5,
       itemBuilder: (context, index) {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),

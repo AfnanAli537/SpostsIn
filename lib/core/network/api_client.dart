@@ -66,6 +66,7 @@ class ApiClient {
 
           // 3️⃣ Continue request
           handler.next(options);
+
         },
       ),
     );

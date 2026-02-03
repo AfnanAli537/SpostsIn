@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'dart:io';
@@ -59,7 +60,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.image, color: Color(0xFF1D2D3D)),
+                leading: const Icon(Icons.image, color:ColorManager.darkPrimary),
                 title: const Text('Pick Image'),
                 onTap: () {
                   Navigator.pop(context);
@@ -67,7 +68,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.video_library, color: Color(0xFF1D2D3D)),
+                leading: const Icon(Icons.video_library, color:ColorManager.darkPrimary ),
                 title: const Text('Pick Video'),
                 onTap: () {
                   Navigator.pop(context);
@@ -91,13 +92,13 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
         // backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon:  Icon(Icons.arrow_back, color:theme.surface),
+          icon:  Icon(Icons.arrow_back, color:theme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Upload Content',
           style: TextStyle(
-            color: Colors.black,
+            color: theme.onSurface,
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -125,7 +126,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
       child: Container(
         height: 200.h,
         width: double.infinity,
-        color: Colors.white,
+        color: theme.surface,
         child: _selectedFile == null
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -160,7 +161,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                     _selectedFile!,
                     width: double.infinity,
                     height: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                   ),
                   Positioned(
                     top: 8.h,
@@ -199,7 +200,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color:  theme.onSurface,
                 ),
               ),
               SizedBox(height: 8.h),
@@ -215,7 +216,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color:  theme.onSurface,
                 ),
               ),
               SizedBox(height: 8.h),
@@ -248,8 +249,6 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                             },
                           ),
               SizedBox(height: 40.h),
-
-           // احنا بنلف الزرار كله داخل Builder
 Builder(
   builder: (context) {
     return CustomElevatedButton(
@@ -300,3 +299,4 @@ Builder(
   }
  
 }
+

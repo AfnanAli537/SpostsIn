@@ -31,7 +31,7 @@ class PostModel {
       title: json['title'],
       description: json['description'],
       isActive: json['isActive'],
-      mediaUrl: json['mediaUrl']??'',
+      mediaUrl: json['mediaUrl'],
       createdAt: DateTime.parse(json['createdAt']),
       author: AuthorModel.fromJson(json['author']),
       likesCount: json['likesCount'],

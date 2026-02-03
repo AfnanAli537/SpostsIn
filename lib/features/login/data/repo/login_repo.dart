@@ -34,6 +34,7 @@ class LoginRepo {
     await sharedPref.saveToken(response.token);
     await sharedPref.saveExpiryDate(response.expiresAt!);
     await sharedPref.saveUserToPrefs(response);
+    await sharedPref.saveUserId(response.userId);
    
   }
 }
