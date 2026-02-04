@@ -25,7 +25,7 @@ class PostsRepositoryImpl  {
     return repo.likePost(postId:postId);
   }
 
-  Future<void> addComment({required String postId,required String text}) {
+  Future<CommentModel> addComment({required String postId,required String text}) {
     return repo.addComment(postId:postId, text:text);
   }
 
@@ -43,8 +43,8 @@ class PostsRepositoryImpl  {
       sport:sport,
     );
   }
-     Future<void> editComment({ required String commentId, required String comment}){
-      return repo.editComment(commentId: commentId, text: comment);}
+     Future<CommentModel> editComment({ required String commentId, required String text}){
+      return repo.editComment(commentId: commentId, text: text);}
    Future<void> deleteComment({ required String commentId, required String postId}){
     return repo.deleteComment(postId:postId,commentId: commentId);}
    Future<Map<String, dynamic>> getLikes({required String postId, required int pageNumber,

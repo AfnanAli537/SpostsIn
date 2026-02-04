@@ -1,6 +1,7 @@
 // comments_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/src/shared_preferences_legacy.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/home/data/model/comment_model.dart';
@@ -15,7 +16,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
    final prefs=getIt<SharedPref>();
 
   CommentsBloc({
-    required this.commentsRepo,
+    required this.commentsRepo, required SharedPreferences prefs,
   }) : super(CommentsInitial()) {
     on<FetchComments>(_onFetchComments);
     on<AddComment>(_onAddComment);
@@ -81,15 +82,16 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     emit(CommentAdding());
 
     try {
-      final newComment = await commentsRepo.addComment(
+      final  CommentModel newComment = await commentsRepo.addComment(
         postId: event.postId,
         text: event.text,
       );
 
       // Update comments list
       if (currentState is CommentsLoaded) {
-        final updatedComments = [newComment, ...currentState.comments];
+        final List<CommentModel> updatedComments = [newComment, ...currentState.comments];
         emit(CommentsLoaded(
+
           comments: updatedComments,
           hasNextPage: currentState.hasNextPage,
           currentPage: currentState.currentPage,
@@ -117,45 +119,51 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       emit(CommentsError('Failed to add comment: ${e.toString()}'));
     }
   }
+  
 
-  // ✅ Edit Comment
-  Future<void> _onEditComment(
-    EditComment event,
-    Emitter<CommentsState> emit,
-  ) async {
-    final currentState = state;
+Future<void> _onEditComment(
+  EditComment event,
+  Emitter<CommentsState> emit,
+) async {
+  final currentState = state;
 
-    if (currentState is! CommentsLoaded) return;
+  if (currentState is! CommentsLoaded) return;
 
-    try {
-      final editedComment = await commentsRepo.editComment(
-        commentId: event.commentId,
-        comment: event.text,
-      );
+  try {
+    // ✅ استدعاء الـ API
+    final CommentModel editedComment = await commentsRepo.editComment(
+      commentId: event.commentId,
+       text: event.text,
+    );
 
-      // Update the comment in the list
-      final updatedComments = currentState.comments.map((comment) {
-        return comment.commentId == event.commentId ? editedComment : comment;
-      }).toList();
+    // ✅ تحديث الـ comment في الـ list
+    final List<CommentModel> updatedComments = currentState.comments.map((comment) {
+      if (comment.commentId == event.commentId) {
+        return editedComment;
+      }
+      return comment;
+    }).toList();
 
-      emit(CommentsLoaded(
-        comments: updatedComments,
-        hasNextPage: currentState.hasNextPage,
-        currentPage: currentState.currentPage,
-        totalCount: currentState.totalCount,
-      ));
-      
-      emit(CommentEdited(editedComment));
-    } catch (e) {
-      emit(CommentsLoaded(
-        comments: currentState.comments,
-        hasNextPage: currentState.hasNextPage,
-        currentPage: currentState.currentPage,
-        totalCount: currentState.totalCount,
-      ));
-      emit(CommentsError('Failed to edit comment: ${e.toString()}'));
-    }
+    emit(CommentsLoaded(
+      comments: updatedComments,
+      hasNextPage: currentState.hasNextPage,
+      currentPage: currentState.currentPage,
+      totalCount: currentState.totalCount,
+    ));
+
+    emit(CommentEdited(editedComment));
+  } catch (e) {
+    print('Edit Comment Error: $e');
+    emit(CommentsLoaded(
+      comments: currentState.comments,
+      hasNextPage: currentState.hasNextPage,
+      currentPage: currentState.currentPage,
+      totalCount: currentState.totalCount,
+    ));
+    emit(CommentsError('Failed to edit comment: ${e.toString()}'));
   }
+}
+ 
 
   // ✅ Delete Comment
   Future<void> _onDeleteComment(

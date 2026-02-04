@@ -382,7 +382,7 @@ class BuildContent extends StatelessWidget {
                       );
 
                       return PostWidget(
-                        key: ValueKey(posts[index].id),
+                         key: ValueKey(post.id),
                         post: post,
                       );
                     },
@@ -393,6 +393,7 @@ class BuildContent extends StatelessWidget {
             return const SliverToBoxAdapter(child: SizedBox.shrink());
           },
         );
+    
       case HomeTab.courses:
         return const SliverToBoxAdapter(
           child: Center(child: Text("Courses tab content")),

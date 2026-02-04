@@ -3,7 +3,7 @@
 // comment_model.dart
 class CommentModel {
   final String commentId;
-  final String text;
+  final String? text;
   final DateTime createdAt;
   final String userId;
   final String fullName;
@@ -20,10 +20,10 @@ class CommentModel {
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
-      commentId: json['commentId'] ?? '',
+      commentId: json['commentId'] ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
       text: json['text'] ?? '',
       createdAt: DateTime.parse(json['createdAt']),
-      userId: json['userId'] ?? '',
+      userId: json['userId'] ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
       fullName: json['fullName'] ?? 'Unknown User',
       profilePictureUrl: json['profilePictureUrl'],
     );

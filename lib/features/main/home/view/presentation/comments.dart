@@ -566,7 +566,7 @@ class _CommentsBottomSheetContentState
                                         ),
                                       );
                                 },
-                                child: const Text('Retry'),
+                                child: const Text('Retry',style:TextStyle(color: Colors.black)),
                               ),
                             ],
                           ),
@@ -646,8 +646,9 @@ class _CommentsBottomSheetContentState
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  comment.text,
-                  style: const TextStyle(fontSize: 14),
+                  comment.text!,
+                  
+                  style: const TextStyle(fontSize: 14,color: Colors.black),
                 ),
               ],
             ),
@@ -695,7 +696,7 @@ class _CommentsBottomSheetContentState
   void _startEdit(CommentModel comment) {
     setState(() {
       _editingCommentId = comment.commentId;
-      _commentController.text = comment.text;
+      _commentController.text = comment.text!;
     });
     FocusScope.of(context).requestFocus(FocusNode());
   }

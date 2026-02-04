@@ -21,7 +21,7 @@
 // }
 
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'network_config.dart';
 
 class ApiClient {
@@ -43,7 +43,7 @@ class ApiClient {
   //                 },
   //         ),
   //       );
-    ApiClient(SharedPreferences prefs)
+    ApiClient(SharedPref prefs)
       : _dio = Dio(
           BaseOptions(
             baseUrl: NetworkConfig.baseUrl,
@@ -56,19 +56,21 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // 1️⃣ Read token from SharedPreferences
-          final token = prefs.getString('access_token');
+          
+  final token = prefs.getToken();
 
-          // 2️⃣ If token exists → add it to headers
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
+  print("TOKEN = $token");
 
-          // 3️⃣ Continue request
-          handler.next(options);
+  if (token != null && token.isNotEmpty) {
+    options.headers['Authorization'] = 'Bearer $token';
+  }
 
-        },
-      ),
+  print("FINAL HEADERS = ${options.headers}");
+
+  handler.next(options);
+}
+
+     ),
     );
   }
 
