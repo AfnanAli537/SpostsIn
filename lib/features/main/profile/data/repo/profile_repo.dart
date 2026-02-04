@@ -38,9 +38,9 @@ class ProfileRepo {
     int pageSize = 10,
   }) async {
     return await _dataSource.getPosts(
-      userId: userId,
+      targetUserId: userId,
       page: page,
-      pageSize: pageSize,
+      size: pageSize,
     );
   }
 

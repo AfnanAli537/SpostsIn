@@ -259,12 +259,14 @@ class Achievement {
   final String title;
   final String subtitle;
   final String imageUrl;
+  final DateTime? date;
 
   Achievement({
     required this.id,
     required this.title,
     required this.subtitle,
     required this.imageUrl,
+    this.date,
   });
 
   factory Achievement.fromJson(Map<String, dynamic> json) {
@@ -273,6 +275,7 @@ class Achievement {
       title: json['title'] ?? '',
       subtitle: json['subtitle'] ?? '',
       imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
+      date: json['date'] != null ? DateTime.parse(json['date']) : null,
     );
   }
 
@@ -282,6 +285,7 @@ class Achievement {
       'title': title,
       'subtitle': subtitle,
       'imageUrl': imageUrl,
+      'date': date?.toIso8601String(),
     };
   }
 }

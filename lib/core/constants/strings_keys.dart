@@ -6,6 +6,7 @@ class StringKeys {
   static const String languageKey = 'language_code';
   static const String tokenKey = 'token';
   static const String expireData = 'ExpireData';
+  static const String userId = 'UserId';
 
   /// Network error
   static const String connectionTimedOut = 'connectionTimedOut';

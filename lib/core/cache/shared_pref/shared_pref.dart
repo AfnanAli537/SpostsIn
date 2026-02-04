@@ -47,6 +47,7 @@ class SharedPref {
   Future<void> clearToken() async {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);
+    await _prefs.remove(StringKeys.userId);
   }
 
   // Future<void> saveExpiryDate(String expiryDate) async {
@@ -65,6 +66,13 @@ DateTime? getExpiryDate() {
   return DateTime.tryParse(value);
 }
 
+//user id
+Future<void> saveUserId(String? userId) async {
+    await _prefs.setString(StringKeys.userId, userId!);
+}
+String? getUserId() {
+    return _prefs.getString(StringKeys.userId);
+}
   // Future<void> saveExpiryDate(DateTime? expiryDate) async {
   //   if (expiryDate == null) return;
   //   await _prefs.setString(StringKeys.expireData, expiryDate.toIso8601String());

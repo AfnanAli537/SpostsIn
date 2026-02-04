@@ -66,14 +66,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i414.SharedPref>(
       () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
     );
-    gh.lazySingleton<_i694.ApiClient>(
-      () => appModule.apiClient(gh<_i460.SharedPreferences>()),
-    );
-    gh.lazySingleton<_i65.IRegisterDataSource>(
-      () => _i569.RegisterApiDataSource(gh<_i694.ApiClient>()),
-    );
     gh.factory<_i939.ProfileBloc>(
       () => _i939.ProfileBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.lazySingleton<_i694.ApiClient>(
+      () => appModule.apiClient(gh<_i414.SharedPref>()),
     );
     gh.factory<_i185.LocaleCubit>(
       () => _i185.LocaleCubit(gh<_i414.SharedPref>()),
@@ -90,8 +87,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i705.IForgetPasswordDataSource>(
       () => _i701.ForgetPasswordApiDataSource(gh<_i694.ApiClient>()),
     );
-    gh.lazySingleton<_i917.RegisterRepo>(
-      () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
+    gh.lazySingleton<_i65.IRegisterDataSource>(
+      () => _i569.RegisterApiDataSource(gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i472.AuthRepo>(
       () => _i472.AuthRepo(gh<_i470.IAuthDataSource>()),
@@ -102,6 +99,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i707.ForgetPasswordRepo>(
       () => _i707.ForgetPasswordRepo(gh<_i705.IForgetPasswordDataSource>()),
+    );
+    gh.lazySingleton<_i917.RegisterRepo>(
+      () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
     );
     return this;
   }

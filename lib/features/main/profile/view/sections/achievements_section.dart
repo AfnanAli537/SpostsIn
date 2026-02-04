@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Add this for date formatting
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
@@ -32,9 +33,16 @@ class AchievementsSection extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 16.w),
+          // Limit to 3 items as per your original logic
           itemCount: achievements.length > 3 ? 3 : achievements.length,
           itemBuilder: (context, index) {
             final achievement = achievements[index];
+            
+            // Format the date if it exists
+            final String formattedDate = achievement.date != null 
+                ? DateFormat.yMMMd().format(achievement.date!) 
+                : '';
+
             return Padding(
               padding: EdgeInsets.only(bottom: 12.h),
               child: InkWell(
@@ -42,6 +50,7 @@ class AchievementsSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.r),
                 child: Row(
                   children: [
+                    // 1. IMAGE
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.r),
                       child: Container(
@@ -61,6 +70,7 @@ class AchievementsSection extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 12.w),
+                    // 2. TITLE AND DATE
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,13 +82,25 @@ class AchievementsSection extends StatelessWidget {
                               color: theme.colorScheme.onSurface,
                             ),
                           ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            achievement.subtitle,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onTertiaryContainer,
+                          if (formattedDate.isNotEmpty) ...[
+                            SizedBox(height: 2.h),
+                            Text(
+                              formattedDate,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onTertiaryContainer, 
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
+                          ],
+                          // Keeping subtitle just in case you want it below the date
+                          // You can remove this if you only want Title and Date
+                          // SizedBox(height: 2.h),
+                          // Text(
+                          //   achievement.subtitle,
+                          //   style: theme.textTheme.bodySmall?.copyWith(
+                          //     color: theme.colorScheme.onTertiaryContainer,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

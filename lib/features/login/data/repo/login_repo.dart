@@ -53,7 +53,7 @@ class LoginRepo {
 
   Future<void> _saveAuthData(LoginResponse response) async {
     await sharedPref.saveToken(response.token);
+    await sharedPref.saveUserId(response.userId);
     await sharedPref.saveExpiryDate(response.expiresAt!);
-   
   }
 }
