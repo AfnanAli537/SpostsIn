@@ -21,7 +21,7 @@ abstract class PostsRepository {
       Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,
-    int pageSize = 10,
+    int pageSize = 20,
   });
 
   Future<void> deleteComment({required String postId, required String commentId});

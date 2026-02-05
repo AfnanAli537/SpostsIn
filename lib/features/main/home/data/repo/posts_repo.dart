@@ -54,8 +54,13 @@ class PostsRepositoryImpl  {
         Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,
-    int pageSize = 10,
+    int pageSize = 20,
   }){
-    return repo.getComments(postId: postId);
+   return repo.getComments(
+  postId: postId,
+  pageNumber: pageNumber,
+  pageSize: pageSize,
+);
+
   }
 }

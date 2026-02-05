@@ -6,6 +6,8 @@ import 'package:sports_in/features/main/home/data/interface/home_tap_enums.dart'
 import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_list.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_screen.dart';
 
 class BuildContent extends StatelessWidget {
   final HomeTab currentTab;
@@ -158,19 +160,41 @@ class BuildContent extends StatelessWidget {
                 
                 // Add more sections here in the future
                 // Example:
-                // SizedBox(height: 24.h),
-                // Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 20.w),
-                //   child: Text(
-                //     "Trending Achievements",
-                //     style: GoogleFonts.poppins(
-                //       fontSize: 18.sp,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
+                SizedBox(height: 24.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 10.h,
+                    horizontal: 20.w,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Opportunities",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          onTabChange(HomeTab.opportunities);
+                        },
+                        child: Text(
+                          "Show all",
+                          style: GoogleFonts.poppins(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+         
                 // ... achievement widgets ...
-                
+                // const OpportunitiesSection(),
               ]),
             );
           },
@@ -401,8 +425,9 @@ class BuildContent extends StatelessWidget {
 
       case HomeTab.opportunities:
         return const SliverToBoxAdapter(
-          child: Center(child: Text("Opportunities tab content")),
+          child: Center(child: Text("opportunities tab content")),
         );
+     
     }
   }
 }

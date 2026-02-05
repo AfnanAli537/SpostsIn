@@ -138,7 +138,7 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
   Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,
-    int pageSize = 10,
+    int pageSize = 20,
   }) async {
     try {
       final url = Endpoints.getComments.replaceFirst('{id}', postId);
