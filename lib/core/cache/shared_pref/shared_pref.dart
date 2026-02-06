@@ -73,13 +73,6 @@ DateTime? getExpiryDate() {
   return DateTime.tryParse(value);
 }
 
-//user id
-Future<void> saveUserId(String? userId) async {
-    await _prefs.setString(StringKeys.userId, userId!);
-}
-String? getUserId() {
-    return _prefs.getString(StringKeys.userId);
-}
   // Future<void> saveExpiryDate(DateTime? expiryDate) async {
   //   if (expiryDate == null) return;
   //   await _prefs.setString(StringKeys.expireData, expiryDate.toIso8601String());
