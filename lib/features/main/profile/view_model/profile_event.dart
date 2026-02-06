@@ -1,23 +1,171 @@
-abstract class ProfileEvent {}
+import 'package:equatable/equatable.dart';
+
+abstract class ProfileEvent extends Equatable {
+  const ProfileEvent();
+
+  @override
+  List<Object?> get props => [];
+}
 
 class LoadMyProfile extends ProfileEvent {}
 
 class LoadUserProfile extends ProfileEvent {
   final String userId;
-  LoadUserProfile(this.userId);
-}
 
-class ToggleFollowUser extends ProfileEvent {
-  final String userId;
-  ToggleFollowUser(this.userId);
-}
+  const LoadUserProfile({required this.userId});
 
-class ToggleConnectUser extends ProfileEvent {
-  final String userId;
-  ToggleConnectUser(this.userId);
+  @override
+  List<Object?> get props => [userId];
 }
 
 class UpdateProfile extends ProfileEvent {
   final Map<String, dynamic> updateData;
-  UpdateProfile(this.updateData);
+
+  const UpdateProfile({required this.updateData});
+
+  @override
+  List<Object?> get props => [updateData];
+}
+
+class ToggleFollow extends ProfileEvent {
+  final String userId;
+
+  const ToggleFollow({required this.userId});
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+class ToggleConnect extends ProfileEvent {
+  final String userId;
+
+  const ToggleConnect({required this.userId});
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+// Achievement Events
+class LoadAchievements extends ProfileEvent {
+  final String userId;
+  final int page;
+  final int size;
+
+  const LoadAchievements({
+    required this.userId,
+    this.page = 1,
+    this.size = 10,
+  });
+
+  @override
+  List<Object?> get props => [userId, page, size];
+}
+
+class CreateAchievement extends ProfileEvent {
+  final String title;
+  final String subtitle;
+  final String imageUrl;
+  final DateTime date;
+
+  const CreateAchievement({
+    required this.title,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.date,
+  });
+
+  @override
+  List<Object?> get props => [title, subtitle, imageUrl, date];
+}
+
+class UpdateAchievement extends ProfileEvent {
+  final String achievementId;
+  final String title;
+  final String subtitle;
+  final String imageUrl;
+  final DateTime date;
+
+  const UpdateAchievement({
+    required this.achievementId,
+    required this.title,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.date,
+  });
+
+  @override
+  List<Object?> get props => [achievementId, title, subtitle, imageUrl, date];
+}
+
+class DeleteAchievement extends ProfileEvent {
+  final String achievementId;
+
+  const DeleteAchievement({required this.achievementId});
+
+  @override
+  List<Object?> get props => [achievementId];
+}
+
+// Posts Events
+class LoadPosts extends ProfileEvent {
+  final String userId;
+  final int page;
+  final int size;
+
+  const LoadPosts({
+    required this.userId,
+    this.page = 1,
+    this.size = 10,
+  });
+
+  @override
+  List<Object?> get props => [userId, page, size];
+}
+
+// Opportunities Events
+class LoadOpportunities extends ProfileEvent {
+  final String userId;
+  final int page;
+  final int pageSize;
+
+  const LoadOpportunities({
+    required this.userId,
+    this.page = 1,
+    this.pageSize = 10,
+  });
+
+  @override
+  List<Object?> get props => [userId, page, pageSize];
+}
+
+// Courses Events
+class LoadCourses extends ProfileEvent {
+  final String userId;
+  final int page;
+  final int pageSize;
+
+  const LoadCourses({
+    required this.userId,
+    this.page = 1,
+    this.pageSize = 10,
+  });
+
+  @override
+  List<Object?> get props => [userId, page, pageSize];
+}
+
+// Interests Events
+class LoadInterests extends ProfileEvent {
+  final String userId;
+  final int page;
+  final int pageSize;
+
+  const LoadInterests({
+    required this.userId,
+    this.page = 1,
+    this.pageSize = 10,
+  });
+
+  @override
+  List<Object?> get props => [userId, page, pageSize];
 }

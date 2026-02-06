@@ -1,37 +1,43 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
+import '../data/repo/profile_repo.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
-import '../model/profile_model.dart';
 
 @injectable
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final ProfileRepo profileRepo;
+  final ProfileRepo _repository;
 
-  ProfileModel? _currentProfile;
-  bool _isOwnProfile = false;
-
-  ProfileBloc(this.profileRepo) : super(ProfileInitial()) {
+  ProfileBloc(this._repository) : super(ProfileInitial()) {
     on<LoadMyProfile>(_onLoadMyProfile);
     on<LoadUserProfile>(_onLoadUserProfile);
-    on<ToggleFollowUser>(_onToggleFollowUser);
-    on<ToggleConnectUser>(_onToggleConnectUser);
     on<UpdateProfile>(_onUpdateProfile);
+    on<ToggleFollow>(_onToggleFollow);
+    on<ToggleConnect>(_onToggleConnect);
+    
+    // Achievement handlers
+    on<LoadAchievements>(_onLoadAchievements);
+    on<CreateAchievement>(_onCreateAchievement);
+    on<UpdateAchievement>(_onUpdateAchievement);
+    on<DeleteAchievement>(_onDeleteAchievement);
+    
+    // Other section handlers
+    on<LoadPosts>(_onLoadPosts);
+    on<LoadOpportunities>(_onLoadOpportunities);
+    on<LoadCourses>(_onLoadCourses);
+    on<LoadInterests>(_onLoadInterests);
   }
 
   Future<void> _onLoadMyProfile(
     LoadMyProfile event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(ProfileLoading());
     try {
-      final profile = await profileRepo.getMyProfile();
-      _currentProfile = profile;
-      _isOwnProfile = true;
+      emit(ProfileLoading());
+      final profile = await _repository.getMyProfile();
       emit(ProfileLoaded(profile: profile, isOwnProfile: true));
     } catch (e) {
-      emit(ProfileError(e.toString()));
+      emit(ProfileError(message: e.toString()));
     }
   }
 
@@ -39,223 +45,228 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     LoadUserProfile event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(ProfileLoading());
     try {
-      final profile = await profileRepo.getUserProfile(event.userId);
-      _currentProfile = profile;
-      _isOwnProfile = false;
+      emit(ProfileLoading());
+      final profile = await _repository.getUserProfile(event.userId);
       emit(ProfileLoaded(profile: profile, isOwnProfile: false));
     } catch (e) {
-      emit(ProfileError(e.toString()));
+      emit(ProfileError(message: e.toString()));
     }
   }
-Future<void> _onToggleFollowUser(
-  ToggleFollowUser event,
-  Emitter<ProfileState> emit,
-) async {
-  if (_currentProfile == null) return;
-
-  // Check if toggling the main profile or an interest
-  final isMainProfile = event.userId == _currentProfile!.id;
-  
-  if (isMainProfile) {
-    // ========== Toggle Main Profile Follow ==========
-    final currentlyFollowing = _currentProfile!.isFollowing;
-    
-    // Optimistic update for main profile
-    final optimisticProfile = _currentProfile!.copyWith(
-      isFollowing: !currentlyFollowing,
-    );
-    
-    _currentProfile = optimisticProfile;
-    emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-
-    // Background API call
-    try {
-      await profileRepo.toggleFollow(event.userId);
-      emit(ProfileActionSuccess(
-        currentlyFollowing ? 'Unfollowed successfully!' : 'Following successfully!',
-      ));
-      emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-    } catch (e) {
-      // Revert on error
-      final revertedProfile = _currentProfile!.copyWith(
-        isFollowing: currentlyFollowing,
-      );
-      _currentProfile = revertedProfile;
-      emit(ProfileActionError('Failed to update follow status'));
-      emit(ProfileLoaded(profile: revertedProfile, isOwnProfile: _isOwnProfile));
-    }
-  } else {
-    // ========== Toggle Interest Follow ==========
-    final interestIndex = _currentProfile!.interests.indexWhere(
-      (interest) => interest.id == event.userId,
-    );
-
-    if (interestIndex == -1) return; // Interest not found
-
-    final currentlyFollowing = _currentProfile!.interests[interestIndex].isFollowing;
-
-    // Optimistic update for interest
-    final updatedInterests = List<Interest>.from(_currentProfile!.interests);
-    updatedInterests[interestIndex] = Interest(
-      id: updatedInterests[interestIndex].id,
-      name: updatedInterests[interestIndex].name,
-      role: updatedInterests[interestIndex].role,
-      profileImage: updatedInterests[interestIndex].profileImage,
-      isConnected: updatedInterests[interestIndex].isConnected,
-      isFollowing: !currentlyFollowing, // Toggle
-    );
-
-    final optimisticProfile = _currentProfile!.copyWith(
-      interests: updatedInterests,
-    );
-    
-    _currentProfile = optimisticProfile;
-    emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-
-    // Background API call
-    try {
-      await profileRepo.toggleFollow(event.userId);
-      emit(ProfileActionSuccess(
-        currentlyFollowing ? 'Unfollowed successfully!' : 'Following successfully!',
-      ));
-      emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-    } catch (e) {
-      // Revert on error
-      final revertedInterests = List<Interest>.from(_currentProfile!.interests);
-      revertedInterests[interestIndex] = Interest(
-        id: revertedInterests[interestIndex].id,
-        name: revertedInterests[interestIndex].name,
-        role: revertedInterests[interestIndex].role,
-        profileImage: revertedInterests[interestIndex].profileImage,
-        isConnected: revertedInterests[interestIndex].isConnected,
-        isFollowing: currentlyFollowing, // Revert
-      );
-
-      final revertedProfile = _currentProfile!.copyWith(
-        interests: revertedInterests,
-      );
-      
-      _currentProfile = revertedProfile;
-      emit(ProfileActionError('Failed to update follow status'));
-      emit(ProfileLoaded(profile: revertedProfile, isOwnProfile: _isOwnProfile));
-    }
-  }
-}
-
-Future<void> _onToggleConnectUser(
-  ToggleConnectUser event,
-  Emitter<ProfileState> emit,
-) async {
-  if (_currentProfile == null) return;
-
-  // Check if toggling the main profile or an interest
-  final isMainProfile = event.userId == _currentProfile!.id;
-  
-  if (isMainProfile) {
-    // ========== Toggle Main Profile Connect ==========
-    final currentlyConnected = _currentProfile!.isConnected;
-    
-    // Optimistic update for main profile
-    final optimisticProfile = _currentProfile!.copyWith(
-      isConnected: !currentlyConnected,
-    );
-    
-    _currentProfile = optimisticProfile;
-    emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-
-    // Background API call
-    try {
-      await profileRepo.toggleConnect(event.userId);
-      emit(ProfileActionSuccess(
-        currentlyConnected ? 'Disconnected successfully!' : 'Connected successfully!',
-      ));
-      emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-    } catch (e) {
-      // Revert on error
-      final revertedProfile = _currentProfile!.copyWith(
-        isConnected: currentlyConnected,
-      );
-      _currentProfile = revertedProfile;
-      emit(ProfileActionError('Failed to update connection status'));
-      emit(ProfileLoaded(profile: revertedProfile, isOwnProfile: _isOwnProfile));
-    }
-  } else {
-    // ========== Toggle Interest Connect ==========
-    final interestIndex = _currentProfile!.interests.indexWhere(
-      (interest) => interest.id == event.userId,
-    );
-
-    if (interestIndex == -1) return; // Interest not found
-
-    final currentlyConnected = _currentProfile!.interests[interestIndex].isConnected;
-
-    // Optimistic update for interest
-    final updatedInterests = List<Interest>.from(_currentProfile!.interests);
-    updatedInterests[interestIndex] = Interest(
-      id: updatedInterests[interestIndex].id,
-      name: updatedInterests[interestIndex].name,
-      role: updatedInterests[interestIndex].role,
-      profileImage: updatedInterests[interestIndex].profileImage,
-      isConnected: !currentlyConnected, // Toggle
-      isFollowing: updatedInterests[interestIndex].isFollowing,
-    );
-
-    final optimisticProfile = _currentProfile!.copyWith(
-      interests: updatedInterests,
-    );
-    
-    _currentProfile = optimisticProfile;
-    emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-
-    // Background API call
-    try {
-      await profileRepo.toggleConnect(event.userId);
-      emit(ProfileActionSuccess(
-        currentlyConnected ? 'Disconnected successfully!' : 'Connected successfully!',
-      ));
-      emit(ProfileLoaded(profile: optimisticProfile, isOwnProfile: _isOwnProfile));
-    } catch (e) {
-      // Revert on error
-      final revertedInterests = List<Interest>.from(_currentProfile!.interests);
-      revertedInterests[interestIndex] = Interest(
-        id: revertedInterests[interestIndex].id,
-        name: revertedInterests[interestIndex].name,
-        role: revertedInterests[interestIndex].role,
-        profileImage: revertedInterests[interestIndex].profileImage,
-        isConnected: currentlyConnected, // Revert
-        isFollowing: revertedInterests[interestIndex].isFollowing,
-      );
-
-      final revertedProfile = _currentProfile!.copyWith(
-        interests: revertedInterests,
-      );
-      
-      _currentProfile = revertedProfile;
-      emit(ProfileActionError('Failed to update connection status'));
-      emit(ProfileLoaded(profile: revertedProfile, isOwnProfile: _isOwnProfile));
-    }
-  }
-}
 
   Future<void> _onUpdateProfile(
     UpdateProfile event,
     Emitter<ProfileState> emit,
   ) async {
-    if (_currentProfile == null) return;
-
-    emit(ProfileLoading());
     try {
-      final updatedProfile = await profileRepo.updateProfile(event.updateData);
-      _currentProfile = updatedProfile;
-      emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
-      emit(ProfileActionSuccess('Profile updated successfully'));
-      emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
+      emit(ProfileLoading());
+      final profile = await _repository.updateProfile(event.updateData);
+      emit(ProfileUpdated(profile: profile));
     } catch (e) {
-      emit(ProfileActionError(e.toString()));
-      emit(ProfileLoaded(profile: _currentProfile!, isOwnProfile: _isOwnProfile));
+      emit(ProfileError(message: e.toString()));
     }
   }
 
+  Future<void> _onToggleFollow(
+    ToggleFollow event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      await _repository.toggleFollow(event.userId);
+      // You might want to reload the profile here
+      // Or emit a specific state for follow toggled
+      final currentState = state;
+      if (currentState is ProfileLoaded) {
+        final updatedProfile = currentState.profile.copyWith(
+          isFollowing: !currentState.profile.isFollowing,
+        );
+        emit(ProfileLoaded(
+          profile: updatedProfile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+      }
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onToggleConnect(
+    ToggleConnect event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      await _repository.toggleConnect(event.userId);
+      final currentState = state;
+      if (currentState is ProfileLoaded) {
+        final updatedProfile = currentState.profile.copyWith(
+          isConnected: !currentState.profile.isConnected,
+        );
+        emit(ProfileLoaded(
+          profile: updatedProfile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+      }
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Achievement Handlers
+  Future<void> _onLoadAchievements(
+    LoadAchievements event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final achievements = await _repository.getAchievements(
+        userId: event.userId,
+        page: event.page,
+        size: event.size,
+      );
+      
+      // Check if there are more achievements
+      // Typically, if we get less than size, there are no more
+      final hasMore = achievements.length >= event.size;
+      
+      emit(AchievementsLoaded(
+        achievements: achievements,
+        hasMore: hasMore,
+      ));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onCreateAchievement(
+    CreateAchievement event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final achievement = await _repository.createAchievement(
+        title: event.title,
+        subtitle: event.subtitle,
+        imageUrl: event.imageUrl,
+        date: event.date,
+      );
+      emit(AchievementCreated(achievement: achievement));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateAchievement(
+    UpdateAchievement event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final achievement = await _repository.updateAchievement(
+        achievementId: event.achievementId,
+        title: event.title,
+        subtitle: event.subtitle,
+        imageUrl: event.imageUrl,
+        date: event.date,
+      );
+      emit(AchievementUpdated(achievement: achievement));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteAchievement(
+    DeleteAchievement event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      await _repository.deleteAchievement(event.achievementId);
+      emit(AchievementDeleted(achievementId: event.achievementId));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Posts Handler
+  Future<void> _onLoadPosts(
+    LoadPosts event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final posts = await _repository.getPosts(
+        userId: event.userId,
+        page: event.page,
+        pageSize: event.size,
+      );
+      
+      final hasMore = posts.length >= event.size;
+      emit(PostsLoaded(posts: posts, hasMore: hasMore));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Opportunities Handler
+  Future<void> _onLoadOpportunities(
+    LoadOpportunities event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final opportunities = await _repository.getOpportunities(
+        userId: event.userId,
+        page: event.page,
+        pageSize: event.pageSize,
+      );
+      
+      final hasMore = opportunities.length >= event.pageSize;
+      emit(OpportunitiesLoaded(
+        opportunities: opportunities,
+        hasMore: hasMore,
+      ));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Courses Handler
+  Future<void> _onLoadCourses(
+    LoadCourses event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final courses = await _repository.getCourses(
+        userId: event.userId,
+        page: event.page,
+        pageSize: event.pageSize,
+      );
+      
+      final hasMore = courses.length >= event.pageSize;
+      emit(CoursesLoaded(courses: courses, hasMore: hasMore));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
+
+  // Interests Handler
+  Future<void> _onLoadInterests(
+    LoadInterests event,
+    Emitter<ProfileState> emit,
+  ) async {
+    try {
+      emit(ProfileLoading());
+      final interests = await _repository.getInterests(
+        userId: event.userId,
+        page: event.page,
+        pageSize: event.pageSize,
+      );
+      
+      final hasMore = interests.length >= event.pageSize;
+      emit(InterestsLoaded(interests: interests, hasMore: hasMore));
+    } catch (e) {
+      emit(ProfileError(message: e.toString()));
+    }
+  }
 }

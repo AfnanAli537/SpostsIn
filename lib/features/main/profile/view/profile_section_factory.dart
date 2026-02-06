@@ -77,6 +77,7 @@ class ProfileSectionFactory {
 
   static List<Widget> buildOtherSections({
     required ProfileModel profile,
+    required bool isOwnProfile,
     required ThemeData theme,
     required S string,
     VoidCallback? onPostsShowAll,
@@ -135,8 +136,8 @@ class ProfileSectionFactory {
     if (profile.achievements.isNotEmpty) {
       sections.add(AchievementsSection(
         achievements: profile.achievements,
-        onShowAll: onAchievementsShowAll,
-        onAchievementTap: onAchievementTap,
+        userId: profile.id, // ADDED
+        isCurrentUser: isOwnProfile, // ADDED
         theme: theme,
         string: string,
       ));
@@ -172,8 +173,8 @@ class ProfileSectionFactory {
     required bool isOwnProfile,
     required ThemeData theme,
     required S string,
-    bool isConnected = false, // ADD THIS
-    bool isFollowing = false, // ADD THIS
+    bool isConnected = false,
+    bool isFollowing = false,
     VoidCallback? onPostsShowAll,
     VoidCallback? onOpportunitiesShowAll,
     VoidCallback? onCoursesShowAll,
@@ -217,7 +218,6 @@ class ProfileSectionFactory {
                   onPressed: onConnectPressed ?? () {},
                   connectedText: string.connected,
                   connectText: string.connect,
-                  
                 ),
               ),
               SizedBox(width: 12.w),
@@ -237,6 +237,7 @@ class ProfileSectionFactory {
 
     sections.addAll(buildOtherSections(
       profile: profile,
+      isOwnProfile: isOwnProfile, // ADDED
       theme: theme,
       string: string,
       onPostsShowAll: onPostsShowAll,

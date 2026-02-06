@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (widget.userId == null) {
       context.read<ProfileBloc>().add(LoadMyProfile());
     } else {
-      context.read<ProfileBloc>().add(LoadUserProfile(widget.userId!));
+      context.read<ProfileBloc>().add(LoadUserProfile(userId: widget.userId!));
     }
   }
 
@@ -187,8 +187,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               isOwnProfile: isOwnProfile,
               theme: theme,
               string: string,
-              isConnected: profile.isConnected, 
-              isFollowing: profile.isFollowing, 
+              isConnected: profile.isConnected,
+              isFollowing: profile.isFollowing,
               onPostsShowAll: () {},
               onOpportunitiesShowAll: () {},
               onCoursesShowAll: () {},
@@ -201,20 +201,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onAchievementTap: (achievement) {},
               onVideoTap: (video) {},
               
+              // FIXED: Use correct event names
               onConnectPressed: () {
-              context.read<ProfileBloc>().add(ToggleConnectUser(profile.id));
+                context.read<ProfileBloc>().add(ToggleConnect(userId: profile.id));
               },
               onFollowPressed: () {
-                context.read<ProfileBloc>().add(ToggleFollowUser(profile.id));
+                context.read<ProfileBloc>().add(ToggleFollow(userId: profile.id));
               },
               onConnectToggle: (interest) {
-                context.read<ProfileBloc>().add(ToggleConnectUser(interest.id));
+                context.read<ProfileBloc>().add(ToggleConnect(userId: interest.id));
               },
               onFollowToggle: (interest) {
-                context.read<ProfileBloc>().add(ToggleFollowUser(interest.id));
+                context.read<ProfileBloc>().add(ToggleFollow(userId: interest.id));
               },
               onInterestTap: (interest) {
-                _navigateToUserProfile(context, interest.id);
+                _navigateToUserProfile(context, "coach_001");
               },
             ),
             SizedBox(height: 24.h),

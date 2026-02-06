@@ -39,7 +39,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: BlocProvider(
         create: (context) => ProfileBloc(
           ProfileRepo(MockProfileData()), 
-        )..add(LoadUserProfile(widget.userId)), 
+        )..add(LoadUserProfile(userId: widget.userId)), // FIXED: Use named parameter
         child: ProfileScreen(userId: widget.userId),
       ),
     );

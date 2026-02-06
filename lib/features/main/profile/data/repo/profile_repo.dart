@@ -31,7 +31,54 @@ class ProfileRepo {
     await _dataSource.toggleConnect(userId);
   }
 
-  // Optional: Keep these if you need separate methods
+  // Achievement methods
+  Future<List<Achievement>> getAchievements({
+    required String userId,
+    int page = 1,
+    int size = 10,
+  }) async {
+    return await _dataSource.getAchievements(
+      userId: userId,
+      page: page,
+      size: size,
+    );
+  }
+
+  Future<Achievement> createAchievement({
+    required String title,
+    required String subtitle,
+    required String imageUrl,
+    required DateTime date,
+  }) async {
+    return await _dataSource.createAchievement(
+      title: title,
+      subtitle: subtitle,
+      imageUrl: imageUrl,
+      date: date,
+    );
+  }
+
+  Future<Achievement> updateAchievement({
+    required String achievementId,
+    required String title,
+    required String subtitle,
+    required String imageUrl,
+    required DateTime date,
+  }) async {
+    return await _dataSource.updateAchievement(
+      achievementId: achievementId,
+      title: title,
+      subtitle: subtitle,
+      imageUrl: imageUrl,
+      date: date,
+    );
+  }
+
+  Future<void> deleteAchievement(String achievementId) async {
+    await _dataSource.deleteAchievement(achievementId);
+  }
+
+  // Posts
   Future<List<Post>> getPosts({
     required String userId,
     int page = 1,
@@ -44,6 +91,7 @@ class ProfileRepo {
     );
   }
 
+  // Opportunities
   Future<List<Opportunity>> getOpportunities({
     required String userId,
     int page = 1,
@@ -56,6 +104,7 @@ class ProfileRepo {
     );
   }
 
+  // Courses
   Future<List<Course>> getCourses({
     required String userId,
     int page = 1,
@@ -68,6 +117,7 @@ class ProfileRepo {
     );
   }
 
+  // Interests
   Future<List<Interest>> getInterests({
     required String userId,
     int page = 1,
