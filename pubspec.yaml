@@ -35,9 +35,8 @@ dependencies:
   chewie: ^1.13.0
   better_player_plus: ^1.0.8
   translator: ^1.0.4+1
-
-
   
+  skeletonizer: ^2.1.2
 
   
 # flutter_intl:

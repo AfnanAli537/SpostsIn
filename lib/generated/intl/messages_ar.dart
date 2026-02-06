@@ -34,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "احصل على الرمز الخاص بك!",
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
+    "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
+    "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
@@ -43,11 +45,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "alreadyHaveAnAccount": MessageLookupByLibrary.simpleMessage(
       "لديك حساب بالفعل؟",
     ),
+    "analyzedPeople": MessageLookupByLibrary.simpleMessage("الأشخاص المحللون"),
+    "analyzedVideosReports": MessageLookupByLibrary.simpleMessage(
+      "تقارير الفيديو المحللة",
+    ),
     "arabic": MessageLookupByLibrary.simpleMessage("العربية"),
     "back": MessageLookupByLibrary.simpleMessage("رجوع"),
     "badRequest": MessageLookupByLibrary.simpleMessage("طلب غير صالح"),
     "basketball": MessageLookupByLibrary.simpleMessage("كرة السلة"),
     "basketballer": MessageLookupByLibrary.simpleMessage("لاعب كرة السلة"),
+    "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
     "centerBack": MessageLookupByLibrary.simpleMessage("صانع لعب (وسط خلفي)"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -61,6 +68,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "club": MessageLookupByLibrary.simpleMessage("نادي"),
     "clubName": MessageLookupByLibrary.simpleMessage("اسم النادي"),
     "coach": MessageLookupByLibrary.simpleMessage("مدرب"),
+    "confirm": MessageLookupByLibrary.simpleMessage("تأكيد"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage(
       "تأكيد كلمة المرور",
     ),
@@ -68,22 +76,34 @@ class MessageLookup extends MessageLookupByLibrary {
       "تأكيد كلمة المرور مطلوب",
     ),
     "conflict": MessageLookupByLibrary.simpleMessage("حدث تعارض في البيانات"),
+    "connect": MessageLookupByLibrary.simpleMessage("اتصل"),
+    "connected": MessageLookupByLibrary.simpleMessage("متصل"),
+    "connectionError": MessageLookupByLibrary.simpleMessage("فشل الاتصال"),
+    "connectionSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم الاتصال بنجاح!",
+    ),
     "connectionTimedOut": MessageLookupByLibrary.simpleMessage(
       "انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى.",
     ),
+    "connections": MessageLookupByLibrary.simpleMessage("الاتصالات"),
     "contactBody": MessageLookupByLibrary.simpleMessage(
       "إذا كانت لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا عبر البريد الإلكتروني: support@sportsin.app",
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("تواصل معنا"),
+    "contactUs": MessageLookupByLibrary.simpleMessage("اتصل بنا"),
     "continueButton": MessageLookupByLibrary.simpleMessage("استمر"),
     "continueText": MessageLookupByLibrary.simpleMessage("استمر"),
     "continueWith": MessageLookupByLibrary.simpleMessage(
       "أو المتابعة باستخدام",
     ),
+    "courses": MessageLookupByLibrary.simpleMessage("الدورات"),
     "create": MessageLookupByLibrary.simpleMessage("إنشاء"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
+    "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم قطع الاتصال بنجاح!",
+    ),
     "done": MessageLookupByLibrary.simpleMessage("تم"),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
@@ -125,6 +145,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "field": MessageLookupByLibrary.simpleMessage("الحقل"),
     "fieldTooShort": m1,
     "firstName": MessageLookupByLibrary.simpleMessage("الاسم الأول"),
+    "follow": MessageLookupByLibrary.simpleMessage("تابع"),
+    "followError": MessageLookupByLibrary.simpleMessage("فشلت المتابعة"),
+    "followSuccess": MessageLookupByLibrary.simpleMessage(
+      "تمت المتابعة بنجاح!",
+    ),
+    "followers": MessageLookupByLibrary.simpleMessage("يتابع"),
+    "following": MessageLookupByLibrary.simpleMessage("متابع"),
     "football": MessageLookupByLibrary.simpleMessage("كرة القدم"),
     "footballer": MessageLookupByLibrary.simpleMessage("لاعب كرة القدم"),
     "forbidden": MessageLookupByLibrary.simpleMessage("الوصول محظور"),
@@ -156,6 +183,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "institute": MessageLookupByLibrary.simpleMessage("موْسسة"),
     "instituteName": MessageLookupByLibrary.simpleMessage("اسم الموْسسة"),
+    "interests": MessageLookupByLibrary.simpleMessage("الاهتمامات"),
     "introductionBody": MessageLookupByLibrary.simpleMessage(
       "سبورتس إن هي منصة اجتماعية احترافية للرياضيين والمدربين والأندية الرياضية للتواصل ومشاركة الخبرات واكتشاف الفرص.",
     ),
@@ -197,6 +225,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "سجّل الدخول إلى حسابك",
     ),
+    "logout": MessageLookupByLibrary.simpleMessage("تسجيل الخروج"),
+    "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+    ),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف صغير واحد",
     ),
@@ -208,6 +240,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "يجب أن تتكون من 8 أحرف على الأقل",
     ),
+    "moreDetails": MessageLookupByLibrary.simpleMessage("المزيد من التفاصيل"),
     "morocco": MessageLookupByLibrary.simpleMessage("المغرب"),
     "name": MessageLookupByLibrary.simpleMessage("الاسم"),
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
@@ -217,6 +250,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "لا يوجد اتصال بالإنترنت.",
     ),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
+    "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
     "number": MessageLookupByLibrary.simpleMessage("الرقم"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رقم واحد",
@@ -248,6 +282,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "تحدث مباشرة مع المدربين والأندية والرياضيين. كوّن شبكتك الرياضية وابقَ على اطلاع على الفرص الجديدة.",
     ),
     "onboarding5Title": MessageLookupByLibrary.simpleMessage("تواصل وتفاعل"),
+    "opportunities": MessageLookupByLibrary.simpleMessage("الفرص"),
     "oppositeHitter": MessageLookupByLibrary.simpleMessage(
       "مهاجم معاكس (Opposite Hitter)",
     ),
@@ -307,6 +342,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "صانع ألعاب (Point Guard)",
     ),
     "position": MessageLookupByLibrary.simpleMessage("المركز"),
+    "posts": MessageLookupByLibrary.simpleMessage("المنشورات"),
     "powerForward": MessageLookupByLibrary.simpleMessage(
       "مهاجم قوي (Power Forward)",
     ),
@@ -354,6 +390,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "الخدمة غير متاحة مؤقتاً",
     ),
     "setter": MessageLookupByLibrary.simpleMessage("موزع (Setter)"),
+    "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "نحن لا نشارك بياناتك الشخصية مع أطراف ثالثة إلا في الحالات التالية:\n\n• الامتثال للالتزامات القانونية أو الطلبات الرسمية.\n• لتقديم الخدمات من خلال شركاء موثوقين (مثل خدمات التحليلات أو الإشعارات).",
     ),
@@ -361,9 +398,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "shootingGuard": MessageLookupByLibrary.simpleMessage(
       "مدافع مسدد (Shooting Guard)",
     ),
+    "showAll": MessageLookupByLibrary.simpleMessage("عرض الكل"),
     "signIn": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
     "signUp": MessageLookupByLibrary.simpleMessage("إنشاء حساب"),
     "signingIn": MessageLookupByLibrary.simpleMessage("جارٍ تسجيل الدخول..."),
+    "skills": MessageLookupByLibrary.simpleMessage("المهارات"),
     "skip": MessageLookupByLibrary.simpleMessage("تخطي"),
     "smallForward": MessageLookupByLibrary.simpleMessage(
       "مهاجم صغير (Small Forward)",
@@ -385,6 +424,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
+    "theme": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),
@@ -394,6 +434,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "unexpectedError": MessageLookupByLibrary.simpleMessage(
       "حدث خطأ غير متوقع.",
+    ),
+    "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم إلغاء المتابعة بنجاح!",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",

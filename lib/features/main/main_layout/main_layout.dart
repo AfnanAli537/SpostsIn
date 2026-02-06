@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/home/view/presentation/home_screen.dart';
 import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/assets_manager.dart';
+import 'package:sports_in/core/widgets/app_drawer.dart';
+import 'package:sports_in/features/main/profile/view/presentation/my_profile_screen.dart';
+import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
 
 class CustomBottomNav extends StatefulWidget {
    const CustomBottomNav({super.key});
@@ -12,6 +19,21 @@ class CustomBottomNav extends StatefulWidget {
 
 class _CustomBottomNavState extends State<CustomBottomNav> {
   int _currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final List<Widget> _pages = [
+    const Center(child: Text("Home")),
+    const Center(child: Text("Search")),
+    const Center(child: Text("Messages")),
+
+    MyProfileScreen(),
+  ];
+  @override
+  void initState() {
+    super.initState();
+    // Load profile ONCE when the main layout is created
+    context.read<ProfileBloc>().add(LoadMyProfile());
+  }
 
   final List<Widget> _pages =  [
  

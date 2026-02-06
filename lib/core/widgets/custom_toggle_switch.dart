@@ -48,7 +48,7 @@ class _CustomAnimatedToggleState<T> extends State<CustomAnimatedToggle<T>> {
       values: widget.values,
       iconOpacity: 1,
       height: widget.height.h,
-      indicatorSize: Size(widget.indicatorWidth.w, widget.height.w),
+      indicatorSize: Size(widget.indicatorWidth.w, widget.height.h),
       borderWidth: 1.8,
       styleBuilder: (value) => ToggleStyle(
         backgroundColor: widget.backgroundColor ?? Colors.transparent,

@@ -8,6 +8,7 @@ class StringKeys {
   static const String userIdKey = 'userId';
 
   static const String expireData = 'ExpireData';
+  static const String userId = 'UserId';
 
   /// Network error
   static const String connectionTimedOut = 'connectionTimedOut';

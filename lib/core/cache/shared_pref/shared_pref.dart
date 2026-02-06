@@ -58,6 +58,7 @@ class SharedPref {
   Future<void> clearToken() async {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);
+    await _prefs.remove(StringKeys.userId);
   }
 
 Future<void> saveExpiryDate(DateTime expiryDate) async {
@@ -72,6 +73,45 @@ DateTime? getExpiryDate() {
   return DateTime.tryParse(value);
 }
 
+//user id
+Future<void> saveUserId(String? userId) async {
+    await _prefs.setString(StringKeys.userId, userId!);
+}
+String? getUserId() {
+    return _prefs.getString(StringKeys.userId);
+}
+  // Future<void> saveExpiryDate(DateTime? expiryDate) async {
+  //   if (expiryDate == null) return;
+  //   await _prefs.setString(StringKeys.expireData, expiryDate.toIso8601String());
+  // }
+
+  // String? getExpiryDate() {
+  //   return _prefs.getString(StringKeys.expireData);
+  // }
+
+//   bool isTokenValid() {
+//     final token = getToken();
+//     final expiryString = getExpiryDate();
+
+//     if (token == null || token.isEmpty) {
+//       print ('token ===========null');
+//       return false;
+//       }
+//     if (expiryString == null || expiryString.isEmpty) 
+//    { 
+//     print('exp==========null');
+//     return false;}
+
+//     final expiryDate = DateTime.tryParse(expiryString);
+//     if (expiryDate == null){   print('expD==========null');
+//       return false;}
+// print('Token: $token');
+// print('Expiry: $expiryString');
+// print('Token valid? ${DateTime.now().isBefore(DateTime.tryParse(expiryString)!)}');
+
+//     return DateTime.now().isBefore(expiryDate);
+//   }
+   
    bool isTokenValid() {
   final token = getToken();
   final expiryDate = getExpiryDate();
