@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
@@ -11,7 +12,7 @@ import 'package:sports_in/generated/l10n.dart';
 import 'dart:io';
 
 class AchievementEditScreen extends StatefulWidget {
-  final Achievement? achievement; // null means create new
+  final Achievement? achievement;
   final String userId;
 
   const AchievementEditScreen({
@@ -29,8 +30,6 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _imageUrlController = TextEditingController();
-  final _titleFocusNode = FocusNode();
-  final _descriptionFocusNode = FocusNode();
 
   DateTime? _selectedDate;
   File? _selectedImage;
@@ -52,9 +51,50 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _imageUrlController.dispose();
-    _titleFocusNode.dispose();
-    _descriptionFocusNode.dispose();
     super.dispose();
+  }
+
+  Widget _buildLabel(String text, ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.h, left: 4.w),
+      child: Text(
+        text,
+        style: theme.textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _getFieldDecoration(ThemeData theme, String hint) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: theme.colorScheme.onSurface.withOpacity(0.05),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    ConfirmationDialog.show(
+      context: context,
+      title: 'Delete Achievement',
+      message: 'Are you sure you want to delete this achievement?',
+      onConfirm: () {
+        context.read<ProfileBloc>().add(
+          DeleteAchievement(achievementId: widget.achievement!.id),
+        );
+      },
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      icon: Icons.delete_outline,
+      isDestructive: true,
+    );
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -139,45 +179,10 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     }
   }
 
-  void _showDeleteConfirmation(BuildContext context) {
-    final theme = Theme.of(context);
-    final strings = S.of(context);
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Achievement'),
-        content: const Text(
-            'Are you sure you want to delete this achievement? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(strings.cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<ProfileBloc>().add(
-                    DeleteAchievement(achievementId: widget.achievement!.id),
-                  );
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: theme.colorScheme.error,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _dismissKeyboard() {
-    FocusScope.of(context).unfocus();
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return BlocProvider(
       create: (context) => getIt<ProfileBloc>(),
@@ -186,194 +191,159 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
           if (state is AchievementCreated || state is AchievementUpdated) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(isEditMode
-                    ? 'Achievement updated successfully'
-                    : 'Achievement created successfully'),
+                content: Text(state is AchievementCreated 
+                    ? 'Achievement created successfully' 
+                    : 'Achievement updated successfully'),
                 backgroundColor: theme.colorScheme.primary,
               ),
             );
-            Navigator.pop(context, true);
+            Navigator.pop(context, true); // Returns to Detail/List Screen
           } else if (state is AchievementDeleted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Achievement deleted successfully'),
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.red,
               ),
             );
-            Navigator.pop(context, true);
-          } else if (state is ProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: theme.colorScheme.error,
-              ),
-            );
+            // Pop twice: once from Edit screen, once from Detail screen
+            // This returns to the List screen or Profile screen
+            Navigator.pop(context); // Pop Edit screen
+            Navigator.pop(context, true); // Pop Detail screen with refresh flag
           }
         },
-        child: GestureDetector(
-          onTap: _dismissKeyboard,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(isEditMode ? 'Edit Achievement' : 'Add Achievement'),
-              actions: [
-                if (isEditMode)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () => _showDeleteConfirmation(context),
-                  )
-              ],
+        child: Scaffold(
+          backgroundColor: colorScheme.surface,
+          appBar: AppBar(
+            backgroundColor: colorScheme.surface,
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              isEditMode ? 'Edit' : 'Add Achievement',
+              style: TextStyle(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(20.r),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // --- Image Section ---
-                      GestureDetector(
-                        onTap: _pickImageFromGallery,
-                        child: Container(
-                          height: 200.h,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceVariant,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              color: theme.colorScheme.outline.withOpacity(0.3),
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12.r),
-                            child: _buildImagePreview(theme),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                      Center(
-                        child: Text(
-                          'Tap image to select from gallery',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-
-                      // --- Title Field ---
-                      TextFormField(
-                        controller: _titleController,
-                        focusNode: _titleFocusNode,
-                        decoration: InputDecoration(
-                          labelText: 'Title',
-                          hintText: 'National Championship',
-                          prefixIcon: const Icon(Icons.emoji_events_outlined),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                        ),
-                        maxLength: 60,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a title';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 16.h),
-
-                      // --- Date Selection Field ---
-                      InkWell(
-                        onTap: () => _selectDate(context),
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: 'Achievement Date',
-                            prefixIcon: const Icon(Icons.calendar_today),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _selectedDate != null
-                                    ? _formatDate(_selectedDate!)
-                                    : 'Select when this happened',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: _selectedDate != null
-                                      ? theme.colorScheme.onSurface
-                                      : theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              Icon(Icons.arrow_drop_down, color: theme.colorScheme.primary),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-
-                      // --- Description Field ---
-                      TextFormField(
-                        controller: _descriptionController,
-                        focusNode: _descriptionFocusNode,
-                        decoration: InputDecoration(
-                          labelText: 'Description',
-                          hintText: 'Tell us more about this milestone...',
-                          prefixIcon: const Icon(Icons.description_outlined),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                        ),
-                        maxLines: 3,
-                        maxLength: 200,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a description';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 32.h),
-
-                      // --- Save Button ---
-                      BlocBuilder<ProfileBloc, ProfileState>(
-                        builder: (context, state) {
-                          final isLoading = state is ProfileLoading;
-                          return ElevatedButton(
-                            onPressed: isLoading ? null : () => _saveAchievement(context),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
-                              backgroundColor: theme.colorScheme.primary,
-                              foregroundColor: theme.colorScheme.onPrimary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                            ),
-                            child: isLoading
-                                ? SizedBox(
-                                    height: 20.h,
-                                    width: 20.w,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: theme.colorScheme.onPrimary,
-                                    ),
-                                  )
-                                : Text(
-                                    isEditMode ? 'Update Achievement' : 'Save Achievement',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                          );
-                        },
-                      ),
-                    ],
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+              onPressed: () => Navigator.pop(context),
+            ),
+            actions: [
+              if (isEditMode)
+                TextButton(
+                  onPressed: () => _showDeleteConfirmation(context),
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: colorScheme.error),
                   ),
                 ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(20.w),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 200.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D2B3D),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: _buildImagePreview(theme),
+                  ),
+                  SizedBox(height: 12.h),
+                  Center(
+                    child: TextButton(
+                      onPressed: _pickImageFromGallery,
+                      child: Text(
+                        "Change Media",
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  _buildLabel("Date", theme),
+                  InkWell(
+                    onTap: () => _selectDate(context),
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 14.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.onSurface.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Text(
+                        _selectedDate != null
+                            ? _formatDate(_selectedDate!)
+                            : "Select Date",
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  _buildLabel("Title", theme),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: _getFieldDecoration(
+                      theme,
+                      "National Championship",
+                    ),
+                    style: theme.textTheme.bodyMedium,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16.h),
+
+                  _buildLabel("Description", theme),
+                  TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 4,
+                    decoration: _getFieldDecoration(
+                      theme,
+                      "Explain your achievement...",
+                    ),
+                    style: theme.textTheme.bodyMedium,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a description';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 30.h),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _saveAchievement(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1B2B39),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      child: const Text("Save"),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -384,13 +354,20 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
 
   Widget _buildImagePreview(ThemeData theme) {
     if (_selectedImage != null) {
-      return Image.file(_selectedImage!, fit: BoxFit.cover);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12.r),
+        child: Image.file(_selectedImage!, fit: BoxFit.cover),
+      );
     }
-    if (_imageUrlController.text.isNotEmpty && !_imageUrlController.text.startsWith('/')) {
-      return Image.network(
-        _imageUrlController.text,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(theme),
+    if (_imageUrlController.text.isNotEmpty &&
+        !_imageUrlController.text.startsWith('/')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12.r),
+        child: Image.network(
+          _imageUrlController.text,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(theme),
+        ),
       );
     }
     return _buildPlaceholder(theme);
@@ -400,9 +377,16 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.add_a_photo_outlined, size: 48.sp, color: theme.colorScheme.primary),
+        Icon(
+          Icons.add_a_photo_outlined,
+          size: 48.sp,
+          color: Colors.white,
+        ),
         SizedBox(height: 8.h),
-        Text('Add Achievement Photo', style: theme.textTheme.labelLarge),
+        Text(
+          'Add Achievement Photo',
+          style: theme.textTheme.labelLarge?.copyWith(color: Colors.white),
+        ),
       ],
     );
   }
@@ -410,7 +394,7 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
   String _formatDate(DateTime date) {
     final months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }

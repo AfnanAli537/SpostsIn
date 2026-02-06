@@ -151,14 +151,14 @@ class _AchievementCard extends StatelessWidget {
                       horizontal: 8.w,
                       vertical: 2.h,
                     ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
+                    // decoration: BoxDecoration(
+                    //   color: theme.colorScheme.primaryContainer,
+                    //   borderRadius: BorderRadius.circular(4.r),
+                    // ),
                     child: Text(
                       achievement.date!.year.toString(),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
+                        color: theme.colorScheme.onTertiaryContainer,
                         fontWeight: FontWeight.w600,
                         fontSize: 11.sp,
                       ),
