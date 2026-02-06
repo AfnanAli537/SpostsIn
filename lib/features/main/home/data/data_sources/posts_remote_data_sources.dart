@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
@@ -48,7 +49,7 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
   }
 
   @override
-  Future<PostModel> likePost({required String postId}) async {
+  Future<void> likePost({required String postId}) async {
     try {
       final url = Endpoints.putLike.replaceFirst('{id}', postId);
       final response = await apiClient.post(url);
@@ -58,9 +59,9 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
           response.statusCode != 204) {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
-
+log("${response.statusCode}=================================");
       // ✅ Return updated post data
-      return PostModel.fromJson(response.data['post']);
+      // return PostModel.fromJson(response.data['post']);
     } on DioException catch (e) {
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
@@ -74,6 +75,7 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     required String title,
   }) async {
     try {
+
       final response = await apiClient.post(
         Endpoints.postPost,
         data: {
@@ -85,9 +87,10 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
+
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
-
+       log("${response.statusCode}==============");
       // ✅ ارجع الـ post اللي السيرفر رجعه
       return PostModel.fromJson(response.data['post']);
     } on DioException catch (e) {
@@ -146,8 +149,10 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
         url,
         params: {'pageNumber': pageNumber, 'pageSize': pageSize},
       );
-
+log('${pageNumber}=========');
+//inspector almost 
       if (response.statusCode == 200) {
+        log("${response.data}========================");
         return PaginatedCommentsResponse.fromJson(response.data);
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
@@ -158,7 +163,7 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
   }
 
   @override
-  Future<CommentModel> addComment({
+  Future<void> addComment({
     required String postId,
     required String text,
   }) async {
@@ -171,7 +176,8 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return CommentModel.fromJson(response.data);
+        log("${response.data}=======================");
+        // return CommentModel.fromJson(response.data);
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
@@ -181,24 +187,24 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
   }
 
   @override
-  Future<CommentModel> editComment({
+  Future<void> editComment({
     required String commentId,
     required String text,
   }) async {
     try {
-      final url = Endpoints.putComment.replaceFirst('{commentId}', commentId);
+      final url = Endpoints.editComment.replaceFirst('{commentId}', commentId);
       final response = await apiClient.put(url, data: {'text': text});
 
       if (response.statusCode == 200) {
         print('Edit Response: ${response.data}');
 
         // لو الـ response فيه wrapper
-        if (response.data is Map && response.data.containsKey('comment')) {
-          return CommentModel.fromJson(response.data['comment']);
-        }
+        // if (response.data is Map && response.data.containsKey('comment')) {
+        //   return CommentModel.fromJson(response.data['comment']);
+        // }
 
         // لو الـ response direct
-        return CommentModel.fromJson(response.data);
+        // return CommentModel.fromJson(response.data);
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }

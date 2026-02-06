@@ -3,7 +3,7 @@
 // comment_model.dart
 class CommentModel {
   final String commentId;
-  final String? text;
+  final String text;
   final DateTime createdAt;
   final String userId;
   final String fullName;

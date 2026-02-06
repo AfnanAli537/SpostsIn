@@ -7,7 +7,7 @@ import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_list.dart';
-import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_screen.dart';
+import 'package:sports_in/features/main/opportunity/view/widgets/opp_card.dart';
 
 class BuildContent extends StatelessWidget {
   final HomeTab currentTab;
@@ -192,7 +192,12 @@ class BuildContent extends StatelessWidget {
                     ],
                   ),
                 ),
-         
+                buildOpportunityPreviewCard(),
+                SizedBox(height: 100.h),
+                // SizedBox(
+                //   height: 400.h, 
+                //   child: const OpportunitiesScreen(),
+                // ),
                 // ... achievement widgets ...
                 // const OpportunitiesSection(),
               ]),
@@ -424,8 +429,8 @@ class BuildContent extends StatelessWidget {
         );
 
       case HomeTab.opportunities:
-        return const SliverToBoxAdapter(
-          child: Center(child: Text("opportunities tab content")),
+       return SliverFillRemaining(
+          child: const JobsListScreen(),
         );
      
     }

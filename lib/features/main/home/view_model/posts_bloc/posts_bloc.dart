@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sports_in/features/main/home/data/model/author_model.dart';
@@ -15,7 +17,6 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     : super(PostsInitial()) {
     on<FetchPosts>(_onFetchPosts);
     on<LikePost>(_onLikePost);
-    // on<AddComment>(_onAddComment);
     on<UploadPost>(_onUploadPost);
   }
 
@@ -87,6 +88,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       emit(
         PostsLoaded(posts: updatedPosts, hasNextPage: currentState.hasNextPage),
       );
+      log("==========================like done/removed");
 print("🔥 Like API called");
       // 2️⃣ اعمل الـ API call
       await postRepo.likePost(postId: event.postId);
@@ -128,20 +130,8 @@ print("🔥 Like API called");
   }
 
 
-  // void _onAddComment(AddComment event, Emitter<PostsState> emit) async {
-  //   final index = _posts.indexWhere((post) => post.id == event.postId);
-  //   if (index != -1) {
-  //     _posts[index].commentsCount += 1;
-  //     emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-
-  //     // Optional: call API
-  //     try {
-  //       await postRepo.addComment(event.postId, event.comment);
-  //     } catch (_) {}
-  //   }
-  // }
-
   void _onUploadPost(UploadPost event, Emitter<PostsState> emit) async {
+    log("hello there==================================");
     /// validate
     if (event.title.isEmpty ||
         event.description.isEmpty ||
@@ -179,7 +169,7 @@ print("🔥 Like API called");
         title: event.title,
         description: event.description,
         sport: event.sport,
-        mediaUrl: event.mediaUrl!,
+        mediaUrl: event.mediaUrl,
       );
     } catch (e) {
       /// rollback لو فشل

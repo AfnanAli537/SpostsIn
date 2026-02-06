@@ -58,7 +58,7 @@ class _PostWidgetState extends State<PostWidget> {
 
   bool _showTranslation = false;
   final GoogleTranslator _translator = GoogleTranslator();
-
+  late int _commentsCount;
   late String _deviceLanguage;
 
   // @override
@@ -70,6 +70,7 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   void initState() {
     super.initState();
+    _commentsCount = widget.post.commentsCount;
     _initializeMedia();
     _loadDeviceLanguage(); // بس حمل اللغة بدون ترجمة
   }
@@ -480,7 +481,15 @@ class _PostWidgetState extends State<PostWidget> {
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (_) =>  CommentsBottomSheet(postId: widget.post.id,),
+                      builder: (_) =>  CommentsBottomSheet(postId: widget.post.id,
+        //                onCommentCountChanged: (newCount) {
+        //   // ✅ Update local state when count changes
+        //   setState(() {
+        //     _commentsCount = newCount;
+        //   });
+        // },
+        ),
+                      
                     );
                   },
                   borderRadius: BorderRadius.circular(20.r),
@@ -498,7 +507,7 @@ class _PostWidgetState extends State<PostWidget> {
                         ),
                         SizedBox(width: 4.w),
                         Text(
-                          widget.post.commentsCount.toString(),
+                        _commentsCount.toString(),
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 25.sp,

@@ -27,20 +27,28 @@ class FetchComments extends CommentsEvent {
 }
 
 class AddComment extends CommentsEvent {
-  final String postId;
+    final String postId;
   final String text;
+  final DateTime createdAt=DateTime.now();
+  final String userId="";
+  final String fullName="";
+  final String? profilePictureUrl='';
 
-  const AddComment({required this.postId, required this.text});
+   AddComment( {required this.postId, required this.text});
 
   @override
   List<Object?> get props => [postId, text];
 }
 
 class EditComment extends CommentsEvent {
-  final String commentId;
+    final String commentId;
   final String text;
+   final DateTime createdAt=DateTime.now();
+  final String userId="";
+  final String fullName="";
+  final String? profilePictureUrl='';
 
-  const EditComment({required this.commentId, required this.text});
+   EditComment( {required this.commentId, required this.text});
 
   @override
   List<Object?> get props => [commentId, text];

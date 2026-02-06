@@ -7,15 +7,15 @@ abstract class PostsRepository {
      int pageSize,
   });
 
-  Future<PostModel> likePost({ required String postId});
-  Future<CommentModel> addComment({ required String postId,required  String text});
-  Future<void> uploadPost({
+  Future<void> likePost({ required String postId});
+  Future<void> addComment({ required String postId,required  String text});
+  Future<PostModel> uploadPost({
     required String title,
     required String description,
      String? mediaUrl,
     required String sport,
   });
-   Future<CommentModel> editComment({ required String commentId, required String text});
+   Future<void> editComment({ required String commentId, required String text});
       Future<Map<String, dynamic>> getLikes({required String postId,required int pageNumber,
      int pageSize,});
       Future<PaginatedCommentsResponse> getComments({

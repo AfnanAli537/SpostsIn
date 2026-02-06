@@ -53,6 +53,11 @@ class ApiClient {
           ),
         ) {   
     // 👇 THIS PART IS THE MAGIC
+    _dio.interceptors.add(LogInterceptor(
+      request: true,requestUrl: true,
+      requestBody: true,responseHeader: true
+      ,responseBody: true,error: true,
+    ));
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {

@@ -21,16 +21,16 @@ class PostsRepositoryImpl  {
   }
 
 
-  Future<PostModel> likePost({required String postId}) {
+  Future<void> likePost({required String postId}) {
     return repo.likePost(postId:postId);
   }
 
-  Future<CommentModel> addComment({required String postId,required String text}) {
+  Future<void> addComment({required String postId,required String text}) {
     return repo.addComment(postId:postId, text:text);
   }
 
 
-  Future<void> uploadPost({
+  Future<PostModel> uploadPost({
     required String title,
     required String description,
      String? mediaUrl,
@@ -43,7 +43,7 @@ class PostsRepositoryImpl  {
       sport:sport,
     );
   }
-     Future<CommentModel> editComment({ required String commentId, required String text}){
+     Future<void> editComment({ required String commentId, required String text}){
       return repo.editComment(commentId: commentId, text: text);}
    Future<void> deleteComment({ required String commentId, required String postId}){
     return repo.deleteComment(postId:postId,commentId: commentId);}
