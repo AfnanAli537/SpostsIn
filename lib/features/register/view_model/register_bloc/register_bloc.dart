@@ -27,7 +27,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
 
     try {
       emit(RegistrationLoading());
-      
+            debugPrint("user email: ${user.email}");
+
       // Send OTP to email
       final otpSent = await repository.sendRegistrationOtp(user.email);
 
@@ -36,6 +37,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
           email: user.email,
           userData: user,
         ));
+      debugPrint("OTP sent successfully for email: ${user.email}");
       } else {
         emit(const RegistrationError(errorKey: 'otpSendFailed'));
       }

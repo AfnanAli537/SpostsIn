@@ -5,7 +5,10 @@ class StringKeys {
   static const String themeKey = 'theme_mode';
   static const String languageKey = 'language_code';
   static const String tokenKey = 'token';
+  static const String userIdKey = 'userId';
+
   static const String expireData = 'ExpireData';
+  static const String userId = 'UserId';
 
   /// Network error
   static const String connectionTimedOut = 'connectionTimedOut';
