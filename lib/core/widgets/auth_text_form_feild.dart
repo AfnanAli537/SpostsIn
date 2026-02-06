@@ -15,6 +15,7 @@ class AuthTextField extends StatefulWidget {
   final IconData? prefixIcon;
   final String? prefixSvg;
   final String? Function(String?)? validator;
+  final int? maxLines;
   // final  obscuringCharacter;
   
 
@@ -29,6 +30,7 @@ class AuthTextField extends StatefulWidget {
     this.validator,
     this.prefixIcon,
     this.prefixSvg, 
+    this.maxLines,
   });
 
   @override
@@ -43,6 +45,7 @@ class _AppTextFieldState extends State<AuthTextField> {
     final showSuffix = widget.isPassword ;
 
     return TextFormField(
+      maxLines: widget.maxLines?? 1,
       onTapOutside: (_) => FocusScope.of(context).unfocus(),
       controller: widget.controller,
       // obscuringCharacter: widget.obscuringCharacter ?? '*',
@@ -53,6 +56,7 @@ class _AppTextFieldState extends State<AuthTextField> {
         labelText: widget.label ?? widget.hintText,
         hintText: widget.label == null ? widget.hintText : null,
          errorMaxLines: 3,
+           alignLabelWithHint: (widget.maxLines ?? 1) > 1,
         prefixIcon: widget.prefixSvg != null
             ? Padding(
                 padding: EdgeInsets.all(12.w),

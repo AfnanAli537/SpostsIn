@@ -10,6 +10,8 @@ import 'package:sports_in/features/forget_password/view/presentation/verify_emai
 import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
 import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
+import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/main_layout/main_layout.dart';
 import 'package:sports_in/features/main/profile/view/presentation/edit_profile_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
@@ -134,8 +136,18 @@ abstract class RoutesManager {
             child: ScoutRegisterScreen(),
           ),
         );
-      case AppRoutes.mainLayout:
-        return CupertinoPageRoute(builder: (_) => CustomBottomNav());
+      // case AppRoutes.mainLayout:
+      //   return CupertinoPageRoute(builder: (_) => CustomBottomNav());
+     case AppRoutes.mainLayout:
+  return CupertinoPageRoute(
+    builder: (_) => BlocProvider(
+      create: (_) => PostsBloc(
+        postRepo: getIt<PostsRepositoryImpl>(),
+      ),
+      child:  CustomBottomNav(), // your main layout
+    ),
+  );
+
       // User Profile Route
       case AppRoutes.userProfile:
         final userId = settings.arguments as String;

@@ -79,6 +79,9 @@ class LoginScreen extends StatelessWidget {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
+               Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
           } else if (state is GoogleSignInFailure) {
             Fluttertoast.showToast(
               msg: state.errorKey,

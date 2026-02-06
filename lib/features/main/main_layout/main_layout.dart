@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/features/main/home/view/presentation/home_screen.dart';
+import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
@@ -8,7 +11,7 @@ import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
 
 class CustomBottomNav extends StatefulWidget {
-  const CustomBottomNav({super.key});
+   const CustomBottomNav({super.key});
 
   @override
   State<CustomBottomNav> createState() => _CustomBottomNavState();
@@ -32,6 +35,15 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     context.read<ProfileBloc>().add(LoadMyProfile());
   }
 
+  final List<Widget> _pages =  [
+ 
+
+    HomePage(),
+    Center(child: Text("Search")),
+    Center(child: Text("Messages")),
+    Center(child: Text("Profile")),
+  ];
+
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -40,120 +52,82 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
   Color _iconColor(int index) {
     return _currentIndex == index
-        ? const Color(0xFF1D2D3D)
+        ? Theme.of(context).colorScheme.primary
         : const Color(0xFFB0BEC5);
   }
+Widget _buildNavItem(IconData icon, int index) {
+  final isSelected = _currentIndex == index;
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: theme.colorScheme.surface,
-
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () =>
-              _scaffoldKey.currentState?.openDrawer(), // Open drawer
-        ),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // App Logo from Assets
-            Image.asset(
-              ImageAssets.logo,
-              height: 32.h, // Scaled height
-              width: 32.w,
-              fit: BoxFit.contain,
-            ),
-            SizedBox(width: 8.w),
-            // App Name
-            Text(
-              "SportsIn",
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
-      ),
-
-      drawer: const AppDrawer(),
-      body: IndexedStack(index: _currentIndex, children: _pages),
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1D2D3D), Color(0xFF2C3E50)],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFF1D2D3D),
-              blurRadius: 2,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: FloatingActionButton(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          onPressed: () {
-            //  showCreateOptionsBottomSheet(context);
-          },
-          child: const Icon(Icons.add, color: Colors.white, size: 32),
-        ),
-      ),
-
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home, 0),
-            _buildNavItem(Icons.search, 1),
-            const SizedBox(width: 60),
-            _buildNavItem(Icons.chat_bubble_outline, 2),
-            _buildNavItem(Icons.person_outline, 3),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, int index) {
-    final isSelected = _currentIndex == index;
-
-    return InkWell(
-      onTap: () => _onItemTapped(index),
+  return InkWell(
+    onTap: () => _onItemTapped(index),
+    customBorder: const CircleBorder(), 
+    child: Padding(
+      padding: EdgeInsets.all(10.r), 
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: _iconColor(index), size: 26),
-          const SizedBox(height: 4),
+          Icon(icon, color: _iconColor(index), size: 26.r),
+          SizedBox(height: 4.h),
           Container(
-            width: 5,
-            height: 5,
+            width: 5.w,
+            height: 5.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isSelected ? const Color(0xFF1D2D3D) : Colors.transparent,
+              color: isSelected 
+                  ? Theme.of(context).colorScheme.primary 
+                  : Colors.transparent,
             ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    extendBody: true, 
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    body: IndexedStack(
+      index: _currentIndex,
+      children: _pages,
+    ),
+
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    floatingActionButton: Container(
+      width: 60.w,
+      height: 60.h,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Theme.of(context).colorScheme.primary, 
+      ),
+      child: FloatingActionButton(
+        shape: const CircleBorder(), 
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        onPressed: () {
+          showCreateOptionsBottomSheet(context);
+        },
+        child: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary, size: 32.r),
+      ),
+    ),
+
+    bottomNavigationBar: BottomAppBar(
+      clipBehavior: Clip.antiAlias, 
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 8.r,
+      color: Theme.of(context).colorScheme.surface, 
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(Icons.home, 0),
+          _buildNavItem(Icons.search, 1),
+           SizedBox(width: 60.w), 
+          _buildNavItem(Icons.chat_bubble_outline, 2),
+          _buildNavItem(Icons.person_outline, 3),
+        ],
+      ),
+    ),
+  );
+}
 }

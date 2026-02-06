@@ -5,59 +5,45 @@ import 'network_config.dart';
 class ApiClient {
   final Dio _dio;
 
-  // ApiClient(SharedPreferences prefs)
-  //   : _dio = Dio(
-  //       BaseOptions(
-  //         baseUrl: NetworkConfig.baseUrl,
-  //         connectTimeout: NetworkConfig.timeout,
-  //         receiveTimeout: NetworkConfig.timeout,
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'Accept': 'application/json',
-  //         },
-  //       ),
-  //     ) {
-  //   // 🔐 Attach token automatically if exists
-  //   _dio.interceptors.add(
-  //     InterceptorsWrapper(
-  //       onRequest: (options, handler) {
-  //         final token = prefs.getString('access_token');
 
-  //         if (token != null && token.isNotEmpty) {
-  //           options.headers['Authorization'] = 'Bearer $token';
-  //         }
-
-  //         handler.next(options);
-  //       },
-  //     ),
-  //   );
-  // }
-
-  ApiClient(SharedPref prefs)
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: NetworkConfig.baseUrl,
-          headers: {'Content-Type': 'application/json'},
-        ),
-      ) {
+    ApiClient(SharedPref prefs)
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: NetworkConfig.baseUrl,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          ),
+        ) {   
+    // 👇 THIS PART IS THE MAGIC
+    _dio.interceptors.add(LogInterceptor(
+      request: true,requestUrl: true,
+      requestBody: true,responseHeader: true
+      ,responseBody: true,error: true,
+    ));
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          final token = prefs.getToken();
+          
+  final token = prefs.getToken();
 
-          print("TOKEN = $token");
+  print("TOKEN = $token");
 
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
+  if (token != null && token.isNotEmpty) {
+    options.headers['Authorization'] = 'Bearer $token';
+  }
 
-          print("FINAL HEADERS = ${options.headers}");
+  print("FINAL HEADERS = ${options.headers}");
 
-          handler.next(options);
-        },
-      ),
+  handler.next(options);
+}
+
+     ),
     );
   }
+
+
+
   Future<Response> get(String endpoint, {Map<String, dynamic>? params}) async {
     return await _dio.get(endpoint, queryParameters: params);
   }
