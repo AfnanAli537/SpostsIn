@@ -41,6 +41,8 @@ class CommentsLoaded extends CommentsState {
       action: action ?? CommentAction.none, 
     );
   }
+  @override
+  List<Object?> get props => [comments, hasNextPage, currentPage, totalCount, action];
 }
 
 // class CommentsLoaded extends CommentsState {

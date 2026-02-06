@@ -482,6 +482,10 @@ class _PostWidgetState extends State<PostWidget> {
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                       builder: (_) =>  CommentsBottomSheet(postId: widget.post.id,
+                         onCommentCountChanged: (newCount) { 
+          setState(() {
+            _commentsCount = newCount;
+          });}
         //                onCommentCountChanged: (newCount) {
         //   // ✅ Update local state when count changes
         //   setState(() {

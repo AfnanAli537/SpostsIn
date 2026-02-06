@@ -343,9 +343,13 @@
 // ignore_for_file: deprecated_member_use
 
 // comments_bottom_sheet.dart
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
@@ -358,10 +362,12 @@ import 'package:shimmer/shimmer.dart';
 
 class CommentsBottomSheet extends StatelessWidget {
   final String postId;
+  final Function(int)? onCommentCountChanged; // ✅ 
 
   const CommentsBottomSheet({
     super.key,
     required this.postId,
+    this.onCommentCountChanged, // ✅ إضافة
   });
 
   @override
@@ -370,16 +376,17 @@ class CommentsBottomSheet extends StatelessWidget {
       create: (_) => CommentsBloc(
         commentsRepo: getIt<PostsRepositoryImpl>(),
         prefs: getIt<SharedPreferences>(),
-      )..add(FetchComments(postId: postId)),
-      child: _CommentsBottomSheetContent(postId: postId),
+      )..add(FetchComments(postId: postId,)),
+      child: _CommentsBottomSheetContent(postId: postId, onCommentCountChanged: onCommentCountChanged, ),
     );
   }
 }
 
 class _CommentsBottomSheetContent extends StatefulWidget {
   final String postId;
+  final Function(int)? onCommentCountChanged;
 
-  const _CommentsBottomSheetContent({required this.postId});
+  const _CommentsBottomSheetContent({required this.postId,this.onCommentCountChanged});
 
   @override
   State<_CommentsBottomSheetContent> createState() =>
@@ -430,50 +437,60 @@ class _CommentsBottomSheetContentState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CommentsBloc, CommentsState>(
-      listenWhen: (previous, current) =>
-      current is CommentsLoaded &&
-      current.action != CommentAction.none,
-      listener: (context, state) {
-        if (state is CommentsLoaded) {
-
+    return
+     BlocListener<CommentsBloc, CommentsState>(
+   listenWhen: (previous, current) {
+    // هنسمع لأي تغيير في الـ action
+    if (current is CommentsLoaded && current.action != CommentAction.none) {
+      return true;
+    }
+    return current is CommentsError;
+  },
+  listener: (context, state) {
+    if (state is CommentsLoaded) {
+       widget.onCommentCountChanged?.call(state.totalCount);
       switch (state.action) {
         case CommentAction.added:
-          Fluttertoast.showToast(msg:'Comment added sucessfull',
-              backgroundColor: Colors.green,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,);
-
+          Fluttertoast.showToast(
+            msg: 'Comment added successfully',
+            backgroundColor: Colors.green,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
+          _commentController.clear(); // ✅ امسح الـ input
           break;
 
         case CommentAction.edited:
-         Fluttertoast.showToast(msg:'Comment updated sucessfully',
-              backgroundColor: Colors.blue,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,);
-          _cancelEdit();
+          Fluttertoast.showToast(
+            msg: 'Comment updated successfully',
+            backgroundColor: Colors.blue,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
+          _cancelEdit(); // ✅ اخرج من وضع التعديل
           break;
 
         case CommentAction.deleted:
-          Fluttertoast.showToast(msg:'Comment deleted sucessfully',
-              backgroundColor: Colors.orange,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,);
+          Fluttertoast.showToast(
+            msg: 'Comment deleted successfully',
+            backgroundColor: Colors.orange,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
           break;
 
         case CommentAction.none:
           break;
       }
-    } 
-        else if (state is CommentsError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
+    } else if (state is CommentsError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  },
       child: DraggableScrollableSheet(
         initialChildSize: 0.7,
         minChildSize: 0.4,
@@ -498,6 +515,7 @@ class _CommentsBottomSheetContentState
                       color: Colors.grey[400],
                       borderRadius: BorderRadius.circular(10),
                     ),
+                 
                   ),
                 ),
 
@@ -507,9 +525,10 @@ class _CommentsBottomSheetContentState
                     final count = state is CommentsLoaded ? state.totalCount : 0;
                     return Text(
                       'Comments${count > 0 ? ' ($count)' : ''}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black,
                       ),
                     );
                   },

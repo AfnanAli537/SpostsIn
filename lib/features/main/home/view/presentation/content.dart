@@ -429,9 +429,7 @@ class BuildContent extends StatelessWidget {
         );
 
       case HomeTab.opportunities:
-       return SliverFillRemaining(
-          child: const JobsListScreen(),
-        );
+      return const OpportunitiesContent();
      
     }
   }

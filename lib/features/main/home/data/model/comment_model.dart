@@ -1,7 +1,9 @@
 
 
 // comment_model.dart
-class CommentModel {
+import 'package:equatable/equatable.dart';
+
+class CommentModel extends Equatable {
   final String commentId;
   final String text;
   final DateTime createdAt;
@@ -57,6 +59,8 @@ class CommentModel {
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
     );
   }
+   @override
+  List<Object?> get props => [commentId, text, createdAt, userId, fullName, profilePictureUrl];
 }
 
 // ✅ Paginated Response Model
