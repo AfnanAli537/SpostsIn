@@ -8,7 +8,7 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart';
-import 'package:sports_in/features/main/home/data/interface/home_tap_enums.dart';
+import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/content.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
@@ -26,9 +26,6 @@ class _HomePageState extends State<HomePage> {
   late Future<LoginResponse?> _userFuture;
   late Future<SharedPreferences> _prefsFuture;
 
-
- 
-
   @override
   void initState() {
     super.initState();
@@ -37,17 +34,20 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeData() {
     _prefsFuture = SharedPreferences.getInstance();
-    _userFuture = _prefsFuture.then((prefsInstance) {
-      sharedPref = SharedPref(prefsInstance);
-      print('📱 Prefs loaded, fetching user...');
-      return sharedPref.getUserFromPrefs();
-    }).then((user) {
-      print('👤 User loaded: ${user?.name?.firstName ?? 'null'}');
-      return user;
-    }).catchError((error) {
-      print('❌ Error loading user: $error');
-      return null;
-    });
+    _userFuture = _prefsFuture
+        .then((prefsInstance) {
+          sharedPref = SharedPref(prefsInstance);
+          print('📱 Prefs loaded, fetching user...');
+          return sharedPref.getUserFromPrefs();
+        })
+        .then((user) {
+          print('👤 User loaded: ${user?.name?.firstName ?? 'null'}');
+          return user;
+        })
+        .catchError((error) {
+          print('❌ Error loading user: $error');
+          return null;
+        });
   }
 
   @override
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         print('📊 FutureBuilder state: ${snapshot.connectionState}');
         print('📊 Has data: ${snapshot.hasData}');
         print('📊 Has error: ${snapshot.hasError}');
-        
+
         // Handle error state
         if (snapshot.hasError) {
           return Scaffold(
@@ -67,7 +67,11 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64.sp,
+                    color: Colors.red[300],
+                  ),
                   SizedBox(height: 16.h),
                   Text('Error: ${snapshot.error}'),
                   SizedBox(height: 16.h),
@@ -128,7 +132,6 @@ class _HomePageState extends State<HomePage> {
         }
 
         final user = snapshot.data!;
-        // final prefs = sharedPref.prefs;
         final apiClient = ApiClient(sharedPref);
 
         return BlocProvider(
@@ -138,113 +141,131 @@ class _HomePageState extends State<HomePage> {
             ),
           )..add(const FetchPosts()),
           child: Scaffold(
-            body: RefreshIndicator(
-                onRefresh: () async {
-    context.read<PostsBloc>().add(const FetchPosts());
-  },
-              child: CustomScrollView(
-                 physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  // SliverAppBar(
-                  //   backgroundColor:  Theme.of(context).colorScheme.surface,
-                  //   elevation: 0,
-                  //   floating: true,
-                  //   snap: true,
-                  //   leading: IconButton(
-                  //     icon:  Icon(Icons.menu, color: Theme.of(context).colorScheme.onSurface),
-                  //     onPressed: () {},
-                  //   ),
-                  //   actions: [
-                  //     IconButton(
-                  //       icon:  Icon(
-                  //         Icons.notifications_outlined,
-                  //         color: Theme.of(context).colorScheme.onSurface,
-                  //       ),
-                  //       onPressed: () {},
-                  //     ),
-                  //   ],
-                  // ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 25.r,
-                            backgroundColor: Colors.grey[300],
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.white,
-                              size: 30.sp,
-                            ),
+            body: BlocBuilder<PostsBloc, PostsState>(
+              builder: (context, state) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<PostsBloc>().add(const FetchPosts(page: 1));
+                  },
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverAppBar(
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        elevation: 0,
+                        floating: true,
+                        snap: true,
+                        leading: IconButton(
+                          icon: Icon(
+                            Icons.menu,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
-                          SizedBox(width: 12.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Hi, ${user.name?.firstName ?? 'Guest'}",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorManager.yellow,
-                                ),
-                              ),
-                               Text(
-                                'Happy to see you today',
-                                style: TextStyle(color:Theme.of(context).colorScheme.onSurface),
-                              ),
-                            ],
+                          onPressed: () {},
+                        ),
+                        actions: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.notifications_outlined,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                            onPressed: () {},
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 14.w, bottom: 10.h),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: HomeTab.values.map((tab) {
-                            final isSelected = _currentTab == tab;
-                            return Padding(
-                              padding: EdgeInsets.only(right: 6.w),
-                              child: ChoiceChip(
-                                label: Text(tab.name),
-                                selected: isSelected,
-                                onSelected: (_) {
-                                  setState(() {
-                                    _currentTab = tab;
-                                  });
-                                },
-                                selectedColor: Theme.of(context).colorScheme.primary,
-                                checkmarkColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                labelStyle: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14.sp,
-                                  color: isSelected
-                                      ? Theme.of(context).colorScheme.secondary
-                                      :Theme.of(context).colorScheme.onSurface,
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.w),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 25.r,
+                                backgroundColor: Colors.grey[300],
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 30.sp,
                                 ),
                               ),
-                            );
-                          }).toList(),
+                              SizedBox(width: 12.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Hi, ${user.name?.firstName ?? 'Guest'}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: ColorManager.yellow,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Happy to see you today',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 14.w, bottom: 10.h),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: HomeTab.values.map((tab) {
+                                final isSelected = _currentTab == tab;
+                                return Padding(
+                                  padding: EdgeInsets.only(right: 6.w),
+                                  child: ChoiceChip(
+                                    label: Text(tab.name),
+                                    selected: isSelected,
+                                    onSelected: (_) {
+                                      setState(() {
+                                        _currentTab = tab;
+                                      });
+                                    },
+                                    selectedColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    checkmarkColor: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
+                                    labelStyle: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14.sp,
+                                      color: isSelected
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.secondary
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      BuildContent(
+                        currentTab: _currentTab,
+                        onTabChange: (tab) {
+                          setState(() {
+                            _currentTab = tab;
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                  BuildContent(
-                    currentTab: _currentTab,
-                    onTabChange: (tab) {
-                      setState(() {
-                        _currentTab = tab;
-                      });
-                    },
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         );

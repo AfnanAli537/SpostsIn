@@ -10,10 +10,8 @@ class PostShimmer extends StatelessWidget {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
-      // color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.r),
-      ),
+
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Shimmer.fromColors(
@@ -22,13 +20,9 @@ class PostShimmer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header (Avatar + Name + Time)
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20.r,
-                    backgroundColor: Colors.grey[300],
-                  ),
+                  CircleAvatar(radius: 20.r, backgroundColor: Colors.grey[300]),
                   SizedBox(width: 12.w),
                   Expanded(
                     child: Column(
@@ -66,7 +60,6 @@ class PostShimmer extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
 
-              // Description lines
               Container(
                 width: double.infinity,
                 height: 12.h,
@@ -95,7 +88,6 @@ class PostShimmer extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
 
-              // Media placeholder
               Container(
                 width: double.infinity,
                 height: 200.h,
@@ -106,7 +98,6 @@ class PostShimmer extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
 
-              // Like and Comment buttons
               Row(
                 children: [
                   Container(

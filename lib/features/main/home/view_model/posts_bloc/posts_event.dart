@@ -7,7 +7,6 @@ sealed class PostsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-
 class FetchPosts extends PostsEvent {
   final int page;
 
@@ -26,17 +25,6 @@ class LikePost extends PostsEvent {
   List<Object?> get props => [postId];
 }
 
-class AddComment extends PostsEvent {
-  final String postId;
-  final String comment;
-
-  const AddComment({required this.postId, required this.comment});
-
-  @override
-  List<Object?> get props => [postId, comment];
-}
-
-
 class UploadPost extends PostsEvent {
   final String title;
   final String description;
@@ -49,7 +37,7 @@ class UploadPost extends PostsEvent {
     required this.sport,
     this.mediaUrl,
   });
-  
+
   @override
   List<Object?> get props => [title, description, sport];
 }
