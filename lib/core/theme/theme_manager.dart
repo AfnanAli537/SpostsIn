@@ -109,7 +109,7 @@ class ThemeManager {
         onInverseSurface: ColorManager.lightPrimary,
         onSurfaceVariant: ColorManager.darkPrimary, 
         onTertiaryFixed: ColorManager.darkAccent,
-        onTertiary: ColorManager.darkPrimaryText
+        onTertiary: ColorManager.darkPrimaryText,
         onTertiaryContainer:ColorManager.darkPrimary, 
 
 
