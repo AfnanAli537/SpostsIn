@@ -73,38 +73,8 @@ DateTime? getExpiryDate() {
   return DateTime.tryParse(value);
 }
 
-  // Future<void> saveExpiryDate(DateTime? expiryDate) async {
-  //   if (expiryDate == null) return;
-  //   await _prefs.setString(StringKeys.expireData, expiryDate.toIso8601String());
-  // }
 
-  // String? getExpiryDate() {
-  //   return _prefs.getString(StringKeys.expireData);
-  // }
-
-//   bool isTokenValid() {
-//     final token = getToken();
-//     final expiryString = getExpiryDate();
-
-//     if (token == null || token.isEmpty) {
-//       print ('token ===========null');
-//       return false;
-//       }
-//     if (expiryString == null || expiryString.isEmpty) 
-//    { 
-//     print('exp==========null');
-//     return false;}
-
-//     final expiryDate = DateTime.tryParse(expiryString);
-//     if (expiryDate == null){   print('expD==========null');
-//       return false;}
-// print('Token: $token');
-// print('Expiry: $expiryString');
-// print('Token valid? ${DateTime.now().isBefore(DateTime.tryParse(expiryString)!)}');
-
-//     return DateTime.now().isBefore(expiryDate);
-//   }
-   
+ 
    bool isTokenValid() {
   final token = getToken();
   final expiryDate = getExpiryDate();

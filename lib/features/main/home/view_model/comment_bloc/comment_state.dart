@@ -1,6 +1,5 @@
 part of 'comment_bloc.dart';
 
-
 sealed class CommentsState extends Equatable {
   const CommentsState();
 
@@ -11,6 +10,7 @@ sealed class CommentsState extends Equatable {
 class CommentsInitial extends CommentsState {}
 
 class CommentsLoading extends CommentsState {}
+
 class CommentsLoaded extends CommentsState {
   final List<CommentModel> comments;
   final bool hasNextPage;
@@ -38,29 +38,19 @@ class CommentsLoaded extends CommentsState {
       hasNextPage: hasNextPage ?? this.hasNextPage,
       currentPage: currentPage ?? this.currentPage,
       totalCount: totalCount ?? this.totalCount,
-      action: action ?? CommentAction.none, 
+      action: action ?? CommentAction.none,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    comments,
+    hasNextPage,
+    currentPage,
+    totalCount,
+    action,
+  ];
 }
-
-// class CommentsLoaded extends CommentsState {
-//   final List<CommentModel> comments;
-//   final bool hasNextPage;
-//   final int currentPage;
-//   final int totalCount;
-//   final CommentAction action;
-
-//   const CommentsLoaded({
-//     required this.comments,
-// required this.action,
-//     this.hasNextPage = false,
-//     this.currentPage = 1,
-//     this.totalCount = 0,
-//   });
-
-//   @override
-//   List<Object?> get props => [comments, hasNextPage, currentPage, totalCount];
-// }
 
 class CommentsLoadingMore extends CommentsState {
   final List<CommentModel> currentComments;
@@ -81,30 +71,3 @@ class CommentsError extends CommentsState {
 }
 
 class CommentAdding extends CommentsState {}
-
-// class CommentAdded extends CommentsState {
-//   final CommentModel comment;
-
-//   const CommentAdded(this.comment);
-
-//   @override
-//   List<Object?> get props => [comment];
-// }
-
-// class CommentDeleted extends CommentsState {
-//   final String commentId;
-
-//   const CommentDeleted(this.commentId);
-
-//   @override
-//   List<Object?> get props => [commentId];
-// }
-
-// class CommentEdited extends CommentsState {
-//   final CommentModel comment;
-
-//   const CommentEdited(this.comment);
-
-//   @override
-//   List<Object?> get props => [comment];
-// }

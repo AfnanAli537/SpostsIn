@@ -2,6 +2,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
@@ -60,7 +61,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.image, color:ColorManager.darkPrimary),
+                leading: const Icon(Icons.image, color: ColorManager.darkPrimary),
                 title: const Text('Pick Image'),
                 onTap: () {
                   Navigator.pop(context);
@@ -68,7 +69,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.video_library, color:ColorManager.darkPrimary ),
+                leading: const Icon(Icons.video_library, color: ColorManager.darkPrimary),
                 title: const Text('Pick Video'),
                 onTap: () {
                   Navigator.pop(context);
@@ -86,205 +87,274 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
   Widget build(BuildContext context) {
     final string = S.of(context);
     final theme = Theme.of(context).colorScheme;
-    return Scaffold(
-      // backgroundColor: Colors.white,
-      appBar: AppBar(
-        // backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon:  Icon(Icons.arrow_back, color:theme.onSurface),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Upload Content',
-          style: TextStyle(
-            color: theme.onSurface,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(24.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Upload Area
-      GestureDetector(
-  onTap: _showPickerOptions,
-  child: DottedBorder(
-    options: RoundedRectDottedBorderOptions(
-      color: Colors.grey[400]!,
-      strokeWidth: 2.w,
-      dashPattern: const [20, 6],
-      radius: Radius.circular(12.r),
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(12.r),
-      child: Container(
-        height: 200.h,
-        width: double.infinity,
-        color: theme.surface,
-        child: _selectedFile == null
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.cloud_upload_outlined,
-                    size: 60.sp,
-                    color: Colors.grey[600],
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    'Upload an Image or video',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    'Maximum file size is 200 MB',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
-              )
-            : Stack(
-                children: [
-                  Image.file(
-                    _selectedFile!,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.fitWidth,
-                  ),
-                  Positioned(
-                    top: 8.h,
-                    right: 8.w,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedFile = null;
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(4.w),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 20.sp,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    ),
-  ),
-),
-    SizedBox(height: 28.h),
-
-              // Title Field
-              Text(
-                'Title',
-                style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color:  theme.onSurface,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              AuthTextField(
-                controller: _titleController,
-                hintText: "Enter Your Title.",       ),
-
-              SizedBox(height: 20.h),
-
-              // Description Field
-               Text(
-                'Description',
-                style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color:  theme.onSurface,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              AuthTextField(controller:
-               _descriptionController,
-               hintText:   'Enter Your Description...',
-               maxLines: 5,
-               ),
-               SizedBox(height: 16.h,),
-      ValueListenableBuilder<String?>(
-                            valueListenable: sportNotifier,
-                            builder: (context, sport, _) {
-                              return AppDropdownOverlay(
-                                labelText: string.sportProfession,
-                                value: sport,
-                                options:
-                                    RegisterLists.sportProfessionOptions(
-                                      string,
-                                    ),
-                                onChanged: (val) =>
-                                     sportNotifier.value = val,
-                                validator: (v) =>
-                                    Validators.validateDropdown(
-                                      context: context,
-                                      value: v,
-                                      fieldName: string.sportProfession
-                                          .toLowerCase(),
-                                    ),
-                              );
-                            },
-                          ),
-              SizedBox(height: 40.h),
-Builder(
-  builder: (context) {
-    return CustomElevatedButton(
-      onPressed: () {
-        // Handle post action
-        if (_titleController.text.isNotEmpty &&
-            _descriptionController.text.isNotEmpty) {
-
-          // Use the PostsBloc
-          context.read<PostsBloc>().add(
-            UploadPost(
-              title: _titleController.text.trim(),
-              description: _descriptionController.text.trim(),
-              sport: sportNotifier.value!,
-              mediaUrl: _selectedFile?.path,
-            ),
+    
+    return BlocListener<PostsBloc, PostsState>(
+      listener: (context, state) {
+        // ✅ استمع للتغييرات
+        if (state is PostsUploadSuccess) {
+          Fluttertoast.showToast(
+            msg: 'Post uploaded successfully!',
+            backgroundColor: Colors.green,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
           );
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Post created successfully!'),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please fill all fields'),
-            ),
+          
+          // ✅ امسح الحقول
+          _titleController.clear();
+          _descriptionController.clear();
+          sportNotifier.value = null;
+          setState(() {
+            _selectedFile = null;
+          });
+          // ✅ ارجع للصفحة السابقة
+          Navigator.pop(context);
+        } else if (state is PostsError) {
+          Fluttertoast.showToast(
+            msg: state.message,
+            backgroundColor: Colors.red,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
           );
         }
       },
-      text: 'Post',
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: theme.onSurface),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            'Upload Content',
+            style: TextStyle(
+              color: theme.onSurface,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Upload Area
+                GestureDetector(
+                  onTap: _showPickerOptions,
+                  child: DottedBorder(
+                    options: RoundedRectDottedBorderOptions(
+                      color: Colors.grey[400]!,
+                      strokeWidth: 2.w,
+                      dashPattern: const [20, 6],
+                      radius: Radius.circular(12.r),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Container(
+                        height: 200.h,
+                        width: double.infinity,
+                        color: theme.surface,
+                        child: _selectedFile == null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.cloud_upload_outlined,
+                                    size: 60.sp,
+                                    color: Colors.grey[600],
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Text(
+                                    'Upload an Image or video',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: Colors.grey[800],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    'Maximum file size is 200 MB',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Stack(
+                                children: [
+                                  Image.file(
+                                    _selectedFile!,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Positioned(
+                                    top: 8.h,
+                                    right: 8.w,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedFile = null;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(4.w),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.black54,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                          size: 20.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 28.h),
+
+                // Title Field
+                Text(
+                  'Title',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: theme.onSurface,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                AuthTextField(
+                  controller: _titleController,
+                  hintText: "Enter Your Title.",
+                ),
+
+                SizedBox(height: 20.h),
+
+                // Description Field
+                Text(
+                  'Description',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: theme.onSurface,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                AuthTextField(
+                  controller: _descriptionController,
+                  hintText: 'Enter Your Description...',
+                  maxLines: 5,
+                ),
+                SizedBox(height: 16.h),
+
+                // Sport Dropdown
+                ValueListenableBuilder<String?>(
+                  valueListenable: sportNotifier,
+                  builder: (context, sport, _) {
+                    return AppDropdownOverlay(
+                      labelText: string.sportProfession,
+                      value: sport,
+                      options: RegisterLists.sportNameOptions(string),
+                      onChanged: (val) => sportNotifier.value = val,
+                      validator: (v) => Validators.validateDropdown(
+                        context: context,
+                        value: v,
+                        fieldName: string.sportProfession.toLowerCase(),
+                      ),
+                    );
+                  },
+                ),
+                
+                SizedBox(height: 40.h),
+
+                // ✅ Post Button with Loading State
+                BlocBuilder<PostsBloc, PostsState>(
+                  builder: (context, state) {
+                    final isUploading = state is PostsLoaded && state.isUploading;
+return CustomElevatedButton(
+  text: 'Post',
+  isLoading: isUploading,        // ✅ show spinner automatically
+  enabled: !isUploading,         // ✅ disable automatically
+  onPressed: () {
+    // ✅ Validation
+    if (_titleController.text.trim().isEmpty ||
+        _descriptionController.text.trim().isEmpty ||
+        sportNotifier.value == null) {
+      Fluttertoast.showToast(
+        msg: 'Please fill all fields',
+        backgroundColor: Colors.orange,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+
+    // ✅ Upload Post
+    context.read<PostsBloc>().add(
+      UploadPost(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        sport: sportNotifier.value!,
+        mediaUrl: _selectedFile?.path,
+      ),
     );
   },
-)
-   ],
+);
+
+                    // return CustomElevatedButton(
+                    //   onPressed: isUploading
+                    //       ? null // ✅ Disable button while uploading
+                    //       : () {
+                    //           // ✅ Validation
+                    //           if (_titleController.text.trim().isEmpty ||
+                    //               _descriptionController.text.trim().isEmpty ||
+                    //               sportNotifier.value == null) {
+                    //             Fluttertoast.showToast(
+                    //               msg: 'Please fill all fields',
+                    //               backgroundColor: Colors.orange,
+                    //               toastLength: Toast.LENGTH_SHORT,
+                    //               gravity: ToastGravity.BOTTOM,
+                    //             );
+                    //             return;
+                    //           }
+
+                    //           // ✅ Upload Post
+                    //           context.read<PostsBloc>().add(
+                    //                 UploadPost(
+                    //                   title: _titleController.text.trim(),
+                    //                   description: _descriptionController.text.trim(),
+                    //                   sport: sportNotifier.value!,
+                    //                   mediaUrl: _selectedFile?.path,
+                    //                 ),
+                    //               );
+                    //         },
+                    //   text: isUploading ? '' : 'Post', // ✅ Empty text while loading
+                    //   child: isUploading
+                    //       ? SizedBox(
+                    //           height: 20.h,
+                    //           width: 20.w,
+                    //           child: const CircularProgressIndicator(
+                    //             strokeWidth: 2,
+                    //             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    //           ),
+                    //         )
+                    //       : null,
+                    // );
+                 
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -295,8 +365,8 @@ Builder(
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    sportNotifier.dispose();
+    positionNotifier.dispose();
     super.dispose();
   }
- 
 }
-

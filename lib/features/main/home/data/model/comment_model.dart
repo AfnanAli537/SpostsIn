@@ -1,7 +1,6 @@
+import 'package:equatable/equatable.dart';
 
-
-// comment_model.dart
-class CommentModel {
+class CommentModel extends Equatable {
   final String commentId;
   final String text;
   final DateTime createdAt;
@@ -9,7 +8,7 @@ class CommentModel {
   final String fullName;
   final String? profilePictureUrl;
 
-  CommentModel({
+  const CommentModel({
     required this.commentId,
     required this.text,
     required this.createdAt,
@@ -20,7 +19,8 @@ class CommentModel {
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
-      commentId: json['commentId'] ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      commentId:
+          json['commentId'] ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
       text: json['text'] ?? '',
       createdAt: DateTime.parse(json['createdAt']),
       userId: json['userId'] ?? 'temp_${DateTime.now().millisecondsSinceEpoch}',
@@ -57,9 +57,18 @@ class CommentModel {
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    commentId,
+    text,
+    createdAt,
+    userId,
+    fullName,
+    profilePictureUrl,
+  ];
 }
 
-// ✅ Paginated Response Model
 class PaginatedCommentsResponse {
   final List<CommentModel> items;
   final int totalCount;
@@ -93,10 +102,3 @@ class PaginatedCommentsResponse {
     );
   }
 }
-
-
-
-
-
-
-

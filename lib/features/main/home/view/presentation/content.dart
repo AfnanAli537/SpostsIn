@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sports_in/features/main/home/data/interface/home_tap_enums.dart';
+import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
@@ -429,9 +429,7 @@ class BuildContent extends StatelessWidget {
         );
 
       case HomeTab.opportunities:
-       return SliverFillRemaining(
-          child: const JobsListScreen(),
-        );
+      return const OpportunitiesContent();
      
     }
   }
