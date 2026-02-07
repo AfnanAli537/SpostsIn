@@ -34,6 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage(
       "Verify and proceed",
     ),
+    "aboutUs": MessageLookupByLibrary.simpleMessage("About us"),
+    "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
@@ -43,11 +45,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "alreadyHaveAnAccount": MessageLookupByLibrary.simpleMessage(
       "Already have an account?",
     ),
+    "analyzedPeople": MessageLookupByLibrary.simpleMessage("Analyzed People"),
+    "analyzedVideosReports": MessageLookupByLibrary.simpleMessage(
+      "Analyzed Videos Reports",
+    ),
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
     "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
     "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
     "basketballer": MessageLookupByLibrary.simpleMessage("Basketballer"),
+    "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
     "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -61,21 +68,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "club": MessageLookupByLibrary.simpleMessage("Club"),
     "clubName": MessageLookupByLibrary.simpleMessage("Club name"),
     "coach": MessageLookupByLibrary.simpleMessage("Coach"),
+    "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage("Confirm Password"),
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
       "Confirm password is required",
     ),
     "conflict": MessageLookupByLibrary.simpleMessage("Data conflict occurred"),
+    "connect": MessageLookupByLibrary.simpleMessage("Connect"),
+    "connected": MessageLookupByLibrary.simpleMessage("Connected"),
+    "connectionError": MessageLookupByLibrary.simpleMessage(
+      "Failed to connect",
+    ),
+    "connectionSuccess": MessageLookupByLibrary.simpleMessage(
+      "Connected successfully!",
+    ),
     "connectionTimedOut": MessageLookupByLibrary.simpleMessage(
       "Connection timed out. Please try again.",
     ),
+    "connections": MessageLookupByLibrary.simpleMessage("Connections"),
     "contactBody": MessageLookupByLibrary.simpleMessage(
       "If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app",
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("Contact Us"),
+    "contactUs": MessageLookupByLibrary.simpleMessage("Contact us"),
     "continueButton": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueText": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueWith": MessageLookupByLibrary.simpleMessage("or continue with"),
+    "courses": MessageLookupByLibrary.simpleMessage("Courses"),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage(
       "Create your Account",
@@ -84,6 +103,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Currently in a Club",
     ),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
+    "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
+      "Disconnected successfully!",
+    ),
     "done": MessageLookupByLibrary.simpleMessage("Done"),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
@@ -127,6 +149,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "field": MessageLookupByLibrary.simpleMessage("field"),
     "fieldTooShort": m1,
     "firstName": MessageLookupByLibrary.simpleMessage("First name"),
+    "follow": MessageLookupByLibrary.simpleMessage("Follow"),
+    "followError": MessageLookupByLibrary.simpleMessage("Failed to follow"),
+    "followSuccess": MessageLookupByLibrary.simpleMessage(
+      "Following successfully!",
+    ),
+    "followers": MessageLookupByLibrary.simpleMessage("Followers"),
+    "following": MessageLookupByLibrary.simpleMessage("Following"),
     "football": MessageLookupByLibrary.simpleMessage("Football"),
     "footballer": MessageLookupByLibrary.simpleMessage("Footballer"),
     "forbidden": MessageLookupByLibrary.simpleMessage("Access forbidden"),
@@ -158,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "institute": MessageLookupByLibrary.simpleMessage("Institute"),
     "instituteName": MessageLookupByLibrary.simpleMessage("Institute name"),
+    "interests": MessageLookupByLibrary.simpleMessage("Interests"),
     "introductionBody": MessageLookupByLibrary.simpleMessage(
       "SportsIn is a professional social platform for athletes, coaches, and sports clubs to connect, share experiences, and discover opportunities.",
     ),
@@ -200,6 +230,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginToYourAccount": MessageLookupByLibrary.simpleMessage(
       "Login to your Account",
     ),
+    "logout": MessageLookupByLibrary.simpleMessage("LOG OUT"),
+    "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to logout?",
+    ),
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 lowercase letter",
     ),
@@ -209,6 +243,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "At least 8 characters long",
     ),
+    "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
     "name": MessageLookupByLibrary.simpleMessage("name"),
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
@@ -220,6 +255,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
+    "notifications": MessageLookupByLibrary.simpleMessage("Notification"),
     "number": MessageLookupByLibrary.simpleMessage("number"),
     "numberValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 number",
@@ -255,6 +291,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboarding5Title": MessageLookupByLibrary.simpleMessage(
       "Connect & Communicate",
     ),
+    "opportunities": MessageLookupByLibrary.simpleMessage("Opportunities"),
     "oppositeHitter": MessageLookupByLibrary.simpleMessage("Opposite Hitter"),
     "other": MessageLookupByLibrary.simpleMessage("Other"),
     "otpHint": MessageLookupByLibrary.simpleMessage(
@@ -308,6 +345,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
+    "posts": MessageLookupByLibrary.simpleMessage("Posts"),
     "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
     "privacyPolicyTitle": MessageLookupByLibrary.simpleMessage(
       "Privacy & Policy",
@@ -356,6 +394,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Service temporarily unavailable",
     ),
     "setter": MessageLookupByLibrary.simpleMessage("Setter"),
+    "settings": MessageLookupByLibrary.simpleMessage("Setting"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
     ),
@@ -363,9 +402,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sharing Your Information",
     ),
     "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
+    "showAll": MessageLookupByLibrary.simpleMessage("Show all"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
     "signingIn": MessageLookupByLibrary.simpleMessage("Signing in..."),
+    "skills": MessageLookupByLibrary.simpleMessage("Skills"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
     "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
     "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
@@ -385,6 +426,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
     "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
+    "theme": MessageLookupByLibrary.simpleMessage("Light"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
     ),
@@ -394,6 +436,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "unexpectedError": MessageLookupByLibrary.simpleMessage(
       "Unexpected error occurred.",
+    ),
+    "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
+      "Unfollowed successfully!",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
