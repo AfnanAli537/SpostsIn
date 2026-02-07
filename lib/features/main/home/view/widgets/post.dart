@@ -321,7 +321,7 @@ class _PostWidgetState extends State<PostWidget> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                       formatTimeAgo(DateTime.parse(widget.post.createdAt.toIso8601String())),
+                       formatTimeAgo(DateTime.parse(widget.post.createdAt.toIso8601String()).toUtc()),
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: Colors.grey[600],

@@ -660,7 +660,7 @@ class _LikesSheetState extends State<LikesSheet> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        formatTimeAgo(DateTime.parse(user.createdAt)),
+                                        formatTimeAgo(DateTime.parse(user.createdAt).toUtc()),
                                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                       ),
                                     ],

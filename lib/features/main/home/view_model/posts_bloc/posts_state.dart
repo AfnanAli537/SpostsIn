@@ -13,18 +13,6 @@ class PostsInitial extends PostsState {}
 class PostsLoading extends PostsState {}
 
 
-class PostsLoaded extends PostsState {
-  final List<PostModel> posts;
-  final bool hasNextPage;
-
-  const PostsLoaded({
-    required this.posts,
-    this.hasNextPage = false,
-  });
-
-  @override
-  List<Object?> get props => [posts, hasNextPage];
-}
 
 
 class PostsError extends PostsState {
@@ -54,3 +42,19 @@ class PostsUploadSuccess extends PostsState {
   @override
   List<Object?> get props => [];
 }
+ // ✅ إضافة isUploading للـ PostsLoaded
+class PostsLoaded extends PostsState {
+  final List<PostModel> posts;
+  final bool hasNextPage;
+  final bool isUploading; // ✅ جديد
+
+  const PostsLoaded({
+    required this.posts,
+    required this.hasNextPage,
+    this.isUploading = false, // ✅ default false
+  });
+
+  @override
+  List<Object?> get props => [posts, hasNextPage, isUploading];
+}
+

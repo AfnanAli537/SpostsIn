@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
+import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/features/main/home/data/interface/post_interface.dart';
 import 'package:sports_in/features/main/home/data/model/comment_model.dart';
@@ -66,37 +67,49 @@ log("${response.statusCode}=================================");
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
   }
+@override
+Future<void> uploadPost({
+  required String description,
+  String? mediaUrl,
+  required String sport,
+  required String title,
+}) async {
+  try {
+    print("🔍 Input sport value: '$sport'");
+    
+    final sportEnum = EnumMapper.fromLabel(EnumMapper.sportLabels(), sport);
+    print("🔍 Sport enum: $sportEnum");
+    
+    final sportId = sportEnum != null ? EnumMapper.getSportId(sportEnum) : null;
+    print("🔍 Sport ID: $sportId");
 
-  @override
-  Future<PostModel> uploadPost({
-    required String description,
-    String? mediaUrl,
-    required String sport,
-    required String title,
-  }) async {
-    try {
+    // ✅ Use FormData instead of JSON
+    final formData = FormData.fromMap({
+      'Title': title,
+      'Description': description,
+      'SportTypeId': sportId,
+      // Don't include MediaFile if it's null - server expects file upload
+      if (mediaUrl != null) 'MediaFile': await MultipartFile.fromFile(mediaUrl),
+    });
 
-      final response = await apiClient.post(
-        Endpoints.postPost,
-        data: {
-          'title': title,
-          'description': description,
-          'mediaUrl': mediaUrl,
-          'SportTypeId': int.parse(sport),
-        },
-      );
+    final response = await apiClient.post(
+      Endpoints.postPost,
+      data: formData, // ✅ Send FormData
+    );
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
-
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
-      }
-       log("${response.statusCode}==============");
-      // ✅ ارجع الـ post اللي السيرفر رجعه
-      return PostModel.fromJson(response.data['post']);
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioErrorKey(e);
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     }
+    
+    log("${response.statusCode}==============");
+    // return PostModel.fromJson(response.data['post']);
+    
+  } on DioException catch (e) {
+    throw ApiErrorHandler.handleDioErrorKey(e);
+  } catch (e) {
+    rethrow;
   }
+}
 
   @override
   Future<Map<String, dynamic>> getLikes({
@@ -141,7 +154,7 @@ log("${response.statusCode}=================================");
   Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,
-    int pageSize = 20,
+    int pageSize = 10,
   }) async {
     try {
       final url = Endpoints.getComments.replaceFirst('{id}', postId);

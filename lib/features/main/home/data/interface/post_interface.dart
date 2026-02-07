@@ -9,7 +9,7 @@ abstract class PostsRepository {
 
   Future<void> likePost({ required String postId});
   Future<void> addComment({ required String postId,required  String text});
-  Future<PostModel> uploadPost({
+  Future<void> uploadPost({
     required String title,
     required String description,
      String? mediaUrl,
@@ -21,7 +21,7 @@ abstract class PostsRepository {
       Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,
-    int pageSize = 20,
+    int pageSize = 10,
   });
 
   Future<void> deleteComment({required String postId, required String commentId});

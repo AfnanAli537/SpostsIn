@@ -399,7 +399,7 @@ class _CommentsBottomSheetContentState
   final ScrollController _scrollController = ScrollController();
 
   String? _editingCommentId;
-  int _currentPage = 1;
+  // int _currentPage = 1;
 
   @override
   void initState() {
@@ -415,11 +415,11 @@ class _CommentsBottomSheetContentState
       final state = context.read<CommentsBloc>().state;
       if (state is CommentsLoaded && state.hasNextPage) {
         if (state is! CommentsLoadingMore) {
-          _currentPage++;
+          // _currentPage++;
           context.read<CommentsBloc>().add(
                 FetchComments(
                   postId: widget.postId,
-                  pageNumber: _currentPage,
+                  // pageNumber: _currentPage,
                 ),
               );
         }
@@ -760,8 +760,10 @@ class _CommentsBottomSheetContentState
                       style: const TextStyle(fontWeight: FontWeight.w600,color:Colors.black),
                     ),
                     const SizedBox(width: 8),
+                  
                     Text(
-                      formatTimeAgo(comment.createdAt),
+                      
+                      formatTimeAgo(comment.createdAt.toUtc()),
                       style: const TextStyle(color: Colors.black, fontSize: 12),
                     ),
                   ],

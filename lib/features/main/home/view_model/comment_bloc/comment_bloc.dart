@@ -35,7 +35,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     Emitter<CommentsState> emit,
   ) async {
     try {
-      if (event.isRefresh || event.pageNumber == 1) {
+      if (event.isRefresh ||state is! CommentsLoaded) {
         emit(CommentsLoading());
 
         final response = await commentsRepo.getComments(
@@ -52,12 +52,15 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       } else {
         // Load more
         final currentState = state;
+          // Increment page by 1 from the current state
         if (currentState is CommentsLoaded) {
+    if (!currentState.hasNextPage) return;
           emit(CommentsLoadingMore(currentState.comments));
+ final nextPage = currentState.currentPage + 1;
 
           final response = await commentsRepo.getComments(
             postId: event.postId,
-            pageNumber: event.pageNumber,
+            pageNumber: nextPage,
           );
 
           final allComments = [...currentState.comments, ...response.items];
@@ -65,7 +68,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
           emit(CommentsLoaded(
             comments: allComments,
             hasNextPage: response.hasNextPage,
-            currentPage: event.pageNumber,
+            currentPage: nextPage,
             totalCount: response.totalCount,
           ));
         }
@@ -80,7 +83,7 @@ Future<void> _onAddComment(
   AddComment event,
   Emitter<CommentsState> emit,
 ) async {
-  final currentState = state;
+  // final currentState = state;
 
   try {
     // استدعاء الAPI أولاً
@@ -208,159 +211,7 @@ Future<void> _onDeleteComment(
     emit(CommentsError('Failed to delete comment: ${e.toString()}'));
   }
 }
-// // ✅ Add Comment - FIXED
-// Future<void> _onAddComment(
-//   AddComment event,
-//   Emitter<CommentsState> emit,
-// ) async {
-//   final currentState = state;
 
-//   emit(CommentAdding());
-
-//   try {
-//     final CommentModel newComment = CommentModel(commentId: event.postId,
-//      text: event.text, createdAt:event.createdAt , userId: event.userId, fullName: event.fullName);
-//     await commentsRepo.addComment(
-//       postId: event.postId,
-//       text: event.text,
-//     );
-
-//     // Update comments list
-//     if (currentState is CommentsLoaded) {
-//       final List<CommentModel> updatedComments = [newComment, ...currentState.comments];
-      
-//       // emit(CommentAdded(newComment)); // ✅ Emit success FIRST
-      
-//       // emit(CommentsLoaded(
-//       //   comments: updatedComments,
-//       //   hasNextPage: currentState.hasNextPage,
-//       //   currentPage: currentState.currentPage,
-//       //   totalCount: currentState.totalCount + 1,
-//       // ));
-//           emit(CommentsLoaded(
-//   comments: updatedComments,
-//   hasNextPage: currentState.hasNextPage,
-//   currentPage: currentState.currentPage,
-//   totalCount: currentState.totalCount + 1,
-//   action: CommentAction.added, // optional enum
-// ));
-
-//     } else {
-//       // emit(CommentAdded(newComment)); // ✅ Emit success FIRST
-//       log("here============================");
-//       emit(CommentsLoaded(
-//         comments: [newComment],
-//         hasNextPage: false,
-//         currentPage: 1,
-//         totalCount: 1,
-//       ));
-  
-//     }
-//   } catch (e) {
-//     if (currentState is CommentsLoaded) {
-//       emit(CommentsLoaded(
-//         comments: currentState.comments,
-//         hasNextPage: currentState.hasNextPage,
-//         currentPage: currentState.currentPage,
-//         totalCount: currentState.totalCount,
-//       ));
-//     }
-//     emit(CommentsError('Failed to add comment: ${e.toString()}'));
-//   }
-// }
-
-
-// // ✅ Edit Comment - FIXED
-// Future<void> _onEditComment(
-//   EditComment event,
-//   Emitter<CommentsState> emit,
-// ) async {
-//   final currentState = state;
-
-//   if (currentState is! CommentsLoaded) return;
-
-//   try {
-//     await commentsRepo.editComment(
-//       commentId: event.commentId,
-//       text: event.text,
-//     );
-//     final CommentModel editedComment =CommentModel(commentId: event.commentId,
-//      text: event.text, createdAt:event.createdAt , userId: event.userId, fullName: event.fullName);
-//     final List<CommentModel> updatedComments = currentState.comments.map((comment) {
-//       if (comment.commentId == event.commentId) {
-//         return editedComment;
-//       }
-//       return comment;
-//     }).toList();
-
-//     // emit(CommentEdited(editedComment)); // ✅ Emit success FIRST
-
-//     // emit(CommentsLoaded(
-//     //   comments: updatedComments,
-//     //   hasNextPage: currentState.hasNextPage,
-//     //   currentPage: currentState.currentPage,
-//     //   totalCount: currentState.totalCount,
-//     // ));
-//        emit(CommentsLoaded(
-//   comments: updatedComments,
-//   hasNextPage: currentState.hasNextPage,
-//   currentPage: currentState.currentPage,
-//   totalCount: currentState.totalCount ,
-//   action: CommentAction.edited, // optional enum
-// ));
-
-//   } catch (e) {
-//     print('Edit Comment Error: $e');
-//     emit(CommentsLoaded(
-//       comments: currentState.comments,
-//       hasNextPage: currentState.hasNextPage,
-//       currentPage: currentState.currentPage,
-//       totalCount: currentState.totalCount,
-//     ));
-//     emit(CommentsError('Failed to edit comment: ${e.toString()}'));
-//   }
-// }
-
-// // ✅ Delete Comment - FIXED
-// Future<void> _onDeleteComment(
-//   DeleteComment event,
-//   Emitter<CommentsState> emit,
-// ) async {
-//   final currentState = state;
-
-//   if (currentState is! CommentsLoaded) return;
-
-//   try {
-//     await commentsRepo.deleteComment(
-//       postId: event.postId,
-//       commentId: event.commentId,
-//     );
-
-//     final updatedComments = currentState.comments
-//         .where((comment) => comment.commentId != event.commentId)
-//         .toList();
-
-//     // emit(CommentDeleted(event.commentId)); // ✅ Emit success FIRST
-
-   
-//     emit(CommentsLoaded(
-//   comments: updatedComments,
-//   hasNextPage: currentState.hasNextPage,
-//   currentPage: currentState.currentPage,
-//   totalCount: currentState.totalCount - 1,
-//   action: CommentAction.deleted,
-// ));
-
-//   } catch (e) {
-//     emit(CommentsLoaded(
-//       comments: currentState.comments,
-//       hasNextPage: currentState.hasNextPage,
-//       currentPage: currentState.currentPage,
-//       totalCount: currentState.totalCount,
-//     ));
-//     emit(CommentsError('Failed to delete comment: ${e.toString()}'));
-//   }
-// }
 }
 
 

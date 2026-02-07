@@ -30,7 +30,7 @@ class PostsRepositoryImpl  {
   }
 
 
-  Future<PostModel> uploadPost({
+  Future<void> uploadPost({
     required String title,
     required String description,
      String? mediaUrl,
@@ -54,7 +54,7 @@ class PostsRepositoryImpl  {
         Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,
-    int pageSize = 20,
+    int pageSize = 10,
   }){
    return repo.getComments(
   postId: postId,
