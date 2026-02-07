@@ -65,18 +65,15 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
-    gh.lazySingleton<_i414.SharedPref>(
-      () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
-    );
     gh.lazySingleton<_i544.IProfileDataSource>(() => _i13.MockProfileData());
     gh.factory<_i752.ProfileRepo>(
       () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
     );
-    gh.lazySingleton<_i414.SharedPref>(
-      () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
-    );
     gh.factory<_i939.ProfileBloc>(
       () => _i939.ProfileBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.lazySingleton<_i414.SharedPref>(
+      () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i694.ApiClient>(
       () => appModule.apiClient(gh<_i414.SharedPref>()),

@@ -24,8 +24,6 @@ class Endpoints {
   static const String sendVerifyRegisterOtp = "/api/Auth/send-gmail-code";
   static const String verifyRegisterOtp = "/api/Auth/confirm-gmail-code";
 
-
-
   // Profile Endpoints
   static const String getProfile = "/api/Profile/get-profile";
   static const String getMyProfile = "/api/Profile/my-profile";
