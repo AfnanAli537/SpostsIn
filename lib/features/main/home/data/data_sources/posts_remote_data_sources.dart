@@ -25,13 +25,12 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
   }) async {
     try {
       final response = await apiClient.get(
-        // ✅ Use apiClient
         Endpoints.allPosts,
         params: {'pageNumber': pageNumber, 'pageSize': pageSize},
       );
 
-      print('📦 Response status: ${response.statusCode}');
-      print('📦 Response data: ${response.data}');
+      log('📦 Response status: ${response.statusCode}');
+      log('📦 Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
@@ -40,11 +39,11 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      print('❌ Dio Error: ${e.message}');
-      print('❌ Error Response: ${e.response?.data}');
+      log('❌ Dio Error: ${e.message}');
+      log('❌ Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      print('❌ Unknown Error: $e');
+      log('❌ Unknown Error: $e');
       rethrow;
     }
   }
@@ -60,56 +59,51 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
           response.statusCode != 204) {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
-log("${response.statusCode}=================================");
-      // ✅ Return updated post data
-      // return PostModel.fromJson(response.data['post']);
+      log("${response.statusCode}=================================");
     } on DioException catch (e) {
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
   }
-@override
-Future<void> uploadPost({
-  required String description,
-  String? mediaUrl,
-  required String sport,
-  required String title,
-}) async {
-  try {
-    print("🔍 Input sport value: '$sport'");
-    
-    final sportEnum = EnumMapper.fromLabel(EnumMapper.sportLabels(), sport);
-    print("🔍 Sport enum: $sportEnum");
-    
-    final sportId = sportEnum != null ? EnumMapper.getSportId(sportEnum) : null;
-    print("🔍 Sport ID: $sportId");
 
-    // ✅ Use FormData instead of JSON
-    final formData = FormData.fromMap({
-      'Title': title,
-      'Description': description,
-      'SportTypeId': sportId,
-      // Don't include MediaFile if it's null - server expects file upload
-      if (mediaUrl != null) 'MediaFile': await MultipartFile.fromFile(mediaUrl),
-    });
+  @override
+  Future<void> uploadPost({
+    required String description,
+    String? mediaUrl,
+    required String sport,
+    required String title,
+  }) async {
+    try {
+      log("🔍 Input sport value: '$sport'");
 
-    final response = await apiClient.post(
-      Endpoints.postPost,
-      data: formData, // ✅ Send FormData
-    );
+      final sportEnum = EnumMapper.fromLabel(EnumMapper.sportLabels(), sport);
+      log("🔍 Sport enum: $sportEnum");
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      final sportId = sportEnum != null
+          ? EnumMapper.getSportId(sportEnum)
+          : null;
+      log("🔍 Sport ID: $sportId");
+      final formData = FormData.fromMap({
+        'Title': title,
+        'Description': description,
+        'SportTypeId': sportId,
+        if (mediaUrl != null)
+          'MediaFile': await MultipartFile.fromFile(mediaUrl),
+      });
+
+      final response = await apiClient.post(Endpoints.postPost, data: formData);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+
+      log("${response.statusCode}==============");
+      // return PostModel.fromJson(response.data['post']);
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    } catch (e) {
+      rethrow;
     }
-    
-    log("${response.statusCode}==============");
-    // return PostModel.fromJson(response.data['post']);
-    
-  } on DioException catch (e) {
-    throw ApiErrorHandler.handleDioErrorKey(e);
-  } catch (e) {
-    rethrow;
   }
-}
 
   @override
   Future<Map<String, dynamic>> getLikes({
@@ -124,8 +118,8 @@ Future<void> uploadPost({
         params: {'page': pageNumber, 'size': pageSize},
       );
 
-      print('📦 Response status: ${response.statusCode}');
-      print('📦 Response data: ${response.data}');
+      log('📦 Response status: ${response.statusCode}');
+      log('📦 Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
@@ -141,11 +135,11 @@ Future<void> uploadPost({
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      print('❌ Dio Error: ${e.message}');
-      print('❌ Error Response: ${e.response?.data}');
+      log('❌ Dio Error: ${e.message}');
+      log('❌ Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      print('❌ Unknown Error: $e');
+      log('❌ Unknown Error: $e');
       rethrow;
     }
   }
@@ -162,8 +156,7 @@ Future<void> uploadPost({
         url,
         params: {'pageNumber': pageNumber, 'pageSize': pageSize},
       );
-log('${pageNumber}=========');
-//inspector almost 
+      log('${pageNumber}=========');
       if (response.statusCode == 200) {
         log("${response.data}========================");
         return PaginatedCommentsResponse.fromJson(response.data);
@@ -182,15 +175,10 @@ log('${pageNumber}=========');
   }) async {
     try {
       final url = Endpoints.putComment.replaceFirst('{id}', postId);
-      final response = await apiClient.post(
-        url,
-        // data: '$text',
-        data: jsonEncode(text),
-      );
+      final response = await apiClient.post(url, data: jsonEncode(text));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         log("${response.data}=======================");
-        // return CommentModel.fromJson(response.data);
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
@@ -209,15 +197,7 @@ log('${pageNumber}=========');
       final response = await apiClient.put(url, data: {'text': text});
 
       if (response.statusCode == 200) {
-        print('Edit Response: ${response.data}');
-
-        // لو الـ response فيه wrapper
-        // if (response.data is Map && response.data.containsKey('comment')) {
-        //   return CommentModel.fromJson(response.data['comment']);
-        // }
-
-        // لو الـ response direct
-        // return CommentModel.fromJson(response.data);
+        log('Edit Response: ${response.data}');
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }

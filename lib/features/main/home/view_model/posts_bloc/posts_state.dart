@@ -7,13 +7,9 @@ sealed class PostsState extends Equatable {
   List<Object?> get props => [];
 }
 
-
 class PostsInitial extends PostsState {}
 
 class PostsLoading extends PostsState {}
-
-
-
 
 class PostsError extends PostsState {
   final String message;
@@ -24,25 +20,22 @@ class PostsError extends PostsState {
   List<Object?> get props => [message];
 }
 
-
-// في posts_state.dart
-
 class PostsUploading extends PostsState {
   final List<PostModel> currentPosts;
-  
+
   const PostsUploading(this.currentPosts);
-  
+
   @override
   List<Object?> get props => [currentPosts];
 }
 
 class PostsUploadSuccess extends PostsState {
   const PostsUploadSuccess();
-  
+
   @override
   List<Object?> get props => [];
 }
- // ✅ إضافة isUploading للـ PostsLoaded
+
 class PostsLoaded extends PostsState {
   final List<PostModel> posts;
   final bool hasNextPage;
@@ -57,4 +50,3 @@ class PostsLoaded extends PostsState {
   @override
   List<Object?> get props => [posts, hasNextPage, isUploading];
 }
-

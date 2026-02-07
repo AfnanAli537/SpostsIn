@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:better_player_plus/better_player_plus.dart';
@@ -14,34 +16,9 @@ import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.da
 import 'package:translator/translator.dart';
 
 class PostWidget extends StatefulWidget {
-  // final String userName;
-  // final String timeAgo;
-  // final String desc;
-  // final String title;
-  // final String? mediaUrl;
-  // final int likes;
-  // final int comments;
-  // final bool isLikedByCurrentUser;
-  // final String postId;
-  // const PostWidget({
-  //   super.key,
-  //   required this.userName,
-  //   required this.timeAgo,
-  //   required this.desc,
-  //   required this.title,
-  //   required this.mediaUrl,
-  //   required this.likes,
-  //   required this.comments,
-  //   required this.isLikedByCurrentUser,
-  //   required this.postId,
-  // });
   final PostModel post;
 
-const PostWidget({
-    super.key,
-  required this.post,
-});
-
+  const PostWidget({super.key, required this.post});
 
   @override
   State<PostWidget> createState() => _PostWidgetState();
@@ -60,51 +37,39 @@ class _PostWidgetState extends State<PostWidget> {
   final GoogleTranslator _translator = GoogleTranslator();
   late int _commentsCount;
   late String _deviceLanguage;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _initializeMedia();
-  //   _loadDeviceLanguageAndTranslate();
-  // }
   @override
   void initState() {
     super.initState();
     _commentsCount = widget.post.commentsCount;
     _initializeMedia();
-    _loadDeviceLanguage(); // بس حمل اللغة بدون ترجمة
+    _loadDeviceLanguage();
   }
-@override
+
+  @override
   void didUpdateWidget(covariant PostWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // التحقق لو أي بيانات أساسية في البوست اتغيرت من برا (من الـ Bloc)
-    if (widget.post.isLikedByCurrentUser != oldWidget.post.isLikedByCurrentUser ||
+    if (widget.post.isLikedByCurrentUser !=
+            oldWidget.post.isLikedByCurrentUser ||
         widget.post.likesCount != oldWidget.post.likesCount ||
         widget.post.commentsCount != oldWidget.post.commentsCount ||
         widget.post.description != oldWidget.post.description) {
-      
-      setState(() {
-        // الـ setState الفاضية هنا كافية إنها تخلي الـ Build Method
-        // تشتغل تاني وتسحب القيم الجديدة من widget.post
-      });
+      setState(() {});
     }
 
-    // ملاحظة إضافية: لو الـ mediaUrl اتغير، ممكن تحتاج تعيد تشغيل الفيديو
     if (widget.post.mediaUrl != oldWidget.post.mediaUrl) {
       _betterPlayerController?.dispose();
       _initializeMedia();
     }
   }
+
   Future<void> _loadDeviceLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     _deviceLanguage = prefs.getString('language_code') ?? 'ar';
-    // _translateDescription();
   }
 
   Future<void> _translateDescription() async {
     if (_translatedDesc != null) {
-      // Already translated, just toggle
       setState(() {
         _showTranslation = true;
       });
@@ -125,12 +90,11 @@ class _PostWidgetState extends State<PostWidget> {
         setState(() {
           _translatedDesc = translation.text;
           _isTranslating = false;
-          _showTranslation =
-              true; // show translated by default after translation
+          _showTranslation = true;
         });
       }
     } catch (e) {
-      print('Translation error: $e');
+      log('Translation error: $e');
       if (mounted) {
         setState(() {
           _translatedDesc = null;
@@ -152,21 +116,20 @@ class _PostWidgetState extends State<PostWidget> {
         });
 
         try {
-          print('🎬 Loading video with better_player_plus: ${widget.post.mediaUrl}');
+          log(
+            '🎬 Loading video with better_player_plus: ${widget.post.mediaUrl}',
+          );
 
-          // Create data source
           BetterPlayerDataSource betterPlayerDataSource =
               BetterPlayerDataSource(
                 BetterPlayerDataSourceType.network,
                 widget.post.mediaUrl!,
-                // Optional: Add caching configuration
                 cacheConfiguration: BetterPlayerCacheConfiguration(
                   useCache: true,
-                  preCacheSize: 10 * 1024 * 1024, // 10MB pre-cache
-                  maxCacheSize: 50 * 1024 * 1024, // 50MB max cache
-                  maxCacheFileSize: 30 * 1024 * 1024, // 30MB max file size
+                  preCacheSize: 10 * 1024 * 1024,
+                  maxCacheSize: 50 * 1024 * 1024,
+                  maxCacheFileSize: 30 * 1024 * 1024,
                 ),
-                // Optional: Add buffering configuration for smoother playback
                 bufferingConfiguration:
                     const BetterPlayerBufferingConfiguration(
                       minBufferMs: 2000,
@@ -176,7 +139,6 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
               );
 
-          // Create player configuration
           final BetterPlayerConfiguration betterPlayerConfiguration =
               BetterPlayerConfiguration(
                 autoPlay: false,
@@ -225,17 +187,15 @@ class _PostWidgetState extends State<PostWidget> {
                 },
               );
 
-          // Initialize controller
           _betterPlayerController = BetterPlayerController(
             betterPlayerConfiguration,
             betterPlayerDataSource: betterPlayerDataSource,
           );
 
-          // Add event listener for errors
           _betterPlayerController!.addEventsListener((event) {
             if (event.betterPlayerEventType ==
                 BetterPlayerEventType.exception) {
-              print('❌ Better Player error: ${event.parameters}');
+              log('❌ Better Player error: ${event.parameters}');
               if (mounted) {
                 setState(() {
                   _videoError = 'Failed to load video';
@@ -245,7 +205,7 @@ class _PostWidgetState extends State<PostWidget> {
             }
           });
 
-          print('✅ Better Player initialized successfully!');
+          log('✅ Better Player initialized successfully!');
 
           if (mounted) {
             setState(() {
@@ -253,7 +213,7 @@ class _PostWidgetState extends State<PostWidget> {
             });
           }
         } catch (e) {
-          print('❌ Video initialization error: $e');
+          log('❌ Video initialization error: $e');
           if (mounted) {
             setState(() {
               _isInitializing = false;
@@ -292,7 +252,6 @@ class _PostWidgetState extends State<PostWidget> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
-      // color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
@@ -321,7 +280,11 @@ class _PostWidgetState extends State<PostWidget> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                       formatTimeAgo(DateTime.parse(widget.post.createdAt.toIso8601String()).toUtc()),
+                        formatTimeAgo(
+                          DateTime.parse(
+                            widget.post.createdAt.toIso8601String(),
+                          ).toUtc(),
+                        ),
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: Colors.grey[600],
@@ -339,12 +302,11 @@ class _PostWidgetState extends State<PostWidget> {
               ],
             ),
             SizedBox(height: 16.h),
-            // Description
+
             Text(
-              // Show original by default; show translation only if toggled
               _showTranslation && _translatedDesc != null
-                  ? _translatedDesc! // show translation
-                  : widget.post.description, // otherwise show original
+                  ? _translatedDesc!
+                  : widget.post.description,
               style: TextStyle(
                 fontSize: 14.sp,
                 color: theme.onTertiary,
@@ -358,19 +320,16 @@ class _PostWidgetState extends State<PostWidget> {
             ),
             SizedBox(height: 4.h),
 
-            // Translate / See Original button
             if (_translatedDesc != null || !_showTranslation)
               TextButton(
                 onPressed: _isTranslating
                     ? null
                     : () async {
                         if (_showTranslation) {
-                          // show original
                           setState(() {
                             _showTranslation = false;
                           });
                         } else {
-                          // show translation
                           if (_translatedDesc == null) {
                             await _translateDescription();
                           } else {
@@ -399,22 +358,19 @@ class _PostWidgetState extends State<PostWidget> {
             SizedBox(height: 8.h),
 
             SizedBox(height: 8.h),
-            // Media (Image or Video)
-            if (widget.post.mediaUrl != null && widget.post.mediaUrl!.isNotEmpty)
+
+            if (widget.post.mediaUrl != null &&
+                widget.post.mediaUrl!.isNotEmpty)
               _isVideo ? _buildVideoPlayer() : _buildImageWidget()
             else
               SizedBox.shrink(),
-            // _buildPlaceholder(),
+
             SizedBox(height: 16.h),
 
-            // Like and Comment Section
             Row(
               children: [
-                // Like Button
                 InkWell(
-                  onTap: () {
-                    // Handle like
-                  },
+                  onTap: () {},
                   borderRadius: BorderRadius.circular(20.r),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
@@ -423,7 +379,6 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                     child: Row(
                       children: [
-                        // Heart icon
                         InkWell(
                           onTap: () {
                             context.read<PostsBloc>().add(
@@ -442,7 +397,6 @@ class _PostWidgetState extends State<PostWidget> {
                         ),
                         SizedBox(width: 5.w),
 
-                        // Likes count text
                         InkWell(
                           onTap: () {
                             showModalBottomSheet(
@@ -474,26 +428,20 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
                 SizedBox(width: 16.w),
 
-                // Comment Button
                 InkWell(
                   onTap: () {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (_) =>  CommentsBottomSheet(postId: widget.post.id,
-                         onCommentCountChanged: (newCount) { 
-          setState(() {
-            _commentsCount = newCount;
-          });}
-        //                onCommentCountChanged: (newCount) {
-        //   // ✅ Update local state when count changes
-        //   setState(() {
-        //     _commentsCount = newCount;
-        //   });
-        // },
-        ),
-                      
+                      builder: (_) => CommentsBottomSheet(
+                        postId: widget.post.id,
+                        onCommentCountChanged: (newCount) {
+                          setState(() {
+                            _commentsCount = newCount;
+                          });
+                        },
+                      ),
                     );
                   },
                   borderRadius: BorderRadius.circular(20.r),
@@ -511,7 +459,7 @@ class _PostWidgetState extends State<PostWidget> {
                         ),
                         SizedBox(width: 4.w),
                         Text(
-                        _commentsCount.toString(),
+                          _commentsCount.toString(),
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 25.sp,
@@ -531,7 +479,6 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   Widget _buildVideoPlayer() {
-    // Show error if video failed to load
     if (_videoError != null) {
       return Container(
         width: double.infinity,
@@ -566,7 +513,6 @@ class _PostWidgetState extends State<PostWidget> {
       );
     }
 
-    // Show loading while initializing
     if (_isInitializing || _betterPlayerController == null) {
       return Container(
         width: double.infinity,
@@ -579,7 +525,6 @@ class _PostWidgetState extends State<PostWidget> {
       );
     }
 
-    // Show Better Player
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.r),
       child: AspectRatio(
@@ -651,6 +596,3 @@ class _PostWidgetState extends State<PostWidget> {
   //   );
   // }
 }
-
-
-

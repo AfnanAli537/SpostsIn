@@ -353,7 +353,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
-import 'package:sports_in/features/main/home/data/interface/home_tap_enums.dart';
+import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/model/comment_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view_model/comment_bloc/comment_bloc.dart';

@@ -1,7 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/uploadposts.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
@@ -14,13 +17,11 @@ class CreateOptionsBottomSheet extends StatelessWidget {
     // final theme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        // color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle bar
           Padding(
             padding: EdgeInsets.only(top: 12.h, bottom: 20.h),
             child: Container(
@@ -33,7 +34,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
             ),
           ),
 
-          // Options List
+          /// Options List
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
@@ -44,25 +45,17 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   title: 'Create Post',
                   onTap: () {
                     Navigator.of(context, rootNavigator: true).pop();
-                    // Navigator.of(context, rootNavigator: true).push(
-                     // عند فتح الصفحة من CustomBottomNav أو BottomSheet
-Navigator.push(
-  context,
-  MaterialPageRoute(
-        builder: (context) => BlocProvider(
-      create: (_) => PostsBloc(
-        postRepo: getIt<PostsRepositoryImpl>(),
-      ), // reuse existing Bloc
-      child: UploadContentScreen(),
-    ),
-  ),
-);
 
-                      // MaterialPageRoute(
-                      //   builder: (_) => const UploadContentScreen(),
-                
-                      // ),  
-                      // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (_) =>
+                              PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+                          child: UploadContentScreen(),
+                        ),
+                      ),
+                    );
                   },
                 ),
                 SizedBox(height: 16.h),
@@ -76,15 +69,33 @@ Navigator.push(
                   },
                 ),
                 SizedBox(height: 16.h),
-                _buildOptionCard(
-                  icon: Icons.campaign,
-                  iconColor: const Color(0xFF90CAF9),
-                  title: 'Create opportunity',
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Navigate to create opportunity
+                FutureBuilder(
+                  future: getIt<SharedPref>().getUserFromPrefs(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+
+                    final userType = snapshot.data!.userType?.toLowerCase();
+
+                    final canCreateOpportunity =
+                        userType == 'coach' ||
+                        userType == 'scout' ||
+                        userType == 'club';
+
+                    return Visibility(
+                      visible: canCreateOpportunity,
+                      child: _buildOptionCard(
+                        icon: Icons.campaign,
+                        iconColor: const Color(0xFF90CAF9),
+                        title: 'Create opportunity',
+                        onTap: () {
+                          Navigator.pop(context);
+                          // Navigate to create opportunity
+                        },
+                      ),
+                    );
                   },
                 ),
+
                 SizedBox(height: 16.h),
                 _buildOptionCard(
                   icon: Icons.work_outline,
@@ -127,7 +138,6 @@ Navigator.push(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         decoration: BoxDecoration(
           color: ThemeData().colorScheme.onPrimary,
-          //  ColorManager.borderColor,
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
@@ -139,7 +149,6 @@ Navigator.push(
         ),
         child: Row(
           children: [
-            // Icon Circle
             Container(
               width: 50.w,
               height: 50.h,
@@ -151,7 +160,6 @@ Navigator.push(
             ),
             SizedBox(width: 20.w),
 
-            // Title
             Expanded(
               child: Text(
                 title,
@@ -164,7 +172,6 @@ Navigator.push(
               ),
             ),
 
-            // Arrow
             Icon(
               Icons.arrow_forward_ios,
               color: const Color(0xFF1D2D3D),
@@ -180,7 +187,6 @@ Navigator.push(
 void showCreateOptionsBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    // backgroundColor: Colors.transparent,
     isScrollControlled: true,
     builder: (context) => const CreateOptionsBottomSheet(),
   );

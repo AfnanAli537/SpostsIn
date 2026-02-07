@@ -1,9 +1,5 @@
 part of 'comment_bloc.dart';
 
-
-
-
-
 sealed class CommentsEvent extends Equatable {
   const CommentsEvent();
 
@@ -27,28 +23,28 @@ class FetchComments extends CommentsEvent {
 }
 
 class AddComment extends CommentsEvent {
-    final String postId;
+  final String postId;
   final String text;
-  final DateTime createdAt=DateTime.now();
-  final String userId="";
-  final String fullName="";
-  final String? profilePictureUrl='';
+  final DateTime createdAt = DateTime.now();
+  final String userId = "";
+  final String fullName = "";
+  final String? profilePictureUrl = '';
 
-   AddComment( {required this.postId, required this.text});
+  AddComment({required this.postId, required this.text});
 
   @override
   List<Object?> get props => [postId, text];
 }
 
 class EditComment extends CommentsEvent {
-    final String commentId;
+  final String commentId;
   final String text;
-   final DateTime createdAt=DateTime.now();
-  final String userId="";
-  final String fullName="";
-  final String? profilePictureUrl='';
+  final DateTime createdAt = DateTime.now();
+  final String userId = "";
+  final String fullName = "";
+  final String? profilePictureUrl = '';
 
-   EditComment( {required this.commentId, required this.text});
+  EditComment({required this.commentId, required this.text});
 
   @override
   List<Object?> get props => [commentId, text];
