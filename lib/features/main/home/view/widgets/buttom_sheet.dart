@@ -95,8 +95,26 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     );
                   },
                 ),
+   FutureBuilder(
+                  future: getIt<SharedPref>().getUserFromPrefs(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
 
-                SizedBox(height: 16.h),
+                    final userType = snapshot.data!.userType?.toLowerCase();
+
+                    final canCreateOpportunity =
+                        userType == 'coach' ||
+                        userType == 'scout' ||
+                        userType == 'club';
+
+                    return    Visibility(
+                      visible:canCreateOpportunity ,
+                      child: SizedBox(height: 16.h));
+                  },
+                ),
+
+     
+             
                 _buildOptionCard(
                   icon: Icons.work_outline,
                   iconColor: const Color(0xFFBCAAA4),

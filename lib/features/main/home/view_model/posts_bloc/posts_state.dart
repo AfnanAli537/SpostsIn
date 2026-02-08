@@ -50,3 +50,11 @@ class PostsLoaded extends PostsState {
   @override
   List<Object?> get props => [posts, hasNextPage, isUploading];
 }
+class PostsLoadingMore extends PostsState {
+  final List<PostModel> currentPosts;
+
+  const PostsLoadingMore(this.currentPosts);
+
+  @override
+  List<Object?> get props => [currentPosts];
+}

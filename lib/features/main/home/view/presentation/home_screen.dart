@@ -12,6 +12,9 @@ import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/content.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
+import 'package:sports_in/features/main/opportunity/data/data_source/opportunity_remote_data_source.dart';
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   late SharedPref sharedPref;
   late Future<LoginResponse?> _userFuture;
   late Future<SharedPreferences> _prefsFuture;
+  
 
   @override
   void initState() {
@@ -34,6 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeData() {
     _prefsFuture = SharedPreferences.getInstance();
+
     _userFuture = _prefsFuture
         .then((prefsInstance) {
           sharedPref = SharedPref(prefsInstance);
@@ -133,13 +138,21 @@ class _HomePageState extends State<HomePage> {
 
         final user = snapshot.data!;
         final apiClient = ApiClient(sharedPref);
-
-        return BlocProvider(
-          create: (_) => PostsBloc(
-            postRepo: PostsRepositoryImpl(
-              PostsRemoteDataSourceImpl(apiClient: apiClient),
+     
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) => PostsBloc(
+                postRepo: PostsRepositoryImpl(
+                  PostsRemoteDataSourceImpl(apiClient: apiClient),
+                ),
+              )..add(const FetchPosts()),
             ),
-          )..add(const FetchPosts()),
+            BlocProvider(create: (context) => OpportunityBloc(opportunityRepo:
+             OpportunityReposatory(OpportunityRemoteDataSourceImpl(apiClient: apiClient)), prefs:sharedPref.prefs)),
+             
+
+          ],
           child: Scaffold(
             body: BlocBuilder<PostsBloc, PostsState>(
               builder: (context, state) {
@@ -191,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Hi, ${user.name?.firstName ?? 'Guest'}",
+                                    "Hi, //${user.name?.firstName ?? 'Guest'}",
                                     style: GoogleFonts.poppins(
                                       fontSize: 18.sp,
                                       fontWeight: FontWeight.bold,

@@ -41,3 +41,4 @@ class UploadPost extends PostsEvent {
   @override
   List<Object?> get props => [title, description, sport];
 }
+class LoadMorePosts extends PostsEvent {}

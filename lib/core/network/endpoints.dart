@@ -44,5 +44,20 @@ class Endpoints {
   static const String getInterests = "/api/Profile/interests";
   static const String toggleFollow = "/api/Profile/follow";
   static const String toggleConnect = "/api/Profile/connect";
+  
+  //opportunities Endpoints
+  static const String getOpportunity  = "/api/Opportunity";
+  static const String postOpportunity = "/api/Opportunity";
+  static const String opportunityDetails = "/api/Opportunity/{id}";
+  static const String editOpportunity = "/api/Opportunity/{id}";
+  static const String deleteOpportunity = "/api/Opportunity/{id}";
+  static const String opportunityToggle  = "/api/Opportunity/{id}";
+  static const String  applyOpportunity= "/api/Opportunity/{id}/apply";
+  static const String getApplicants = "/api/Opportunity/{id}/applicants";
+  static const String getActiveOp  = "/api/Opportunity/my-active";
+  static const String getInActiveOp  = "/api/Opportunity/my-inactive";
+  static const String detectAcceptOrReject = "/api/Opportunity/applications/{applicationId}/status";
+
+
 
 }

@@ -20,6 +20,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     on<FetchPosts>(_onFetchPosts);
     on<LikePost>(_onLikePost);
     on<UploadPost>(_onUploadPost);
+    on<LoadMorePosts>(_onLoadMorePosts);
   }
 
   final List<PostModel> _posts = [];
@@ -27,31 +28,100 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   bool _hasNextPage = true;
   bool _isFetching = false;
 
-  Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
-    if (_isFetching || !_hasNextPage) return;
-    _isFetching = true;
+Future<void> _onFetchPosts(
+  FetchPosts event,
+  Emitter<PostsState> emit,
+) async {
+  try {
+    emit(PostsLoading());
 
-    try {
-      if (_currentPage == 1) {
-        emit(PostsLoading());
-        await Future.delayed(const Duration(seconds: 2));
-      }
-      final fetchedPosts = await postRepo.getAllPosts(
-        pageNumber: _currentPage,
-        pageSize: pageSize,
-      );
+    _posts.clear();
+    _currentPage = 1;
+    _hasNextPage = true;
 
-      _posts.addAll(fetchedPosts);
-      _hasNextPage = fetchedPosts.length == pageSize;
-      _currentPage++;
+    final fetchedPosts = await postRepo.getAllPosts(
+      pageNumber: 1,
+      pageSize: pageSize,
+    );
 
-      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-    } catch (e) {
-      emit(PostsError('Failed to fetch posts: ${e.toString()}'));
-    } finally {
-      _isFetching = false;
-    }
+    _posts.addAll(fetchedPosts);
+    _hasNextPage = fetchedPosts.length == pageSize;
+
+    emit(
+      PostsLoaded(
+        posts: List.from(_posts),
+        hasNextPage: _hasNextPage,
+      ),
+    );
+  } catch (e) {
+    emit(PostsError('Failed to fetch posts: ${e.toString()}'));
   }
+}
+
+Future<void> _onLoadMorePosts(
+  LoadMorePosts event,
+  Emitter<PostsState> emit,
+) async {
+  if (_isFetching || !_hasNextPage) return;
+
+  _isFetching = true;
+
+  final currentState = state;
+  if (currentState is! PostsLoaded) return;
+
+  try {
+    emit(PostsLoadingMore(currentState.posts));
+
+    final nextPage = _currentPage + 1;
+
+    final fetchedPosts = await postRepo.getAllPosts(
+      pageNumber: nextPage,
+      pageSize: pageSize,
+    );
+
+    _posts.addAll(fetchedPosts);
+
+    _currentPage = nextPage;
+    _hasNextPage = fetchedPosts.length == pageSize;
+
+    emit(
+      PostsLoaded(
+        posts: List.from(_posts),
+        hasNextPage: _hasNextPage,
+      ),
+    );
+  } catch (e) {
+    emit(PostsError('Failed to load more posts: ${e.toString()}'));
+  } finally {
+    _isFetching = false;
+  }
+}
+
+  // Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
+  //   if (_isFetching || !_hasNextPage) return;
+  //   _isFetching = true;
+
+  //   try {
+  //     if (_currentPage == 1) {
+  //       emit(PostsLoading());
+  //       await Future.delayed(const Duration(seconds: 2));
+  //     }
+  //     final fetchedPosts = await postRepo.getAllPosts(
+  //       pageNumber: _currentPage,
+  //       pageSize: pageSize,
+  //     );
+
+  //     _posts.addAll(fetchedPosts);
+  //     _hasNextPage = fetchedPosts.length == pageSize;
+  //     _currentPage++;
+
+  //     emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
+  //   } catch (e) {
+  //     emit(PostsError('Failed to fetch posts: ${e.toString()}'));
+  //   } finally {
+  //     _isFetching = false;
+  //   }
+  // }
 
   Future<void> _onLikePost(LikePost event, Emitter<PostsState> emit) async {
     final currentState = state;

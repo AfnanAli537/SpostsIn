@@ -29,10 +29,10 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
         final currentState = state;
         if (currentState is LikesLoaded) {
           emit(LikesLoadingMore(currentState.likes));
-
+ final nextPage = currentState.currentPage + 1;
           final result = await postRepo.getLikes(
             postId: event.postId,
-            pageNumber: event.page,
+            pageNumber: nextPage,
           );
           final newLikes = result['likes'] as List<UserLists>;
           final hasNextPage = result['hasNextPage'] as bool;

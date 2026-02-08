@@ -26,7 +26,7 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     try {
       final response = await apiClient.get(
         Endpoints.allPosts,
-        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+        params: {'page': pageNumber, 'size': pageSize},
       );
 
       log('📦 Response status: ${response.statusCode}');
@@ -154,7 +154,7 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       final url = Endpoints.getComments.replaceFirst('{id}', postId);
       final response = await apiClient.get(
         url,
-        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+        params: {'page': pageNumber, 'size': pageSize},
       );
       log('${pageNumber}=========');
       if (response.statusCode == 200) {

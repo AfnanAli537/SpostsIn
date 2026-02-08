@@ -192,7 +192,7 @@ class BuildContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                buildOpportunityPreviewCard(),
+                LatestOpportunityCard(),
                 SizedBox(height: 100.h),
                 // SizedBox(
                 //   height: 400.h, 
@@ -405,20 +405,45 @@ class BuildContent extends StatelessWidget {
                       return true;
                     },
                     builder: (context, state) {
+                     
                       if (state is! PostsLoaded) return const SizedBox();
                       final post = state.posts.firstWhere(
                         (p) => p.id == postId,
                       );
+if (postIndex == posts.length - 1 && state.hasNextPage) {
+  context.read<PostsBloc>().add( LoadMorePosts());
 
-                      return PostWidget(
-                         key: ValueKey(post.id),
-                        post: post,
+  return Column(
+    children: [
+      PostWidget(
+        key: ValueKey(post.id),
+        post: post,
+      ),
+      const SizedBox(height: 16),
+      const Center(child: CircularProgressIndicator()),
+    ],
+  );
+}
+
+                      return Column(
+                        children: [
+                          PostWidget(
+                             key: ValueKey(post.id),
+                            post: post,
+                          ),
+                           Visibility(visible: state.posts.length==index, 
+                           child: SizedBox(height: 100,)) ,
+                        ],
                       );
+                      
                     },
+                    
                   );
                 }, childCount: posts.length + 1), 
               );
+         
             }
+                 
             return const SliverToBoxAdapter(child: SizedBox.shrink());
           },
         );
