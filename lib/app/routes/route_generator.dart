@@ -13,7 +13,7 @@ import 'package:sports_in/features/forget_password/view_model/forget_password_bl
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/main_layout/main_layout.dart';
-import 'package:sports_in/features/main/profile/view/presentation/edit_profile_screen.dart';
+import 'package:sports_in/features/main/profile/view/presentation/edit_profile_router_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
 import 'package:sports_in/features/register/view/presentation/registration_otp/registration_otp_screen.dart';
@@ -154,9 +154,10 @@ abstract class RoutesManager {
         return CupertinoPageRoute(
           builder: (_) => UserProfileScreen(userId: userId),
         );
+
         case AppRoutes.editProfile:
         return CupertinoPageRoute(
-          builder: (_) => EditProfileScreen(),
+          builder: (_) => EditProfileRouterScreen(),
         );
     }
 

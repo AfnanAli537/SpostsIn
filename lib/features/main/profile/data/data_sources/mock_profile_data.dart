@@ -4,14 +4,15 @@ import '../../model/profile_model.dart';
 
 @LazySingleton(as: IProfileDataSource)
 class MockProfileData implements IProfileDataSource {
-  
   // Simulated storage for current user ID (normally from SharedPreferences)
-  final String _currentUserId = 'player_001';
+  final String userId;
 
+  MockProfileData( {this.userId = 'coach_001'});
+  
   @override
   Future<ProfileModel> getMyProfile() async {
     // Simulate getting userId from shared preferences
-    final userId = _currentUserId;
+    final userId = this.userId;
     
     // Get base profile info (includes stats)
     final baseInfo = await _getBaseProfileInfo(userId);
@@ -140,6 +141,7 @@ class MockProfileData implements IProfileDataSource {
     };
   }
 
+
   // Simulate GET /profile/{userId}/posts endpoint
   @override
   Future<List<Post>> getPosts({
@@ -148,6 +150,7 @@ class MockProfileData implements IProfileDataSource {
     int size = 10,
   }) async {
     await Future.delayed(const Duration(milliseconds: 400));
+
     print('Mock API: GET /profile/$targetUserId/posts?page=$page&size=$size');
     
     final allPosts = targetUserId == 'coach_001'
@@ -503,4 +506,5 @@ class MockProfileData implements IProfileDataSource {
     // Return updated profile by fetching it again
     return getMyProfile();
   }
+
 }

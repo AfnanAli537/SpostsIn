@@ -17,6 +17,7 @@ class UserProfileScreen extends StatefulWidget {
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
+
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
@@ -24,6 +25,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
+
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

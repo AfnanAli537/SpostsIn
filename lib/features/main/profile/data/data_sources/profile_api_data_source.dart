@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/core/constants/strings_keys.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
@@ -231,19 +233,41 @@ class ProfileApiDataSource implements IProfileDataSource {
     }
   }
 
-  @override
-  Future<ProfileModel> updateProfile(Map<String, dynamic> updateData) async {
-    try {
-      final response = await _apiClient.put(
-        Endpoints.getMyProfile,
-        data: updateData,
-      );
-      return ProfileModel.fromJson(response.data['data']);
-    } on DioException catch (e) {
-      throw _handleError(e);
-    }
-  }
+  // @override
+  // Future<ProfileModel> updateProfile(Map<String, dynamic> updateData) async {
+  //   try {
+  //     final response = await _apiClient.put(
+  //       Endpoints.updateProfile,
+  //       data: updateData,
+  //     );
+  //     return ProfileModel.fromJson(response.data['data']);
+  //   } on DioException catch (e) {
+  //     throw _handleError(e);
+  //   }
+  // }
+@override
+Future<ProfileModel> updateProfile(Map<String, dynamic> updateData) async {
+  try {
+    final response = await _apiClient.put(
+      Endpoints.updateProfile,
+      data: updateData,
+    );
 
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return ProfileModel.fromJson(response.data['data']);
+    }
+    throw ApiException(
+      message: 'Failed to update profile',
+      key: StringKeys.validationError,
+    );
+  } on DioException catch (e) {
+    final errorKey = ApiErrorHandler.handleDioErrorKey(e);
+    throw ApiException(
+      message: e.message ?? 'Failed to update profile',
+      key: errorKey,
+    );
+  }
+}
   Exception _handleError(DioException error) {
     if (error.response != null) {
       final message = error.response?.data['message'] ?? 'An error occurred';

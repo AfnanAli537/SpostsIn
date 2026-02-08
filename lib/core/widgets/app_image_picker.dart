@@ -1,14 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class AppImagePicker extends StatefulWidget {
   final void Function(File?) onImageSelected;
+  final String? initialImage; // Can be URL or SharedPrefs key
 
-  const AppImagePicker({super.key, required this.onImageSelected});
+  const AppImagePicker({
+    super.key,
+    required this.onImageSelected,
+    this.initialImage,
+  });
 
   @override
   State<AppImagePicker> createState() => _AppImagePickerState();
@@ -37,8 +42,15 @@ class _AppImagePickerState extends State<AppImagePicker> {
           CircleAvatar(
             radius: 40.r,
             backgroundColor: ColorManager.grey,
-            backgroundImage: _image != null ? FileImage(_image!) : null,
-            child: _image == null ? Icon(Icons.person, size: 40, color: ColorManager.white) : null,
+            backgroundImage: _image != null
+                ? FileImage(_image!)
+                : (widget.initialImage != null && widget.initialImage!.isNotEmpty
+                    // ? CachedNetworkImageProvider(widget.initialImage!)
+                    ? NetworkImage(NetworkImageAssets.unknownImage)//TODO but here the pfp saved in the login
+                    : null),
+            child: _image == null && (widget.initialImage == null || widget.initialImage!.isEmpty)
+                ? Icon(Icons.person, size: 40, color: ColorManager.white)
+                : null,
           ),
           Container(
             decoration: const BoxDecoration(

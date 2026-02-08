@@ -1983,6 +1983,71 @@ class S {
       args: [],
     );
   }
+
+  /// `Search`
+  String get search {
+    return Intl.message('Search', name: 'search', desc: '', args: []);
+  }
+
+  /// `Search Result`
+  String get searchResults {
+    return Intl.message(
+      'Search Result',
+      name: 'searchResults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No results found`
+  String get noResultsFound {
+    return Intl.message(
+      'No results found',
+      name: 'noResultsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try a different search`
+  String get tryDifferentSearch {
+    return Intl.message(
+      'Try a different search',
+      name: 'tryDifferentSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start searching`
+  String get startSearching {
+    return Intl.message(
+      'Start searching',
+      name: 'startSearching',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
+
+  /// `Edit Profile`
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get bio {
+    return Intl.message('Description', name: 'bio', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

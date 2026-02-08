@@ -54,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
     "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
     "basketballer": MessageLookupByLibrary.simpleMessage("Basketballer"),
+    "bio": MessageLookupByLibrary.simpleMessage("Description"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
     "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
@@ -107,6 +108,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Disconnected successfully!",
     ),
     "done": MessageLookupByLibrary.simpleMessage("Done"),
+    "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -252,6 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No Internet Connection",
     ),
+    "noResultsFound": MessageLookupByLibrary.simpleMessage("No results found"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
@@ -376,7 +379,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
     "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
+    "save": MessageLookupByLibrary.simpleMessage("Save"),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
+    "search": MessageLookupByLibrary.simpleMessage("Search"),
+    "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
     "select": MessageLookupByLibrary.simpleMessage("Select"),
     "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
       "Please select at least one sport",
@@ -420,6 +426,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sport": MessageLookupByLibrary.simpleMessage("Sport"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("Sport profession"),
+    "startSearching": MessageLookupByLibrary.simpleMessage("Start searching"),
     "strongPassword": MessageLookupByLibrary.simpleMessage(
       "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
     ),
@@ -429,6 +436,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "theme": MessageLookupByLibrary.simpleMessage("Light"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
+    ),
+    "tryDifferentSearch": MessageLookupByLibrary.simpleMessage(
+      "Try a different search",
     ),
     "tunisia": MessageLookupByLibrary.simpleMessage("Tunisia"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(

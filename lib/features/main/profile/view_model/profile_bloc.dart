@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../data/repo/profile_repo.dart';
+import '../model/profile_model.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
@@ -71,22 +72,89 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ToggleFollow event,
     Emitter<ProfileState> emit,
   ) async {
-    try {
-      await _repository.toggleFollow(event.userId);
-      // You might want to reload the profile here
-      // Or emit a specific state for follow toggled
-      final currentState = state;
-      if (currentState is ProfileLoaded) {
-        final updatedProfile = currentState.profile.copyWith(
-          isFollowing: !currentState.profile.isFollowing,
-        );
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+
+    // Check if toggling main profile or an interest
+    final isMainProfile = event.userId == currentState.profile.id;
+
+    if (isMainProfile) {
+      // Toggle main profile
+      final currentlyFollowing = currentState.profile.isFollowing;
+      
+      // Optimistic update
+      final updatedProfile = currentState.profile.copyWith(
+        isFollowing: !currentlyFollowing,
+      );
+      emit(ProfileLoaded(
+        profile: updatedProfile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
+
+      try {
+        await _repository.toggleFollow(event.userId);
+        emit(ProfileActionSuccess(
+          message: currentlyFollowing ? 'Unfollowed successfully!' : 'Following successfully!',
+        ));
         emit(ProfileLoaded(
           profile: updatedProfile,
           isOwnProfile: currentState.isOwnProfile,
         ));
+      } catch (e) {
+        // Revert on error
+        emit(ProfileLoaded(
+          profile: currentState.profile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+        emit(ProfileActionError(message: 'Failed to update follow status'));
       }
-    } catch (e) {
-      emit(ProfileError(message: e.toString()));
+    } else {
+      // Toggle interest
+      final interestIndex = currentState.profile.interests.indexWhere(
+        (interest) => interest.id == event.userId,
+      );
+
+      if (interestIndex == -1) return;
+
+      final currentlyFollowing = currentState.profile.interests[interestIndex].isFollowing;
+
+      // Optimistic update
+      final updatedInterests = List<Interest>.from(currentState.profile.interests);
+      updatedInterests[interestIndex] = Interest(
+        id: updatedInterests[interestIndex].id,
+        name: updatedInterests[interestIndex].name,
+        role: updatedInterests[interestIndex].role,
+        profileImage: updatedInterests[interestIndex].profileImage,
+        isConnected: updatedInterests[interestIndex].isConnected,
+        isFollowing: !currentlyFollowing,
+      );
+
+      final updatedProfile = currentState.profile.copyWith(
+        interests: updatedInterests,
+      );
+
+      emit(ProfileLoaded(
+        profile: updatedProfile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
+
+      try {
+        await _repository.toggleFollow(event.userId);
+        emit(ProfileActionSuccess(
+          message: currentlyFollowing ? 'Unfollowed successfully!' : 'Following successfully!',
+        ));
+        emit(ProfileLoaded(
+          profile: updatedProfile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+      } catch (e) {
+        // Revert on error
+        emit(ProfileLoaded(
+          profile: currentState.profile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+        emit(ProfileActionError(message: 'Failed to update follow status'));
+      }
     }
   }
 
@@ -94,20 +162,89 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ToggleConnect event,
     Emitter<ProfileState> emit,
   ) async {
-    try {
-      await _repository.toggleConnect(event.userId);
-      final currentState = state;
-      if (currentState is ProfileLoaded) {
-        final updatedProfile = currentState.profile.copyWith(
-          isConnected: !currentState.profile.isConnected,
-        );
+    final currentState = state;
+    if (currentState is! ProfileLoaded) return;
+
+    // Check if toggling main profile or an interest
+    final isMainProfile = event.userId == currentState.profile.id;
+
+    if (isMainProfile) {
+      // Toggle main profile
+      final currentlyConnected = currentState.profile.isConnected;
+      
+      // Optimistic update
+      final updatedProfile = currentState.profile.copyWith(
+        isConnected: !currentlyConnected,
+      );
+      emit(ProfileLoaded(
+        profile: updatedProfile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
+
+      try {
+        await _repository.toggleConnect(event.userId);
+        emit(ProfileActionSuccess(
+          message: currentlyConnected ? 'Disconnected successfully!' : 'Connected successfully!',
+        ));
         emit(ProfileLoaded(
           profile: updatedProfile,
           isOwnProfile: currentState.isOwnProfile,
         ));
+      } catch (e) {
+        // Revert on error
+        emit(ProfileLoaded(
+          profile: currentState.profile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+        emit(ProfileActionError(message: 'Failed to update connection status'));
       }
-    } catch (e) {
-      emit(ProfileError(message: e.toString()));
+    } else {
+      // Toggle interest
+      final interestIndex = currentState.profile.interests.indexWhere(
+        (interest) => interest.id == event.userId,
+      );
+
+      if (interestIndex == -1) return;
+
+      final currentlyConnected = currentState.profile.interests[interestIndex].isConnected;
+
+      // Optimistic update
+      final updatedInterests = List<Interest>.from(currentState.profile.interests);
+      updatedInterests[interestIndex] = Interest(
+        id: updatedInterests[interestIndex].id,
+        name: updatedInterests[interestIndex].name,
+        role: updatedInterests[interestIndex].role,
+        profileImage: updatedInterests[interestIndex].profileImage,
+        isConnected: !currentlyConnected,
+        isFollowing: updatedInterests[interestIndex].isFollowing,
+      );
+
+      final updatedProfile = currentState.profile.copyWith(
+        interests: updatedInterests,
+      );
+
+      emit(ProfileLoaded(
+        profile: updatedProfile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
+
+      try {
+        await _repository.toggleConnect(event.userId);
+        emit(ProfileActionSuccess(
+          message: currentlyConnected ? 'Disconnected successfully!' : 'Connected successfully!',
+        ));
+        emit(ProfileLoaded(
+          profile: updatedProfile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+      } catch (e) {
+        // Revert on error
+        emit(ProfileLoaded(
+          profile: currentState.profile,
+          isOwnProfile: currentState.isOwnProfile,
+        ));
+        emit(ProfileActionError(message: 'Failed to update connection status'));
+      }
     }
   }
 
@@ -124,8 +261,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         size: event.size,
       );
       
-      // Check if there are more achievements
-      // Typically, if we get less than size, there are no more
       final hasMore = achievements.length >= event.size;
       
       emit(AchievementsLoaded(

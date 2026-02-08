@@ -279,5 +279,14 @@
   "followSuccess": "تمت المتابعة بنجاح!",
   "followError": "فشلت المتابعة",
   "unfollowSuccess": "تم إلغاء المتابعة بنجاح!",
-  "disconnectSuccess": "تم قطع الاتصال بنجاح!"
+  "disconnectSuccess": "تم قطع الاتصال بنجاح!",
+
+  "search": "أبحث",
+  "searchResults": "نتائج البحث",
+  "noResultsFound": "لا توجد نتائج",
+  "tryDifferentSearch": "جرب بحث أخر",
+  "startSearching": "ابدأ البحث",
+  "save": "حفظ",
+  "editProfile": "عدل الحساب",
+  "bio": "الوصف"
 }

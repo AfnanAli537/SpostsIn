@@ -46,6 +46,14 @@ import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart'
     as _i752;
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart'
     as _i939;
+import 'package:sports_in/features/main/search/data/data_sources/mock_search_data_source.dart'
+    as _i1019;
+import 'package:sports_in/features/main/search/data/interface/i_search_data_source.dart'
+    as _i109;
+import 'package:sports_in/features/main/search/data/repo/search_repo.dart'
+    as _i514;
+import 'package:sports_in/features/main/search/view_model/search_bloc.dart'
+    as _i803;
 import 'package:sports_in/features/register/data/data_sources/register_api_data_source.dart'
     as _i569;
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart'
@@ -65,6 +73,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
+    gh.lazySingleton<_i109.ISearchDataSource>(
+      () => _i1019.MockSearchDataSource(),
+    );
     gh.lazySingleton<_i544.IProfileDataSource>(() => _i13.MockProfileData());
     gh.factory<_i752.ProfileRepo>(
       () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
@@ -74,6 +85,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i414.SharedPref>(
       () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i514.SearchRepo>(
+      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
     );
     gh.lazySingleton<_i694.ApiClient>(
       () => appModule.apiClient(gh<_i414.SharedPref>()),
@@ -86,6 +100,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i423.PostsRepository>(
       () => _i833.PostsRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
+    );
+    gh.factory<_i803.SearchBloc>(
+      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),

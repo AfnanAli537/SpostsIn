@@ -25,19 +25,20 @@ class Endpoints {
   static const String verifyRegisterOtp = "/api/Auth/confirm-gmail-code";
 
   // Profile Endpoints
-  static const String getProfile = "/api/Profile/get-profile";
-  static const String getMyProfile = "/api/Profile/my-profile";
+  static const String getProfile = "/api/Profile/{userId}";
+  static const String updateProfile = "/api/Profile/Update";
   
   // Posts Endpoints
   static const String getPosts = allPosts; 
   
-  static const String getOpportunities = "/api/Profile/opportunities";
+  static const String getOpportunities = "/api/Profile/Update";
   static const String getCourses = "/api/Profile/courses";
   
   // Achievements Endpoints
-  static const String getAchievements = "/api/Achievements/user";
+  static const String getAchievements = "/api/Achievements/user/{userId}";
+  static const String getAchievement = "/api/Achievements/{id}";
   static const String createAchievement = "/api/Achievements";
-  static const String updateAchievement = "/api/Achievements";
+  static const String updateAchievement = "/api/Achievements/{id}";
   static const String deleteAchievement = "/api/Achievements";
   
   static const String getAnalyzedVideos = "/api/Profile/analyzed-videos";

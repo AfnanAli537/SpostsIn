@@ -54,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "badRequest": MessageLookupByLibrary.simpleMessage("طلب غير صالح"),
     "basketball": MessageLookupByLibrary.simpleMessage("كرة السلة"),
     "basketballer": MessageLookupByLibrary.simpleMessage("لاعب كرة السلة"),
+    "bio": MessageLookupByLibrary.simpleMessage("الوصف"),
     "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
     "centerBack": MessageLookupByLibrary.simpleMessage("صانع لعب (وسط خلفي)"),
@@ -105,6 +106,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "تم قطع الاتصال بنجاح!",
     ),
     "done": MessageLookupByLibrary.simpleMessage("تم"),
+    "editProfile": MessageLookupByLibrary.simpleMessage("عدل الحساب"),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -249,6 +251,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",
     ),
+    "noResultsFound": MessageLookupByLibrary.simpleMessage("لا توجد نتائج"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
     "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
     "number": MessageLookupByLibrary.simpleMessage("الرقم"),
@@ -375,7 +378,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "rightBack": MessageLookupByLibrary.simpleMessage("ظهير أيمن"),
     "rightWing": MessageLookupByLibrary.simpleMessage("جناح أيمن"),
+    "save": MessageLookupByLibrary.simpleMessage("حفظ"),
     "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
+    "search": MessageLookupByLibrary.simpleMessage("أبحث"),
+    "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
     "select": MessageLookupByLibrary.simpleMessage("اختر"),
     "selectField": m3,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
@@ -418,6 +424,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sport": MessageLookupByLibrary.simpleMessage("الرياضة"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("المهنة الرياضية"),
+    "startSearching": MessageLookupByLibrary.simpleMessage("ابدأ البحث"),
     "strongPassword": MessageLookupByLibrary.simpleMessage(
       "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
     ),
@@ -428,6 +435,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),
+    "tryDifferentSearch": MessageLookupByLibrary.simpleMessage("جرب بحث أخر"),
     "tunisia": MessageLookupByLibrary.simpleMessage("تونس"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",

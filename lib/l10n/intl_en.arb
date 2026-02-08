@@ -304,6 +304,17 @@
   "followSuccess": "Following successfully!",
   "followError": "Failed to follow",
   "unfollowSuccess": "Unfollowed successfully!",
-  "disconnectSuccess": "Disconnected successfully!"
+  "disconnectSuccess": "Disconnected successfully!",
+
+
+  "search": "Search",
+  "searchResults": "Search Result",
+  "noResultsFound": "No results found",
+  "tryDifferentSearch": "Try a different search",
+  "startSearching": "Start searching",
+  "save": "Save",
+  "editProfile": "Edit Profile",
+  "bio": "Description"
+
 
 }

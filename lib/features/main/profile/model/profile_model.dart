@@ -418,8 +418,10 @@ class PlayerSpecificData {
   final String? age;
   final String? specializedSport;
   final int? yearsOfExperience;
+  final int? gender;
 
-  PlayerSpecificData({
+  PlayerSpecificData(
+    {this.gender, 
     this.position,
     this.height,
     this.weight,
@@ -439,6 +441,8 @@ class PlayerSpecificData {
       specializedSport: json['specializedSport'] ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
+      gender:
+          json['gender'] ?? json['gender'],
     );
   }
 
@@ -451,6 +455,7 @@ class PlayerSpecificData {
       'age': age,
       'specializedSport': specializedSport,
       'yearsOfExperience': yearsOfExperience,
+      'gender': gender
     };
   }
 }
@@ -460,8 +465,11 @@ class CoachSpecificData {
   final int? yearsOfExperience;
   final String? certifications;
   final String? age;
+  final int? gender;
+
 
   CoachSpecificData({
+    this.gender,
     this.specializedSport,
     this.yearsOfExperience,
     this.certifications,
@@ -475,6 +483,8 @@ class CoachSpecificData {
           json['yearsOfExperience'] ?? json['years_of_experience'],
       certifications: json['certifications'],
       age: json['age']?.toString(),
+      gender:
+          json['gender'] ?? json['gender'],
     );
   }
 
@@ -484,6 +494,7 @@ class CoachSpecificData {
       'yearsOfExperience': yearsOfExperience,
       'certifications': certifications,
       'age': age,
+      'gender':gender
     };
   }
 }
@@ -492,8 +503,11 @@ class ScoutSpecificData {
   final String? specializedSport;
   final int? yearsOfExperience;
   final String? organization;
+  final int? gender;
+
 
   ScoutSpecificData({
+    this.gender, 
     this.specializedSport,
     this.yearsOfExperience,
     this.organization,
@@ -505,6 +519,8 @@ class ScoutSpecificData {
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       organization: json['organization'],
+      gender:
+          json['gender'] ?? json['gender'],
     );
   }
 
@@ -513,13 +529,14 @@ class ScoutSpecificData {
       'specializedSport': specializedSport,
       'yearsOfExperience': yearsOfExperience,
       'organization': organization,
+      'gender':gender
     };
   }
 }
 
 class ClubSpecificData {
   final String? location;
-  final String? foundedYear;
+  final String? foundedYear;//TODO NEED TO MAKE IT TYPE DATE
   final String? sport;
 
   ClubSpecificData({this.location, this.foundedYear, this.sport});
@@ -539,10 +556,11 @@ class ClubSpecificData {
 
 class InstituteSpecificData {
   final String? location;
+  final String? industry;
   final String? foundedYear;
   final String? accreditation;
 
-  InstituteSpecificData({this.location, this.foundedYear, this.accreditation});
+  InstituteSpecificData({this.industry, this.location, this.foundedYear, this.accreditation});
 
   factory InstituteSpecificData.fromJson(Map<String, dynamic> json) {
     return InstituteSpecificData(
@@ -563,16 +581,19 @@ class InstituteSpecificData {
 
 class OtherSpecificData {
   final Map<String, dynamic>? customData;
+  final int? gender;
 
-  OtherSpecificData({this.customData});
+  OtherSpecificData({this.gender, this.customData});
 
   factory OtherSpecificData.fromJson(Map<String, dynamic> json) {
     return OtherSpecificData(
       customData: json['customData'] ?? json['custom_data'],
+      gender:
+          json['gender'] ?? json['gender'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'customData': customData};
+    return {'customData': customData,'gender': gender};
   }
 }
