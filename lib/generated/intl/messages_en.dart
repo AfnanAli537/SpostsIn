@@ -167,9 +167,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("Forgot Password"),
     "forward": MessageLookupByLibrary.simpleMessage("Forward"),
-    "foundDate": MessageLookupByLibrary.simpleMessage(
-      "Foundation date dd/mm/yyyy",
-    ),
+    "foundDate": MessageLookupByLibrary.simpleMessage("Foundation date"),
     "fullName": MessageLookupByLibrary.simpleMessage("Full Name"),
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
@@ -254,6 +252,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No Internet Connection",
     ),
+    "noOpportunities": MessageLookupByLibrary.simpleMessage("No Opportunities"),
+    "noPosts": MessageLookupByLibrary.simpleMessage("No Posts"),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("No results found"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",

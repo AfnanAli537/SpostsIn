@@ -210,11 +210,17 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
 
                           SizedBox(height: 20.h),
 
-                          CustomElevatedButton(
-                            text: state is ProfileLoading ? string.loading : string.save,
-                            isLoading: state is ProfileLoading,
-                            enabled: true,
-                            onPressed: () => _onUpdate(context, string),
+                          BlocBuilder<ProfileBloc, ProfileState>(
+                            builder: (context, state) {
+                              final isLoading = state is ProfileLoading;
+
+                              return CustomElevatedButton(
+                                text: isLoading ? string.loading : string.save,
+                                isLoading: isLoading,
+                                enabled: !isLoading, // ✅ Disable during loading
+                                onPressed: () => _onUpdate(context, string),
+                              );
+                            },
                           ),
                         ],
                       ),

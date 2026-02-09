@@ -131,7 +131,7 @@ class _AchievementDetailView extends StatelessWidget {
                     achievement.imageUrl,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) => Icon(
-                      Icons.sports_football,
+                      Icons.emoji_events,
                       size: 80.sp,
                       color: colorScheme.primary,
                     ),
@@ -197,7 +197,7 @@ class _AchievementDetailView extends StatelessWidget {
             child: Text(
               content.isEmpty ? "No $label provided" : content,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: colorScheme.onSecondary,
                 height: isLongText ? 1.5 : 1.0,
               ),
             ),

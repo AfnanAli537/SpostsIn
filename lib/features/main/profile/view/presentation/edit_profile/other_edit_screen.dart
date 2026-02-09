@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/core/utils/helper/gender_helper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -42,14 +43,27 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
 
   @override
   void initState() {
-    super.initState();
-    
-    firstNameController = TextEditingController(text: widget.profile.name.split(' ').first);
-    lastNameController = TextEditingController(text: widget.profile.name.split(' ').last);
-    bioController = TextEditingController(text: widget.profile.description);
-    genderNotifier = ValueNotifier<String?>(null);
-    // locationNotifier = ValueNotifier<String?>(null);
+ super.initState();
+  
+  // ✅ Split name properly
+  final nameParts = widget.profile.name.split(' ');
+  final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+  final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+  
+  firstNameController = TextEditingController(text: firstName);
+  lastNameController = TextEditingController(text: lastName);
+  bioController = TextEditingController(text: widget.profile.description);
+  
+    // ✅ Convert gender ID to label
+  String? initialGender;
+  if (widget.profile.otherData?.gender != null) {
+    initialGender = GenderHelper.genderIdToLabel(
+      widget.profile.otherData!.gender,
+      S.current,
+    );
   }
+  genderNotifier = ValueNotifier<String?>(initialGender);
+}
 
   @override
   void dispose() {
@@ -186,13 +200,17 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
 
                           SizedBox(height: 24.h),
 
-                          CustomElevatedButton(
-                            text: state is ProfileLoading
-                                ? string.loading
-                                : string.save,
-                            isLoading: state is ProfileLoading,
-                            enabled: true,
-                            onPressed: () => _onUpdate(context, string),
+                          BlocBuilder<ProfileBloc, ProfileState>(
+                            builder: (context, state) {
+                              final isLoading = state is ProfileLoading;
+
+                              return CustomElevatedButton(
+                                text: isLoading ? string.loading : string.save,
+                                isLoading: isLoading,
+                                enabled: !isLoading, // ✅ Disable during loading
+                                onPressed: () => _onUpdate(context, string),
+                              );
+                            },
                           ),
                         ],
                       ),

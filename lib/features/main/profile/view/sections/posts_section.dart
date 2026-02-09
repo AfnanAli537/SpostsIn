@@ -36,7 +36,7 @@ class PostsSection extends StatelessWidget {
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
-            itemCount: posts.length > 6 ? 6 : posts.length,
+            itemCount: posts.length > 3 ? 3 : posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
               return Padding(

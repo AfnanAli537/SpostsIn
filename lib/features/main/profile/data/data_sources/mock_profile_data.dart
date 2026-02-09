@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 import '../interface/i_profile_data_source.dart';
 import '../../model/profile_model.dart';
 
-@LazySingleton(as: IProfileDataSource)
+// @LazySingleton(as: IProfileDataSource)
 class MockProfileData implements IProfileDataSource {
   // Simulated storage for current user ID (normally from SharedPreferences)
   final String userId;

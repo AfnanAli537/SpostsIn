@@ -55,18 +55,28 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Future<void> _onUpdateProfile(
-    UpdateProfile event,
-    Emitter<ProfileState> emit,
-  ) async {
-    try {
-      emit(ProfileLoading());
-      final profile = await _repository.updateProfile(event.updateData);
-      emit(ProfileUpdated(profile: profile));
-    } catch (e) {
-      emit(ProfileError(message: e.toString()));
+Future<void> _onUpdateProfile(
+  UpdateProfile event,
+  Emitter<ProfileState> emit,
+) async {
+  try {
+    emit(ProfileLoading());
+    final updatedProfile = await _repository.updateProfile(event.updateData);
+    
+    emit(ProfileUpdated(profile: updatedProfile));
+    emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
+  } catch (e) {
+    emit(ProfileError(message: e.toString()));
+    
+    final currentState = state;
+    if (currentState is ProfileLoaded) {
+      emit(ProfileLoaded(
+        profile: currentState.profile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
     }
   }
+}
 
   Future<void> _onToggleFollow(
     ToggleFollow event,

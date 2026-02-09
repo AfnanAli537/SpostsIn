@@ -17,7 +17,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 
-
 class ClubEditScreen extends StatefulWidget {
   final ProfileModel profile;
 
@@ -35,14 +34,16 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
   late final ValueNotifier<String?> locationNotifier;
   late final ValueNotifier<List<String>> selectedSportsNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
-  
-  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(AutovalidateMode.disabled);
+
+  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(
+    AutovalidateMode.disabled,
+  );
 
   @override
   void initState() {
     super.initState();
     final clubData = widget.profile.clubData!;
-    
+
     clubNameController = TextEditingController(text: widget.profile.name);
     foundDateController = TextEditingController(text: clubData.foundedYear);
     bioController = TextEditingController(text: widget.profile.description);
@@ -60,7 +61,7 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
 
   void _onUpdate(BuildContext context, S string) async {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
-    
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -84,9 +85,7 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
     final string = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(string.editProfile),
-      ),
+      appBar: AppBar(title: Text(string.editProfile)),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {
@@ -181,11 +180,17 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
 
                           SizedBox(height: 20.h),
 
-                          CustomElevatedButton(
-                            text: state is ProfileLoading ? string.loading : string.save,
-                            isLoading: state is ProfileLoading,
-                            enabled: true,
-                            onPressed: () => _onUpdate(context, string),
+                          BlocBuilder<ProfileBloc, ProfileState>(
+                            builder: (context, state) {
+                              final isLoading = state is ProfileLoading;
+
+                              return CustomElevatedButton(
+                                text: isLoading ? string.loading : string.save,
+                                isLoading: isLoading,
+                                enabled: !isLoading, // ✅ Disable during loading
+                                onPressed: () => _onUpdate(context, string),
+                              );
+                            },
                           ),
                         ],
                       ),

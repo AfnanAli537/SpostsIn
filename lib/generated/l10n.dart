@@ -459,10 +459,10 @@ class S {
     return Intl.message('Club name', name: 'clubName', desc: '', args: []);
   }
 
-  /// `Foundation date dd/mm/yyyy`
+  /// `Foundation date`
   String get foundDate {
     return Intl.message(
-      'Foundation date dd/mm/yyyy',
+      'Foundation date',
       name: 'foundDate',
       desc: '',
       args: [],
@@ -1864,11 +1864,26 @@ class S {
     return Intl.message('Posts', name: 'posts', desc: '', args: []);
   }
 
+  /// `No Posts`
+  String get noPosts {
+    return Intl.message('No Posts', name: 'noPosts', desc: '', args: []);
+  }
+
   /// `Opportunities`
   String get opportunities {
     return Intl.message(
       'Opportunities',
       name: 'opportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Opportunities`
+  String get noOpportunities {
+    return Intl.message(
+      'No Opportunities',
+      name: 'noOpportunities',
       desc: '',
       args: [],
     );

@@ -322,7 +322,7 @@ class _AchievementCard extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
         padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: const Color(0xFFDCE2D9), width: 1.5), // Match the light green/grey border
         ),
@@ -336,8 +336,7 @@ class _AchievementCard extends StatelessWidget {
                   Text(
                     achievement.date?.year.toString() ?? "",
                     style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color:theme.colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -345,6 +344,7 @@ class _AchievementCard extends StatelessWidget {
                   Text(
                     achievement.title,
                     style: theme.textTheme.titleMedium?.copyWith(
+                      color:theme.colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                       fontSize: 16.sp,
                     ),
@@ -354,7 +354,7 @@ class _AchievementCard extends StatelessWidget {
                   Text(
                     achievement.subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.black54,
+                      color: theme.colorScheme.onTertiaryContainer,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -369,15 +369,15 @@ class _AchievementCard extends StatelessWidget {
               child: Container(
                 width: 80.w,
                 height: 60.h,
-                color: const Color(0xFFFDE598), // Matching the yellow/green background in UI
+                color: theme.colorScheme.primary, // Matching the yellow/green background in UI
                 child: Image.network(
                   achievement.imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => 
-                      const Icon(Icons.sports_basketball, color: Colors.orange),
+                      Icon(Icons.emoji_events, color: theme.colorScheme.onSecondaryFixed
                 ),
               ),
-            ),
+            ),)
           ],
         ),
       ),

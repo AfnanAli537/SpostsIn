@@ -62,7 +62,7 @@
   "instituteName": "اسم الموْسسة",
   "industary": "المجال",
   "clubName": "اسم النادي",
-  "foundDate": "تاريخ التأسيس يوم/شهر/سنة",
+  "foundDate": "تاريخ التأسيس",
   "currentlyInClub": "حاليًا في نادٍ",
 
   "male": "ذكر",
@@ -266,7 +266,9 @@
   "follow": "تابع",
   "connected": "متصل",
   "posts": "المنشورات",
+  "noPosts": "لا توجد منشورات",
   "opportunities": "الفرص",
+  "noOpportunities": "لا توجد فرص",
   "courses": "الدورات",
   "achievements": "الإنجازات",
   "analyzedVideosReports": "تقارير الفيديو المحللة",

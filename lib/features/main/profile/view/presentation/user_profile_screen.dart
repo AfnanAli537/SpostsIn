@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/features/main/profile/data/data_sources/mock_profile_data.dart';
-import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
 import '../../view_model/profile_bloc.dart';
 import '../../view_model/profile_event.dart';
 import 'profile_screen.dart';
@@ -17,7 +16,6 @@ class UserProfileScreen extends StatefulWidget {
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
-
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
@@ -25,7 +23,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
-
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -39,9 +36,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         title: Text(string.profile),
       ),
       body: BlocProvider(
-        create: (context) => ProfileBloc(
-          ProfileRepo(MockProfileData()), 
-        )..add(LoadUserProfile(userId: widget.userId)), // FIXED: Use named parameter
+        create: (context) => getIt<ProfileBloc>()
+          ..add(LoadUserProfile(userId: widget.userId)),
         child: ProfileScreen(userId: widget.userId),
       ),
     );

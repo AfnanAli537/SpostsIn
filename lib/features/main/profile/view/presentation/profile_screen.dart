@@ -109,7 +109,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileDescription(description: fakeProfile.description),
             SizedBox(height: 16.h),
             ProfileStatsWidget(stats: fakeProfile.stats, theme: theme, string: S.of(context)),
-            Divider(height: 1, color: theme.dividerColor),
+            Divider(height: 1, color: theme.colorScheme.onError),
+            SizedBox(height: 16.h),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 20.h,
+                    width: 150.w,
+                    color: theme.colorScheme.surfaceVariant,
+                  ),
+                  SizedBox(height: 12.h),
+                  Container(
+                    height: 100.h,
+                    width: double.infinity,
+                    color: theme.colorScheme.surfaceVariant,
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 16.h),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -215,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 context.read<ProfileBloc>().add(ToggleFollow(userId: interest.id));
               },
               onInterestTap: (interest) {
-                _navigateToUserProfile(context, "coach_001");
+                _navigateToUserProfile(context, interest.id);
               },
             ),
             SizedBox(height: 24.h),

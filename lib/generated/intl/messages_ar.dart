@@ -163,9 +163,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("نسيت كلمة المرور"),
     "forward": MessageLookupByLibrary.simpleMessage("مهاجم"),
-    "foundDate": MessageLookupByLibrary.simpleMessage(
-      "تاريخ التأسيس يوم/شهر/سنة",
-    ),
+    "foundDate": MessageLookupByLibrary.simpleMessage("تاريخ التأسيس"),
     "fullName": MessageLookupByLibrary.simpleMessage("الاسم الكامل"),
     "gender": MessageLookupByLibrary.simpleMessage("الجنس"),
     "getStarted": MessageLookupByLibrary.simpleMessage("ابدأ"),
@@ -251,6 +249,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",
     ),
+    "noOpportunities": MessageLookupByLibrary.simpleMessage("لا توجد فرص"),
+    "noPosts": MessageLookupByLibrary.simpleMessage("لا توجد منشورات"),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("لا توجد نتائج"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
     "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
