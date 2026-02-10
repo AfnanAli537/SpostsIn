@@ -38,6 +38,12 @@ import 'package:sports_in/features/main/home/data/interface/post_interface.dart'
     as _i423;
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart'
     as _i651;
+import 'package:sports_in/features/main/opportunity/data/data_source/opportunity_remote_data_source.dart'
+    as _i78;
+import 'package:sports_in/features/main/opportunity/data/interface/opportunity_interface.dart'
+    as _i709;
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
+    as _i294;
 import 'package:sports_in/features/main/profile/data/data_sources/mock_profile_data.dart'
     as _i13;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
@@ -90,11 +96,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
     );
+    gh.lazySingleton<_i709.OpportunityInterface>(
+      () => _i78.OpportunityRemoteDataSourceImpl(
+        apiClient: gh<_i694.ApiClient>(),
+      ),
+    );
     gh.lazySingleton<_i470.IAuthDataSource>(
       () => _i172.AuthApiDataSource(gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i705.IForgetPasswordDataSource>(
       () => _i701.ForgetPasswordApiDataSource(gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i294.OpportunityReposatory>(
+      () => _i294.OpportunityReposatory(gh<_i709.OpportunityInterface>()),
     );
     gh.lazySingleton<_i65.IRegisterDataSource>(
       () => _i569.RegisterApiDataSource(gh<_i694.ApiClient>()),

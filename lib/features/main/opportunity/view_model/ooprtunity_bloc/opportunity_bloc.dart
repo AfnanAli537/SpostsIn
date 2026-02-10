@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
@@ -14,16 +13,17 @@ part 'opportunity_state.dart';
 
 class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
   final OpportunityReposatory opportunityRepo;
-  final prefs = getIt<SharedPref>();
+  final  prefs = getIt<SharedPref>();
 
   // Current filters
   String? _currentSearchTerm;
   int? _currentSportTypeId;
   String? _currentSportName;
 
-  OpportunityBloc({
+  OpportunityBloc(
+    {
     required this.opportunityRepo,
-    required SharedPreferences prefs,
+   
   }) : super(OpportunityInitial()) {
     on<FetchOpportunities>(_onFetchOpportunities);
     on<UpdateSearchTerm>(_onUpdateSearchTerm);

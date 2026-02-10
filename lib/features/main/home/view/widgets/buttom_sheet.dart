@@ -8,6 +8,9 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/uploadposts.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/upload_opportunity.dart';
+import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
 
 class CreateOptionsBottomSheet extends StatelessWidget {
   const CreateOptionsBottomSheet({super.key});
@@ -89,7 +92,18 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                         title: 'Create opportunity',
                         onTap: () {
                           Navigator.pop(context);
-                          // Navigate to create opportunity
+                          
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (_) =>
+                            OpportunityBloc(opportunityRepo: getIt<OpportunityReposatory>() ),
+                          child: AddOpportunityScreen(),
+                        ),
+                      ),
+                    );
+                     
                         },
                       ),
                     );

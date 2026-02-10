@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/features/main/opportunity/data/interface/opportunity_interface.dart';
+import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/core/network/api_client.dart';
@@ -157,20 +158,20 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
   }
 
   // Uncomment and implement when needed:
-  /*
-  @override
-  Future<Map<String, dynamic>> getApplicants({
+  
+@override
+  Future<ApplicantsResponseModel> getApplicants({
     required int pageNumber,
     int pageSize = 10,
     required String opportunityID,
-    String? status,
+    String? status = 'pending',
   }) async {
     try {
       final url = Endpoints.getApplicants.replaceFirst('{id}', opportunityID);
       
       final params = {
-        'pageNumber': pageNumber,
-        'pageSize': pageSize,
+        'pageNumber': pageNumber.toString(),
+        'pageSize': pageSize.toString(),
       };
 
       if (status != null && status.isNotEmpty) {
@@ -183,15 +184,8 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
       log('📦 Response data: ${response.data}');
 
       if (response.statusCode == 200) {
-        final List items = response.data['items'] ?? [];
-        final List<ApplicantModel> applicants = items
-            .map((json) => ApplicantModel.fromJson(json))
-            .toList();
-
-        return {
-          'applicants': applicants,
-          'hasNextPage': response.data['hasNextPage'] ?? false,
-        };
+        // Parse the entire response using the model
+        return ApplicantsResponseModel.fromJson(response.data);
       }
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
@@ -205,20 +199,37 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
     }
   }
 
-  @override
-  Future<void> acceptOrRejectApplicant({
+@override
+  Future<ApplicantsResponseModel> acceptOrRejectApplicant({
     required String applicationId,
-    required String status, // e.g., "accepted" or "rejected"
+   required  String status,
   }) async {
     try {
-      final url = Endpoints.manageApplication.replaceFirst('{id}', applicationId);
-      final response = await apiClient.put(url, data: {'status': status});
+      final url = Endpoints.detectAcceptOrReject.replaceFirst('{applicationId}', applicationId);
+      final response = await apiClient.patch(url, params: {'status': status});
 
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log("${response.statusCode}============== Application $status successfully");
+        
+        // Return the response data if available, or create a minimal response
+        if (response.data != null && response.data is Map<String, dynamic>) {
+          return ApplicantsResponseModel.fromJson(response.data);
+        } else {
+          // If the API doesn't return data, create a minimal response
+          // This is typically for 204 No Content responses
+          return ApplicantsResponseModel(
+            items: [],
+            totalCount: 0,
+            pageNumber: 1,
+            pageSize: 10,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPreviousPage: false,
+          );
+        }
       }
 
-      log("${response.statusCode}============== Application $status successfully");
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
       log('❌ Dio Error: ${e.message}');
       log('❌ Error Response: ${e.response?.data}');
@@ -228,5 +239,4 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
       rethrow;
     }
   }
-  */
 }

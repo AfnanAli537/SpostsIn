@@ -402,19 +402,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -422,6 +409,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
 import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
 
 class OpportunitiesContent extends StatefulWidget {
@@ -431,23 +419,29 @@ class OpportunitiesContent extends StatefulWidget {
   State<OpportunitiesContent> createState() => _OpportunitiesContentState();
 }
 
-class _OpportunitiesContentState extends State<OpportunitiesContent> {
+class _OpportunitiesContentState extends State<OpportunitiesContent>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
+  late AnimationController _shimmerController;
 
   final Map<String, int> _sportTypes = {
     'Football': 1,
     'Basketball': 2,
     'Volleyball': 3,
     'Handball': 4,
-    'Teakwando': 5,
+    'Taekwondo': 5,
   };
-    
 
   @override
   void initState() {
     super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+    
     context.read<OpportunityBloc>().add(const FetchOpportunities(isRefresh: true));
     _scrollController.addListener(_onScroll);
   }
@@ -466,6 +460,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
+    _shimmerController.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -584,7 +579,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
                       label: state is OpportunityLoaded && state.sportName != null
                           ? state.sportName!
                           : 'Sport',
-                      // icon: Icons.sports_soccer,
                       isSelected: state is OpportunityLoaded && state.sportTypeId != null,
                       onTap: () {
                         _showFilterDialog(
@@ -619,13 +613,13 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
             
             // Content based on state
             if (state is OpportunityLoading)
-              _buildLoadingState()
+              ..._buildShimmerList()
             else if (state is OpportunityLoaded)
               ..._buildOpportunitiesList(state)
             else if (state is OpportunityError)
               _buildErrorState(state.message)
             else
-              _buildInitialState(),
+              ..._buildShimmerList(),
             
             SizedBox(height: 100.h),
           ]),
@@ -634,27 +628,111 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
     );
   }
 
-  Widget _buildLoadingState() {
-    return Padding(
-      padding: EdgeInsets.all(40.w),
-      child: Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
+  List<Widget> _buildShimmerList() {
+    return List.generate(
+      5, // Show 5 shimmer cards
+      (index) => _buildShimmerCard(),
     );
   }
 
-  Widget _buildInitialState() {
-    return Padding(
-      padding: EdgeInsets.all(40.w),
-      child: Center(
-        child: Text(
-          'Loading opportunities...',
-          style: GoogleFonts.poppins(
-            fontSize: 16.sp,
-            color: Colors.grey[600],
+  Widget _buildShimmerCard() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: AnimatedBuilder(
+          animation: _shimmerController,
+          builder: (context, child) {
+            return ShaderMask(
+              shaderCallback: (bounds) {
+                return LinearGradient(
+                  colors: [
+                    Colors.grey[300]!,
+                    Colors.grey[100]!,
+                    Colors.grey[300]!,
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  transform: _SlidingGradientTransform(
+                    slidePercent: _shimmerController.value,
+                  ),
+                ).createShader(bounds);
+              },
+              blendMode: BlendMode.srcATop,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title shimmer - first line
+                        Container(
+                          width: double.infinity,
+                          height: 18.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        // Title shimmer - second line
+                        Container(
+                          width: 150.w,
+                          height: 18.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        // Publisher name shimmer
+                        Container(
+                          width: 120.w,
+                          height: 14.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        // Date shimmer
+                        Container(
+                          width: 100.w,
+                          height: 12.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  // Image shimmer
+                  Container(
+                    width: 80.w,
+                    height: 80.h,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -667,19 +745,17 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
 
     final widgets = <Widget>[];
     
-    // Add all opportunity cards
     for (var opportunity in state.opportunities) {
       widgets.add(_buildJobCard(opportunity));
     }
     
-    // Add loading more indicator
     if (state.hasNextPage) {
       widgets.add(
         Padding(
           padding: EdgeInsets.all(16.h),
           child: Center(
             child: CircularProgressIndicator(
-              color: const Color(0xFF1A5F4E),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -769,7 +845,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
 
   Widget _buildFilterChip({
     required String label,
-     IconData? icon,
+    IconData? icon,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -779,7 +855,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white,
-        
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300,
@@ -790,7 +865,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-       icon!=null? Icons.clear: Icons.tune,
+              icon ?? Icons.tune,
               size: 18.sp,
               color: isSelected ? Colors.white : Colors.grey[700],
             ),
@@ -830,21 +905,15 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16.r),
           onTap: () {
-            // Fetch opportunity details
-            context.read<OpportunityBloc>().add(
-                  FetchOpportunityDetails(opportunityId: opportunity.id),
-                );
-            
-            // TODO: Navigate to details page
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (_) => BlocProvider.value(
-            //       value: context.read<OpportunityBloc>(),
-            //       child: OpportunityDetailsPage(opportunity: opportunity),
-            //     ),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<OpportunityBloc>(),
+                  child: OpportunityDetailsPage(opportunityId: opportunity.id,isOwner: opportunity.isOwner,),
+                ),
+              ),
+            );
           },
           child: Padding(
             padding: EdgeInsets.all(16.w),
@@ -881,7 +950,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                           "Since ${_formatDate(opportunity.createdAt)}",
+                            "Since ${_formatDate(opportunity.createdAt)}",
                             style: GoogleFonts.poppins(
                               fontSize: 12.sp,
                               color: Colors.grey[500],
@@ -909,9 +978,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
                   child: opportunity.mediaUrl == null
                       ? Center(
                           child: Icon(
-                           Icons.event_available_outlined,
-                           size: 40.sp,
-                        color: Theme.of(context).colorScheme.surface,
+                            Icons.event_available_outlined,
+                            size: 40.sp,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                         )
                       : null,
@@ -945,36 +1014,33 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
               mainAxisSize: MainAxisSize.min,
               children: options.map((option) {
                 return ListTile(
-  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-  title: Container(
-    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h), // 👈 space inside
-    decoration: BoxDecoration(
-      color: Colors.grey[200],
-      borderRadius: BorderRadius.circular(12.r),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.05),
-          blurRadius: 6,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Expanded(
-      child: Text(
-        option,
-        style: GoogleFonts.poppins(
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    ),
-  ),
-  onTap: () {
-    onSelected(option);
-    Navigator.pop(dialogContext);
-  },
-);
-
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  title: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      option,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    onSelected(option);
+                    Navigator.pop(dialogContext);
+                  },
+                );
               }).toList(),
             ),
           ),
@@ -1016,5 +1082,17 @@ class _OpportunitiesContentState extends State<OpportunitiesContent> {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+}
+
+// Custom gradient transform for shimmer effect
+class _SlidingGradientTransform extends GradientTransform {
+  final double slidePercent;
+
+  const _SlidingGradientTransform({required this.slidePercent});
+
+  @override
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
+    return Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
   }
 }

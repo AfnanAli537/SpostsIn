@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
               )..add(const FetchPosts()),
             ),
             BlocProvider(create: (context) => OpportunityBloc(opportunityRepo:
-             OpportunityReposatory(OpportunityRemoteDataSourceImpl(apiClient: apiClient)), prefs:sharedPref.prefs)),
+             OpportunityReposatory(OpportunityRemoteDataSourceImpl(apiClient: apiClient)))),
              
 
           ],
@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Hi, //${user.name?.firstName ?? 'Guest'}",
+                                    "Hi, ${user.name?.firstName ?? 'Guest'}",
                                     style: GoogleFonts.poppins(
                                       fontSize: 18.sp,
                                       fontWeight: FontWeight.bold,

@@ -6,6 +6,7 @@ class DetailsModel {
   final int sportTypeId;
   final String? mediaFile;
   final String? uploadedMediaUrl;
+  final bool isAlreadyApplied;
 
   DetailsModel({
     required this.title,
@@ -15,6 +16,7 @@ class DetailsModel {
     required this.sportTypeId,
     this.mediaFile,
     this.uploadedMediaUrl,
+     required this.isAlreadyApplied,
   });
 
   // --------------------------
@@ -29,6 +31,7 @@ class DetailsModel {
       sportTypeId: json['sportTypeId'] ?? 0,
       mediaFile: json['mediaFile'],
       uploadedMediaUrl: json['uploadedMediaUrl'],
+      isAlreadyApplied: json['isAlreadyApplied']?? false,
     );
   }
 
@@ -45,6 +48,7 @@ class DetailsModel {
       'sportTypeId': sportTypeId,
       'mediaFile': mediaFile,
       'uploadedMediaUrl': uploadedMediaUrl,
+      'isAlreadyApplied':isAlreadyApplied,
     };
   }
 }

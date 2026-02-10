@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/features/main/opportunity/data/interface/opportunity_interface.dart';
+import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 
@@ -23,9 +24,9 @@ class OpportunityReposatory {
 
   Future<void> applyOpportunity({required String opportunityID }){ return repo.applyOpportunity(opportunityID: opportunityID);}
 
-  // Future<> getApplicants({required int pageNumber, 
-  // int pageSize=10,required String opportunityID,String? status }){ return repo.getApplicants(pageNumber: pageNumber, opportunityID: opportunityID,status: status);}
+  Future<ApplicantsResponseModel> getApplicants({required int pageNumber, 
+  int pageSize=10,required String opportunityID,String? status }){ return repo.getApplicants(pageNumber: pageNumber, opportunityID: opportunityID,status: status);}
   
-  // Future <> acceptOrRejectApplicant({required String applicationId,String? status}){ return repo.acceptOrRejectApplicant(applicationId: applicationId,status: status);}
+  Future <ApplicantsResponseModel> acceptOrRejectApplicant({required String applicationId, required String status}){ return repo.acceptOrRejectApplicant(applicationId: applicationId,status: status);}
 
 }

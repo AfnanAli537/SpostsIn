@@ -64,7 +64,6 @@ class BuildContent extends StatelessWidget {
                 // Content based on state
                 if (state is PostsLoading) ...[
                   const PostShimmer(),
-                  const PostShimmer(),
                 ] else if (state is PostsError) ...[
                   Padding(
                     padding: EdgeInsets.all(20.w),
