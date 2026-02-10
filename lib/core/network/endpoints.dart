@@ -44,11 +44,6 @@ class Endpoints {
   static const String updateAchievement = "/api/Achievements/{id}";//(put) one Achievement, have parameter achievement id and the request body takes Title* (string), Description* (string), AchievementDate (string($date-time)), and MediaFile (string($binary)) takes an image
   static const String deleteAchievement = "/api/Achievements/{id}";//(delete) have parameter id of the achievement 
   
-  static const String getAnalyzedVideos = "/api/Profile/analyzed-videos";
-  static const String getInterests = "/api/Profile/interests";
-  static const String toggleFollow = "/api/Profile/follow";
-  static const String toggleConnect = "/api/Profile/connect";
-  
   //opportunities Endpoints
   static const String getOpportunity  = "/api/Opportunity";
   static const String postOpportunity = "/api/Opportunity";

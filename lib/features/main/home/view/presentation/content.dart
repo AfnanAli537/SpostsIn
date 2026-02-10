@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
@@ -21,6 +23,7 @@ class BuildContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sharedPref = getIt<SharedPref>();
    final theme=Theme.of(context).colorScheme;
     switch (currentTab) {
      case HomeTab.forYou:

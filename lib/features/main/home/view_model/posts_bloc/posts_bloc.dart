@@ -103,31 +103,6 @@ Future<void> _onLoadMorePosts(
   }
 }
 
-  // Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
-  //   if (_isFetching || !_hasNextPage) return;
-  //   _isFetching = true;
-
-  //   try {
-  //     if (_currentPage == 1) {
-  //       emit(PostsLoading());
-  //       await Future.delayed(const Duration(seconds: 2));
-  //     }
-  //     final fetchedPosts = await postRepo.getAllPosts(
-  //       pageNumber: _currentPage,
-  //       pageSize: pageSize,
-  //     );
-
-  //     _posts.addAll(fetchedPosts);
-  //     _hasNextPage = fetchedPosts.length == pageSize;
-  //     _currentPage++;
-
-  //     emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-  //   } catch (e) {
-  //     emit(PostsError('Failed to fetch posts: ${e.toString()}'));
-  //   } finally {
-  //     _isFetching = false;
-  //   }
-  // }
 
   // ✅ New handler for user-specific posts
   Future<void> _onFetchUserPosts(
