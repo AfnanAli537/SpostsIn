@@ -5,7 +5,7 @@ import 'package:sports_in/core/constants/strings_keys.dart';
 
 class CloudinaryService {
   static const String _defaultImageUrl =
-      NetworkImage.unknownImage;
+      NetworkImageAssets.unknownImage;
   static Future<String> uploadImage(File? file) async {
     if (file == null) {
       return _defaultImageUrl;

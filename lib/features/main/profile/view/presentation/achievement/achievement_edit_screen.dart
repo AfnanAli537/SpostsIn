@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
@@ -182,29 +183,30 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final string = S.of(context);
     final colorScheme = theme.colorScheme;
 
     return BlocProvider(
       create: (context) => getIt<ProfileBloc>(),
       child: BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          if (state is AchievementCreated || state is AchievementUpdated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state is AchievementCreated 
-                    ? 'Achievement created successfully' 
-                    : 'Achievement updated successfully'),
-                backgroundColor: theme.colorScheme.primary,
-              ),
+          if (state is AchievementCreated ) {
+            Fluttertoast.showToast(
+              msg: string.addAchievement,
+              backgroundColor: Colors.green,
             );
-            Navigator.pop(context, true); // Returns to Detail/List Screen
-          } else if (state is AchievementDeleted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Achievement deleted successfully'),
-                backgroundColor: Colors.red,
-              ),
+            Navigator.pop(context, true);
+          }else if (state is AchievementUpdated) {
+            Fluttertoast.showToast(
+              msg: string.achievementUpdated,
+              backgroundColor: Colors.green,
             );
+            } else if (state is AchievementDeleted) {
+            Fluttertoast.showToast(
+              msg: string.achievementDeleted,
+              backgroundColor: Colors.red,
+            );
+
             // Pop twice: once from Edit screen, once from Detail screen
             // This returns to the List screen or Profile screen
             Navigator.pop(context); // Pop Edit screen
@@ -330,17 +332,26 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
 
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => _saveAchievement(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1B2B39),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                      ),
-                      child: const Text("Save"),
+                    child: BlocBuilder<ProfileBloc, ProfileState>(
+                      builder: (context, state) {
+                        final isLoading = state is ProfileLoading;
+
+                        return ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => _saveAchievement(context),
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : Text(
+                                  'Save Achievement',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -366,7 +377,8 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
         child: Image.network(
           _imageUrlController.text,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(theme),
+          errorBuilder: (context, error, stackTrace) =>
+              _buildPlaceholder(theme),
         ),
       );
     }
@@ -377,11 +389,7 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          Icons.add_a_photo_outlined,
-          size: 48.sp,
-          color: Colors.white,
-        ),
+        Icon(Icons.add_a_photo_outlined, size: 48.sp, color: Colors.white),
         SizedBox(height: 8.h),
         Text(
           'Add Achievement Photo',
@@ -393,8 +401,18 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
 
   String _formatDate(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }

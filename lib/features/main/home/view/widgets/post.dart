@@ -6,6 +6,7 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
@@ -260,37 +261,48 @@ class _PostWidgetState extends State<PostWidget> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 20.r,
-                  backgroundColor: Colors.grey[300],
-                  child: Icon(Icons.person, color: Colors.white, size: 24.sp),
+                GestureDetector(
+                  onTap: _navigateToAuthorProfile,
+                  child: CircleAvatar(
+                    radius: 20.r,
+                    backgroundImage: widget.post.author.profilePictureUrl != null
+                        ? NetworkImage(widget.post.author.profilePictureUrl!)
+                        : null,
+                    backgroundColor: Colors.grey[300],
+                    child: widget.post.author.profilePictureUrl == null
+                        ? Icon(Icons.person, color: Colors.white, size: 24.sp)
+                        : null,
+                  ),
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.post.author.fullName,
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: theme.onSurface,
+                  child: GestureDetector(
+                    onTap: _navigateToAuthorProfile,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.post.author.fullName,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: theme.onSurface,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        formatTimeAgo(
-                          DateTime.parse(
-                            widget.post.createdAt.toIso8601String(),
-                          ).toUtc(),
+                        SizedBox(height: 4.h),
+                        Text(
+                          formatTimeAgo(
+                            DateTime.parse(
+                              widget.post.createdAt.toIso8601String(),
+                            ).toUtc(),
+                          ),
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey[600],
+                          ),
                         ),
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 IconButton(
@@ -579,7 +591,13 @@ class _PostWidgetState extends State<PostWidget> {
       ),
     );
   }
-
+  void _navigateToAuthorProfile() {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.userProfile,
+      arguments: widget.post.author.userId,
+    );
+  }
   // Widget _buildPlaceholder() {
   //   return Container(
   //     width: double.infinity,

@@ -1,8 +1,6 @@
 part of 'posts_bloc.dart';
 
-sealed class PostsState extends Equatable {
-  const PostsState();
-
+abstract class PostsState extends Equatable {
   @override
   List<Object?> get props => [];
 }
@@ -11,41 +9,48 @@ class PostsInitial extends PostsState {}
 
 class PostsLoading extends PostsState {}
 
+class PostsLoaded extends PostsState {
+  final List<PostModel> posts;
+  final bool hasNextPage;
+  final bool isUploading;
+
+  PostsLoaded({
+    required this.posts,
+    required this.hasNextPage,
+    this.isUploading = false,
+  });
+
+  @override
+  List<Object?> get props => [posts, hasNextPage, isUploading];
+}
+
+// ✅ New state for user-specific posts
+class UserPostsLoaded extends PostsState {
+  final List<PostModel> posts;
+  final bool hasNextPage;
+
+  UserPostsLoaded({
+    required this.posts,
+    required this.hasNextPage,
+  });
+
+  @override
+  List<Object?> get props => [posts, hasNextPage];
+}
+
 class PostsError extends PostsState {
   final String message;
 
-  const PostsError(this.message);
+  PostsError(this.message);
 
   @override
   List<Object?> get props => [message];
 }
 
-class PostsUploading extends PostsState {
-  final List<PostModel> currentPosts;
+class PostsUploadSuccess extends PostsState {}
 
-  const PostsUploading(this.currentPosts);
-
-  @override
-  List<Object?> get props => [currentPosts];
-}
-
-class PostsUploadSuccess extends PostsState {
-  const PostsUploadSuccess();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class PostsLoaded extends PostsState {
-  final List<PostModel> posts;
-  final bool hasNextPage;
-  final bool isUploading; // ✅ جديد
-
-  const PostsLoaded({
-    required this.posts,
-    required this.hasNextPage,
-    this.isUploading = false, // ✅ default false
-  });
+// ✅ New state for update success
+class PostUpdateSuccess extends PostsState {}
 
   @override
   List<Object?> get props => [posts, hasNextPage, isUploading];
@@ -58,3 +63,5 @@ class PostsLoadingMore extends PostsState {
   @override
   List<Object?> get props => [currentPosts];
 }
+// ✅ New state for delete success
+class PostDeleteSuccess extends PostsState {}

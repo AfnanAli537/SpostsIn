@@ -225,4 +225,86 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
   }
+
+  @override
+  Future<List<PostModel>> getUserPosts({
+    required String userId,
+    required int page,
+    required int pageSize,
+  }) async {
+    try {
+      final response = await apiClient.get(
+        Endpoints.allPosts,
+        params: {
+          'targetUserId': userId,
+          'page': page,
+          'size': pageSize,
+        },
+      );
+
+      log('📦 User Posts Response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List items = response.data['items'] ?? [];
+        return items.map((json) => PostModel.fromJson(json)).toList();
+      }
+
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+    } on DioException catch (e) {
+      log('❌ Error fetching user posts: ${e.message}');
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
+
+  // ✅ Update post
+  @override
+  Future<void> updatePost({
+    required String postId,
+    required String title,
+    required String description,
+    required int sportTypeId,
+    String? mediaFile,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'Title': title,
+        'Description': description,
+        'SportTypeId': sportTypeId,
+        if (mediaFile != null)
+          'MediaFile': await MultipartFile.fromFile(mediaFile),
+      });
+
+      final url = Endpoints.putPost.replaceFirst('{id}', postId);
+      final response = await apiClient.put(url, data: formData);
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+
+      log('✅ Post updated successfully');
+    } on DioException catch (e) {
+      log('❌ Error updating post: ${e.message}');
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
+
+  // ✅ Delete post
+  @override
+  Future<void> deletePost({required String postId}) async {
+    try {
+      final url = Endpoints.deletePost.replaceFirst('{id}', postId);
+      final response = await apiClient.delete(url);
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+
+      log('✅ Post deleted successfully');
+    } on DioException catch (e) {
+      log('❌ Error deleting post: ${e.message}');
+      throw ApiErrorHandler.handleDioErrorKey(e);
+    }
+  }
+
+
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
@@ -23,8 +24,8 @@ class AchievementsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<ProfileBloc>()
-        ..add(LoadAchievements(userId: userId, page: 1)),
+      create: (context) =>
+          getIt<ProfileBloc>()..add(LoadAchievements(userId: userId, page: 1)),
       child: _AchievementsListView(
         userId: userId,
         isCurrentUser: isCurrentUser,
@@ -79,11 +80,8 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
       _isLoadingMore = true;
     });
     context.read<ProfileBloc>().add(
-          LoadAchievements(
-            userId: widget.userId,
-            page: _currentPage + 1,
-          ),
-        );
+      LoadAchievements(userId: widget.userId, page: _currentPage + 1),
+    );
   }
 
   void _refreshAchievements() {
@@ -93,11 +91,8 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
       _hasMore = true;
     });
     context.read<ProfileBloc>().add(
-          LoadAchievements(
-            userId: widget.userId,
-            page: 1,
-          ),
-        );
+      LoadAchievements(userId: widget.userId, page: 1),
+    );
   }
 
   @override
@@ -116,9 +111,8 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => AchievementEditScreen(
-                          userId: widget.userId,
-                        ),
+                        builder: (_) =>
+                            AchievementEditScreen(userId: widget.userId),
                       ),
                     );
                     // Refresh list if achievement was created
@@ -132,6 +126,9 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
       ),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
+          if (state is ProfileLoading && _achievements.isEmpty) {
+              _buildShimmerLoading();
+          }
           if (state is AchievementsLoaded) {
             setState(() {
               if (_currentPage == 1) {
@@ -154,7 +151,7 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
               SnackBar(
                 content: Text(
                   // strings.achievementDeleted ??
-                   'Achievement deleted successfully',
+                  'Achievement deleted successfully',
                 ),
                 backgroundColor: theme.colorScheme.primary,
               ),
@@ -232,9 +229,8 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
                         final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => AchievementEditScreen(
-                              userId: widget.userId,
-                            ),
+                            builder: (_) =>
+                                AchievementEditScreen(userId: widget.userId),
                           ),
                         );
                         if (result == true) {
@@ -243,8 +239,9 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
                       },
                       icon: const Icon(Icons.add),
                       label: Text(
-                        // strings.addAchievement ?? 
-                        'Add Achievement'),
+                        // strings.addAchievement ??
+                        'Add Achievement',
+                      ),
                     ),
                   ],
                 ],
@@ -305,7 +302,16 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
       ),
     );
   }
+  
+  Widget _buildShimmerLoading() {
+  return ListView.separated(
+    itemCount: 5,
+    separatorBuilder: (context, index) => SizedBox(height: 8.h),
+    itemBuilder: (context, index) =>  _AchievementShimmerCard(),
+  );
 }
+}
+
 class _AchievementCard extends StatelessWidget {
   final Achievement achievement;
   final VoidCallback onTap;
@@ -322,9 +328,12 @@ class _AchievementCard extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
         padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: const Color(0xFFDCE2D9), width: 1.5), // Match the light green/grey border
+          border: Border.all(
+            color: const Color(0xFFDCE2D9),
+            width: 1.5,
+          ), // Match the light green/grey border
         ),
         child: Row(
           children: [
@@ -336,8 +345,7 @@ class _AchievementCard extends StatelessWidget {
                   Text(
                     achievement.date?.year.toString() ?? "",
                     style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -345,16 +353,19 @@ class _AchievementCard extends StatelessWidget {
                   Text(
                     achievement.title,
                     style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                       fontSize: 16.sp,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 4.h),
                   // Subtitle
                   Text(
                     achievement.subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.black54,
+                      color: theme.colorScheme.onTertiaryContainer,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -369,17 +380,53 @@ class _AchievementCard extends StatelessWidget {
               child: Container(
                 width: 80.w,
                 height: 60.h,
-                color: const Color(0xFFFDE598), // Matching the yellow/green background in UI
+                color: theme
+                    .colorScheme
+                    .primary, // Matching the yellow/green background in UI
                 child: Image.network(
                   achievement.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => 
-                      const Icon(Icons.sports_basketball, color: Colors.orange),
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.emoji_events,
+                    color: theme.colorScheme.onSecondaryFixed,
+                  ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+}
+
+class _AchievementShimmerCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // Same structure as _AchievementCard
+      child: Row(
+        children: [
+          Expanded(
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Column(
+                children: [
+                  Container(width: 50.w, height: 12.h, color: Colors.white),
+                  Container(width: double.infinity, height: 16.h, color: Colors.white),
+                  Container(width: 120.w, height: 12.h, color: Colors.white),
+                ],
+              ),
+            ),
+          ),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(width: 80.w, height: 60.h, color: Colors.white),
+          ),
+        ],
       ),
     );
   }

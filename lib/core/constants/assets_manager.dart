@@ -41,6 +41,6 @@ class SvgAssets {
   static const String other = '${base}person.svg';
 }
 
-class NetworkImage {
+class NetworkImageAssets {
   static const String unknownImage = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/500px-Unknown_person.jpg';
 }
