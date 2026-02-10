@@ -11,6 +11,7 @@ class RegisterTextField extends StatefulWidget {
   final bool isConformPassword;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
+  final int? maxLines; // Added parameter
 
   const RegisterTextField({
     super.key,
@@ -20,6 +21,7 @@ class RegisterTextField extends StatefulWidget {
     this.isConformPassword = false,
     this.keyboardType = TextInputType.text,
     this.validator,
+    this.maxLines = 1, // Defaulted to 1 to maintain current UI
   });
 
   @override
@@ -51,6 +53,8 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
     return TextFormField(
       controller: widget.controller,
       focusNode: _focusNode,
+      // Pass the maxLines parameter here
+      maxLines: widget.maxLines, 
       obscureText: widget.isPassword || widget.isConformPassword ? _obscure : false,
       keyboardType: widget.keyboardType,
       validator: widget.validator,
@@ -63,7 +67,6 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
         contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
         errorMaxLines: 3,
         
-        // Enabled border
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(
@@ -72,7 +75,6 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
           ),
         ),
         
-        // Focused border
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(
@@ -81,7 +83,6 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
           ),
         ),
 
-        // Error border
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(
@@ -90,7 +91,6 @@ class _RegisterTextFieldState extends State<RegisterTextField> {
           ),
         ),
 
-        // Focused error border
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(

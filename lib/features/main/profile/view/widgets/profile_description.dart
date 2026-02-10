@@ -12,13 +12,17 @@ class ProfileDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+    final isEmpty = description.trim().isEmpty;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0.r),
       child: Text(
-        description,
+        isEmpty ? 'No bio' : description,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurface,
+          color: isEmpty 
+            ? theme.colorScheme.onError.withOpacity(0.5)
+            : theme.colorScheme.onSurface,
+          fontStyle: isEmpty ? FontStyle.italic : FontStyle.normal,
           height: 1.4.h,
         ),
       ),

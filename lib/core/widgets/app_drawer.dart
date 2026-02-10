@@ -10,8 +10,8 @@ import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_state.dart';
+import 'package:sports_in/features/login/model/login_response_model.dart'; // Ensure this is imported
+
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
@@ -69,90 +69,95 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-Widget _buildProfileHeader(ThemeData theme, S string) {
-  return BlocBuilder<ProfileBloc, ProfileState>(
-    builder: (context, state) {
-      bool isLoading = state is ProfileInitial || state is ProfileLoading;
-      
-      String name = isLoading ? "Loading Name Content" : "";
-      String role = isLoading ? "Loading Role Subtitle" : "";
-      String? imageUrl;
+  Widget _buildProfileHeader(ThemeData theme, S string) {
+    // We use FutureBuilder to fetch data directly from SharedPref
+    return FutureBuilder<LoginResponse?>(
+      future: getIt<SharedPref>().getUserFromPrefs(),
+      builder: (context, snapshot) {
+        final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+        final user = snapshot.data;
 
-      if (state is ProfileLoaded) {
-        name = state.profile.name;
-        role = state.profile.role;
-        imageUrl = state.profile.profileImage;
-      }
+        // Extract data or use defaults
+        String name = user?.name != null 
+            ? user!.name!.firstName
+            : (isLoading ? "Loading Name..." : "Guest User");
+            
+        String role = user?.userType ?? (isLoading ? "Loading Role..." : "No Role");
+        
+        // Note: Your SharedPref model doesn't currently save image URL. 
+        // If you add it to SharedPref, you can retrieve it here.
+        String? imageUrl; 
 
-      return Container(
-        width: double.infinity,
-        // Using Container outside Skeletonizer so the background is always solid
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primary,
-          borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(80.r),
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary,
+            borderRadius: BorderRadius.only(
+              bottomRight: Radius.circular(80.r),
+            ),
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 32.h),
-            child: Skeletonizer(
-              enabled: isLoading,
-              containersColor: theme.colorScheme.onPrimary.withOpacity(0.2),
-              child: Column(
-                mainAxisSize: MainAxisSize.min, 
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 35.r,
-                    backgroundImage: imageUrl != null && imageUrl.isNotEmpty
-                        ? NetworkImage(imageUrl)
-                        : null,
-                    backgroundColor: theme.colorScheme.onPrimary.withOpacity(0.1),
-                    child: (imageUrl == null || imageUrl.isEmpty) && !isLoading
-                        ? Icon(Icons.person, color: theme.colorScheme.onPrimary)
-                        : null,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 32.h),
+              child: Skeletonizer(
+                enabled: isLoading,
+                containersColor: theme.colorScheme.onPrimary.withOpacity(0.2),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 35.r,
+                      backgroundImage: imageUrl != null && imageUrl.isNotEmpty
+                          ? NetworkImage(imageUrl)
+                          : null,
+                      backgroundColor: theme.colorScheme.onPrimary.withOpacity(0.1),
+                      child: (imageUrl == null || imageUrl.isEmpty) && !isLoading
+                          ? Icon(Icons.person, color: theme.colorScheme.onPrimary)
+                          : null,
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.settings,
-                        color: theme.colorScheme.onPrimary.withOpacity(0.6),
-                        size: 14.sp,
+                    SizedBox(height: 16.h),
+                    Text(
+                      name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(width: 4.w),
-                      Expanded(
-                        child: Text(
-                          role,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onPrimary.withOpacity(0.6),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4.h),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          color: theme.colorScheme.onPrimary.withOpacity(0.6),
+                          size: 14.sp,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        SizedBox(width: 4.w),
+                        Expanded(
+                          child: Text(
+                            role,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onPrimary.withOpacity(0.6),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
+  // ... rest of the helper methods (_buildMenuItem, _buildThemeToggle, etc. remain the same)
+  
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
@@ -222,9 +227,9 @@ Widget _buildProfileHeader(ThemeData theme, S string) {
                 if (themeMode == ThemeMode.system) {
                   activeMode =
                       MediaQuery.platformBrightnessOf(context) ==
-                          Brightness.dark
-                      ? ThemeMode.dark
-                      : ThemeMode.light;
+                              Brightness.dark
+                          ? ThemeMode.dark
+                          : ThemeMode.light;
                 }
 
                 return CustomAnimatedToggle<ThemeMode>(
@@ -306,7 +311,7 @@ Widget _buildProfileHeader(ThemeData theme, S string) {
       iconColor: theme.colorScheme.error,
       isDestructive: true,
       onConfirm: () async {
-        await getIt<SharedPref>().clearToken();
+        await getIt<SharedPref>().clear(); // Use clear() to wipe all user data
         rootNavigator.pushNamedAndRemoveUntil(
           AppRoutes.login,
           (route) => false,

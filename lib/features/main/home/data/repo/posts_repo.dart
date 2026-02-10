@@ -16,6 +16,19 @@ class PostsRepositoryImpl {
     return repo.getAllPosts(pageNumber: pageNumber, pageSize: pageSize);
   }
 
+  // ✅ New method for user-specific posts
+  Future<List<PostModel>> getUserPosts({
+    required String userId,
+    required int page,
+    required int pageSize,
+  }) {
+    return repo.getUserPosts(
+      userId: userId,
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
   Future<void> likePost({required String postId}) {
     return repo.likePost(postId: postId);
   }
@@ -36,6 +49,28 @@ class PostsRepositoryImpl {
       mediaUrl: mediaUrl,
       sport: sport,
     );
+  }
+
+  // ✅ New method for updating post
+  Future<void> updatePost({
+    required String postId,
+    required String title,
+    required String description,
+    required int sportTypeId,
+    String? mediaFile,
+  }) {
+    return repo.updatePost(
+      postId: postId,
+      title: title,
+      description: description,
+      sportTypeId: sportTypeId,
+      mediaFile: mediaFile,
+    );
+  }
+
+  // ✅ New method for deleting post
+  Future<void> deletePost({required String postId}) {
+    return repo.deletePost(postId: postId);
   }
 
   Future<void> editComment({required String commentId, required String text}) {

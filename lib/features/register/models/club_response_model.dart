@@ -19,7 +19,7 @@ class ClubModel extends UserModel {
 
   @override
   Map<String, dynamic> toJson() => {
-        // "pfp": image,
+        "image": image,
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,

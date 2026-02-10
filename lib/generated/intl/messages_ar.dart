@@ -35,7 +35,15 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
     "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
+    "achievement": MessageLookupByLibrary.simpleMessage("الإنجاز"),
+    "achievementDeleted": MessageLookupByLibrary.simpleMessage(
+      "تم حذف الإنجاز بنجاح",
+    ),
+    "achievementUpdated": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الإنجاز بنجاح",
+    ),
     "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
+    "addAchievement": MessageLookupByLibrary.simpleMessage("إنجاز الجديد"),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
@@ -54,6 +62,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "badRequest": MessageLookupByLibrary.simpleMessage("طلب غير صالح"),
     "basketball": MessageLookupByLibrary.simpleMessage("كرة السلة"),
     "basketballer": MessageLookupByLibrary.simpleMessage("لاعب كرة السلة"),
+    "bio": MessageLookupByLibrary.simpleMessage("الوصف"),
     "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
     "centerBack": MessageLookupByLibrary.simpleMessage("صانع لعب (وسط خلفي)"),
@@ -101,10 +110,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
+    "deletePost": MessageLookupByLibrary.simpleMessage("حذف المنشور"),
+    "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
+    ),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "تم قطع الاتصال بنجاح!",
     ),
     "done": MessageLookupByLibrary.simpleMessage("تم"),
+    "editProfile": MessageLookupByLibrary.simpleMessage("عدل الحساب"),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -161,9 +175,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("نسيت كلمة المرور"),
     "forward": MessageLookupByLibrary.simpleMessage("مهاجم"),
-    "foundDate": MessageLookupByLibrary.simpleMessage(
-      "تاريخ التأسيس يوم/شهر/سنة",
-    ),
+    "foundDate": MessageLookupByLibrary.simpleMessage("تاريخ التأسيس"),
     "fullName": MessageLookupByLibrary.simpleMessage("الاسم الكامل"),
     "gender": MessageLookupByLibrary.simpleMessage("الجنس"),
     "getStarted": MessageLookupByLibrary.simpleMessage("ابدأ"),
@@ -249,6 +261,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",
     ),
+    "noOpportunities": MessageLookupByLibrary.simpleMessage("لا توجد فرص"),
+    "noPosts": MessageLookupByLibrary.simpleMessage("لا توجد منشورات"),
+    "noResultsFound": MessageLookupByLibrary.simpleMessage("لا توجد نتائج"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
     "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
     "number": MessageLookupByLibrary.simpleMessage("الرقم"),
@@ -342,6 +357,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "صانع ألعاب (Point Guard)",
     ),
     "position": MessageLookupByLibrary.simpleMessage("المركز"),
+    "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل حذف المنشور. حاول مرة أخرى.",
+    ),
+    "postDeleted": MessageLookupByLibrary.simpleMessage(
+      "تم حذف المنشور بنجاح!",
+    ),
+    "postUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل تحديث المنشور. حاول مرة أخرى.",
+    ),
+    "postUpdated": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث المنشور بنجاح!",
+    ),
     "posts": MessageLookupByLibrary.simpleMessage("المنشورات"),
     "powerForward": MessageLookupByLibrary.simpleMessage(
       "مهاجم قوي (Power Forward)",
@@ -375,7 +402,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "rightBack": MessageLookupByLibrary.simpleMessage("ظهير أيمن"),
     "rightWing": MessageLookupByLibrary.simpleMessage("جناح أيمن"),
+    "save": MessageLookupByLibrary.simpleMessage("حفظ"),
     "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
+    "search": MessageLookupByLibrary.simpleMessage("أبحث"),
+    "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
     "select": MessageLookupByLibrary.simpleMessage("اختر"),
     "selectField": m3,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
@@ -418,6 +448,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "sport": MessageLookupByLibrary.simpleMessage("الرياضة"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("المهنة الرياضية"),
+    "startSearching": MessageLookupByLibrary.simpleMessage("ابدأ البحث"),
     "strongPassword": MessageLookupByLibrary.simpleMessage(
       "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
     ),
@@ -428,6 +459,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),
+    "tryDifferentSearch": MessageLookupByLibrary.simpleMessage("جرب بحث أخر"),
     "tunisia": MessageLookupByLibrary.simpleMessage("تونس"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
@@ -437,6 +469,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
       "تم إلغاء المتابعة بنجاح!",
+    ),
+    "updatingPost": MessageLookupByLibrary.simpleMessage(
+      "جار تحديث المنشور...",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",
