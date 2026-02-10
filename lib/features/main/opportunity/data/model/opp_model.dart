@@ -1,34 +1,30 @@
 class OpportunityModel {
   final String id;
   final String title;
-  final String organization;
-  final String sport;
-  final String location;
-  final String type;
-  final String iconPath;
-  final int colorCode;
+  final String publisherName;
+  final String? mediaUrl;
+  final bool isOwner;
+  final DateTime createdAt;
 
   OpportunityModel({
     required this.id,
     required this.title,
-    required this.organization,
-    required this.sport,
-    required this.location,
-    required this.type,
-    required this.iconPath,
-    required this.colorCode,
+    required this.publisherName,
+    this.mediaUrl,
+    required this.isOwner,
+    required this.createdAt,
   });
 
   factory OpportunityModel.fromJson(Map<String, dynamic> json) {
     return OpportunityModel(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      organization: json['organization'] ?? '',
-      sport: json['sport'] ?? '',
-      location: json['location'] ?? '',
-      type: json['type'] ?? '',
-      iconPath: json['iconPath'] ?? '',
-      colorCode: json['colorCode'] ?? 0xFF1A5F4E,
+      id: json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      publisherName: json['publisherName'] as String? ?? '',
+      mediaUrl: json['mediaUrl'] as String?,
+      isOwner: json['isOwner'] as bool? ?? false,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
     );
   }
 
@@ -36,22 +32,19 @@ class OpportunityModel {
     return {
       'id': id,
       'title': title,
-      'organization': organization,
-      'sport': sport,
-      'location': location,
-      'type': type,
-      'iconPath': iconPath,
-      'colorCode': colorCode,
+      'publisherName': publisherName,
+      'mediaUrl': mediaUrl,
+      'isOwner': isOwner,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
+
+  
 }
 
 
 
-
-
-// ✅ Paginated Response Model
-class PaginatedCommentsResponse {
+class PaginatedOpportunitiesResponse {
   final List<OpportunityModel> items;
   final int totalCount;
   final int pageNumber;
@@ -60,7 +53,7 @@ class PaginatedCommentsResponse {
   final bool hasNextPage;
   final bool hasPreviousPage;
 
-  PaginatedCommentsResponse({
+  PaginatedOpportunitiesResponse({
     required this.items,
     required this.totalCount,
     required this.pageNumber,
@@ -70,8 +63,8 @@ class PaginatedCommentsResponse {
     required this.hasPreviousPage,
   });
 
-  factory PaginatedCommentsResponse.fromJson(Map<String, dynamic> json) {
-    return PaginatedCommentsResponse(
+  factory PaginatedOpportunitiesResponse.fromJson(Map<String, dynamic> json) {
+    return PaginatedOpportunitiesResponse(
       items: (json['items'] as List<dynamic>)
           .map((item) => OpportunityModel.fromJson(item))
           .toList(),
@@ -84,5 +77,3 @@ class PaginatedCommentsResponse {
     );
   }
 }
-
-

@@ -52,5 +52,16 @@ class PostsUploadSuccess extends PostsState {}
 // ✅ New state for update success
 class PostUpdateSuccess extends PostsState {}
 
+  @override
+  List<Object?> get props => [posts, hasNextPage, isUploading];
+}
+class PostsLoadingMore extends PostsState {
+  final List<PostModel> currentPosts;
+
+  const PostsLoadingMore(this.currentPosts);
+
+  @override
+  List<Object?> get props => [currentPosts];
+}
 // ✅ New state for delete success
 class PostDeleteSuccess extends PostsState {}

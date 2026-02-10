@@ -44,6 +44,25 @@ class Endpoints {
   static const String updateAchievement = "/api/Achievements/{id}";//(put) one Achievement, have parameter achievement id and the request body takes Title* (string), Description* (string), AchievementDate (string($date-time)), and MediaFile (string($binary)) takes an image
   static const String deleteAchievement = "/api/Achievements/{id}";//(delete) have parameter id of the achievement 
   
+  static const String getAnalyzedVideos = "/api/Profile/analyzed-videos";
+  static const String getInterests = "/api/Profile/interests";
+  static const String toggleFollow = "/api/Profile/follow";
+  static const String toggleConnect = "/api/Profile/connect";
+  
+  //opportunities Endpoints
+  static const String getOpportunity  = "/api/Opportunity";
+  static const String postOpportunity = "/api/Opportunity";
+  static const String opportunityDetails = "/api/Opportunity/{id}";
+  static const String editOpportunity = "/api/Opportunity/{id}";
+  static const String deleteOpportunity = "/api/Opportunity/{id}";
+  static const String opportunityToggle  = "/api/Opportunity/{id}";
+  static const String  applyOpportunity= "/api/Opportunity/{id}/apply";
+  static const String getApplicants = "/api/Opportunity/{id}/applicants";
+  static const String getActiveOp  = "/api/Opportunity/my-active";
+  static const String getInActiveOp  = "/api/Opportunity/my-inactive";
+  static const String detectAcceptOrReject = "/api/Opportunity/applications/{applicationId}/status";
+
+
   static const String getAnalyzedVideos = "/api/Profile/analyzed-videos";//leave as mock data for now
   static const String getInterests = "/api/Profile/interests";//there is no end points but I will put an actual users with there id and role in order to try to navigate to an actual different users by using the get profile endpoint to also view the follow and connect status
   static const String toggleFollow = "/api/Social/follow/{targetId}";//(post) takes the targetId  as a parameter
