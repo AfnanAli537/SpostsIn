@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/utils/helper/gender_helper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
@@ -79,7 +80,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
+    
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
@@ -111,7 +112,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            Navigator.pop(context);
+            // Navigator.pop(context);
           }
 
           if (state is ProfileError) {

@@ -137,6 +137,7 @@ class UserModel extends Equatable {
       'gender': gender,
       'location': location,
       // Add image upload logic separately
+      if(image != null) 'image': image,
       if (sport != null) 'sport': sport,
       if (position != null) 'position': position,
       if (height != null) 'height': height,

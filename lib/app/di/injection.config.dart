@@ -38,6 +38,8 @@ import 'package:sports_in/features/main/home/data/interface/post_interface.dart'
     as _i423;
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart'
     as _i651;
+import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart'
+    as _i45;
 import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
     as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
@@ -130,6 +132,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i939.ProfileBloc>(
       () => _i939.ProfileBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.factory<_i45.PostsBloc>(
+      () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
     );
     gh.lazySingleton<_i707.ForgetPasswordRepo>(
       () => _i707.ForgetPasswordRepo(gh<_i705.IForgetPasswordDataSource>()),

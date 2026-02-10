@@ -35,7 +35,15 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
     "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
+    "achievement": MessageLookupByLibrary.simpleMessage("الإنجاز"),
+    "achievementDeleted": MessageLookupByLibrary.simpleMessage(
+      "تم حذف الإنجاز بنجاح",
+    ),
+    "achievementUpdated": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الإنجاز بنجاح",
+    ),
     "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
+    "addAchievement": MessageLookupByLibrary.simpleMessage("إنجاز الجديد"),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
@@ -102,6 +110,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
+    "deletePost": MessageLookupByLibrary.simpleMessage("حذف المنشور"),
+    "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
+    ),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "تم قطع الاتصال بنجاح!",
     ),
@@ -345,6 +357,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "صانع ألعاب (Point Guard)",
     ),
     "position": MessageLookupByLibrary.simpleMessage("المركز"),
+    "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل حذف المنشور. حاول مرة أخرى.",
+    ),
+    "postDeleted": MessageLookupByLibrary.simpleMessage(
+      "تم حذف المنشور بنجاح!",
+    ),
+    "postUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل تحديث المنشور. حاول مرة أخرى.",
+    ),
+    "postUpdated": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث المنشور بنجاح!",
+    ),
     "posts": MessageLookupByLibrary.simpleMessage("المنشورات"),
     "powerForward": MessageLookupByLibrary.simpleMessage(
       "مهاجم قوي (Power Forward)",
@@ -445,6 +469,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
       "تم إلغاء المتابعة بنجاح!",
+    ),
+    "updatingPost": MessageLookupByLibrary.simpleMessage(
+      "جار تحديث المنشور...",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
@@ -49,17 +50,16 @@ class _AchievementDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final string = S.of(context);
     final colorScheme = theme.colorScheme;
 
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
         if (state is AchievementDeleted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Achievement deleted successfully'),
-              backgroundColor: colorScheme.primary,
-            ),
-          );
+          Fluttertoast.showToast(
+              msg: string.achievementDeleted,
+              backgroundColor: Colors.red,
+            );
           // Pop back to list/profile with refresh flag
           Navigator.pop(context, true);
         }
@@ -71,7 +71,7 @@ class _AchievementDetailView extends StatelessWidget {
           elevation: 0,
           centerTitle: true,
           title: Text(
-            "Achievements",
+            string.achievement,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,

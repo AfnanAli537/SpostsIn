@@ -91,7 +91,7 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            Navigator.pop(context);
+            // Navigator.pop(context);
           }
 
           if (state is ProfileError) {

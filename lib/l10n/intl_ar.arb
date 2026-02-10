@@ -271,6 +271,10 @@
   "noOpportunities": "لا توجد فرص",
   "courses": "الدورات",
   "achievements": "الإنجازات",
+  "achievement": "الإنجاز",
+  "addAchievement": "إنجاز الجديد",
+  "achievementDeleted": "تم حذف الإنجاز بنجاح",
+  "achievementUpdated": "تم تحديث الإنجاز بنجاح",
   "analyzedVideosReports": "تقارير الفيديو المحللة",
   "interests": "الاهتمامات",
   "showAll": "عرض الكل",
@@ -290,5 +294,12 @@
   "startSearching": "ابدأ البحث",
   "save": "حفظ",
   "editProfile": "عدل الحساب",
-  "bio": "الوصف"
+  "bio": "الوصف",
+  "updatingPost": "جار تحديث المنشور...",
+  "postUpdated": "تم تحديث المنشور بنجاح!",
+  "postUpdateFailed": "فشل تحديث المنشور. حاول مرة أخرى.",
+  "deletePost": "حذف المنشور",
+  "deletePostConfirmation": "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
+  "postDeleted": "تم حذف المنشور بنجاح!",
+  "postDeleteFailed": "فشل حذف المنشور. حاول مرة أخرى."
 }

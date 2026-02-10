@@ -35,7 +35,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Verify and proceed",
     ),
     "aboutUs": MessageLookupByLibrary.simpleMessage("About us"),
+    "achievement": MessageLookupByLibrary.simpleMessage("Achievement"),
+    "achievementDeleted": MessageLookupByLibrary.simpleMessage(
+      "Achievement deleted successfully",
+    ),
+    "achievementUpdated": MessageLookupByLibrary.simpleMessage(
+      "Achievement updated successfully",
+    ),
     "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
+    "addAchievement": MessageLookupByLibrary.simpleMessage(
+      "Added New Achievement",
+    ),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
@@ -104,6 +114,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Currently in a Club",
     ),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
+    "deletePost": MessageLookupByLibrary.simpleMessage("Delete Post"),
+    "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this post?",
+    ),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "Disconnected successfully!",
     ),
@@ -348,6 +362,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
+    "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
+      "Failed to delete post. Please try again.",
+    ),
+    "postDeleted": MessageLookupByLibrary.simpleMessage(
+      "Post deleted successfully!",
+    ),
+    "postUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "Failed to update post. Please try again.",
+    ),
+    "postUpdated": MessageLookupByLibrary.simpleMessage(
+      "Post updated successfully!",
+    ),
     "posts": MessageLookupByLibrary.simpleMessage("Posts"),
     "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
     "privacyPolicyTitle": MessageLookupByLibrary.simpleMessage(
@@ -450,6 +476,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
       "Unfollowed successfully!",
     ),
+    "updatingPost": MessageLookupByLibrary.simpleMessage("Updating post..."),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
     ),

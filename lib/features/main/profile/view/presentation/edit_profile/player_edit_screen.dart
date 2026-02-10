@@ -38,7 +38,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
 
   late final ValueNotifier<String?> genderNotifier;
   late final ValueNotifier<String?> locationNotifier;
-  late final ValueNotifier<String?> sportNotifier;
+  late final ValueNotifier<String?> sportNameNotifier;
   late final ValueNotifier<String?> positionNotifier;
   late final ValueNotifier<bool> hasClubNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
@@ -58,7 +58,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     bioController = TextEditingController(text: widget.profile.description);
     // genderNotifier = ValueNotifier<String?>(null);
     // locationNotifier = ValueNotifier<String?>(null);
-    sportNotifier = ValueNotifier<String?>(playerData.specializedSport);
+    sportNameNotifier = ValueNotifier<String?>(playerData.specializedSport);
     positionNotifier = ValueNotifier<String?>(playerData.position);
     // hasClubNotifier = ValueNotifier<bool>(false);
   }
@@ -75,7 +75,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
   }
 
   void _onSportChanged(String? selectedSport, S string) {
-    sportNotifier.value = selectedSport;
+    sportNameNotifier.value = selectedSport;
     if (!RegisterLists.isTeamSport(string, selectedSport)) {
       positionNotifier.value = null;
     }
@@ -103,7 +103,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
       bio: bioController.text.trim(),
       // gender: genderNotifier.value,
       // location: locationNotifier.value,
-      specialization: sportNotifier.value,
+      specialization: sportNameNotifier.value,
       position: positionNotifier.value,
       // hasClub: hasClubNotifier.value,
     );
@@ -129,7 +129,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            Navigator.pop(context);
+            // Navigator.pop(context);
           }
 
           if (state is ProfileError) {
@@ -233,12 +233,12 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                           SizedBox(height: 16.h),
 
                           ValueListenableBuilder<String?>(
-                            valueListenable: sportNotifier,
+                            valueListenable: sportNameNotifier,
                             builder: (context, sport, _) {
                               return AppDropdownOverlay(
                                 labelText: string.sportProfession,
                                 value: sport,
-                                options: RegisterLists.sportProfessionOptions(string),
+                                options: RegisterLists.sportNameOptions(string),
                                 onChanged: (val) => _onSportChanged(val, string),
                                 validator: (v) => Validators.validateDropdown(
                                   context: context,
@@ -252,7 +252,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                           SizedBox(height: 16.h),
 
                           ValueListenableBuilder<String?>(
-                            valueListenable: sportNotifier,
+                            valueListenable: sportNameNotifier,
                             builder: (context, sport, _) {
                               if (!RegisterLists.isTeamSport(string, sport)) {
                                 return const SizedBox.shrink();
@@ -277,7 +277,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                           ),
 
                           ValueListenableBuilder<String?>(
-                            valueListenable: sportNotifier,
+                            valueListenable: sportNameNotifier,
                             builder: (context, sport, _) {
                               if (!RegisterLists.isTeamSport(string, sport)) {
                                 return const SizedBox.shrink();

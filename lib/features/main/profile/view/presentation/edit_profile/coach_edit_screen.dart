@@ -111,7 +111,7 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-            Navigator.pop(context);
+            // Navigator.pop(context);
           }
 
           if (state is ProfileError) {

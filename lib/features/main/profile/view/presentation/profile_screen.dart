@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile_bloc.dart';
 import '../../view_model/profile_event.dart';
@@ -85,7 +86,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       id: 'loading',
       name: 'Loading Name',
       role: 'Loading Role',
-      description: 'Loading description text that will be replaced with actual content',
+      description:
+          'Loading description text that will be replaced with actual content',
       userType: UserType.player,
       stats: ProfileStats(
         followers: '0',
@@ -105,10 +107,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileHeader(profile: fakeProfile, theme: theme, isOwnProfile: false),
+            ProfileHeader(
+              profile: fakeProfile,
+              theme: theme,
+              isOwnProfile: false,
+            ),
             ProfileDescription(description: fakeProfile.description),
             SizedBox(height: 16.h),
-            ProfileStatsWidget(stats: fakeProfile.stats, theme: theme, string: S.of(context)),
+            ProfileStatsWidget(
+              stats: fakeProfile.stats,
+              theme: theme,
+              string: S.of(context),
+            ),
             Divider(height: 1, color: theme.colorScheme.onError),
             SizedBox(height: 16.h),
             Padding(
@@ -161,7 +171,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 60.sp, color: theme.colorScheme.error),
+          Icon(
+            Icons.error_outline,
+            size: 60.sp,
+            color: theme.colorScheme.error,
+          ),
           SizedBox(height: 16.h),
           Text('Error loading profile', style: theme.textTheme.headlineMedium),
           SizedBox(height: 8.h),
@@ -196,9 +210,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             ProfileHeader(
               profile: profile,
-              isOwnProfile: isOwnProfile,
+              isOwnProfile: profile.isOwner,
               theme: theme,
-              onEditPressed: isOwnProfile ? () => _navigateToEditProfile(context) : null,
+              onEditPressed: profile.isOwner
+                  ? () => _navigateToEditProfile(context)
+                  : null,
             ),
             ProfileDescription(description: profile.description),
             SizedBox(height: 8.h),
@@ -209,30 +225,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               string: string,
               isConnected: profile.isConnected,
               isFollowing: profile.isFollowing,
-              onPostsShowAll: () {},
+              onPostsShowAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProfilePostsListScreen(
+                      userId: profile.id,
+                      isCurrentUser: profile.isOwner,
+                    ),
+                  ),
+                );
+              },
               onOpportunitiesShowAll: () {},
               onCoursesShowAll: () {},
               onAchievementsShowAll: () {},
               onVideosShowAll: () {},
               onInterestsShowAll: () {},
-              onPostTap: (post) {},
+              onPostTap: (post) { Navigator.pushNamed(context, AppRoutes.profilePostsListScreen, arguments: {'userId': profile.id, 'isCurrentUser': profile.isOwner});},
               onOpportunityTap: (opportunity) {},
               onCourseTap: (course) {},
               onAchievementTap: (achievement) {},
               onVideoTap: (video) {},
-              
+
               // FIXED: Use correct event names
               onConnectPressed: () {
-                context.read<ProfileBloc>().add(ToggleConnect(userId: profile.id));
+                context.read<ProfileBloc>().add(
+                  ToggleConnect(userId: profile.id),
+                );
               },
               onFollowPressed: () {
-                context.read<ProfileBloc>().add(ToggleFollow(userId: profile.id));
+                context.read<ProfileBloc>().add(
+                  ToggleFollow(userId: profile.id),
+                );
               },
               onConnectToggle: (interest) {
-                context.read<ProfileBloc>().add(ToggleConnect(userId: interest.id));
+                // context.read<ProfileBloc>().add(
+                //   ToggleConnect(userId: interest.id),
+                // );
               },
               onFollowToggle: (interest) {
-                context.read<ProfileBloc>().add(ToggleFollow(userId: interest.id));
+                context.read<ProfileBloc>().add(
+                  ToggleFollow(userId: interest.id),
+                );
               },
               onInterestTap: (interest) {
                 _navigateToUserProfile(context, interest.id);
@@ -246,17 +280,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _navigateToEditProfile(BuildContext context) {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.editProfile,
-    );
+    Navigator.pushNamed(context, AppRoutes.editProfile);
   }
 
   void _navigateToUserProfile(BuildContext context, String userId) {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.userProfile,
-      arguments: userId,
-    );
+    Navigator.pushNamed(context, AppRoutes.userProfile, arguments: userId);
   }
 }

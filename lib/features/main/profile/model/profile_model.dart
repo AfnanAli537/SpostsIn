@@ -18,8 +18,9 @@ class ProfileModel {
   final ClubSpecificData? clubData;
   final InstituteSpecificData? instituteData;
   final OtherSpecificData? otherData;
-  final bool isConnected; // Track if current user is connected to this profile
-  final bool isFollowing; // Track if current user is following this profile
+  final bool isConnected;
+  final bool isFollowing;
+  final bool isOwner; // ✅ Added isOwner field
 
   ProfileModel({
     required this.id,
@@ -43,6 +44,7 @@ class ProfileModel {
     this.otherData,
     this.isConnected = false,
     this.isFollowing = false,
+    this.isOwner = false, // ✅ Default value
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -95,13 +97,14 @@ class ProfileModel {
           : null,
       instituteData:
           userType == UserType.institute && json['instituteData'] != null
-          ? InstituteSpecificData.fromJson(json['instituteData'])
-          : null,
+              ? InstituteSpecificData.fromJson(json['instituteData'])
+              : null,
       otherData: userType == UserType.other && json['otherData'] != null
           ? OtherSpecificData.fromJson(json['otherData'])
           : null,
       isConnected: json['isConnected'] as bool? ?? false,
       isFollowing: json['isFollowing'] as bool? ?? false,
+      isOwner: json['isOwner'] as bool? ?? false, // ✅ Parse from JSON
     );
   }
 
@@ -145,58 +148,62 @@ class ProfileModel {
       'otherData': otherData?.toJson(),
       'isConnected': isConnected,
       'isFollowing': isFollowing,
+      'isOwner': isOwner, // ✅ Include in JSON
     };
   }
 
-ProfileModel copyWith({
-  String? id,
-  String? name,
-  String? profileImage,
-  String? role,
-  String? description,
-  UserType? userType,
-  ProfileStats? stats,
-  List<Post>? posts,
-  List<Achievement>? achievements,
-  List<AnalyzedVideoReport>? analyzedVideos,
-  List<Interest>? interests,
-  List<Opportunity>? opportunities,
-  List<Course>? courses,
-  PlayerSpecificData? playerData,
-  CoachSpecificData? coachData,
-  ScoutSpecificData? scoutData,
-  ClubSpecificData? clubData,
-  InstituteSpecificData? instituteData,
-  OtherSpecificData? otherData,
-  bool? isConnected,
-  bool? isFollowing,
-}) {
-  return ProfileModel(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    profileImage: profileImage ?? this.profileImage,
-    role: role ?? this.role,
-    description: description ?? this.description,
-    userType: userType ?? this.userType,
-    stats: stats ?? this.stats,
-    posts: posts ?? this.posts,
-    achievements: achievements ?? this.achievements,
-    analyzedVideos: analyzedVideos ?? this.analyzedVideos,
-    interests: interests ?? this.interests,
-    opportunities: opportunities ?? this.opportunities,
-    courses: courses ?? this.courses,
-    playerData: playerData ?? this.playerData,
-    coachData: coachData ?? this.coachData,
-    scoutData: scoutData ?? this.scoutData,
-    clubData: clubData ?? this.clubData,
-    instituteData: instituteData ?? this.instituteData,
-    otherData: otherData ?? this.otherData,
-    isConnected: isConnected ?? this.isConnected,
-    isFollowing: isFollowing ?? this.isFollowing,
-  );
-}
+  ProfileModel copyWith({
+    String? id,
+    String? name,
+    String? profileImage,
+    String? role,
+    String? description,
+    UserType? userType,
+    ProfileStats? stats,
+    List<Post>? posts,
+    List<Achievement>? achievements,
+    List<AnalyzedVideoReport>? analyzedVideos,
+    List<Interest>? interests,
+    List<Opportunity>? opportunities,
+    List<Course>? courses,
+    PlayerSpecificData? playerData,
+    CoachSpecificData? coachData,
+    ScoutSpecificData? scoutData,
+    ClubSpecificData? clubData,
+    InstituteSpecificData? instituteData,
+    OtherSpecificData? otherData,
+    bool? isConnected,
+    bool? isFollowing,
+    bool? isOwner, // ✅ Add to copyWith
+  }) {
+    return ProfileModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      profileImage: profileImage ?? this.profileImage,
+      role: role ?? this.role,
+      description: description ?? this.description,
+      userType: userType ?? this.userType,
+      stats: stats ?? this.stats,
+      posts: posts ?? this.posts,
+      achievements: achievements ?? this.achievements,
+      analyzedVideos: analyzedVideos ?? this.analyzedVideos,
+      interests: interests ?? this.interests,
+      opportunities: opportunities ?? this.opportunities,
+      courses: courses ?? this.courses,
+      playerData: playerData ?? this.playerData,
+      coachData: coachData ?? this.coachData,
+      scoutData: scoutData ?? this.scoutData,
+      clubData: clubData ?? this.clubData,
+      instituteData: instituteData ?? this.instituteData,
+      otherData: otherData ?? this.otherData,
+      isConnected: isConnected ?? this.isConnected,
+      isFollowing: isFollowing ?? this.isFollowing,
+      isOwner: isOwner ?? this.isOwner, // ✅ Include in copyWith
+    );
+  }
 }
 
+// Rest of the classes remain the same...
 enum UserType { player, coach, scout, club, institute, other }
 
 class ProfileStats {
@@ -238,19 +245,21 @@ class Post {
   final String id;
   final String imageUrl;
   final String? title;
+  final String? description;
 
-  Post({required this.id, required this.imageUrl, this.title});
+  Post({required this.id, required this.imageUrl, this.title,this.description});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       id: json['id'] ?? '',
       imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
       title: json['title'],
+      description: json['description'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'imageUrl': imageUrl, 'title': title};
+    return {'id': id, 'imageUrl': imageUrl, 'title': title, 'description': description};
   }
 }
 
@@ -420,8 +429,8 @@ class PlayerSpecificData {
   final int? yearsOfExperience;
   final int? gender;
 
-  PlayerSpecificData(
-    {this.gender, 
+  PlayerSpecificData({
+    this.gender,
     this.position,
     this.height,
     this.weight,
@@ -441,8 +450,7 @@ class PlayerSpecificData {
       specializedSport: json['specializedSport'] ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
-      gender:
-          json['gender'] ?? json['gender'],
+      gender: json['gender'],
     );
   }
 
@@ -455,7 +463,7 @@ class PlayerSpecificData {
       'age': age,
       'specializedSport': specializedSport,
       'yearsOfExperience': yearsOfExperience,
-      'gender': gender
+      'gender': gender,
     };
   }
 }
@@ -466,7 +474,6 @@ class CoachSpecificData {
   final String? certifications;
   final String? age;
   final int? gender;
-
 
   CoachSpecificData({
     this.gender,
@@ -483,8 +490,7 @@ class CoachSpecificData {
           json['yearsOfExperience'] ?? json['years_of_experience'],
       certifications: json['certifications'],
       age: json['age']?.toString(),
-      gender:
-          json['gender'] ?? json['gender'],
+      gender: json['gender'],
     );
   }
 
@@ -494,7 +500,7 @@ class CoachSpecificData {
       'yearsOfExperience': yearsOfExperience,
       'certifications': certifications,
       'age': age,
-      'gender':gender
+      'gender': gender,
     };
   }
 }
@@ -505,9 +511,8 @@ class ScoutSpecificData {
   final String? organization;
   final int? gender;
 
-
   ScoutSpecificData({
-    this.gender, 
+    this.gender,
     this.specializedSport,
     this.yearsOfExperience,
     this.organization,
@@ -519,8 +524,7 @@ class ScoutSpecificData {
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       organization: json['organization'],
-      gender:
-          json['gender'] ?? json['gender'],
+      gender: json['gender'],
     );
   }
 
@@ -529,14 +533,14 @@ class ScoutSpecificData {
       'specializedSport': specializedSport,
       'yearsOfExperience': yearsOfExperience,
       'organization': organization,
-      'gender':gender
+      'gender': gender,
     };
   }
 }
 
 class ClubSpecificData {
   final String? location;
-  final String? foundedYear;//TODO NEED TO MAKE IT TYPE DATE
+  final String? foundedYear;
   final String? sport;
 
   ClubSpecificData({this.location, this.foundedYear, this.sport});
@@ -560,11 +564,17 @@ class InstituteSpecificData {
   final String? foundedYear;
   final String? accreditation;
 
-  InstituteSpecificData({this.industry, this.location, this.foundedYear, this.accreditation});
+  InstituteSpecificData({
+    this.industry,
+    this.location,
+    this.foundedYear,
+    this.accreditation,
+  });
 
   factory InstituteSpecificData.fromJson(Map<String, dynamic> json) {
     return InstituteSpecificData(
       location: json['location'],
+      industry: json['industry'],
       foundedYear: json['foundedYear'] ?? json['founded_year']?.toString(),
       accreditation: json['accreditation'],
     );
@@ -573,6 +583,7 @@ class InstituteSpecificData {
   Map<String, dynamic> toJson() {
     return {
       'location': location,
+      'industry': industry,
       'foundedYear': foundedYear,
       'accreditation': accreditation,
     };
@@ -588,12 +599,11 @@ class OtherSpecificData {
   factory OtherSpecificData.fromJson(Map<String, dynamic> json) {
     return OtherSpecificData(
       customData: json['customData'] ?? json['custom_data'],
-      gender:
-          json['gender'] ?? json['gender'],
+      gender: json['gender'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'customData': customData,'gender': gender};
+    return {'customData': customData, 'gender': gender};
   }
 }

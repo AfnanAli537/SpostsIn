@@ -1,10 +1,14 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
+import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
+import 'package:sports_in/core/utils/helper/gender_helper.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../interface/i_profile_data_source.dart';
 import '../../model/profile_model.dart';
 
@@ -29,10 +33,7 @@ class ApiProfileDataSource implements IProfileDataSource {
       return await getUserProfile(userId);
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
-      throw ApiException(
-        message:'failed to fetch profile',
-        key: errorKey,
-      );
+      throw ApiException(message: 'failed to fetch profile', key: errorKey);
     }
   }
 
@@ -80,7 +81,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
       throw ApiException(
-        message:'failed to fetch user\'s profile',
+        message: 'failed to fetch user\'s profile',
         key: errorKey,
       );
     }
@@ -89,15 +90,14 @@ class ApiProfileDataSource implements IProfileDataSource {
   /// Convert API response to ProfileModel
   ProfileModel _apiResponseToProfile(Map<String, dynamic> json) {
     final userType = _parseUserType(json['userType']);
-    final isOwner = json['isOwner'] == true;
+    final isOwner = json['isOwner']; // ✅ Get isOwner from API
     final connectionStatus = json['connectionStatus']?.toString();
-    
+    final gender = json['gender'];
     // Extract sports from array
     final sportsList = json['sports'] as List?;
-    final sportsText = sportsList != null && sportsList.isNotEmpty 
-        ? sportsList.first.toString() 
+    final sportsText = sportsList != null && sportsList.isNotEmpty
+        ? sportsList.first.toString()
         : null;
-
     return ProfileModel(
       id: json['userId'] ?? '',
       name: json['fullName'] ?? 'Unknown User',
@@ -111,20 +111,31 @@ class ApiProfileDataSource implements IProfileDataSource {
         connections: json['connectionsCount']?.toString() ?? '0',
         analyzedPeople: json['analyzedPeopleCount']?.toString() ?? '0',
       ),
-      posts: [], // Loaded separately
-      achievements: [], // Loaded separately
-      analyzedVideos: [], // Loaded separately
-      interests: [], // Loaded separately
+      posts: [],
+      achievements: [],
+      analyzedVideos: [],
+      interests: [],
       opportunities: null,
       courses: null,
-      playerData: userType == UserType.player ? _buildPlayerData(json) : null,
-      coachData: userType == UserType.coach ? _buildCoachData(json, sportsText) : null,
-      scoutData: userType == UserType.scout ? _buildScoutData(json, sportsText) : null,
-      clubData: userType == UserType.club ? _buildClubData(json, sportsList) : null,
-      instituteData: userType == UserType.institute ? _buildInstituteData(json) : null,
+      playerData: userType == UserType.player
+          ? _buildPlayerData(json, sportsText)
+          : null,
+      coachData: userType == UserType.coach
+          ? _buildCoachData(json, sportsText)
+          : null,
+      scoutData: userType == UserType.scout
+          ? _buildScoutData(json, sportsText)
+          : null,
+      clubData: userType == UserType.club
+          ? _buildClubData(json, sportsList)
+          : null,
+      instituteData: userType == UserType.institute
+          ? _buildInstituteData(json)
+          : null,
       otherData: userType == UserType.other ? _buildOtherData(json) : null,
       isConnected: connectionStatus == 'Connected',
       isFollowing: json['isFollowedByMe'] == true,
+      isOwner: isOwner, // ✅ Set isOwner from API
     );
   }
 
@@ -148,7 +159,8 @@ class ApiProfileDataSource implements IProfileDataSource {
 
   String _getRoleText(UserType type, String? specialization, List? sports) {
     // Priority: specialization > sports[0] > empty
-    final sportText = specialization ?? 
+    final sportText =
+        specialization ??
         (sports != null && sports.isNotEmpty ? sports.first.toString() : '');
 
     switch (type) {
@@ -167,20 +179,26 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
-  PlayerSpecificData _buildPlayerData(Map<String, dynamic> json) {
+  PlayerSpecificData _buildPlayerData(
+    Map<String, dynamic> json,
+    String? sportsText,
+  ) {
     return PlayerSpecificData(
       position: json['position'],
       height: json['height']?.toString(),
       weight: json['weight']?.toString(),
       preferredFoot: null,
       age: json['age']?.toString(),
-      specializedSport: json['specialization'],
+      specializedSport: sportsText ?? json['specialization'],
       yearsOfExperience: json['yearsOfExperience'],
       gender: json['gender'],
     );
   }
 
-  CoachSpecificData _buildCoachData(Map<String, dynamic> json, String? sportsText) {
+  CoachSpecificData _buildCoachData(
+    Map<String, dynamic> json,
+    String? sportsText,
+  ) {
     return CoachSpecificData(
       specializedSport: sportsText ?? json['specialization'],
       yearsOfExperience: json['yearsOfExperience'],
@@ -190,19 +208,36 @@ class ApiProfileDataSource implements IProfileDataSource {
     );
   }
 
-  ScoutSpecificData _buildScoutData(Map<String, dynamic> json, String? sportsText) {
+  ScoutSpecificData _buildScoutData(
+    Map<String, dynamic> json,
+    String? sportsText,
+  ) {
+    S? s;
+    try {
+      s = S.current;
+    } catch (_) {
+      s = null;
+    }
+    final genderEnum = json['gender'] != null
+        ? EnumMapper.fromLabel(EnumMapper.genderLabels(s), json['gender'])
+        : null;
+    final genderId = genderEnum != null
+        ? EnumMapper.getGenderId(genderEnum)
+        : null;
+
     return ScoutSpecificData(
       specializedSport: sportsText ?? json['specialization'],
       yearsOfExperience: json['yearsOfExperience'],
       organization: null,
-      gender: json['gender'],
+      gender: genderId,
     );
   }
 
   ClubSpecificData _buildClubData(Map<String, dynamic> json, List? sportsList) {
     // For clubs, store all sports (up to 6)
-    final sports = sportsList?.take(6).map((s) => s.toString()).join(', ') ?? '';
-    
+    final sports =
+        sportsList?.take(6).map((s) => s.toString()).join(', ') ?? '';
+
     return ClubSpecificData(
       location: null,
       foundedYear: json['foundationDate'],
@@ -220,10 +255,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   }
 
   OtherSpecificData _buildOtherData(Map<String, dynamic> json) {
-    return OtherSpecificData(
-      gender: json['gender'],
-      customData: null,
-    );
+    return OtherSpecificData(gender: json['gender'], customData: null);
   }
 
   @override
@@ -235,18 +267,25 @@ class ApiProfileDataSource implements IProfileDataSource {
       );
 
       if (response.statusCode == 200) {
-        // Return the updated profile from response
         final json = response.data as Map<String, dynamic>;
-        return _apiResponseToProfile(json);
+
+        // ✅ Check if API returned profile or just message
+        if (json.containsKey('message') && !json.containsKey('userId')) {
+          // API only returned success message, fetch the updated profile
+          final userId = _currentUserId;
+          if (userId == null) throw Exception('User not logged in');
+
+          return await getUserProfile(userId); // ✅ Fetch complete profile
+        } else {
+          // API returned full profile
+          return _apiResponseToProfile(json);
+        }
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
-      throw ApiException(
-        message:'failed to update profile',
-        key: errorKey,
-      );
+      throw ApiException(message: 'failed to update profile', key: errorKey);
     }
   }
 
@@ -259,11 +298,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     try {
       final response = await _apiClient.get(
         Endpoints.allPosts,
-        params: {
-          'targetUserId': targetUserId,
-          'page': page,
-          'size': size,
-        },
+        params: {'targetUserId': targetUserId, 'page': page, 'size': size},
       );
 
       if (response.statusCode == 200) {
@@ -295,16 +330,13 @@ class ApiProfileDataSource implements IProfileDataSource {
     try {
       final response = await _apiClient.get(
         Endpoints.getAchievements.replaceAll('{userId}', userId),
-        params: {
-          'page': page,
-          'size': size,
-        },
+        params: {'page': page, 'size': size},
       );
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
-        
+
         return items.map((json) {
           return Achievement(
             id: json['id'] ?? '',
@@ -365,7 +397,8 @@ class ApiProfileDataSource implements IProfileDataSource {
           subtitle: json['description'] ?? subtitle,
           imageUrl: json['mediaUrl'] ?? imageUrl,
           date: DateTime.parse(
-              json['achievementDate'] ?? date.toIso8601String()),
+            json['achievementDate'] ?? date.toIso8601String(),
+          ),
         );
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
@@ -373,7 +406,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
       throw ApiException(
-        message:'failed to create achievement',
+        message: 'failed to create achievement',
         key: errorKey,
       );
     }
@@ -420,7 +453,8 @@ class ApiProfileDataSource implements IProfileDataSource {
           subtitle: json['description'] ?? subtitle,
           imageUrl: json['mediaUrl'] ?? imageUrl,
           date: DateTime.parse(
-              json['achievementDate'] ?? date.toIso8601String()),
+            json['achievementDate'] ?? date.toIso8601String(),
+          ),
         );
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
@@ -428,7 +462,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
       throw ApiException(
-        message:'failed to update achievement',
+        message: 'failed to update achievement',
         key: errorKey,
       );
     }
@@ -438,8 +472,8 @@ class ApiProfileDataSource implements IProfileDataSource {
   Future<void> deleteAchievement(String achievementId) async {
     try {
       final response = await _apiClient.delete(
-        Endpoints.deleteAchievement,
-        params: {'id': achievementId},
+        Endpoints.deleteAchievement.replaceAll('{id}', achievementId),
+        // params: {'id': achievementId},
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
@@ -448,7 +482,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
       throw ApiException(
-        message:'failed to delete achievement',
+        message: 'failed to delete achievement',
         key: errorKey,
       );
     }
@@ -463,16 +497,13 @@ class ApiProfileDataSource implements IProfileDataSource {
     try {
       final response = await _apiClient.get(
         Endpoints.myActiveOpportunities,
-        params: {
-          'page': page,
-          'pageSize': pageSize,
-        },
+        params: {'page': page, 'pageSize': pageSize},
       );
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
-        
+
         return items.map((json) => Opportunity.fromJson(json)).toList();
       } else {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
@@ -495,11 +526,13 @@ class ApiProfileDataSource implements IProfileDataSource {
 
     return [
       Course(
-          id: 'course_1',
-          imageUrl: 'https://picsum.photos/200/200?random=16'),
+        id: 'course_1',
+        imageUrl: 'https://picsum.photos/200/200?random=16',
+      ),
       Course(
-          id: 'course_2',
-          imageUrl: 'https://picsum.photos/200/200?random=17'),
+        id: 'course_2',
+        imageUrl: 'https://picsum.photos/200/200?random=17',
+      ),
     ];
   }
 
@@ -535,16 +568,21 @@ class ApiProfileDataSource implements IProfileDataSource {
 
             final userType = _parseUserType(json['userType']);
             final sportsList = json['sports'] as List?;
-            
-            interests.add(Interest(
-              id: json['userId'] ?? '',
-              name: json['fullName'] ?? 'Unknown',
-              role: _getRoleText(
-                  userType, json['specialization'], sportsList),
-              profileImage: json['profilePictureUrl'] ?? '',
-              isConnected: json['connectionStatus'] == 'Connected',
-              isFollowing: json['isFollowedByMe'] == true,
-            ));
+
+            interests.add(
+              Interest(
+                id: json['userId'] ?? '',
+                name: json['fullName'] ?? 'Unknown',
+                role: _getRoleText(
+                  userType,
+                  json['specialization'],
+                  sportsList,
+                ),
+                profileImage: json['profilePictureUrl'] ?? '',
+                isConnected: json['connectionStatus'] == 'Connected',
+                isFollowing: json['isFollowedByMe'] == true,
+              ),
+            );
           }
         } catch (e) {
           print('Error loading interest user $interestUserId: $e');
@@ -588,10 +626,7 @@ class ApiProfileDataSource implements IProfileDataSource {
       }
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
-      throw ApiException(
-        message:'failed to toggle follow',
-        key: errorKey,
-      );
+      throw ApiException(message: 'failed to toggle follow', key: errorKey);
     }
   }
 
@@ -609,7 +644,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     } on DioException catch (e) {
       final errorKey = ApiErrorHandler.handleDioErrorKey(e);
       throw ApiException(
-        message:'failed to request connection',
+        message: 'failed to request connection',
         key: errorKey,
       );
     }

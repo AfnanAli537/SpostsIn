@@ -13,26 +13,26 @@ class Endpoints {
   //post
   static const String  allPosts="/api/Posts/feed";
   static const String  postPost= "/api/Posts";
- static const String putLike = "/api/Posts/{id}/like";
- static const String putComment= "/api/Posts/{id}/comment";
- static const String getLikes= "/api/Posts/{id}/likes";
- static const String getComments= "/api/Posts/{id}/comments";
- static const String editComment="/api/Posts/comments/{commentId}";
+  static const String putPost = '/api/Posts/{id}'; 
+  static const String deletePost = '/api/Posts/{id}';
+
+  static const String putLike = "/api/Posts/{id}/like";
+  static const String putComment= "/api/Posts/{id}/comment";
+  static const String getLikes= "/api/Posts/{id}/likes";
+  static const String getComments= "/api/Posts/{id}/comments";
+  static const String editComment="/api/Posts/comments/{commentId}";
   static const String deletComment= "/api/Posts/comments/{commentId}";
 
 
   static const String sendVerifyRegisterOtp = "/api/Auth/send-gmail-code";
   static const String verifyRegisterOtp = "/api/Auth/confirm-gmail-code";
 
- 
+
  //static const String  allPosts="/api/Posts/feed";//(get) posts, have parameter for targetUserId and also uses pagination, takes page and size
 
   //Profile Endpoints
   static const String getProfile = "/api/Profile/{userId}";//(get) profile by userId as a parameter
-//and here is the Response body:
-//{ "userId": "07f4e4d8-0315-48fc-82a0-89e37b67648a","fullName": "Heba Khaled","userType": "Other","profilePictureUrl": null,"bio": null,"sports": [],"followersCount": "0","followingCount": "0","connectionsCount": "0","analyzedPeopleCount": "0","height": null,"weight": null,"position": null,"age": null,"gender": 0,"yearsOfExperience": null,"specialization": null,"foundationDate": null,"industry": null,"isOwner": false,"isFollowedByMe": false,"connectionStatus": null}
   static const String updateProfile = "/api/Profile/Update";//(put) update the profile take the date from the get and put it in the update body as default value the Request body is the same as the responce body from the profile get
-  
   
   static const String myActiveOpportunities = "/api/Opportunity/my-active";//(get) takes page and pageSize parameters and get list of my active opportunities 
   static const String getCourses = "/api/Profile/courses";//keep for the courses the mock data for now 
@@ -42,7 +42,7 @@ class Endpoints {
   static const String getAchievement = "/api/Achievements/{id}";//(get) one Achievement, have parameter id for achievement details screen
   static const String createAchievement = "/api/Achievements";//(post) one Achievement, the request body takes Title* (string), Description* (string), AchievementDate (string($date-time)), and MediaFile (string($binary)) takes an image
   static const String updateAchievement = "/api/Achievements/{id}";//(put) one Achievement, have parameter achievement id and the request body takes Title* (string), Description* (string), AchievementDate (string($date-time)), and MediaFile (string($binary)) takes an image
-  static const String deleteAchievement = "/api/Achievements";//(delete) have parameter id of the achievement 
+  static const String deleteAchievement = "/api/Achievements/{id}";//(delete) have parameter id of the achievement 
   
   static const String getAnalyzedVideos = "/api/Profile/analyzed-videos";//leave as mock data for now
   static const String getInterests = "/api/Profile/interests";//there is no end points but I will put an actual users with there id and role in order to try to navigate to an actual different users by using the get profile endpoint to also view the follow and connect status

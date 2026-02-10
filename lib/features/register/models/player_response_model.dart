@@ -23,7 +23,7 @@ class PlayerModel extends UserModel {
 
   @override
   Map<String, dynamic> toJson() => {
-        // "image": image,
+        "image": image,
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,

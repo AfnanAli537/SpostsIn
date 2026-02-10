@@ -296,6 +296,10 @@
   "noOpportunities": "No Opportunities",
   "courses": "Courses",
   "achievements": "Achievements",
+  "achievement": "Achievement",
+  "addAchievement": "Added New Achievement",
+  "achievementDeleted": "Achievement deleted successfully",
+  "achievementUpdated": "Achievement updated successfully",
   "analyzedVideosReports": "Analyzed Videos Reports",
   "interests": "Interests",
   "showAll": "Show all",
@@ -316,7 +320,13 @@
   "startSearching": "Start searching",
   "save": "Save",
   "editProfile": "Edit Profile",
-  "bio": "Description"
+  "bio": "Description",
 
-
+  "updatingPost": "Updating post...",
+  "postUpdated": "Post updated successfully!",
+  "postUpdateFailed": "Failed to update post. Please try again.",
+  "deletePost": "Delete Post",
+  "deletePostConfirmation": "Are you sure you want to delete this post?",
+  "postDeleted": "Post deleted successfully!",
+  "postDeleteFailed": "Failed to delete post. Please try again."
 }
