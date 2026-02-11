@@ -11,4 +11,22 @@ abstract class OpportunityInterface {
   Future<void> applyOpportunity({required String opportunityID });
   Future<ApplicantsResponseModel> getApplicants({required int pageNumber, int pageSize,required String opportunityID,String? status });
   Future <ApplicantsResponseModel> acceptOrRejectApplicant({required String applicationId,required String status});
+  Future<PaginatedOpportunitiesResponse> getMyOpportunities({
+  required bool showActive,
+  int page = 1,
+  int pageSize = 10,
+});
+  Future<void> updateOpportunity({
+  required String opportunityId,
+  required String title,
+  required String description,
+  required String requirements,
+  required DateTime endDate,
+  required int sportTypeId,
+  String? mediaFile,
+});
+
+Future<void> deleteOpportunity({
+  required String opportunityId,
+});
 }

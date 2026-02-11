@@ -28,5 +28,39 @@ class OpportunityReposatory {
   int pageSize=10,required String opportunityID,String? status }){ return repo.getApplicants(pageNumber: pageNumber, opportunityID: opportunityID,status: status);}
   
   Future <ApplicantsResponseModel> acceptOrRejectApplicant({required String applicationId, required String status}){ return repo.acceptOrRejectApplicant(applicationId: applicationId,status: status);}
+Future<PaginatedOpportunitiesResponse> getMyOpportunities({
+  required bool showActive,
+  int page = 1,
+  int pageSize = 10,
+}) async {
+  return await repo.getMyOpportunities(
+    showActive: showActive,
+    page: page,
+    pageSize: pageSize,
+  );
+}
 
+Future<void> updateOpportunity({
+  required String id,
+  required String title,
+  required String description,
+  required String requirements,
+  required DateTime endDate,
+  required int sportTypeId,
+  String? mediaFile,
+}) async {
+  return await repo.updateOpportunity(
+    opportunityId: id,
+    title: title,
+    description: description,
+    requirements: requirements,
+    endDate: endDate,
+    sportTypeId: sportTypeId,
+    mediaFile: mediaFile,
+  );
+}
+
+Future<void> deleteOpportunity(String id) async {
+  return await repo.deleteOpportunity(opportunityId: id);
+}
 }

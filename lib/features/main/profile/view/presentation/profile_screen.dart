@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile_bloc.dart';
@@ -236,13 +237,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
-              onOpportunitiesShowAll: () {},
+              onOpportunitiesShowAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyOpportunitiesListScreen(
+                      showActiveOnly: true, // or false for inactive
+                    ),
+                  ),
+                );
+              },
               onCoursesShowAll: () {},
               onAchievementsShowAll: () {},
               onVideosShowAll: () {},
               onInterestsShowAll: () {},
-              onPostTap: (post) { Navigator.pushNamed(context, AppRoutes.profilePostsListScreen, arguments: {'userId': profile.id, 'isCurrentUser': profile.isOwner});},
-              onOpportunityTap: (opportunity) {},
+              onPostTap: (post) {
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.profilePostsListScreen,
+                  arguments: {
+                    'userId': profile.id,
+                    'isCurrentUser': profile.isOwner,
+                  },
+                );
+              },
+              onOpportunityTap: (opportunity) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyOpportunitiesListScreen(
+                      showActiveOnly: true, // or false for inactive
+                    ),
+                  ),
+                );
+              },
               onCourseTap: (course) {},
               onAchievementTap: (achievement) {},
               onVideoTap: (video) {},

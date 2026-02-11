@@ -46,6 +46,8 @@ import 'package:sports_in/features/main/opportunity/data/interface/opportunity_i
     as _i709;
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
     as _i294;
+import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart'
+    as _i743;
 import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
     as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
@@ -137,6 +139,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i257.LoginRepo>(
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
+    );
+    gh.factory<_i743.OpportunityBloc>(
+      () => _i743.OpportunityBloc(
+        opportunityRepo: gh<_i294.OpportunityReposatory>(),
+      ),
     );
     gh.lazySingleton<_i651.PostsRepositoryImpl>(
       () => _i651.PostsRepositoryImpl(gh<_i423.PostsRepository>()),

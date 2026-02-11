@@ -14,6 +14,9 @@ import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/main_layout/main_layout.dart';
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
+import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view/presentation/edit_profile_router_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
@@ -172,6 +175,14 @@ abstract class RoutesManager {
           builder: (_) =>BlocProvider(
             create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: UpdatePostScreen(post: args),
+          )
+        );
+      case AppRoutes.opportunityEditScreen:
+        final opportunityId = settings.arguments as String;
+        return CupertinoPageRoute(
+          builder: (_) =>BlocProvider(
+            create: (_) => OpportunityBloc(opportunityRepo: getIt<OpportunityReposatory>()),
+            child: UpdateOpportunityScreen(opportunityId: opportunityId),
           )
         );
     }

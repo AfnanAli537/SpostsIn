@@ -65,27 +65,18 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.9) {
-      final state = context.read<PostsBloc>().state;
-      if (state is UserPostsLoaded && state.hasNextPage) {
-        _loadMore();
+ void _onScroll() {
+  if (_scrollController.position.pixels >= 
+      _scrollController.position.maxScrollExtent * 0.9) {
+    final state = context.read<PostsBloc>().state;
+    if (state is PostsLoaded && state.hasNextPage) {
+      final currentState = context.read<PostsBloc>().state;
+      if (currentState is! PostsLoadingMore) {
+        context.read<PostsBloc>().add(LoadMorePosts());
       }
     }
   }
-
-  void _loadMore() {
-    _currentPage++;
-    context.read<PostsBloc>().add(
-          FetchUserPosts(
-            userId: widget.userId,
-            page: _currentPage,
-            pageSize: 10,
-          ),
-        );
-  }
-
+}
   void _refreshPosts() {
     setState(() {
       _currentPage = 1;
