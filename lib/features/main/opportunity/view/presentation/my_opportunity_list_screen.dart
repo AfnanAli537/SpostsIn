@@ -236,6 +236,7 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
                           value: context.read<OpportunityBloc>(),
                           child: OpportunityDetailsPage(
                             opportunityId: opportunity.id,
+                            isOwner: opportunity.isOwner,
                           ),
                         ),
                       ),
