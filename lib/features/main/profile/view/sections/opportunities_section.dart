@@ -51,7 +51,7 @@ class OpportunitiesSection extends StatelessWidget {
                         color: theme.colorScheme.onError.withOpacity(0.1),
                       ),
                       child: Image.network(
-                        opportunity.imageUrl,
+                        opportunity.mediaUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Center(

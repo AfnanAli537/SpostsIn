@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
@@ -118,11 +119,11 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
             setState(() {
               _opportunities.removeWhere((o) => o.id == state.opportunityId);
             });
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Opportunity deleted successfully'),
-                backgroundColor: Colors.green,
-              ),
+            Fluttertoast.showToast(
+              msg: 'Opportunity deleted successfully',
+              backgroundColor: Colors.green,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
             );
           } else if (state is OpportunityUpdated) {
             // Refresh the list after update

@@ -56,7 +56,7 @@ class ApiProfileDataSource implements IProfileDataSource {
           getAchievements(userId: userId, page: 1, size: 3),
           _getAnalyzedVideos(userId), // Mock for now
           getInterests(userId: userId, page: 1, pageSize: 6),
-          getOpportunities(userId: userId, page: 1, pageSize: 10),
+          getOpportunities(userId: userId, page: 1, pageSize: 3),
           getCourses(userId: userId, page: 1, pageSize: 10), // Mock for now
         ]);
 

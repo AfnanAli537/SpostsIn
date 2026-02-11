@@ -85,7 +85,6 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
         if (mediaUrl != null && mediaFile == null)
           'MediaUrl': mediaUrl,
       });
-
       final response = await apiClient.post(
         Endpoints.postOpportunity,
         data: formData,

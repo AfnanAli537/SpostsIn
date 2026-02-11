@@ -381,21 +381,21 @@ class Interest {
 
 class Opportunity {
   final String id;
-  final String imageUrl;
+  final String mediaUrl;
   final String? title;
 
-  Opportunity({required this.id, required this.imageUrl, this.title});
+  Opportunity({required this.id, required this.mediaUrl, this.title});
 
   factory Opportunity.fromJson(Map<String, dynamic> json) {
     return Opportunity(
       id: json['id'] ?? '',
-      imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
+      mediaUrl: json['mediaUrl'] ?? json['mediaUrl'] ?? '',
       title: json['title'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'imageUrl': imageUrl, 'title': title};
+    return {'id': id, 'mediaUrl': mediaUrl, 'title': title};
   }
 }
 
