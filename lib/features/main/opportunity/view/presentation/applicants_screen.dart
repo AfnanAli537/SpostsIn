@@ -69,7 +69,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
             String? status;
             switch (index) {
               case 0:
-                status = 'All'; // All
+                status = null; // All
                 break;
               case 1:
                 status = 'accepted';
