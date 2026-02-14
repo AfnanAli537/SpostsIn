@@ -48,17 +48,22 @@ class OpportunitiesSection extends StatelessWidget {
                     child: Container(
                       width: 100.w,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.onError.withOpacity(0.1),
                       ),
                       child: Image.network(
-                        opportunity.imageUrl,
+                        opportunity.mediaUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Center(
                             child: Icon(
-                              Icons.work,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
+                            Icons.event_available_outlined,
+                            size: 40.sp,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                            //  Icon(
+                            //   Icons.work,
+                            //   color: theme.colorScheme.onSurfaceVariant,
+                            // ),
                           );
                         },
                       ),

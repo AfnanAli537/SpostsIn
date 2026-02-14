@@ -3,21 +3,45 @@ import 'package:sports_in/features/main/home/data/model/post_model.dart';
 
 abstract class PostsRepository {
   Future<List<PostModel>> getAllPosts({required int pageNumber, int pageSize});
+  
+  // ✅ New method for user-specific posts
+  Future<List<PostModel>> getUserPosts({
+    required String userId,
+    required int page,
+    required int pageSize,
+  });
 
   Future<void> likePost({required String postId});
+  
   Future<void> addComment({required String postId, required String text});
+  
   Future<void> uploadPost({
     required String title,
     required String description,
     String? mediaUrl,
     required String sport,
   });
+
+  // ✅ New method for updating post
+  Future<void> updatePost({
+    required String postId,
+    required String title,
+    required String description,
+    required int sportTypeId,
+    String? mediaFile,
+  });
+
+  // ✅ New method for deleting post
+  Future<void> deletePost({required String postId});
+  
   Future<void> editComment({required String commentId, required String text});
+  
   Future<Map<String, dynamic>> getLikes({
     required String postId,
     required int pageNumber,
     int pageSize,
   });
+  
   Future<PaginatedCommentsResponse> getComments({
     required String postId,
     int pageNumber = 1,

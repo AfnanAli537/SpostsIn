@@ -897,14 +897,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/applicants_screen.dart';
 import 'package:sports_in/features/main/opportunity/view_model/bloc/applicants_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class OpportunityDetailsPage extends StatefulWidget {
   final String opportunityId;
@@ -935,6 +939,9 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final string = S.of(context);
+    final colorScheme = theme.colorScheme;
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -953,6 +960,69 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
           ),
         ),
         centerTitle: true,
+        actions: widget.isOwner == true ? [
+          // Edit button
+      IconButton(
+        icon: Icon(
+          Icons.edit_outlined,
+          color: colorScheme.onSurface,
+          size: 20.sp,
+        ),
+        onPressed: () async {
+          // First, fetch full opportunity details
+          context.read<OpportunityBloc>().add(
+                FetchOpportunityDetails(opportunityId: widget.opportunityId),
+              );
+
+          // Navigate to update screen
+          final result = await Navigator.pushNamed(
+            context,
+            AppRoutes.opportunityEditScreen,
+            arguments: widget.opportunityId, // Pass ID to fetch details
+          );
+
+          // Refresh if updated
+          if (result == true) {
+            context.read<OpportunityBloc>().add(
+                  const FetchOpportunities(isRefresh: true),
+                );
+          }
+          Navigator.pop(context);
+        },
+      ),
+      
+      // Delete button
+      IconButton(
+        icon: Icon(
+          Icons.delete_outline,
+          color: colorScheme.onSurface,
+          size: 20.sp,
+        ),
+        onPressed: () {
+          ConfirmationDialog.show(
+            context: context,
+            title: 'Delete Opportunity',
+            message: 'Are you sure you want to delete this opportunity? This action cannot be undone.',
+            onConfirm: () {
+              context.read<OpportunityBloc>().add(
+                    DeleteOpportunity(opportunityId: widget.opportunityId),
+                  );
+
+              Fluttertoast.showToast(
+                msg: 'Deleting opportunity...',
+                backgroundColor: Colors.orange,
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+              );
+            },
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            icon: Icons.delete_outline,
+            isDestructive: true,
+          );
+        },
+      ),
+        ]:null
       ),
       body: BlocConsumer<OpportunityBloc, OpportunityState>(
         listener: (context, state) {
@@ -1253,7 +1323,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
                 ApplyToOpportunity(opportunityId: widget.opportunityId),
               );
             },
-            child: const Text('Apply'),
+            child: const Text('Apply', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

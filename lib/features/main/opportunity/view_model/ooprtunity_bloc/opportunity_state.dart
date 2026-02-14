@@ -102,3 +102,42 @@ class OpportunityApplying extends OpportunityState {}
 class OpportunityApplied extends OpportunityState {
   const OpportunityApplied();
 }
+class OpportunityUpdateSuccess extends OpportunityState {
+  const OpportunityUpdateSuccess();
+}
+
+class OpportunityDeleteSuccess extends OpportunityState {
+  const OpportunityDeleteSuccess();
+}
+class MyOpportunitiesLoaded extends OpportunityState {
+  final List<OpportunityModel> opportunities;
+  final bool hasMore;
+
+  const MyOpportunitiesLoaded({
+    required this.opportunities,
+    this.hasMore = true,
+  });
+
+  @override
+  List<Object?> get props => [opportunities, hasMore];
+}
+
+// Opportunity updated successfully
+class OpportunityUpdated extends OpportunityState {
+  final String opportunityId;
+
+  const OpportunityUpdated({required this.opportunityId});
+
+  @override
+  List<Object?> get props => [opportunityId];
+}
+
+// Opportunity deleted successfully
+class OpportunityDeleted extends OpportunityState {
+  final String opportunityId;
+
+  const OpportunityDeleted({required this.opportunityId});
+
+  @override
+  List<Object?> get props => [opportunityId];
+}

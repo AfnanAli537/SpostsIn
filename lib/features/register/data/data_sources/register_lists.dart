@@ -35,7 +35,7 @@ class RegisterLists {
   static List<String> positionOptions(S s, String? sport) {
     if (sport == null) return [];
     
-    if (sport == s.footballer) {
+    if (sport == s.footballer || sport == s.football) {
       return [
         s.goalkeeper,
         s.defender,
@@ -44,7 +44,7 @@ class RegisterLists {
       ];
     }
     
-    if (sport == s.basketballer) {
+    if (sport == s.basketballer || sport == s.basketball) {
       return [
         s.pointGuard,
         s.shootingGuard,
@@ -54,7 +54,7 @@ class RegisterLists {
       ];
     }
     
-    if (sport == s.volleyballer) {
+    if (sport == s.volleyballer || sport == s.volleyball) {
       return [
         s.setter,
         s.outsideHitter,
@@ -64,7 +64,7 @@ class RegisterLists {
       ];
     }
     
-    if (sport == s.handballPlayer) {
+    if (sport == s.handballPlayer || sport == s.handball) {
       return [
         s.goalkeeper,
         s.leftWing,
@@ -111,6 +111,10 @@ class RegisterLists {
       s.basketballer,
       s.volleyballer,
       s.handballPlayer,
+      s.football,
+      s.basketball,
+      s.volleyball,
+      s.handball,
     ];
     
     return teamSports.contains(sportValue);

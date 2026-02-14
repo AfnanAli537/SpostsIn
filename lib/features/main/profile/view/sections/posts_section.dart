@@ -20,6 +20,16 @@ class PostsSection extends StatelessWidget {
     required this.string,
   }) : super(key: key);
 
+  // ✅ Helper method to check if URL is valid
+  bool _isValidImageUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+    if (url == 'string') return false; // Handle literal "string" from API
+    if (url.length < 5) return false; // Too short to be valid URL
+    
+    // Check if it starts with http:// or https://
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (posts.isEmpty) return const SizedBox.shrink();
@@ -36,9 +46,11 @@ class PostsSection extends StatelessWidget {
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
-            itemCount: posts.length > 6 ? 6 : posts.length,
+            itemCount: posts.length > 3 ? 3 : posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
+              final hasValidImage = _isValidImageUrl(post.imageUrl);
+              
               return Padding(
                 padding: EdgeInsets.only(right: 12.w),
                 child: GestureDetector(
@@ -48,20 +60,29 @@ class PostsSection extends StatelessWidget {
                     child: Container(
                       width: 100.w,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.onError.withOpacity(0.1),
                       ),
-                      child: Image.network(
-                        post.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                            child: Icon(
-                              Icons.image,
-                              color: theme.colorScheme.onSurfaceVariant,
+                      // ✅ Only use Image.network if URL is valid
+                      child: hasValidImage
+                          ? Image.network(
+                              post.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Icon(
+                                    Icons.image,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Icon(
+                                Icons.article_outlined,
+                                color: theme.colorScheme.primary,
+                                size: 40.sp,
+                              ),
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ),
                 ),

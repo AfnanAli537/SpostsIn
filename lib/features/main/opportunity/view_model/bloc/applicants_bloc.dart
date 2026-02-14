@@ -94,7 +94,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
 
       await repository.acceptOrRejectApplicant(
         applicationId: event.applicationId,
-        status: 'accepted',
+        status: 'Accepted',
       );
 
       emit(ApplicantActionSuccess(
@@ -126,7 +126,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
 
       await repository.acceptOrRejectApplicant(
         applicationId: event.applicationId,
-        status: 'rejected',
+        status: 'Rejected',
       );
 
       emit(ApplicantActionSuccess(

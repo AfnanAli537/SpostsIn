@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/home/data/model/author_model.dart';
@@ -10,23 +11,28 @@ import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 part 'posts_event.dart';
 part 'posts_state.dart';
 
+@injectable
 class PostsBloc extends Bloc<PostsEvent, PostsState> {
   final PostsRepositoryImpl postRepo;
-  final int pageSize;
+  // final int pageSize;
   final prefs = getIt<SharedPref>();
 
-  PostsBloc({required this.postRepo, this.pageSize = 10})
+  PostsBloc({required this.postRepo})
     : super(PostsInitial()) {
     on<FetchPosts>(_onFetchPosts);
+    on<FetchUserPosts>(_onFetchUserPosts); 
     on<LikePost>(_onLikePost);
     on<UploadPost>(_onUploadPost);
     on<LoadMorePosts>(_onLoadMorePosts);
+    on<UpdatePost>(_onUpdatePost); 
+    on<DeletePost>(_onDeletePost); 
   }
 
   final List<PostModel> _posts = [];
   int _currentPage = 1;
   bool _hasNextPage = true;
   bool _isFetching = false;
+  final int pageSize = 10;
 
 Future<void> _onFetchPosts(
   FetchPosts event,
@@ -97,31 +103,31 @@ Future<void> _onLoadMorePosts(
   }
 }
 
-  // Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
-  //   if (_isFetching || !_hasNextPage) return;
-  //   _isFetching = true;
 
-  //   try {
-  //     if (_currentPage == 1) {
-  //       emit(PostsLoading());
-  //       await Future.delayed(const Duration(seconds: 2));
-  //     }
-  //     final fetchedPosts = await postRepo.getAllPosts(
-  //       pageNumber: _currentPage,
-  //       pageSize: pageSize,
-  //     );
+  // ✅ New handler for user-specific posts
+  Future<void> _onFetchUserPosts(
+    FetchUserPosts event,
+    Emitter<PostsState> emit,
+  ) async {
+    try {
+      if (event.page == 1) {
+        emit(PostsLoading());
+      }
 
-  //     _posts.addAll(fetchedPosts);
-  //     _hasNextPage = fetchedPosts.length == pageSize;
-  //     _currentPage++;
+      final fetchedPosts = await postRepo.getUserPosts(
+        userId: event.userId,
+        page: event.page,
+        pageSize: event.pageSize,
+      );
 
-  //     emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-  //   } catch (e) {
-  //     emit(PostsError('Failed to fetch posts: ${e.toString()}'));
-  //   } finally {
-  //     _isFetching = false;
-  //   }
-  // }
+      emit(UserPostsLoaded(
+        posts: fetchedPosts,
+        hasNextPage: fetchedPosts.length >= event.pageSize,
+      ));
+    } catch (e) {
+      emit(PostsError('Failed to fetch user posts: ${e.toString()}'));
+    }
+  }
 
   Future<void> _onLikePost(LikePost event, Emitter<PostsState> emit) async {
     final currentState = state;
@@ -271,6 +277,83 @@ Future<void> _onLoadMorePosts(
       emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
 
       emit(PostsError("Failed to upload post: ${e.toString()}"));
+    }
+  }
+
+  // ✅ New handler for update post
+  Future<void> _onUpdatePost(UpdatePost event, Emitter<PostsState> emit) async {
+    emit(PostsLoading());
+
+    try {
+      await postRepo.updatePost(
+        postId: event.postId,
+        title: event.title,
+        description: event.description,
+        sportTypeId: event.sportTypeId,
+        mediaFile: event.mediaFile,
+      );
+
+      emit(PostUpdateSuccess());
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      // Refresh posts list
+      final currentState = state;
+      if (currentState is PostsLoaded) {
+        emit(PostsLoaded(posts: currentState.posts, hasNextPage: currentState.hasNextPage));
+      }
+    } catch (e) {
+      emit(PostsError('Failed to update post: ${e.toString()}'));
+    }
+  }
+
+  // ✅ New handler for delete post
+  Future<void> _onDeletePost(DeletePost event, Emitter<PostsState> emit) async {
+    final currentState = state;
+    
+    try {
+      await postRepo.deletePost(postId: event.postId);
+
+      // Remove post from local list
+      if (currentState is PostsLoaded) {
+        final updatedPosts = currentState.posts
+            .where((post) => post.id != event.postId)
+            .toList();
+        
+        emit(PostsLoaded(
+          posts: updatedPosts,
+          hasNextPage: currentState.hasNextPage,
+        ));
+      } else if (currentState is UserPostsLoaded) {
+        final updatedPosts = currentState.posts
+            .where((post) => post.id != event.postId)
+            .toList();
+        
+        emit(UserPostsLoaded(
+          posts: updatedPosts,
+          hasNextPage: currentState.hasNextPage,
+        ));
+      }
+
+      emit(PostDeleteSuccess());
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      // Re-emit current state
+      if (currentState is PostsLoaded) {
+        emit(PostsLoaded(
+          posts: currentState.posts.where((p) => p.id != event.postId).toList(),
+          hasNextPage: currentState.hasNextPage,
+        ));
+      }
+    } catch (e) {
+      emit(PostsError('Failed to delete post: ${e.toString()}'));
+      
+      // Re-emit previous state on error
+      if (currentState is PostsLoaded) {
+        emit(PostsLoaded(
+          posts: currentState.posts,
+          hasNextPage: currentState.hasNextPage,
+        ));
+      }
     }
   }
 }

@@ -18,4 +18,8 @@ abstract class AppRoutes {
 
   static const String userProfile = '/user-profile'; 
   static const String editProfile = '/edit-profile'; 
+  static const String profilePostsListScreen = '/profile-posts-list'; 
+  static const String profilePostsEditScreen = '/profile-posts-edit'; 
+
+  static const String opportunityEditScreen = '/opportunity-edit'; 
 }

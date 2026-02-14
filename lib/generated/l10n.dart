@@ -459,10 +459,10 @@ class S {
     return Intl.message('Club name', name: 'clubName', desc: '', args: []);
   }
 
-  /// `Foundation date dd/mm/yyyy`
+  /// `Foundation date`
   String get foundDate {
     return Intl.message(
-      'Foundation date dd/mm/yyyy',
+      'Foundation date',
       name: 'foundDate',
       desc: '',
       args: [],
@@ -1864,11 +1864,26 @@ class S {
     return Intl.message('Posts', name: 'posts', desc: '', args: []);
   }
 
+  /// `No Posts`
+  String get noPosts {
+    return Intl.message('No Posts', name: 'noPosts', desc: '', args: []);
+  }
+
   /// `Opportunities`
   String get opportunities {
     return Intl.message(
       'Opportunities',
       name: 'opportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Opportunities`
+  String get noOpportunities {
+    return Intl.message(
+      'No Opportunities',
+      name: 'noOpportunities',
       desc: '',
       args: [],
     );
@@ -1884,6 +1899,41 @@ class S {
     return Intl.message(
       'Achievements',
       name: 'achievements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Achievement`
+  String get achievement {
+    return Intl.message('Achievement', name: 'achievement', desc: '', args: []);
+  }
+
+  /// `Added New Achievement`
+  String get addAchievement {
+    return Intl.message(
+      'Added New Achievement',
+      name: 'addAchievement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Achievement deleted successfully`
+  String get achievementDeleted {
+    return Intl.message(
+      'Achievement deleted successfully',
+      name: 'achievementDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Achievement updated successfully`
+  String get achievementUpdated {
+    return Intl.message(
+      'Achievement updated successfully',
+      name: 'achievementUpdated',
       desc: '',
       args: [],
     );
@@ -1979,6 +2029,136 @@ class S {
     return Intl.message(
       'Disconnected successfully!',
       name: 'disconnectSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search`
+  String get search {
+    return Intl.message('Search', name: 'search', desc: '', args: []);
+  }
+
+  /// `Search Result`
+  String get searchResults {
+    return Intl.message(
+      'Search Result',
+      name: 'searchResults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No results found`
+  String get noResultsFound {
+    return Intl.message(
+      'No results found',
+      name: 'noResultsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try a different search`
+  String get tryDifferentSearch {
+    return Intl.message(
+      'Try a different search',
+      name: 'tryDifferentSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start searching`
+  String get startSearching {
+    return Intl.message(
+      'Start searching',
+      name: 'startSearching',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
+
+  /// `Edit Profile`
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get bio {
+    return Intl.message('Description', name: 'bio', desc: '', args: []);
+  }
+
+  /// `Updating post...`
+  String get updatingPost {
+    return Intl.message(
+      'Updating post...',
+      name: 'updatingPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post updated successfully!`
+  String get postUpdated {
+    return Intl.message(
+      'Post updated successfully!',
+      name: 'postUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to update post. Please try again.`
+  String get postUpdateFailed {
+    return Intl.message(
+      'Failed to update post. Please try again.',
+      name: 'postUpdateFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Post`
+  String get deletePost {
+    return Intl.message('Delete Post', name: 'deletePost', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to delete this post?`
+  String get deletePostConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this post?',
+      name: 'deletePostConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post deleted successfully!`
+  String get postDeleted {
+    return Intl.message(
+      'Post deleted successfully!',
+      name: 'postDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to delete post. Please try again.`
+  String get postDeleteFailed {
+    return Intl.message(
+      'Failed to delete post. Please try again.',
+      name: 'postDeleteFailed',
       desc: '',
       args: [],
     );

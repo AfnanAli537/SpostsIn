@@ -38,20 +38,32 @@ import 'package:sports_in/features/main/home/data/interface/post_interface.dart'
     as _i423;
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart'
     as _i651;
+import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart'
+    as _i45;
 import 'package:sports_in/features/main/opportunity/data/data_source/opportunity_remote_data_source.dart'
     as _i78;
 import 'package:sports_in/features/main/opportunity/data/interface/opportunity_interface.dart'
     as _i709;
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
     as _i294;
-import 'package:sports_in/features/main/profile/data/data_sources/mock_profile_data.dart'
-    as _i13;
+import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart'
+    as _i743;
+import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
+    as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
     as _i544;
 import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart'
     as _i752;
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart'
     as _i939;
+import 'package:sports_in/features/main/search/data/data_sources/mock_search_data_source.dart'
+    as _i1019;
+import 'package:sports_in/features/main/search/data/interface/i_search_data_source.dart'
+    as _i109;
+import 'package:sports_in/features/main/search/data/repo/search_repo.dart'
+    as _i514;
+import 'package:sports_in/features/main/search/view_model/search_bloc.dart'
+    as _i803;
 import 'package:sports_in/features/register/data/data_sources/register_api_data_source.dart'
     as _i569;
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart'
@@ -71,15 +83,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
-    gh.lazySingleton<_i544.IProfileDataSource>(() => _i13.MockProfileData());
-    gh.factory<_i752.ProfileRepo>(
-      () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
-    );
-    gh.factory<_i939.ProfileBloc>(
-      () => _i939.ProfileBloc(gh<_i752.ProfileRepo>()),
+    gh.lazySingleton<_i109.ISearchDataSource>(
+      () => _i1019.MockSearchDataSource(),
     );
     gh.lazySingleton<_i414.SharedPref>(
       () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i514.SearchRepo>(
+      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
     );
     gh.lazySingleton<_i694.ApiClient>(
       () => appModule.apiClient(gh<_i414.SharedPref>()),
@@ -93,8 +104,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i423.PostsRepository>(
       () => _i833.PostsRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
+    gh.factory<_i803.SearchBloc>(
+      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
+    );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i544.IProfileDataSource>(
+      () => _i505.ApiProfileDataSource(
+        gh<_i694.ApiClient>(),
+        gh<_i414.SharedPref>(),
+      ),
     );
     gh.lazySingleton<_i709.OpportunityInterface>(
       () => _i78.OpportunityRemoteDataSourceImpl(
@@ -120,8 +140,22 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
+    gh.factory<_i743.OpportunityBloc>(
+      () => _i743.OpportunityBloc(
+        opportunityRepo: gh<_i294.OpportunityReposatory>(),
+      ),
+    );
     gh.lazySingleton<_i651.PostsRepositoryImpl>(
       () => _i651.PostsRepositoryImpl(gh<_i423.PostsRepository>()),
+    );
+    gh.factory<_i752.ProfileRepo>(
+      () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
+    );
+    gh.factory<_i939.ProfileBloc>(
+      () => _i939.ProfileBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.factory<_i45.PostsBloc>(
+      () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
     );
     gh.lazySingleton<_i707.ForgetPasswordRepo>(
       () => _i707.ForgetPasswordRepo(gh<_i705.IForgetPasswordDataSource>()),

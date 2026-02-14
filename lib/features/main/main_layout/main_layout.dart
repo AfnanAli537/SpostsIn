@@ -8,6 +8,7 @@ import 'package:sports_in/core/widgets/app_drawer.dart';
 import 'package:sports_in/features/main/profile/view/presentation/my_profile_screen.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
+import 'package:sports_in/features/main/search/view/presentation/search_screen.dart';
 
 class CustomBottomNav extends StatefulWidget {
   const CustomBottomNav({super.key});
@@ -22,7 +23,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const Center(child: Text("Search")),
+    const SearchScreen(),
     const Center(child: Text("Messages")),
     const MyProfileScreen(),
   ];

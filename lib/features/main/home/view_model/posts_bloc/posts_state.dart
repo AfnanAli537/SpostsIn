@@ -1,8 +1,7 @@
 part of 'posts_bloc.dart';
 
-sealed class PostsState extends Equatable {
+abstract class PostsState extends Equatable {
   const PostsState();
-
   @override
   List<Object?> get props => [];
 }
@@ -11,45 +10,51 @@ class PostsInitial extends PostsState {}
 
 class PostsLoading extends PostsState {}
 
-class PostsError extends PostsState {
-  final String message;
-
-  const PostsError(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
-
-class PostsUploading extends PostsState {
-  final List<PostModel> currentPosts;
-
-  const PostsUploading(this.currentPosts);
-
-  @override
-  List<Object?> get props => [currentPosts];
-}
-
-class PostsUploadSuccess extends PostsState {
-  const PostsUploadSuccess();
-
-  @override
-  List<Object?> get props => [];
-}
-
 class PostsLoaded extends PostsState {
   final List<PostModel> posts;
   final bool hasNextPage;
-  final bool isUploading; // ✅ جديد
+  final bool isUploading;
 
-  const PostsLoaded({
+  PostsLoaded({
     required this.posts,
     required this.hasNextPage,
-    this.isUploading = false, // ✅ default false
+    this.isUploading = false,
   });
 
   @override
   List<Object?> get props => [posts, hasNextPage, isUploading];
 }
+
+// ✅ New state for user-specific posts
+class UserPostsLoaded extends PostsState {
+  final List<PostModel> posts;
+  final bool hasNextPage;
+  final bool isUploading;
+
+  UserPostsLoaded({
+    required this.posts,
+    required this.hasNextPage,
+    this.isUploading = false,
+  });
+
+  @override
+  List<Object?> get props => [posts, hasNextPage, isUploading];
+}
+
+class PostsError extends PostsState {
+  final String message;
+
+  PostsError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+class PostsUploadSuccess extends PostsState {}
+
+class PostUpdateSuccess extends PostsState {}
+
+class PostDeleteSuccess extends PostsState {}
+
 class PostsLoadingMore extends PostsState {
   final List<PostModel> currentPosts;
 
