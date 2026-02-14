@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/profile/view/widgets/post.dart';
@@ -64,27 +65,18 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.9) {
-      final state = context.read<PostsBloc>().state;
-      if (state is UserPostsLoaded && state.hasNextPage) {
-        _loadMore();
+ void _onScroll() {
+  if (_scrollController.position.pixels >= 
+      _scrollController.position.maxScrollExtent * 0.9) {
+    final state = context.read<PostsBloc>().state;
+    if (state is PostsLoaded && state.hasNextPage) {
+      final currentState = context.read<PostsBloc>().state;
+      if (currentState is! PostsLoadingMore) {
+        context.read<PostsBloc>().add(LoadMorePosts());
       }
     }
   }
-
-  void _loadMore() {
-    _currentPage++;
-    context.read<PostsBloc>().add(
-          FetchUserPosts(
-            userId: widget.userId,
-            page: _currentPage,
-            pageSize: 10,
-          ),
-        );
-  }
-
+}
   void _refreshPosts() {
     setState(() {
       _currentPage = 1;

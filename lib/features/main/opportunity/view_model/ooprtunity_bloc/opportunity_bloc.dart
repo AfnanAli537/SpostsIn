@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
@@ -11,6 +12,7 @@ import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.d
 part 'opportunity_event.dart';
 part 'opportunity_state.dart';
 
+@injectable
 class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
   final OpportunityReposatory opportunityRepo;
   final  prefs = getIt<SharedPref>();
@@ -32,6 +34,10 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
     on<CreateOpportunity>(_onCreateOpportunity);
     on<FetchOpportunityDetails>(_onFetchOpportunityDetails);
     on<ApplyToOpportunity>(_onApplyToOpportunity);
+    on<UpdateOpportunity>(_onUpdateOpportunity);
+    on<DeleteOpportunity>(_onDeleteOpportunity);
+    on<FetchMyOpportunities>(_onFetchMyOpportunities);
+
   }
 
   String? get currentUserId => prefs.getUserId();
@@ -271,10 +277,10 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       emit(const OpportunityApplied());
 
       // Return to previous state after a delay
-      await Future.delayed(const Duration(milliseconds: 1000));
-      if (state is OpportunityApplied) {
-        add(const FetchOpportunities(isRefresh: true));
-      }
+      // await Future.delayed(const Duration(milliseconds: 1000));
+      // if (state is OpportunityApplied) {
+      //   add(const FetchOpportunities(isRefresh: true));
+      // }
     } catch (e) {
       log('❌ Error applying to opportunity: $e');
       emit(OpportunityError(
@@ -282,4 +288,63 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       ));
     }
   }
+Future<void> _onFetchMyOpportunities(
+  FetchMyOpportunities event,
+  Emitter<OpportunityState> emit,
+) async {
+  try {
+    emit(OpportunityLoading());
+    
+    final response = await opportunityRepo.getMyOpportunities(
+      showActive: event.showActive,
+      page: event.page,
+      pageSize: event.pageSize,
+    );
+    
+    emit(MyOpportunitiesLoaded(
+      opportunities: response.items,
+      hasMore: response.hasNextPage,
+    ));
+  } catch (e) {
+    emit(OpportunityError(e.toString()));
+  }
+}
+
+Future<void> _onUpdateOpportunity(
+  UpdateOpportunity event,
+  Emitter<OpportunityState> emit,
+) async {
+  try {
+    emit(OpportunityLoading());
+    
+    await opportunityRepo.updateOpportunity(
+      id: event.opportunityId,
+      title: event.title,
+      description: event.description,
+      requirements: event.requirements,
+      endDate: event.endDate,
+      sportTypeId: event.sportTypeId,
+      mediaFile: event.mediaFile,
+    );
+    
+    emit(OpportunityUpdated(opportunityId: event.opportunityId));
+  } catch (e) {
+    emit(OpportunityError(e.toString()));
+  }
+}
+
+Future<void> _onDeleteOpportunity(
+  DeleteOpportunity event,
+  Emitter<OpportunityState> emit,
+) async {
+  try {
+    emit(OpportunityLoading());
+    
+    await opportunityRepo.deleteOpportunity(event.opportunityId);
+    
+    emit(OpportunityDeleted(opportunityId: event.opportunityId));
+  } catch (e) {
+    emit(OpportunityError(e.toString()));
+  }
+}
 }

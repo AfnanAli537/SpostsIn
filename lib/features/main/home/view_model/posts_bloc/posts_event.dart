@@ -48,7 +48,7 @@ class FetchUserPosts extends PostsEvent {
   final int page;
   final int pageSize;
 
-  FetchUserPosts({
+  const FetchUserPosts({
     required this.userId,
     this.page = 1,
     this.pageSize = 10,
@@ -62,7 +62,7 @@ class UpdatePost extends PostsEvent {
   final int sportTypeId;
   final String? mediaFile; // Path to new media file (optional)
 
-  UpdatePost({
+  const UpdatePost({
     required this.postId,
     required this.title,
     required this.description,

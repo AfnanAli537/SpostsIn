@@ -56,7 +56,7 @@ class ApiProfileDataSource implements IProfileDataSource {
           getAchievements(userId: userId, page: 1, size: 3),
           _getAnalyzedVideos(userId), // Mock for now
           getInterests(userId: userId, page: 1, pageSize: 6),
-          getOpportunities(userId: userId, page: 1, pageSize: 10),
+          getOpportunities(userId: userId, page: 1, pageSize: 3),
           getCourses(userId: userId, page: 1, pageSize: 10), // Mock for now
         ]);
 
@@ -212,24 +212,12 @@ class ApiProfileDataSource implements IProfileDataSource {
     Map<String, dynamic> json,
     String? sportsText,
   ) {
-    S? s;
-    try {
-      s = S.current;
-    } catch (_) {
-      s = null;
-    }
-    final genderEnum = json['gender'] != null
-        ? EnumMapper.fromLabel(EnumMapper.genderLabels(s), json['gender'])
-        : null;
-    final genderId = genderEnum != null
-        ? EnumMapper.getGenderId(genderEnum)
-        : null;
 
     return ScoutSpecificData(
       specializedSport: sportsText ?? json['specialization'],
       yearsOfExperience: json['yearsOfExperience'],
+      gender: json['gender'],
       organization: null,
-      gender: genderId,
     );
   }
 

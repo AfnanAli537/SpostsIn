@@ -312,8 +312,14 @@ class BuildContent extends StatelessWidget {
               );
             }
 
-            if (state is PostsLoaded) {
-              final posts = state.posts;
+            // Handle both PostsLoaded and PostsLoadingMore states
+            if (state is PostsLoaded || state is PostsLoadingMore) {
+              final posts = state is PostsLoaded 
+                  ? state.posts 
+                  : (state as PostsLoadingMore).currentPosts;
+              final hasNextPage = state is PostsLoaded ? state.hasNextPage : true;
+              final isLoadingMore = state is PostsLoadingMore;
+              
               if (posts.isEmpty) {
                 return SliverList(
                   delegate: SliverChildListDelegate([
@@ -386,57 +392,33 @@ class BuildContent extends StatelessWidget {
                   
                   // Adjust index for posts array
                   final postIndex = index - 1;
-                  final postId = posts[postIndex].id;
                   
-                  return BlocBuilder<PostsBloc, PostsState>(
-                    buildWhen: (previous, current) {
-                      if (previous is PostsLoaded && current is PostsLoaded) {
-                        final prevPost = previous.posts.firstWhere(
-                          (p) => p.id == postId,
-                        );
-                        final currPost = current.posts.firstWhere(
-                          (p) => p.id == postId,
-                        );
-                        return prevPost.isLikedByCurrentUser !=
-                                currPost.isLikedByCurrentUser ||
-                            prevPost.likesCount != currPost.likesCount;
-                      }
-                      return true;
-                    },
-                    builder: (context, state) {
-                     
-                      if (state is! PostsLoaded) return const SizedBox();
-                      final post = state.posts.firstWhere(
-                        (p) => p.id == postId,
-                      );
-if (postIndex == posts.length - 1 && state.hasNextPage) {
-  context.read<PostsBloc>().add( LoadMorePosts());
-
-  return Column(
-    children: [
-      PostWidget(
-        key: ValueKey(post.id),
-        post: post,
-      ),
-      const SizedBox(height: 16),
-      const Center(child: CircularProgressIndicator()),
-    ],
-  );
-}
-
-                      return Column(
-                        children: [
-                          PostWidget(
-                             key: ValueKey(post.id),
-                            post: post,
-                          ),
-                           Visibility(visible: state.posts.length==index, 
-                           child: SizedBox(height: 100,)) ,
-                        ],
-                      );
-                      
-                    },
-                    
+                  // Check if we're at the last item and need to load more
+                  if (postIndex == posts.length - 1 && hasNextPage && !isLoadingMore) {
+                    // Trigger pagination only once
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      context.read<PostsBloc>().add(LoadMorePosts());
+                    });
+                  }
+                  
+                  final post = posts[postIndex];
+                  
+                  return Column(
+                    children: [
+                      PostWidget(
+                        key: ValueKey(post.id),
+                        post: post,
+                      ),
+                      // Show loading indicator at the last item if loading more
+                      if (postIndex == posts.length - 1 && isLoadingMore)
+                        const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      // Add spacing at the very end
+                      if (postIndex == posts.length - 1)
+                        const SizedBox(height: 100),
+                    ],
                   );
                 }, childCount: posts.length + 1), 
               );

@@ -60,7 +60,7 @@ class PostsSection extends StatelessWidget {
                     child: Container(
                       width: 100.w,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.onError.withOpacity(0.1),
                       ),
                       // ✅ Only use Image.network if URL is valid
                       child: hasValidImage
@@ -79,7 +79,7 @@ class PostsSection extends StatelessWidget {
                           : Center(
                               child: Icon(
                                 Icons.article_outlined,
-                                color: theme.colorScheme.onSurfaceVariant,
+                                color: theme.colorScheme.primary,
                                 size: 40.sp,
                               ),
                             ),

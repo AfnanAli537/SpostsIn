@@ -34,7 +34,6 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
   late final TextEditingController bioController;
 
   late final ValueNotifier<String?> sportNameNotifier;
-  late final ValueNotifier<String?> genderNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
 
   final autoValidateNotifier = ValueNotifier<AutovalidateMode>(
@@ -105,15 +104,15 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
       appBar: AppBar(title: Text(string.editProfile)),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          // if (state is ProfileUpdated) {
-            // Fluttertoast.showToast(
-            //   msg: 'Profile updated successfully',
-            //   backgroundColor: Colors.green,
-            //   toastLength: Toast.LENGTH_LONG,
-            //   gravity: ToastGravity.TOP,
-            // );
+          if (state is ProfileUpdated) {
+            Fluttertoast.showToast(
+              msg: 'Profile updated successfully',
+              backgroundColor: Colors.green,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.TOP,
+            );
             // Navigator.pop(context);
-          // }
+          }
 
           if (state is ProfileError) {
             Fluttertoast.showToast(

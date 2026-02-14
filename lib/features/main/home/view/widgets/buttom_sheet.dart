@@ -11,6 +11,7 @@ import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.da
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/upload_opportunity.dart';
 import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/view/presentation/achievement/achievement_edit_screen.dart';
 
 class CreateOptionsBottomSheet extends StatelessWidget {
   const CreateOptionsBottomSheet({super.key});
@@ -66,7 +67,15 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   icon: Icons.star,
                   iconColor: const Color(0xFFFFEE58),
                   title: 'Create Achievement',
-                  onTap: () {
+                  onTap: () async {
+                    final sharedPref = getIt<SharedPref>();
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            AchievementEditScreen(userId: sharedPref.getUserId()!),
+                      ),
+                    );
                     Navigator.pop(context);
                     // Navigate to create achievement
                   },

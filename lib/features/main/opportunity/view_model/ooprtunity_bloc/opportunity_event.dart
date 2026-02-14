@@ -90,3 +90,56 @@ class ApplyToOpportunity extends OpportunityEvent {
   @override
   List<Object?> get props => [opportunityId];
 }
+class UpdateOpportunity extends OpportunityEvent {
+  final String opportunityId;
+  final String title;
+  final String description;
+  final String requirements;
+  final DateTime endDate;
+  final int sportTypeId;
+  final String? mediaFile;
+
+  const UpdateOpportunity({
+    required this.opportunityId,
+    required this.title,
+    required this.description,
+    required this.requirements,
+    required this.endDate,
+    required this.sportTypeId,
+    this.mediaFile,
+  });
+
+  @override
+  List<Object?> get props => [
+        opportunityId,
+        title,
+        description,
+        requirements,
+        endDate,
+        sportTypeId,
+        mediaFile,
+      ];
+}
+
+class DeleteOpportunity extends OpportunityEvent {
+  final String opportunityId;
+
+  const DeleteOpportunity({required this.opportunityId});
+
+  @override
+  List<Object?> get props => [opportunityId];
+}
+class FetchMyOpportunities extends OpportunityEvent {
+  final bool showActive; // true = active, false = inactive
+  final int page;
+  final int pageSize;
+
+  const FetchMyOpportunities({
+    this.showActive = true,
+    this.page = 1,
+    this.pageSize = 10,
+  });
+
+  @override
+  List<Object?> get props => [showActive, page, pageSize];
+}

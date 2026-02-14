@@ -85,7 +85,6 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
         if (mediaUrl != null && mediaFile == null)
           'MediaUrl': mediaUrl,
       });
-
       final response = await apiClient.post(
         Endpoints.postOpportunity,
         data: formData,
@@ -239,4 +238,92 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
       rethrow;
     }
   }
+  @override
+/// Get my opportunities (active or inactive)
+Future<PaginatedOpportunitiesResponse> getMyOpportunities({
+  required bool showActive,
+  int page = 1,
+  int pageSize = 10,
+}) async {
+  try {
+    // Use correct endpoint based on showActive parameter
+    final endpoint = showActive 
+        ? Endpoints.getActiveOp 
+        : Endpoints.getInActiveOp;
+    
+    final response = await apiClient.get(
+      endpoint,
+      params: {
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data as Map<String, dynamic>;
+      return PaginatedOpportunitiesResponse.fromJson(data);
+    } else {
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+    }
+  } on DioException catch (e) {
+    final errorKey = ApiErrorHandler.handleDioErrorKey(e);
+    throw ApiException(
+      message: 'Failed to load opportunities',
+      key: errorKey,
+    );
+  }
+}
+  @override
+Future<void> updateOpportunity({
+  required String opportunityId,
+  required String title,
+  required String description,
+  required String requirements,
+  required DateTime endDate,
+  required int sportTypeId,
+  String? mediaFile,
+}) async {
+  try {
+    final formData = FormData.fromMap({
+      'Title': title,
+      'Description': description,
+      'Requirements': requirements,
+      'EndDate': endDate.toIso8601String(),
+      'SportTypeId': sportTypeId,
+      if (mediaFile != null)
+        'MediaFile': await MultipartFile.fromFile(mediaFile),
+    });
+
+    final url = Endpoints.editOpportunity.replaceFirst('{id}', opportunityId);
+    final response = await apiClient.put(url, data: formData);
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+    }
+
+    log('✅ Opportunity updated successfully (API)');
+  } on DioException catch (e) {
+    log('❌ Error updating opportunity: ${e.message}');
+    throw ApiErrorHandler.handleDioErrorKey(e);
+  }
+}
+
+@override
+Future<void> deleteOpportunity({
+  required String opportunityId,
+}) async {
+  try {
+    final url = Endpoints.deleteOpportunity.replaceFirst('{id}', opportunityId);
+    final response = await apiClient.delete(url);
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+    }
+
+    log('✅ Opportunity deleted successfully (API)');
+  } on DioException catch (e) {
+    log('❌ Error deleting opportunity: ${e.message}');
+    throw ApiErrorHandler.handleDioErrorKey(e);
+  }
+}
 }
