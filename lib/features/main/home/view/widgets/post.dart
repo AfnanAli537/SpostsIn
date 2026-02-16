@@ -4,15 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/comments.dart';
 import 'package:sports_in/features/main/home/view/presentation/likes.dart';
+import 'package:sports_in/features/main/home/view/widgets/full_screen_image.dart';
 import 'package:sports_in/features/main/home/view_model/likes_bloc/likes_bloc.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:translator/translator.dart';
@@ -43,8 +44,8 @@ class _PostWidgetState extends State<PostWidget> {
   bool _showTranslation = false;
   final GoogleTranslator _translator = GoogleTranslator();
   late int _commentsCount;
-  late String _deviceLanguage;
-
+  String? _detectedLanguage;
+  String? _targetLanguage;
   late bool _isLiked;
   late int _likesCount;
 
@@ -55,7 +56,7 @@ class _PostWidgetState extends State<PostWidget> {
     _isLiked = widget.post.isLikedByCurrentUser;
     _likesCount = widget.post.likesCount;
     _initializeMedia();
-    _loadDeviceLanguage();
+    _detectLanguage();
   }
 
   @override
@@ -77,22 +78,53 @@ class _PostWidgetState extends State<PostWidget> {
     }
   }
 
-  Future<void> _loadDeviceLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    _deviceLanguage = prefs.getString('language_code') ?? 'ar';
+  /// كشف اللغة التلقائي
+  Future<void> _detectLanguage() async {
+    try {
+      // استخدام Google Translator للكشف عن اللغة
+      final detection = await _translator.translate(
+        widget.post.description,
+        from: 'auto',
+        to: 'en',
+      );
+      
+      if (mounted) {
+        setState(() {
+          _detectedLanguage = detection.sourceLanguage.code;
+          _targetLanguage = _detectedLanguage == 'ar' ? 'en' : 'ar';
+        });
+      }
+    } catch (e) {
+      log('Language detection error: $e');
+      if (mounted) {
+        setState(() {
+          _detectedLanguage = _isArabic(widget.post.description) ? 'ar' : 'en';
+          _targetLanguage = _detectedLanguage == 'ar' ? 'en' : 'ar';
+        });
+      }
+    }
+  }
+
+  bool _isArabic(String text) {
+    final arabicRegex = RegExp(r'[\u0600-\u06FF]');
+    return arabicRegex.hasMatch(text);
   }
 
   Future<void> _translateDescription() async {
+    // إذا كانت الترجمة موجودة بالفعل، فقط نبدل العرض
     if (_translatedDesc != null) {
       setState(() => _showTranslation = true);
       return;
     }
+
     setState(() => _isTranslating = true);
     try {
       final translation = await _translator.translate(
         widget.post.description,
-        to: _deviceLanguage,
+        from: _detectedLanguage ?? 'auto',
+        to: _targetLanguage!,
       );
+      
       if (mounted) {
         setState(() {
           _translatedDesc = translation.text;
@@ -107,7 +139,18 @@ class _PostWidgetState extends State<PostWidget> {
           _isTranslating = false;
           _showTranslation = false;
         });
+        Fluttertoast.showToast(msg: 'Failed to translate');
       }
+    }
+  }
+
+  void _toggleTranslation() {
+    if (_showTranslation) {
+      // عرض النص الأصلي
+      setState(() => _showTranslation = false);
+    } else {
+      // عرض الترجمة
+      _translateDescription();
     }
   }
 
@@ -184,6 +227,22 @@ class _PostWidgetState extends State<PostWidget> {
     context.read<PostsBloc>().add(LikePost(widget.post.id));
   }
 
+  void _openFullScreenMedia() {
+    if (widget.post.mediaUrl == null || widget.post.mediaUrl!.isEmpty) return;
+
+    if(!_isVideo) {
+      // Open full-screen image viewer
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FullScreenImageViewer(
+            imageUrl: widget.post.mediaUrl!,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _betterPlayerController?.dispose();
@@ -229,7 +288,7 @@ class _PostWidgetState extends State<PostWidget> {
                     ],
                   ),
                 ),
-                // NEW POPUP MENU BUTTON
+                // POPUP MENU BUTTON
                 PopupMenuButton<String>(
                   icon: Icon(Icons.more_vert, color: theme.onSurface),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -275,20 +334,76 @@ class _PostWidgetState extends State<PostWidget> {
               ],
             ),
             SizedBox(height: 16.h),
+            // النص الأصلي أو المترجم
             Text(
-              _showTranslation && _translatedDesc != null ? _translatedDesc! : widget.post.description,
-              style: TextStyle(fontSize: 14.sp, height: 1.4),
+              _showTranslation && _translatedDesc != null 
+                  ? _translatedDesc! 
+                  : widget.post.description,
+              style: TextStyle(
+                fontSize: 14.sp, 
+                height: 1.4,
+                // إضافة خط مائل للنص المترجم
+                fontStyle: _showTranslation && _translatedDesc != null 
+                    ? FontStyle.italic 
+                    : FontStyle.normal,
+                // يمكن إضافة لون مختلف قليلاً للنص المترجم
+                color: _showTranslation && _translatedDesc != null 
+                    ? Colors.grey[200] 
+                    : null,
+              ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
+            // زر الترجمة
             TextButton(
-              onPressed: _isTranslating ? null : () => _showTranslation ? setState(() => _showTranslation = false) : _translateDescription(),
+              onPressed: _isTranslating ? null : _toggleTranslation,
               child: _isTranslating 
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                : Text(_showTranslation ? 'See Original' : 'Translate', style: const TextStyle(color: Colors.blue)),
+                ? const SizedBox(
+                    width: 16, 
+                    height: 16, 
+                    child: CircularProgressIndicator(strokeWidth: 2)
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _showTranslation 
+                            ? Icons.translate_outlined 
+                            : Icons.translate,
+                        size: 14.sp,
+                        color: Colors.blue,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        _showTranslation ? 'See Original' : 'Translate',
+                        style: const TextStyle(color: Colors.blue),
+                      ),
+                    ],
+                  ),
             ),
             if (widget.post.mediaUrl != null && widget.post.mediaUrl!.isNotEmpty)
-              _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
+              GestureDetector(
+                onTap: _openFullScreenMedia,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
+                    // Fullscreen icon overlay
+                    Visibility(
+                      visible: !_isVideo,
+                      child: Positioned(
+                        bottom: 8.h,
+                        right: 8.w,
+                        child: Icon(
+                          Icons.fullscreen,
+                          color: ColorManager.borderColor,
+                          size: 35.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             SizedBox(height: 16.h),
             Row(
               children: [

@@ -94,7 +94,6 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        // Handle loading state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             body: Center(
@@ -110,7 +109,6 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        // Handle case where user is null
         if (!snapshot.hasData || snapshot.data == null) {
           return Scaffold(
             body: Center(
@@ -163,28 +161,6 @@ class _HomePageState extends State<HomePage> {
                   child: CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
-                      // SliverAppBar(
-                      //   backgroundColor: Theme.of(context).colorScheme.surface,
-                      //   elevation: 0,
-                      //   floating: true,
-                      //   snap: true,
-                      //   leading: IconButton(
-                      //     icon: Icon(
-                      //       Icons.menu,
-                      //       color: Theme.of(context).colorScheme.onSurface,
-                      //     ),
-                      //     onPressed: () {},
-                      //   ),
-                      //   actions: [
-                      //     IconButton(
-                      //       icon: Icon(
-                      //         Icons.notifications_outlined,
-                      //         color: Theme.of(context).colorScheme.onSurface,
-                      //       ),
-                      //       onPressed: () {},
-                      //     ),
-                      //   ],
-                      // ),
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.all(16.w),

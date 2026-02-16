@@ -25,8 +25,8 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
   }) async {
     try {
       final Map<String,dynamic>params = {
-        'page': pageNumber,
-        'size': pageSize,
+        'pageNumber': pageNumber,
+        'pageSize': pageSize,
       };
 
       if (searchTerm != null && searchTerm.isNotEmpty) {

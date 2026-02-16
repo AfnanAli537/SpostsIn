@@ -401,14 +401,15 @@
 //     );
 //   }
 // }
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
 import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
 
@@ -442,16 +443,22 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       duration: const Duration(milliseconds: 1500),
     )..repeat();
     
-    context.read<OpportunityBloc>().add(const FetchOpportunities(isRefresh: true));
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
+    if (!mounted) return;
+    
     if (_scrollController.position.pixels >= 
         _scrollController.position.maxScrollExtent * 0.9) {
       final state = context.read<OpportunityBloc>().state;
       if (state is OpportunityLoaded && state.hasNextPage) {
-        context.read<OpportunityBloc>().add(const FetchOpportunities());
+        // Schedule the event for after the current frame to avoid mouse tracker conflicts
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.read<OpportunityBloc>().add(const FetchOpportunities());
+          }
+        });
       }
     }
   }
@@ -459,6 +466,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _shimmerController.dispose();
     _debounce?.cancel();
@@ -499,6 +507,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
               duration: Duration(seconds: 2),
             ),
           );
+          context.read<OpportunityBloc>().add(const FetchOpportunities(isRefresh: true));
         }
         
         if (state is OpportunityApplied) {
@@ -515,111 +524,24 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
         return SliverList(
           delegate: SliverChildListDelegate([
             // Search Section
-            Padding(
-              padding: EdgeInsets.all(16.w),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 16.sp,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey[400],
-                    ),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.clear,
-                              color: Colors.grey[600],
-                            ),
-                            onPressed: () {
-                              _searchController.clear();
-                              _onSearchChanged('');
-                            },
-                          )
-                        : Icon(
-                            Icons.tune,
-                            color: Colors.grey[600],
-                          ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 14.h,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            _buildSearchBar(),
             
             // Filter Section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildFilterChip(
-                      label: state is OpportunityLoaded && state.sportName != null
-                          ? state.sportName!
-                          : 'Sport',
-                      isSelected: state is OpportunityLoaded && state.sportTypeId != null,
-                      onTap: () {
-                        _showFilterDialog(
-                          'Select Sport',
-                          _sportTypes.keys.toList(),
-                          (selected) {
-                            context.read<OpportunityBloc>().add(
-                                  UpdateSportFilter(
-                                    sportTypeId: _sportTypes[selected],
-                                    sportName: selected,
-                                  ),
-                                );
-                          },
-                        );
-                      },
-                    ),
-                    SizedBox(width: 8.w),
-                    if (state is OpportunityLoaded &&
-                        (state.sportTypeId != null || state.searchTerm != null))
-                      _buildFilterChip(
-                        label: 'Clear',
-                        icon: Icons.clear_all,
-                        isSelected: false,
-                        onTap: _clearFilters,
-                      ),
-                  ],
-                ),
-              ),
-            ),
+            _buildFilterSection(state),
             
             SizedBox(height: 16.h),
             
-            // Content based on state
-            if (state is OpportunityLoading)
-              ..._buildShimmerList()
-            else if (state is OpportunityLoaded)
+            // Content based on state - Similar to PostsTab logic
+            if (state is OpportunityLoaded)
               ..._buildOpportunitiesList(state)
+            else if (state is OpportunityLoading)
+              ..._buildShimmerList()
             else if (state is OpportunityError)
               _buildErrorState(state.message)
+            else if (state is OpportunityInitial)
+              ..._buildShimmerList()
             else
-              ..._buildShimmerList(),
+              const SizedBox.shrink(),
             
             SizedBox(height: 100.h),
           ]),
@@ -628,9 +550,106 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: EdgeInsets.all(16.w),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: TextField(
+          onTapOutside: (_) => FocusScope.of(context).unfocus(),
+          controller: _searchController,
+          onChanged: _onSearchChanged,
+          decoration: InputDecoration(
+            hintText: 'Search',
+            hintStyle: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 16.sp,
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.grey[400],
+            ),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: Icon(
+                      Icons.clear,
+                      color: Colors.grey[600],
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                      _onSearchChanged('');
+                    },
+                  )
+                : Icon(
+                    Icons.tune,
+                    color: Colors.grey[600],
+                  ),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 14.h,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterSection(OpportunityState state) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildFilterChip(
+              label: state is OpportunityLoaded && state.sportName != null
+                  ? state.sportName!
+                  : 'Sport',
+              isSelected: state is OpportunityLoaded && state.sportTypeId != null,
+              onTap: () {
+                _showFilterDialog(
+                  'Select Sport',
+                  _sportTypes.keys.toList(),
+                  (selected) {
+                    context.read<OpportunityBloc>().add(
+                          UpdateSportFilter(
+                            sportTypeId: _sportTypes[selected],
+                            sportName: selected,
+                          ),
+                        );
+                  },
+                );
+              },
+            ),
+            SizedBox(width: 8.w),
+            if (state is OpportunityLoaded &&
+                (state.sportTypeId != null || state.searchTerm != null))
+              _buildFilterChip(
+                label: 'Clear',
+                icon: Icons.clear_all,
+                isSelected: false,
+                onTap: _clearFilters,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   List<Widget> _buildShimmerList() {
     return List.generate(
-      5, // Show 5 shimmer cards
+      5,
       (index) => _buildShimmerCard(),
     );
   }
@@ -677,7 +696,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Title shimmer - first line
                         Container(
                           width: double.infinity,
                           height: 18.h,
@@ -687,7 +705,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           ),
                         ),
                         SizedBox(height: 8.h),
-                        // Title shimmer - second line
                         Container(
                           width: 150.w,
                           height: 18.h,
@@ -697,7 +714,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           ),
                         ),
                         SizedBox(height: 12.h),
-                        // Publisher name shimmer
                         Container(
                           width: 120.w,
                           height: 14.h,
@@ -707,7 +723,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           ),
                         ),
                         SizedBox(height: 8.h),
-                        // Date shimmer
                         Container(
                           width: 100.w,
                           height: 12.h,
@@ -720,7 +735,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     ),
                   ),
                   SizedBox(width: 12.w),
-                  // Image shimmer
                   Container(
                     width: 80.w,
                     height: 80.h,
@@ -749,6 +763,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       widgets.add(_buildJobCard(opportunity));
     }
     
+    // Show loading indicator for pagination
     if (state.hasNextPage) {
       widgets.add(
         Padding(
@@ -897,7 +912,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
-          ),
+            ),
         ],
       ),
       child: Material(
@@ -905,12 +920,16 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
         child: InkWell(
           borderRadius: BorderRadius.circular(16.r),
           onTap: () {
+            // Navigate without await - Let Bloc handle state
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<OpportunityBloc>(),
-                  child: OpportunityDetailsPage(opportunityId: opportunity.id,isOwner: opportunity.isOwner,),
+                builder: (_) => BlocProvider(
+                  create: (BuildContext context) =>OpportunityBloc(opportunityRepo: getIt<OpportunityReposatory>() ) ,
+                  child: OpportunityDetailsPage(
+                    opportunityId: opportunity.id,
+                    isOwner: opportunity.isOwner,
+                  ),
                 ),
               ),
             );
