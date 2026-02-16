@@ -136,3 +136,49 @@ Future<LoginResponse?> getUserFromPrefs() async {
 
 
 }
+
+
+
+
+
+
+
+
+class AppliedOpportunitiesManager {
+  static const String _appliedOpportunitiesKey = 'applied_opportunities';
+
+  // Get list of applied opportunity IDs
+  static Future<Set<String>> getAppliedOpportunities() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? appliedList = prefs.getStringList(_appliedOpportunitiesKey);
+    return appliedList?.toSet() ?? {};
+  }
+
+  // Mark an opportunity as applied
+  static Future<void> markAsApplied(String opportunityId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final appliedSet = await getAppliedOpportunities();
+    appliedSet.add(opportunityId);
+    await prefs.setStringList(_appliedOpportunitiesKey, appliedSet.toList());
+  }
+
+  // Check if an opportunity has been applied to
+  static Future<bool> isApplied(String opportunityId) async {
+    final appliedSet = await getAppliedOpportunities();
+    return appliedSet.contains(opportunityId);
+  }
+
+  // Remove an opportunity from applied list (if user cancels application)
+  static Future<void> removeApplied(String opportunityId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final appliedSet = await getAppliedOpportunities();
+    appliedSet.remove(opportunityId);
+    await prefs.setStringList(_appliedOpportunitiesKey, appliedSet.toList());
+  }
+
+  // Clear all applied opportunities (useful for logout)
+  static Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_appliedOpportunitiesKey);
+  }
+}

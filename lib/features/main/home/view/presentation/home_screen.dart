@@ -157,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                 return RefreshIndicator(
                   onRefresh: () async {
                     context.read<PostsBloc>().add(const FetchPosts(page: 1));
+                    context.read<OpportunityBloc>().add(const FetchOpportunities (isRefresh:true ));
                   },
                   child: CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
