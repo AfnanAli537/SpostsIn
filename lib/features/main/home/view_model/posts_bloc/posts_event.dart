@@ -60,7 +60,7 @@ class UpdatePost extends PostsEvent {
   final String title;
   final String description;
   final int sportTypeId;
-  final String? mediaFile; // Path to new media file (optional)
+  final String? mediaFile; 
 
   const UpdatePost({
     required this.postId,
@@ -77,7 +77,7 @@ class UpdatePost extends PostsEvent {
 class DeletePost extends PostsEvent {
   final String postId;
 
-  DeletePost({required this.postId});
+  const DeletePost({required this.postId});
 
   @override
   List<Object?> get props => [postId];

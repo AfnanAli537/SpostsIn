@@ -412,7 +412,7 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 
 class OpportunitiesContent extends StatefulWidget {
   const OpportunitiesContent({super.key});
@@ -605,6 +605,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       ),
     );
   }
+bool _hasValidImage(String? url) {
+  return url != null && url.isNotEmpty && url.trim().isNotEmpty;
+}
 
   Widget _buildFilterSection(OpportunityState state) {
     return Padding(
@@ -982,29 +985,58 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                   ),
                 ),
                 SizedBox(width: 12.w),
-                Container(
-                  width: 80.w,
-                  height: 80.h,
-                  decoration: BoxDecoration(
-                    color: opportunity.mediaUrl != null ? null : defaultColor,
-                    borderRadius: BorderRadius.circular(12.r),
-                    image: opportunity.mediaUrl != null
-                        ? DecorationImage(
-                            image: NetworkImage(opportunity.mediaUrl!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                  ),
-                  child: opportunity.mediaUrl == null
-                      ? Center(
-                          child: Icon(
-                            Icons.event_available_outlined,
-                            size: 40.sp,
-                            color: Theme.of(context).colorScheme.surface,
-                          ),
-                        )
+
+// Then in your code:
+Container(
+  width: 80.w,
+  height: 80.h,
+  decoration: BoxDecoration(
+    color: _hasValidImage(opportunity.mediaUrl) ? Colors.grey[200] : defaultColor,
+    borderRadius: BorderRadius.circular(12.r),
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(12.r),
+    child: _hasValidImage(opportunity.mediaUrl)
+        ? Image.network(
+            opportunity.mediaUrl!,
+            width: 80.w,
+            height: 80.h,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
                       : null,
+                  strokeWidth: 2,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: defaultColor,
+                child: Center(
+                  child: Icon(
+                    Icons.event_available_outlined,
+                    size: 40.sp,
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
+                ),
+              );
+            },
+          )
+        : Center(
+            child: Icon(
+              Icons.event_available_outlined,
+              size: 40.sp,
+              color: Theme.of(context).colorScheme.surface,
+            ),
+          ),
+  ),
+)
               ],
             ),
           ),

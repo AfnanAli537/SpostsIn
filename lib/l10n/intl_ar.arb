@@ -298,8 +298,108 @@
   "updatingPost": "جار تحديث المنشور...",
   "postUpdated": "تم تحديث المنشور بنجاح!",
   "postUpdateFailed": "فشل تحديث المنشور. حاول مرة أخرى.",
-  "deletePost": "حذف المنشور",
-  "deletePostConfirmation": "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
   "postDeleted": "تم حذف المنشور بنجاح!",
-  "postDeleteFailed": "فشل حذف المنشور. حاول مرة أخرى."
+  "postDeleteFailed": "فشل حذف المنشور. حاول مرة أخرى.",
+ 
+  "commentAddedSuccessfully": "تم إضافة التعليق بنجاح",
+  "commentUpdatedSuccessfully": "تم تحديث التعليق بنجاح",
+  "commentDeletedSuccessfully": "تم حذف التعليق بنجاح",
+  "comments": "التعليقات",
+  "noCommentsYet": "لا توجد تعليقات بعد",
+  "retry": "إعادة المحاولة",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "deleteComment": "حذف التعليق",
+  "deleteCommentConfirmation": "هل أنت متأكد من حذف هذا التعليق؟",
+  "editingComment": "جاري تعديل التعليق",
+  "editYourComment": "عدّل تعليقك...",
+  "addAComment": "أضف تعليقاً...",
+  "update": "تحديث",
+  "post": "نشر",
+  "error": "خطأ",
+  "loadingUserData": "جاري تحميل بيانات المستخدم...",
+  "noUserDataFound": "لم يتم العثور على بيانات المستخدم",
+  "hi": "مرحباً",
+  "guest": "ضيف",
+  "happyToSeeYouToday": "سعداء برؤيتك اليوم",
+ "latestPosts": "أحدث المنشورات",
+  "oopsSomethingWentWrong": "عذراً! حدث خطأ ما",
+  "noPostsYet": "لا توجد منشورات بعد",
+  "likes": "الإعجابات",
+  "noLikesYet": "لا توجد إعجابات بعد",
+  "beTheFirstToCreatePost": "كن أول من ينشر منشوراً!",
+  "pickImage": "اختر صورة",
+  "pickVideo": "اختر فيديو",
+  "postUploadedSuccessfully": "تم رفع المنشور بنجاح!",
+  "uploadContent": "رفع محتوى",
+  "uploadImageOrVideo": "ارفع صورة أو فيديو",
+  "maximumFileSize": "الحد الأقصى لحجم الملف 200 ميجابايت",
+  "title": "العنوان",
+  "enterYourTitle": "أدخل عنوانك.",
+  "description": "الوصف",
+  "enterYourDescription": "أدخل وصفك...",
+  "pleaseFillAllFields": "يرجى ملء جميع الحقول",
+  "createPost": "إنشاء منشور",
+  "createAchievement": "إنشاء إنجاز",
+  "createOpportunity": "إنشاء فرصة",
+  "createAdvertisement": "إنشاء إعلان",
+  "makeVideoAnalysis": "عمل تحليل فيديو",
+  "failedToLoadImage": "فشل تحميل الصورة",
+  "deletePost": "حذف المنشور",
+  "deletePostConfirmation": "هل أنت متأكد من حذف هذا المنشور؟",
+  "failedToTranslate": "فشلت الترجمة",
+  "failedToLoadVideo": "فشل تحميل الفيديو",
+  "analyzeVideoComingSoon": "ميزة تحليل الفيديو قريباً",
+  "analyzeVideo": "تحليل الفيديو",
+  "seeOriginal": "رؤية النص الأصلي",
+  "translate": "ترجمة",
+  "forYou":"من اجلك",
+
+  
+  "justNow": "الآن",
+
+  "yearsAgo": "{count, plural, =1 {منذ سنة} =2 {منذ سنتين} few {منذ # سنوات} many {منذ # سنة} other {منذ # سنة}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "monthsAgo": "{count, plural, =1 {منذ شهر} =2 {منذ شهرين} few {منذ # أشهر} many {منذ # شهرًا} other {منذ # شهر}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "daysAgo": "{count, plural, =1 {منذ يوم} =2 {منذ يومين} few {منذ # أيام} many {منذ # يومًا} other {منذ # يوم}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "hoursAgo": "{count, plural, =1 {منذ ساعة} =2 {منذ ساعتين} few {منذ # ساعات} many {منذ # ساعة} other {منذ # ساعة}}",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "minutesAgo": "{count, plural, =1 {منذ دقيقة} =2 {منذ دقيقتين} few {منذ # دقائق} many {منذ # دقيقة} other {منذ # دقيقة}}",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "secondsAgo": "{count, plural, =1 {منذ ثانية} =2 {منذ ثانيتين} few {منذ # ثوانٍ} many {منذ # ثانية} other {منذ # ثانية}}",
+  "@secondsAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+
+
+
 }

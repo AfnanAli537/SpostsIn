@@ -280,7 +280,6 @@
   "contactUs": "Contact us",
   "logout": "LOG OUT",
   "logoutConfirmation": "Are you sure you want to logout?",
-  "cancel": "Cancel",
   "confirm": "Confirm",
 
   "followers": "Followers",
@@ -328,5 +327,111 @@
   "deletePost": "Delete Post",
   "deletePostConfirmation": "Are you sure you want to delete this post?",
   "postDeleted": "Post deleted successfully!",
-  "postDeleteFailed": "Failed to delete post. Please try again."
+  "postDeleteFailed": "Failed to delete post. Please try again.",
+
+  "commentAddedSuccessfully": "Comment added successfully",
+  "commentUpdatedSuccessfully": "Comment updated successfully",
+  "commentDeletedSuccessfully": "Comment deleted successfully",
+  "comments": "Comments",
+  "noCommentsYet": "No comments yet",
+  "retry": "Retry",
+  "edit": "Edit",
+  "delete": "Delete",
+  "deleteComment": "Delete Comment",
+  "deleteCommentConfirmation": "Are you sure you want to delete this comment?",
+  "cancel": "Cancel",
+  "editingComment": "Editing comment",
+  "editYourComment": "Edit your comment...",
+  "addAComment": "Add a comment...",
+  "update": "Update",
+  "post": "Post",
+  "error": "Error",
+  "loadingUserData": "Loading user data...",
+  "noUserDataFound": "No user data found",
+  "hi": "Hi",
+  "guest": "Guest",
+  "happyToSeeYouToday": "Happy to see you today",
+
+"latestPosts": "Latest posts",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "noPostsYet": "No posts yet",
+  "likes": "Likes",
+  "noLikesYet": "No likes yet",
+  "beTheFirstToCreatePost": "Be the first to create a post!",
+  "pickImage": "Pick Image",
+  "pickVideo": "Pick Video",
+  "postUploadedSuccessfully": "Post uploaded successfully!",
+  "uploadContent": "Upload Content",
+  "uploadImageOrVideo": "Upload an Image or video",
+  "maximumFileSize": "Maximum file size is 200 MB",
+  "title": "Title",
+  "enterYourTitle": "Enter Your Title.",
+  "description": "Description",
+  "enterYourDescription": "Enter Your Description...",
+  "pleaseFillAllFields": "Please fill all fields",
+  "createPost": "Create Post",
+  "createAchievement": "Create Achievement",
+  "createOpportunity": "Create opportunity",
+  "createAdvertisement": "Create Advertisement",
+  "makeVideoAnalysis": "Make Video Analysis",
+  "failedToLoadImage": "Failed to load image",
+  "failedToTranslate": "Failed to translate",
+  "failedToLoadVideo": "Failed to load video",
+  "analyzeVideoComingSoon": "Analyze video feature coming soon",
+  "analyzeVideo": "Analyze Video",
+  "seeOriginal": "See Original",
+  "translate": "Translate",
+  "forYou":"forYou",
+
+  
+  "justNow": "Just now",
+
+  "yearsAgo": "{count, plural, =1 {# year ago} other {# years ago}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "monthsAgo": "{count, plural, =1 {# month ago} other {# months ago}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "daysAgo": "{count, plural, =1 {# day ago} other {# days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "hoursAgo": "{count, plural, =1 {# hour ago} other {# hours ago}}",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "minutesAgo": "{count, plural, =1 {# minute ago} other {# minutes ago}}",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "secondsAgo": "{count, plural, =1 {# second ago} other {# seconds ago}}",
+  "@secondsAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+
+
+  
+
+
 }

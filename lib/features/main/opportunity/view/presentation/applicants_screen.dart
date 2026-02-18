@@ -340,7 +340,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
-import 'package:sports_in/features/main/opportunity/view_model/bloc/applicants_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/applicants_bloc/applicants_bloc.dart';
 
 class ApplicantsPage extends StatefulWidget {
   final String opportunityId;

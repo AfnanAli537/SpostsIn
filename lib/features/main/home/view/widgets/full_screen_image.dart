@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class FullScreenImageViewer extends StatefulWidget {
   final String imageUrl;
@@ -21,13 +22,11 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
   @override
   void initState() {
     super.initState();
-    // Set full screen mode
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   @override
   void dispose() {
-    // Restore system UI
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
@@ -42,10 +41,8 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
 
   void _handleDoubleTap() {
     if (_transformationController.value != Matrix4.identity()) {
-      // Reset zoom
       _transformationController.value = Matrix4.identity();
     } else {
-      // Zoom in to 2x at tap position
       final position = _doubleTapDetails!.localPosition;
       _transformationController.value = Matrix4.identity()
         ..translate(-position.dx * 2, -position.dy * 2)
@@ -55,10 +52,11 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
+
     return Scaffold(
       body: Stack(
         children: [
-          // Image with zoom and pan
           GestureDetector(
             onDoubleTapDown: _handleDoubleTapDown,
             onDoubleTap: _handleDoubleTap,
@@ -96,7 +94,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
                           ),
                           SizedBox(height: 16.h),
                           Text(
-                            'Failed to load image',
+                            strings.failedToLoadImage,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.sp,
@@ -110,8 +108,6 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               ),
             ),
           ),
-          
-          // Back button
           SafeArea(
             child: Padding(
               padding: EdgeInsets.all(16.w),
@@ -132,8 +128,6 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               ),
             ),
           ),
-
-          // Zoom indicator
           Positioned(
             bottom: 32.h,
             left: 0,

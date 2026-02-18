@@ -7,6 +7,7 @@ import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/widgets/opp_card.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class ForYouTab extends StatelessWidget {
   final void Function(HomeTab) onTabChange;
@@ -18,13 +19,13 @@ class ForYouTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
     
     return BlocBuilder<PostsBloc, PostsState>(
       builder: (context, state) {
         return SliverList(
           delegate: SliverChildListDelegate([
-            // Latest Posts Header - Always visible
             Padding(
               padding: EdgeInsets.symmetric(
                 vertical: 10.h,
@@ -33,7 +34,7 @@ class ForYouTab extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    "Latest posts",
+                    strings.latestPosts,
                     style: GoogleFonts.poppins(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
@@ -45,7 +46,7 @@ class ForYouTab extends StatelessWidget {
                       onTabChange(HomeTab.posts);
                     },
                     child: Text(
-                      "Show all",
+                      strings.showAll,
                       style: GoogleFonts.poppins(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.bold,
@@ -57,7 +58,6 @@ class ForYouTab extends StatelessWidget {
               ),
             ),
             
-            // Content based on state
             if (state is PostsLoading) ...[
               const PostShimmer(),
             ] else if (state is PostsError) ...[
@@ -74,7 +74,7 @@ class ForYouTab extends StatelessWidget {
                       ),
                       SizedBox(height: 16.h),
                       Text(
-                        'Oops! Something went wrong',
+                        strings.oopsSomethingWentWrong,
                         style: GoogleFonts.poppins(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
@@ -93,11 +93,11 @@ class ForYouTab extends StatelessWidget {
                       SizedBox(height: 24.h),
                       ElevatedButton.icon(
                         onPressed: () {
-                          context.read<PostsBloc>().add(FetchPosts());
+                          context.read<PostsBloc>().add(const FetchPosts());
                         },
                         icon: const Icon(Icons.refresh),
                         label: Text(
-                          'Retry',
+                          strings.retry,
                           style: GoogleFonts.poppins(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
@@ -134,7 +134,7 @@ class ForYouTab extends StatelessWidget {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'No posts yet',
+                          strings.noPostsYet,
                           style: GoogleFonts.poppins(
                             fontSize: 18.sp,
                             color: Colors.grey[600],
@@ -153,7 +153,6 @@ class ForYouTab extends StatelessWidget {
                 ),
             ],
             
-            // Opportunities Section
             SizedBox(height: 24.h),
             Padding(
               padding: EdgeInsets.symmetric(
@@ -163,7 +162,7 @@ class ForYouTab extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    "Opportunities",
+                    strings.opportunities,
                     style: GoogleFonts.poppins(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
@@ -175,7 +174,7 @@ class ForYouTab extends StatelessWidget {
                       onTabChange(HomeTab.opportunities);
                     },
                     child: Text(
-                      "Show all",
+                      strings.showAll,
                       style: GoogleFonts.poppins(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.bold,
@@ -186,7 +185,7 @@ class ForYouTab extends StatelessWidget {
                 ],
               ),
             ),
-            LatestOpportunityCard(),
+            const LatestOpportunityCard(),
             SizedBox(height: 100.h),
           ]),
         );

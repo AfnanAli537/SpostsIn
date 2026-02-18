@@ -29,8 +29,8 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
         params: {'page': pageNumber, 'size': pageSize},
       );
 
-      log('📦 Response status: ${response.statusCode}');
-      log('📦 Response data: ${response.data}');
+      log(' Response status: ${response.statusCode}');
+      log(' Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
@@ -39,11 +39,11 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
@@ -73,15 +73,11 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     required String title,
   }) async {
     try {
-      log("🔍 Input sport value: '$sport'");
-
       final sportEnum = EnumMapper.fromLabel(EnumMapper.sportLabels(), sport);
-      log("🔍 Sport enum: $sportEnum");
 
       final sportId = sportEnum != null
           ? EnumMapper.getSportId(sportEnum)
           : null;
-      log("🔍 Sport ID: $sportId");
       final formData = FormData.fromMap({
         'Title': title,
         'Description': description,
@@ -97,7 +93,6 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       }
 
       log("${response.statusCode}==============");
-      // return PostModel.fromJson(response.data['post']);
     } on DioException catch (e) {
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
@@ -118,8 +113,8 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
         params: {'page': pageNumber, 'size': pageSize},
       );
 
-      log('📦 Response status: ${response.statusCode}');
-      log('📦 Response data: ${response.data}');
+      log(' Response status: ${response.statusCode}');
+      log(' Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
@@ -135,11 +130,11 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
@@ -235,14 +230,10 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     try {
       final response = await apiClient.get(
         Endpoints.allPosts,
-        params: {
-          'targetUserId': userId,
-          'page': page,
-          'size': pageSize,
-        },
+        params: {'targetUserId': userId, 'page': page, 'size': pageSize},
       );
 
-      log('📦 User Posts Response status: ${response.statusCode}');
+      log(' User Posts Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
@@ -251,12 +242,11 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Error fetching user posts: ${e.message}');
+      log(' Error fetching user posts: ${e.message}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
   }
 
-  // ✅ Update post
   @override
   Future<void> updatePost({
     required String postId,
@@ -281,14 +271,13 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
 
-      log('✅ Post updated successfully');
+      log(' Post updated successfully');
     } on DioException catch (e) {
-      log('❌ Error updating post: ${e.message}');
+      log(' Error updating post: ${e.message}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
   }
 
-  // ✅ Delete post
   @override
   Future<void> deletePost({required String postId}) async {
     try {
@@ -299,12 +288,10 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
 
-      log('✅ Post deleted successfully');
+      log(' Post deleted successfully');
     } on DioException catch (e) {
-      log('❌ Error deleting post: ${e.message}');
+      log(' Error deleting post: ${e.message}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     }
   }
-
-
 }

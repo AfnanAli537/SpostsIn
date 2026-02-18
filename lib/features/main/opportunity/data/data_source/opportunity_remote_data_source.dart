@@ -24,7 +24,7 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
     int? sportTypeId,
   }) async {
     try {
-      final Map<String,dynamic>params = {
+      final Map<String, dynamic> params = {
         'pageNumber': pageNumber,
         'pageSize': pageSize,
       };
@@ -42,8 +42,8 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
         params: params,
       );
 
-      log('📦 Response status: ${response.statusCode}');
-      log('📦 Response data: ${response.data}');
+      log(' Response status: ${response.statusCode}');
+      log(' Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final List items = response.data['items'] ?? [];
@@ -52,11 +52,11 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
@@ -72,7 +72,7 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
     String? mediaUrl,
   }) async {
     try {
-      log("🔍 Creating opportunity with sport type ID: $sportTypeId");
+      log(" Creating opportunity with sport type ID: $sportTypeId");
 
       final formData = FormData.fromMap({
         'Title': title,
@@ -82,8 +82,7 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
         'SportTypeId': sportTypeId,
         if (mediaFile != null)
           'MediaFile': await MultipartFile.fromFile(mediaFile),
-        if (mediaUrl != null && mediaFile == null)
-          'MediaUrl': mediaUrl,
+        if (mediaUrl != null && mediaFile == null) 'MediaUrl': mediaUrl,
       });
       final response = await apiClient.post(
         Endpoints.postOpportunity,
@@ -94,13 +93,15 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
 
-      log("${response.statusCode}============== Opportunity created successfully");
+      log(
+        "${response.statusCode}============== Opportunity created successfully",
+      );
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
@@ -110,11 +111,14 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
     required String opportunityID,
   }) async {
     try {
-      final url = Endpoints.opportunityDetails.replaceFirst('{id}', opportunityID);
+      final url = Endpoints.opportunityDetails.replaceFirst(
+        '{id}',
+        opportunityID,
+      );
       final response = await apiClient.get(url);
 
-      log('📦 Response status: ${response.statusCode}');
-      log('📦 Response data: ${response.data}');
+      log(' Response status: ${response.statusCode}');
+      log(' Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         return DetailsModel.fromJson(response.data);
@@ -122,21 +126,22 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
 
   @override
-  Future<void> applyOpportunity({
-    required String opportunityID,
-  }) async {
+  Future<void> applyOpportunity({required String opportunityID}) async {
     try {
-      final url = Endpoints.applyOpportunity.replaceFirst('{id}', opportunityID);
+      final url = Endpoints.applyOpportunity.replaceFirst(
+        '{id}',
+        opportunityID,
+      );
       final response = await apiClient.post(url);
 
       if (response.statusCode != 200 &&
@@ -145,20 +150,20 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
         throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
       }
 
-      log("${response.statusCode}============== Application submitted successfully");
+      log(
+        "${response.statusCode}============== Application submitted successfully",
+      );
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
 
-  // Uncomment and implement when needed:
-  
-@override
+  @override
   Future<ApplicantsResponseModel> getApplicants({
     required int pageNumber,
     int pageSize = 10,
@@ -167,7 +172,7 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
   }) async {
     try {
       final url = Endpoints.getApplicants.replaceFirst('{id}', opportunityID);
-      
+
       final params = {
         'pageNumber': pageNumber.toString(),
         'pageSize': pageSize.toString(),
@@ -183,39 +188,39 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
       log('📦 Response data: ${response.data}');
 
       if (response.statusCode == 200) {
-        // Parse the entire response using the model
         return ApplicantsResponseModel.fromJson(response.data);
       }
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
 
-@override
+  @override
   Future<ApplicantsResponseModel> acceptOrRejectApplicant({
     required String applicationId,
-   required  String status,
+    required String status,
   }) async {
     try {
-      final url = Endpoints.detectAcceptOrReject.replaceFirst('{applicationId}', applicationId);
+      final url = Endpoints.detectAcceptOrReject.replaceFirst(
+        '{applicationId}',
+        applicationId,
+      );
       final response = await apiClient.patch(url, params: {'status': status});
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        log("${response.statusCode}============== Application $status successfully");
-        
-        // Return the response data if available, or create a minimal response
+        log(
+          "${response.statusCode}============== Application $status successfully",
+        );
         if (response.data != null && response.data is Map<String, dynamic>) {
           return ApplicantsResponseModel.fromJson(response.data);
         } else {
-          // If the API doesn't return data, create a minimal response
-          // This is typically for 204 No Content responses
           return ApplicantsResponseModel(
             items: [],
             totalCount: 0,
@@ -230,100 +235,98 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
 
       throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
     } on DioException catch (e) {
-      log('❌ Dio Error: ${e.message}');
-      log('❌ Error Response: ${e.response?.data}');
+      log(' Dio Error: ${e.message}');
+      log(' Error Response: ${e.response?.data}');
       throw ApiErrorHandler.handleDioErrorKey(e);
     } catch (e) {
-      log('❌ Unknown Error: $e');
+      log(' Unknown Error: $e');
       rethrow;
     }
   }
+
   @override
-/// Get my opportunities (active or inactive)
-Future<PaginatedOpportunitiesResponse> getMyOpportunities({
-  required bool showActive,
-  int page = 1,
-  int pageSize = 10,
-}) async {
-  try {
-    // Use correct endpoint based on showActive parameter
-    final endpoint = showActive 
-        ? Endpoints.getActiveOp 
-        : Endpoints.getInActiveOp;
-    
-    final response = await apiClient.get(
-      endpoint,
-      params: {
-        'page': page,
-        'pageSize': pageSize,
-      },
-    );
+  Future<PaginatedOpportunitiesResponse> getMyOpportunities({
+    required bool showActive,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    try {
+      final endpoint = showActive
+          ? Endpoints.getActiveOp
+          : Endpoints.getInActiveOp;
 
-    if (response.statusCode == 200) {
-      final data = response.data as Map<String, dynamic>;
-      return PaginatedOpportunitiesResponse.fromJson(data);
-    } else {
-      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      final response = await apiClient.get(
+        endpoint,
+        params: {'page': page, 'pageSize': pageSize},
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        return PaginatedOpportunitiesResponse.fromJson(data);
+      } else {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+    } on DioException catch (e) {
+      final errorKey = ApiErrorHandler.handleDioErrorKey(e);
+      throw ApiException(
+        message: 'Failed to load opportunities',
+        key: errorKey,
+      );
     }
-  } on DioException catch (e) {
-    final errorKey = ApiErrorHandler.handleDioErrorKey(e);
-    throw ApiException(
-      message: 'Failed to load opportunities',
-      key: errorKey,
-    );
   }
-}
+
   @override
-Future<void> updateOpportunity({
-  required String opportunityId,
-  required String title,
-  required String description,
-  required String requirements,
-  required DateTime endDate,
-  required int sportTypeId,
-  String? mediaFile,
-}) async {
-  try {
-    final formData = FormData.fromMap({
-      'Title': title,
-      'Description': description,
-      'Requirements': requirements,
-      'EndDate': endDate.toIso8601String(),
-      'SportTypeId': sportTypeId,
-      if (mediaFile != null)
-        'MediaFile': await MultipartFile.fromFile(mediaFile),
-    });
+  Future<void> updateOpportunity({
+    required String opportunityId,
+    required String title,
+    required String description,
+    required String requirements,
+    required DateTime endDate,
+    required int sportTypeId,
+    String? mediaFile,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'Title': title,
+        'Description': description,
+        'Requirements': requirements,
+        'EndDate': endDate.toIso8601String(),
+        'SportTypeId': sportTypeId,
+        if (mediaFile != null)
+          'MediaFile': await MultipartFile.fromFile(mediaFile),
+      });
 
-    final url = Endpoints.editOpportunity.replaceFirst('{id}', opportunityId);
-    final response = await apiClient.put(url, data: formData);
+      final url = Endpoints.editOpportunity.replaceFirst('{id}', opportunityId);
+      final response = await apiClient.put(url, data: formData);
 
-    if (response.statusCode != 200 && response.statusCode != 204) {
-      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+
+      log(' Opportunity updated successfully (API)');
+    } on DioException catch (e) {
+      log(' Error updating opportunity: ${e.message}');
+      throw ApiErrorHandler.handleDioErrorKey(e);
     }
-
-    log('✅ Opportunity updated successfully (API)');
-  } on DioException catch (e) {
-    log('❌ Error updating opportunity: ${e.message}');
-    throw ApiErrorHandler.handleDioErrorKey(e);
   }
-}
 
-@override
-Future<void> deleteOpportunity({
-  required String opportunityId,
-}) async {
-  try {
-    final url = Endpoints.deleteOpportunity.replaceFirst('{id}', opportunityId);
-    final response = await apiClient.delete(url);
+  @override
+  Future<void> deleteOpportunity({required String opportunityId}) async {
+    try {
+      final url = Endpoints.deleteOpportunity.replaceFirst(
+        '{id}',
+        opportunityId,
+      );
+      final response = await apiClient.delete(url);
 
-    if (response.statusCode != 200 && response.statusCode != 204) {
-      throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleStatusCodeKey(response.statusCode);
+      }
+
+      log(' Opportunity deleted successfully (API)');
+    } on DioException catch (e) {
+      log(' Error deleting opportunity: ${e.message}');
+      throw ApiErrorHandler.handleDioErrorKey(e);
     }
-
-    log('✅ Opportunity deleted successfully (API)');
-  } on DioException catch (e) {
-    log('❌ Error deleting opportunity: ${e.message}');
-    throw ApiErrorHandler.handleDioErrorKey(e);
   }
-}
 }

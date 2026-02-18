@@ -130,7 +130,7 @@ class DeleteOpportunity extends OpportunityEvent {
   List<Object?> get props => [opportunityId];
 }
 class FetchMyOpportunities extends OpportunityEvent {
-  final bool showActive; // true = active, false = inactive
+  final bool showActive;
   final int page;
   final int pageSize;
 

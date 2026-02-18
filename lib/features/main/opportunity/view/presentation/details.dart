@@ -9,8 +9,8 @@ import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/applicants_screen.dart';
-import 'package:sports_in/features/main/opportunity/view_model/bloc/applicants_bloc.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/applicants_bloc/applicants_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 // import 'package:sports_in/generated/l10n.dart';
 
 class OpportunityDetailsPage extends StatefulWidget {

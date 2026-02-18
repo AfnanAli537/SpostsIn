@@ -4,7 +4,6 @@ import 'package:sports_in/features/main/home/data/model/post_model.dart';
 abstract class PostsRepository {
   Future<List<PostModel>> getAllPosts({required int pageNumber, int pageSize});
   
-  // ✅ New method for user-specific posts
   Future<List<PostModel>> getUserPosts({
     required String userId,
     required int page,
@@ -22,7 +21,6 @@ abstract class PostsRepository {
     required String sport,
   });
 
-  // ✅ New method for updating post
   Future<void> updatePost({
     required String postId,
     required String title,
@@ -31,7 +29,6 @@ abstract class PostsRepository {
     String? mediaFile,
   });
 
-  // ✅ New method for deleting post
   Future<void> deletePost({required String postId});
   
   Future<void> editComment({required String commentId, required String text});

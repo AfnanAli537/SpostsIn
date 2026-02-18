@@ -1809,11 +1809,6 @@ class S {
     );
   }
 
-  /// `Cancel`
-  String get cancel {
-    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
-  }
-
   /// `Confirm`
   String get confirm {
     return Intl.message('Confirm', name: 'confirm', desc: '', args: []);
@@ -2161,6 +2156,503 @@ class S {
       name: 'postDeleteFailed',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Comment added successfully`
+  String get commentAddedSuccessfully {
+    return Intl.message(
+      'Comment added successfully',
+      name: 'commentAddedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comment updated successfully`
+  String get commentUpdatedSuccessfully {
+    return Intl.message(
+      'Comment updated successfully',
+      name: 'commentUpdatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comment deleted successfully`
+  String get commentDeletedSuccessfully {
+    return Intl.message(
+      'Comment deleted successfully',
+      name: 'commentDeletedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comments`
+  String get comments {
+    return Intl.message('Comments', name: 'comments', desc: '', args: []);
+  }
+
+  /// `No comments yet`
+  String get noCommentsYet {
+    return Intl.message(
+      'No comments yet',
+      name: 'noCommentsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+  }
+
+  /// `Edit`
+  String get edit {
+    return Intl.message('Edit', name: 'edit', desc: '', args: []);
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
+  }
+
+  /// `Delete Comment`
+  String get deleteComment {
+    return Intl.message(
+      'Delete Comment',
+      name: 'deleteComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this comment?`
+  String get deleteCommentConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this comment?',
+      name: 'deleteCommentConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
+  }
+
+  /// `Editing comment`
+  String get editingComment {
+    return Intl.message(
+      'Editing comment',
+      name: 'editingComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit your comment...`
+  String get editYourComment {
+    return Intl.message(
+      'Edit your comment...',
+      name: 'editYourComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a comment...`
+  String get addAComment {
+    return Intl.message(
+      'Add a comment...',
+      name: 'addAComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update`
+  String get update {
+    return Intl.message('Update', name: 'update', desc: '', args: []);
+  }
+
+  /// `Post`
+  String get post {
+    return Intl.message('Post', name: 'post', desc: '', args: []);
+  }
+
+  /// `Error`
+  String get error {
+    return Intl.message('Error', name: 'error', desc: '', args: []);
+  }
+
+  /// `Loading user data...`
+  String get loadingUserData {
+    return Intl.message(
+      'Loading user data...',
+      name: 'loadingUserData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No user data found`
+  String get noUserDataFound {
+    return Intl.message(
+      'No user data found',
+      name: 'noUserDataFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hi`
+  String get hi {
+    return Intl.message('Hi', name: 'hi', desc: '', args: []);
+  }
+
+  /// `Guest`
+  String get guest {
+    return Intl.message('Guest', name: 'guest', desc: '', args: []);
+  }
+
+  /// `Happy to see you today`
+  String get happyToSeeYouToday {
+    return Intl.message(
+      'Happy to see you today',
+      name: 'happyToSeeYouToday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Latest posts`
+  String get latestPosts {
+    return Intl.message(
+      'Latest posts',
+      name: 'latestPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Oops! Something went wrong`
+  String get oopsSomethingWentWrong {
+    return Intl.message(
+      'Oops! Something went wrong',
+      name: 'oopsSomethingWentWrong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No posts yet`
+  String get noPostsYet {
+    return Intl.message('No posts yet', name: 'noPostsYet', desc: '', args: []);
+  }
+
+  /// `Likes`
+  String get likes {
+    return Intl.message('Likes', name: 'likes', desc: '', args: []);
+  }
+
+  /// `No likes yet`
+  String get noLikesYet {
+    return Intl.message('No likes yet', name: 'noLikesYet', desc: '', args: []);
+  }
+
+  /// `Be the first to create a post!`
+  String get beTheFirstToCreatePost {
+    return Intl.message(
+      'Be the first to create a post!',
+      name: 'beTheFirstToCreatePost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pick Image`
+  String get pickImage {
+    return Intl.message('Pick Image', name: 'pickImage', desc: '', args: []);
+  }
+
+  /// `Pick Video`
+  String get pickVideo {
+    return Intl.message('Pick Video', name: 'pickVideo', desc: '', args: []);
+  }
+
+  /// `Post uploaded successfully!`
+  String get postUploadedSuccessfully {
+    return Intl.message(
+      'Post uploaded successfully!',
+      name: 'postUploadedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload Content`
+  String get uploadContent {
+    return Intl.message(
+      'Upload Content',
+      name: 'uploadContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload an Image or video`
+  String get uploadImageOrVideo {
+    return Intl.message(
+      'Upload an Image or video',
+      name: 'uploadImageOrVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum file size is 200 MB`
+  String get maximumFileSize {
+    return Intl.message(
+      'Maximum file size is 200 MB',
+      name: 'maximumFileSize',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Title`
+  String get title {
+    return Intl.message('Title', name: 'title', desc: '', args: []);
+  }
+
+  /// `Enter Your Title.`
+  String get enterYourTitle {
+    return Intl.message(
+      'Enter Your Title.',
+      name: 'enterYourTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get description {
+    return Intl.message('Description', name: 'description', desc: '', args: []);
+  }
+
+  /// `Enter Your Description...`
+  String get enterYourDescription {
+    return Intl.message(
+      'Enter Your Description...',
+      name: 'enterYourDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please fill all fields`
+  String get pleaseFillAllFields {
+    return Intl.message(
+      'Please fill all fields',
+      name: 'pleaseFillAllFields',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create Post`
+  String get createPost {
+    return Intl.message('Create Post', name: 'createPost', desc: '', args: []);
+  }
+
+  /// `Create Achievement`
+  String get createAchievement {
+    return Intl.message(
+      'Create Achievement',
+      name: 'createAchievement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create opportunity`
+  String get createOpportunity {
+    return Intl.message(
+      'Create opportunity',
+      name: 'createOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create Advertisement`
+  String get createAdvertisement {
+    return Intl.message(
+      'Create Advertisement',
+      name: 'createAdvertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Make Video Analysis`
+  String get makeVideoAnalysis {
+    return Intl.message(
+      'Make Video Analysis',
+      name: 'makeVideoAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load image`
+  String get failedToLoadImage {
+    return Intl.message(
+      'Failed to load image',
+      name: 'failedToLoadImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to translate`
+  String get failedToTranslate {
+    return Intl.message(
+      'Failed to translate',
+      name: 'failedToTranslate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load video`
+  String get failedToLoadVideo {
+    return Intl.message(
+      'Failed to load video',
+      name: 'failedToLoadVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze video feature coming soon`
+  String get analyzeVideoComingSoon {
+    return Intl.message(
+      'Analyze video feature coming soon',
+      name: 'analyzeVideoComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze Video`
+  String get analyzeVideo {
+    return Intl.message(
+      'Analyze Video',
+      name: 'analyzeVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `See Original`
+  String get seeOriginal {
+    return Intl.message(
+      'See Original',
+      name: 'seeOriginal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Translate`
+  String get translate {
+    return Intl.message('Translate', name: 'translate', desc: '', args: []);
+  }
+
+  /// `forYou`
+  String get forYou {
+    return Intl.message('forYou', name: 'forYou', desc: '', args: []);
+  }
+
+  /// `Just now`
+  String get justNow {
+    return Intl.message('Just now', name: 'justNow', desc: '', args: []);
+  }
+
+  /// `{count, plural, =1 {# year ago} other {# years ago}}`
+  String yearsAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '# year ago',
+      other: '# years ago',
+      name: 'yearsAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {# month ago} other {# months ago}}`
+  String monthsAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '# month ago',
+      other: '# months ago',
+      name: 'monthsAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {# day ago} other {# days ago}}`
+  String daysAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '# day ago',
+      other: '# days ago',
+      name: 'daysAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {# hour ago} other {# hours ago}}`
+  String hoursAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '# hour ago',
+      other: '# hours ago',
+      name: 'hoursAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {# minute ago} other {# minutes ago}}`
+  String minutesAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '# minute ago',
+      other: '# minutes ago',
+      name: 'minutesAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {# second ago} other {# seconds ago}}`
+  String secondsAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '# second ago',
+      other: '# seconds ago',
+      name: 'secondsAgo',
+      desc: '',
+      args: [count],
     );
   }
 }

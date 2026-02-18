@@ -6,10 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 
 class AddOpportunityScreen extends StatefulWidget {
   const AddOpportunityScreen({super.key});
@@ -39,57 +38,17 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
     'Taekwondo': 5,
   };
 
+  // 👇 Only pick image now
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85, // Optional: compress image
+    );
     if (image != null) {
       setState(() {
         _selectedFile = File(image.path);
       });
     }
-  }
-
-  Future<void> _pickVideo() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() {
-        _selectedFile = File(video.path);
-      });
-    }
-  }
-
-  void _showPickerOptions() {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.image, color: ColorManager.darkPrimary),
-                title: const Text('Pick Image'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.video_library, color: ColorManager.darkPrimary),
-                title: const Text('Pick Video'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickVideo();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _selectEndDate() async {
@@ -206,6 +165,11 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
             gravity: ToastGravity.TOP,
           );
 
+          // 👇 Fetch opportunities again after success
+          context.read<OpportunityBloc>().add(
+            const FetchOpportunities(isRefresh: true),
+          );
+
           // Clear fields
           _titleController.clear();
           _descriptionController.clear();
@@ -253,9 +217,9 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Upload Area
+                // 👇 Upload Area - Now shows image when selected
                 GestureDetector(
-                  onTap: _showPickerOptions,
+                  onTap: _pickImage, // 👈 Direct image picker
                   child: DottedBorder(
                    options: RoundedRectDottedBorderOptions(
                       color: Colors.grey[400]!,
@@ -280,7 +244,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                                   ),
                                   SizedBox(height: 12.h),
                                   Text(
-                                    'Upload an Image or video',
+                                    'Upload an Image',
                                     style: GoogleFonts.poppins(
                                       fontSize: 14.sp,
                                       color: Colors.grey[800],
@@ -289,7 +253,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    'Maximum file size is 200 MB',
+                                    'Tap to select from gallery',
                                     style: GoogleFonts.poppins(
                                       fontSize: 12.sp,
                                       color: Colors.grey[500],
@@ -299,12 +263,14 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                               )
                             : Stack(
                                 children: [
+                                  // 👇 Show selected image
                                   Image.file(
                                     _selectedFile!,
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
                                   ),
+                                  // Remove button
                                   Positioned(
                                     top: 8.h,
                                     right: 8.w,
@@ -315,7 +281,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                                         });
                                       },
                                       child: Container(
-                                        padding: EdgeInsets.all(4.w),
+                                        padding: EdgeInsets.all(6.w),
                                         decoration: const BoxDecoration(
                                           color: Colors.black54,
                                           shape: BoxShape.circle,

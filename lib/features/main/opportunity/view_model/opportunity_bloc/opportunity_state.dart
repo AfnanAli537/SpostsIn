@@ -41,14 +41,14 @@ class OpportunityLoaded extends OpportunityState {
 
   @override
   List<Object?> get props => [
-        opportunities,
-        hasNextPage,
-        currentPage,
-        totalCount,
-        searchTerm,
-        sportTypeId,
-        sportName,
-      ];
+    opportunities,
+    hasNextPage,
+    currentPage,
+    totalCount,
+    searchTerm,
+    sportTypeId,
+    sportName,
+  ];
 
   OpportunityLoaded copyWith({
     List<OpportunityModel>? opportunities,
@@ -102,6 +102,7 @@ class OpportunityApplying extends OpportunityState {}
 class OpportunityApplied extends OpportunityState {
   const OpportunityApplied();
 }
+
 class OpportunityUpdateSuccess extends OpportunityState {
   const OpportunityUpdateSuccess();
 }
@@ -109,6 +110,7 @@ class OpportunityUpdateSuccess extends OpportunityState {
 class OpportunityDeleteSuccess extends OpportunityState {
   const OpportunityDeleteSuccess();
 }
+
 class MyOpportunitiesLoaded extends OpportunityState {
   final List<OpportunityModel> opportunities;
   final bool hasMore;
@@ -122,7 +124,6 @@ class MyOpportunitiesLoaded extends OpportunityState {
   List<Object?> get props => [opportunities, hasMore];
 }
 
-// Opportunity updated successfully
 class OpportunityUpdated extends OpportunityState {
   final String opportunityId;
 
@@ -132,7 +133,6 @@ class OpportunityUpdated extends OpportunityState {
   List<Object?> get props => [opportunityId];
 }
 
-// Opportunity deleted successfully
 class OpportunityDeleted extends OpportunityState {
   final String opportunityId;
 

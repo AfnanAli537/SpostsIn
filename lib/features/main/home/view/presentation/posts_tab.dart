@@ -5,21 +5,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class PostsTab extends StatelessWidget {
   const PostsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
     
     return BlocBuilder<PostsBloc, PostsState>(
       builder: (context, state) {
-        // Loading State
         if (state is PostsLoading) {
           return SliverList(
             delegate: SliverChildListDelegate([
-              _buildHeader(),
+              _buildHeader(strings),
               const PostShimmer(),
               const PostShimmer(),
               const PostShimmer(),
@@ -29,17 +30,15 @@ class PostsTab extends StatelessWidget {
           );
         }
 
-        // Error State
         if (state is PostsError) {
           return SliverList(
             delegate: SliverChildListDelegate([
-              _buildHeader(),
-              _buildErrorState(context, state.message, theme),
+              _buildHeader(strings),
+              _buildErrorState(context, state.message, theme, strings),
             ]),
           );
         }
 
-        // Handle both PostsLoaded and PostsLoadingMore states
         if (state is PostsLoaded || state is PostsLoadingMore) {
           final posts = state is PostsLoaded 
               ? state.posts 
@@ -47,32 +46,27 @@ class PostsTab extends StatelessWidget {
           final hasNextPage = state is PostsLoaded ? state.hasNextPage : true;
           final isLoadingMore = state is PostsLoadingMore;
           
-          // Empty State
           if (posts.isEmpty) {
             return SliverList(
               delegate: SliverChildListDelegate([
-                _buildHeader(),
-                _buildEmptyState(),
+                _buildHeader(strings),
+                _buildEmptyState(strings),
               ]),
             );
           }
           
-          // Posts List with Pagination
           return SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                // First item is the header
                 if (index == 0) {
-                  return _buildHeader();
+                  return _buildHeader(strings);
                 }
                 
-                // Adjust index for posts array
                 final postIndex = index - 1;
                 
-                // Trigger pagination at the last item
                 if (postIndex == posts.length - 1 && hasNextPage && !isLoadingMore) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    context.read<PostsBloc>().add(LoadMorePosts());
+                    context.read<PostsBloc>().add( LoadMorePosts());
                   });
                 }
                 
@@ -84,13 +78,11 @@ class PostsTab extends StatelessWidget {
                       key: ValueKey(post.id),
                       post: post,
                     ),
-                    // Show loading indicator at the last item if loading more
                     if (postIndex == posts.length - 1 && isLoadingMore)
                       const Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Center(child: CircularProgressIndicator()),
                       ),
-                    // Add spacing at the very end
                     if (postIndex == posts.length - 1)
                       const SizedBox(height: 100),
                   ],
@@ -106,14 +98,14 @@ class PostsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(S strings) {
     return Padding(
       padding: EdgeInsets.symmetric(
         vertical: 10.h,
         horizontal: 20.w,
       ),
       child: Text(
-        "Posts",
+        strings.posts,
         style: GoogleFonts.poppins(
           fontSize: 18.sp,
           fontWeight: FontWeight.bold,
@@ -122,7 +114,7 @@ class PostsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String message, ColorScheme theme) {
+  Widget _buildErrorState(BuildContext context, String message, ColorScheme theme, S strings) {
     return Padding(
       padding: EdgeInsets.all(20.w),
       child: Center(
@@ -136,7 +128,7 @@ class PostsTab extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
             Text(
-              'Oops! Something went wrong',
+              strings.oopsSomethingWentWrong,
               style: GoogleFonts.poppins(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
@@ -155,11 +147,11 @@ class PostsTab extends StatelessWidget {
             SizedBox(height: 24.h),
             ElevatedButton.icon(
               onPressed: () {
-                context.read<PostsBloc>().add(FetchPosts());
+                context.read<PostsBloc>().add(const FetchPosts());
               },
               icon: const Icon(Icons.refresh),
               label: Text(
-                'Retry',
+                strings.retry,
                 style: GoogleFonts.poppins(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
@@ -183,7 +175,7 @@ class PostsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(S strings) {
     return Padding(
       padding: EdgeInsets.all(40.w),
       child: Center(
@@ -197,7 +189,7 @@ class PostsTab extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
             Text(
-              'No posts yet',
+              strings.noPostsYet,
               style: GoogleFonts.poppins(
                 fontSize: 18.sp,
                 color: Colors.grey[600],
@@ -205,7 +197,7 @@ class PostsTab extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             Text(
-              'Be the first to create a post!',
+              strings.beTheFirstToCreatePost,
               style: GoogleFonts.poppins(
                 fontSize: 14.sp,
                 color: Colors.grey[500],

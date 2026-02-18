@@ -10,7 +10,7 @@ class SharedPref {
   final SharedPreferences _prefs;
 
   SharedPref(this._prefs);
-   SharedPreferences get prefs => _prefs;
+  SharedPreferences get prefs => _prefs;
 
   /// onboarding
   Future<void> setOnboardingCompleted(bool value) async {
@@ -55,130 +55,87 @@ class SharedPref {
   String? getUserId() {
     return _prefs.getString(StringKeys.userIdKey);
   }
+
   Future<void> clearToken() async {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);
     await _prefs.remove(StringKeys.userId);
   }
 
-Future<void> saveExpiryDate(DateTime expiryDate) async {
-  await _prefs.setString(
-    StringKeys.expireData,
-    expiryDate.toUtc().toIso8601String(),
-  );
-}
-DateTime? getExpiryDate() {
-  final value = _prefs.getString(StringKeys.expireData);
-  if (value == null) return null;
-  return DateTime.tryParse(value);
-}
+  Future<void> saveExpiryDate(DateTime expiryDate) async {
+    await _prefs.setString(
+      StringKeys.expireData,
+      expiryDate.toUtc().toIso8601String(),
+    );
+  }
 
+  DateTime? getExpiryDate() {
+    final value = _prefs.getString(StringKeys.expireData);
+    if (value == null) return null;
+    return DateTime.tryParse(value);
+  }
 
- 
-   bool isTokenValid() {
-  final token = getToken();
-  final expiryDate = getExpiryDate();
+  bool isTokenValid() {
+    final token = getToken();
+    final expiryDate = getExpiryDate();
 
-  if (token == null || token.isEmpty) return false;
-  if (expiryDate == null) return false;
+    if (token == null || token.isEmpty) return false;
+    if (expiryDate == null) return false;
 
-  return DateTime.now().toUtc().isBefore(expiryDate);
-}
-
+    return DateTime.now().toUtc().isBefore(expiryDate);
+  }
 
   /// clear all
   Future<void> clear() async {
     await _prefs.clear();
   }
+
   ///user data
-  
-Future<void> saveUserToPrefs(LoginResponse response) async {
-  if (response.token != null) await _prefs.setString('Token', response.token!);
-  if (response.userId != null) await _prefs.setString('userId', response.userId!);
-  if (response.userType != null) await _prefs.setString('userType', response.userType!);
-  if (response.email != null) await _prefs.setString('email', response.email!);
-  if (response.name != null) {
-    await _prefs.setString('name', jsonEncode(response.name!.toJson()));
-  }
-  if (response.expiresAt != null) {
-    await _prefs.setString('expire', response.expiresAt!.toIso8601String());
-  }
-}
-Future<LoginResponse?> getUserFromPrefs() async {
-  final token = _prefs.getString('Token');
-  final userId = _prefs.getString('userId');
-  final userType = _prefs.getString('userType');
-  final email = _prefs.getString('email');
 
-  UserName? name;
-  final nameStr = _prefs.getString('name');
-  if (nameStr != null) {
-    name = UserName.fromJson(jsonDecode(nameStr));
+  Future<void> saveUserToPrefs(LoginResponse response) async {
+    if (response.token != null)
+      await _prefs.setString('Token', response.token!);
+    if (response.userId != null)
+      await _prefs.setString('userId', response.userId!);
+    if (response.userType != null)
+      await _prefs.setString('userType', response.userType!);
+    if (response.email != null)
+      await _prefs.setString('email', response.email!);
+    if (response.name != null) {
+      await _prefs.setString('name', jsonEncode(response.name!.toJson()));
+    }
+    if (response.expiresAt != null) {
+      await _prefs.setString('expire', response.expiresAt!.toIso8601String());
+    }
   }
 
-  DateTime? expiresAt;
-  final expiresAtStr = _prefs.getString('expire');
-  if (expiresAtStr != null) {
-    expiresAt = DateTime.tryParse(expiresAtStr);
-  }
+  Future<LoginResponse?> getUserFromPrefs() async {
+    final token = _prefs.getString('Token');
+    final userId = _prefs.getString('userId');
+    final userType = _prefs.getString('userType');
+    final email = _prefs.getString('email');
 
-  return LoginResponse(
-    isSuccess: true,
-    message: "Welcome Back",
-    token: token,
-    userId: userId,
-    userType: userType,
-    email: email,
-    name: name,
-    expiresAt: expiresAt,
-  );
-}
+    UserName? name;
+    final nameStr = _prefs.getString('name');
+    if (nameStr != null) {
+      name = UserName.fromJson(jsonDecode(nameStr));
+    }
 
+    DateTime? expiresAt;
+    final expiresAtStr = _prefs.getString('expire');
+    if (expiresAtStr != null) {
+      expiresAt = DateTime.tryParse(expiresAtStr);
+    }
 
-}
-
-
-
-
-
-
-
-
-class AppliedOpportunitiesManager {
-  static const String _appliedOpportunitiesKey = 'applied_opportunities';
-
-  // Get list of applied opportunity IDs
-  static Future<Set<String>> getAppliedOpportunities() async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String>? appliedList = prefs.getStringList(_appliedOpportunitiesKey);
-    return appliedList?.toSet() ?? {};
-  }
-
-  // Mark an opportunity as applied
-  static Future<void> markAsApplied(String opportunityId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final appliedSet = await getAppliedOpportunities();
-    appliedSet.add(opportunityId);
-    await prefs.setStringList(_appliedOpportunitiesKey, appliedSet.toList());
-  }
-
-  // Check if an opportunity has been applied to
-  static Future<bool> isApplied(String opportunityId) async {
-    final appliedSet = await getAppliedOpportunities();
-    return appliedSet.contains(opportunityId);
-  }
-
-  // Remove an opportunity from applied list (if user cancels application)
-  static Future<void> removeApplied(String opportunityId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final appliedSet = await getAppliedOpportunities();
-    appliedSet.remove(opportunityId);
-    await prefs.setStringList(_appliedOpportunitiesKey, appliedSet.toList());
-  }
-
-  // Clear all applied opportunities (useful for logout)
-  static Future<void> clearAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_appliedOpportunitiesKey);
+    return LoginResponse(
+      isSuccess: true,
+      message: "Welcome Back",
+      token: token,
+      userId: userId,
+      userType: userType,
+      email: email,
+      name: name,
+      expiresAt: expiresAt,
+    );
   }
 }
