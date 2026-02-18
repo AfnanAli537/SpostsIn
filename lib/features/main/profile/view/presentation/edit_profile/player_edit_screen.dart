@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -124,8 +125,8 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
         listener: (context, state) {
           if (state is ProfileUpdated) {
             Fluttertoast.showToast(
-              msg: 'Profile updated successfully',
-              backgroundColor: Colors.green,
+              msg: string.editProfileSuccess,
+              backgroundColor: ColorManager.success,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
@@ -135,7 +136,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
           if (state is ProfileError) {
             Fluttertoast.showToast(
               msg: state.message,
-              backgroundColor: Colors.red,
+              backgroundColor: ColorManager.error,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );

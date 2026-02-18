@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileDescription extends StatelessWidget {
@@ -17,7 +18,7 @@ class ProfileDescription extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0.r),
       child: Text(
-        isEmpty ? 'No bio' : description,
+        isEmpty ? S.of(context).noBio : description,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: isEmpty 
             ? theme.colorScheme.onError.withOpacity(0.5)

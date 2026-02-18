@@ -30,9 +30,6 @@ class PlayerDataSection extends StatelessWidget {
                   _buildInfoRow(string.position, data.position!),
                 if (data.age != null)
                   _buildInfoRow(string.age, '${data.age} ${string.yearsOfExperience0to2.split(' ')[1]}'),
-                  //TODO the skills fields will be deleted and replace with the age field
-                // if (data.preferredFoot != null)
-                //   _buildInfoRow(string.skills, data.preferredFoot!),
               ],
             ),
           ),

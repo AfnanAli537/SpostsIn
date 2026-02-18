@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -50,14 +51,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (state is ProfileActionSuccess) {
           Fluttertoast.showToast(
             msg: state.message,
-            backgroundColor: Colors.green,
+            backgroundColor: ColorManager.success,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
           );
         } else if (state is ProfileActionError) {
           Fluttertoast.showToast(
             msg: state.message,
-            backgroundColor: Colors.red,
+            backgroundColor: ColorManager.error,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
           );
@@ -178,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: theme.colorScheme.error,
           ),
           SizedBox(height: 16.h),
-          Text('Error loading profile', style: theme.textTheme.headlineMedium),
+          Text(string.profileLoadFailed, style: theme.textTheme.headlineMedium),
           SizedBox(height: 8.h),
           Text(
             message,
@@ -277,9 +278,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // FIXED: Use correct event names
               onConnectPressed: () {
-                context.read<ProfileBloc>().add(
-                  ToggleConnect(userId: profile.id),
-                );
+                // context.read<ProfileBloc>().add(
+                //   ToggleConnect(userId: profile.id),
+                // );
               },
               onFollowPressed: () {
                 context.read<ProfileBloc>().add(

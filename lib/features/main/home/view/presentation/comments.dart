@@ -338,8 +338,6 @@
 //   });
 // }
 
-
-
 // ignore_for_file: deprecated_member_use
 
 // comments_bottom_sheet.dart
@@ -352,6 +350,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/model/comment_model.dart';
@@ -359,10 +358,9 @@ import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view_model/comment_bloc/comment_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
-
 class CommentsBottomSheet extends StatelessWidget {
   final String postId;
-  final Function(int)? onCommentCountChanged; // ✅ 
+  final Function(int)? onCommentCountChanged; // ✅
 
   const CommentsBottomSheet({
     super.key,
@@ -376,8 +374,11 @@ class CommentsBottomSheet extends StatelessWidget {
       create: (_) => CommentsBloc(
         commentsRepo: getIt<PostsRepositoryImpl>(),
         prefs: getIt<SharedPreferences>(),
-      )..add(FetchComments(postId: postId,)),
-      child: _CommentsBottomSheetContent(postId: postId, onCommentCountChanged: onCommentCountChanged, ),
+      )..add(FetchComments(postId: postId)),
+      child: _CommentsBottomSheetContent(
+        postId: postId,
+        onCommentCountChanged: onCommentCountChanged,
+      ),
     );
   }
 }
@@ -386,7 +387,10 @@ class _CommentsBottomSheetContent extends StatefulWidget {
   final String postId;
   final Function(int)? onCommentCountChanged;
 
-  const _CommentsBottomSheetContent({required this.postId,this.onCommentCountChanged});
+  const _CommentsBottomSheetContent({
+    required this.postId,
+    this.onCommentCountChanged,
+  });
 
   @override
   State<_CommentsBottomSheetContent> createState() =>
@@ -417,11 +421,11 @@ class _CommentsBottomSheetContentState
         if (state is! CommentsLoadingMore) {
           // _currentPage++;
           context.read<CommentsBloc>().add(
-                FetchComments(
-                  postId: widget.postId,
-                  // pageNumber: _currentPage,
-                ),
-              );
+            FetchComments(
+              postId: widget.postId,
+              // pageNumber: _currentPage,
+            ),
+          );
         }
       }
     }
@@ -437,60 +441,56 @@ class _CommentsBottomSheetContentState
 
   @override
   Widget build(BuildContext context) {
-    return
-     BlocListener<CommentsBloc, CommentsState>(
-   listenWhen: (previous, current) {
-    // هنسمع لأي تغيير في الـ action
-    if (current is CommentsLoaded && current.action != CommentAction.none) {
-      return true;
-    }
-    return current is CommentsError;
-  },
-  listener: (context, state) {
-    if (state is CommentsLoaded) {
-       widget.onCommentCountChanged?.call(state.totalCount);
-      switch (state.action) {
-        case CommentAction.added:
-          Fluttertoast.showToast(
-            msg: 'Comment added successfully',
-            backgroundColor: Colors.green,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-          );
-          _commentController.clear(); // ✅ امسح الـ input
-          break;
+    return BlocListener<CommentsBloc, CommentsState>(
+      listenWhen: (previous, current) {
+        // هنسمع لأي تغيير في الـ action
+        if (current is CommentsLoaded && current.action != CommentAction.none) {
+          return true;
+        }
+        return current is CommentsError;
+      },
+      listener: (context, state) {
+        if (state is CommentsLoaded) {
+          widget.onCommentCountChanged?.call(state.totalCount);
+          switch (state.action) {
+            case CommentAction.added:
+              Fluttertoast.showToast(
+                msg: 'Comment added successfully',
+                backgroundColor: Colors.green,
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.TOP,
+              );
+              _commentController.clear(); // ✅ امسح الـ input
+              break;
 
-        case CommentAction.edited:
-          Fluttertoast.showToast(
-            msg: 'Comment updated successfully',
-            backgroundColor: Colors.blue,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-          );
-          _cancelEdit(); // ✅ اخرج من وضع التعديل
-          break;
+            case CommentAction.edited:
+              Fluttertoast.showToast(
+                msg: 'Comment updated successfully',
+                backgroundColor: Colors.blue,
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.TOP,
+              );
+              _cancelEdit(); // ✅ اخرج من وضع التعديل
+              break;
 
-        case CommentAction.deleted:
-          Fluttertoast.showToast(
-            msg: 'Comment deleted successfully',
-            backgroundColor: Colors.orange,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-          );
-          break;
+            case CommentAction.deleted:
+              Fluttertoast.showToast(
+                msg: 'Comment deleted successfully',
+                backgroundColor: Colors.orange,
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.TOP,
+              );
+              break;
 
-        case CommentAction.none:
-          break;
-      }
-    } else if (state is CommentsError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  },
+            case CommentAction.none:
+              break;
+          }
+        } else if (state is CommentsError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+      },
       child: DraggableScrollableSheet(
         initialChildSize: 0.7,
         minChildSize: 0.4,
@@ -515,14 +515,15 @@ class _CommentsBottomSheetContentState
                       color: Colors.grey[400],
                       borderRadius: BorderRadius.circular(10),
                     ),
-                 
                   ),
                 ),
 
                 // Title with count
                 BlocBuilder<CommentsBloc, CommentsState>(
                   builder: (context, state) {
-                    final count = state is CommentsLoaded ? state.totalCount : 0;
+                    final count = state is CommentsLoaded
+                        ? state.totalCount
+                        : 0;
                     return Text(
                       'Comments${count > 0 ? ' ($count)' : ''}',
                       style: GoogleFonts.poppins(
@@ -559,7 +560,8 @@ class _CommentsBottomSheetContentState
 
                         return ListView.builder(
                           controller: _scrollController,
-                          itemCount: comments.length +
+                          itemCount:
+                              comments.length +
                               (state is CommentsLoaded && state.hasNextPage
                                   ? 1
                                   : 0),
@@ -568,14 +570,12 @@ class _CommentsBottomSheetContentState
                               return const Padding(
                                 padding: EdgeInsets.all(16.0),
                                 child: Center(
-                                    child: CircularProgressIndicator()),
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
                             }
 
-                            return _buildCommentItem(
-                              context,
-                              comments[index],
-                            );
+                            return _buildCommentItem(context, comments[index]);
                           },
                         );
                       } else if (state is CommentsError) {
@@ -592,13 +592,16 @@ class _CommentsBottomSheetContentState
                               ElevatedButton(
                                 onPressed: () {
                                   context.read<CommentsBloc>().add(
-                                        FetchComments(
-                                          postId: widget.postId,
-                                          isRefresh: true,
-                                        ),
-                                      );
+                                    FetchComments(
+                                      postId: widget.postId,
+                                      isRefresh: true,
+                                    ),
+                                  );
                                 },
-                                child: const Text('Retry',style:TextStyle(color: Colors.black)),
+                                child: const Text(
+                                  'Retry',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                               ),
                             ],
                           ),
@@ -633,10 +636,7 @@ class _CommentsBottomSheetContentState
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.withOpacity(0.2),
-            width: 0.5,
-          ),
+          bottom: BorderSide(color: Colors.grey.withOpacity(0.2), width: 0.5),
         ),
       ),
       child: Shimmer.fromColors(
@@ -646,10 +646,7 @@ class _CommentsBottomSheetContentState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Avatar shimmer
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.grey[300],
-            ),
+            CircleAvatar(radius: 18, backgroundColor: Colors.grey[300]),
             const SizedBox(width: 12),
 
             // Content shimmer
@@ -716,103 +713,111 @@ class _CommentsBottomSheetContentState
             ? Colors.blue.withOpacity(0.05)
             : Colors.transparent,
         border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.withOpacity(0.2),
-            width: 0.5,
-          ),
+          bottom: BorderSide(color: Colors.grey.withOpacity(0.2), width: 0.5),
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Avatar
-          CircleAvatar(
-            radius: 18,
-            backgroundImage: comment.profilePictureUrl != null
-                ? NetworkImage(comment.profilePictureUrl!)
-                : null,
-            backgroundColor: Colors.grey[300],
-          child: comment.profilePictureUrl == null
-    ? Text(
-        (comment.fullName.isNotEmpty
-                ? comment.fullName[0]
-                : 'U')
-            .toUpperCase(),
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            AppRoutes.userProfile,
+            arguments: comment.userId,
+          );
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Avatar
+            CircleAvatar(
+              radius: 18,
+              backgroundImage: comment.profilePictureUrl != null
+                  ? NetworkImage(comment.profilePictureUrl!)
+                  : null,
+              backgroundColor: Colors.grey[300],
+              child: comment.profilePictureUrl == null
+                  ? Text(
+                      (comment.fullName.isNotEmpty ? comment.fullName[0] : 'U')
+                          .toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        comment.fullName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      Text(
+                        formatTimeAgo(comment.createdAt.toUtc()),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    comment.text,
+
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+
+            // Actions (Edit & Delete) - Only for current user
+            if (isCurrentUser)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _startEdit(comment);
+                  } else if (value == 'delete') {
+                    _showDeleteDialog(context, comment);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, size: 18),
+                        SizedBox(width: 8),
+                        Text('Edit'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, size: 18, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Delete', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
-      )
-    : null,
-
-          ),
-          const SizedBox(width: 12),
-
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      comment.fullName,
-                      style: const TextStyle(fontWeight: FontWeight.w600,color:Colors.black),
-                    ),
-                    const SizedBox(width: 8),
-                  
-                    Text(
-                      
-                      formatTimeAgo(comment.createdAt.toUtc()),
-                      style: const TextStyle(color: Colors.black, fontSize: 12),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  comment.text,
-                  
-                  style: const TextStyle(fontSize: 14,color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-
-          // Actions (Edit & Delete) - Only for current user
-          if (isCurrentUser)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
-              onSelected: (value) {
-                if (value == 'edit') {
-                  _startEdit(comment);
-                } else if (value == 'delete') {
-                  _showDeleteDialog(context, comment);
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit, size: 18),
-                      SizedBox(width: 8),
-                      Text('Edit'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, size: 18, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Delete', style: TextStyle(color: Colors.red)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
       ),
     );
   }
@@ -846,17 +851,14 @@ class _CommentsBottomSheetContentState
           TextButton(
             onPressed: () {
               context.read<CommentsBloc>().add(
-                    DeleteComment(
-                      postId: widget.postId,
-                      commentId: comment.commentId,
-                    ),
-                  );
+                DeleteComment(
+                  postId: widget.postId,
+                  commentId: comment.commentId,
+                ),
+              );
               Navigator.pop(dialogContext);
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -951,19 +953,19 @@ class _CommentsBottomSheetContentState
                                 if (_editingCommentId != null) {
                                   // Edit
                                   context.read<CommentsBloc>().add(
-                                        EditComment(
-                                          commentId: _editingCommentId!,
-                                          text: _commentController.text.trim(),
-                                        ),
-                                      );
+                                    EditComment(
+                                      commentId: _editingCommentId!,
+                                      text: _commentController.text.trim(),
+                                    ),
+                                  );
                                 } else {
                                   // Add
                                   context.read<CommentsBloc>().add(
-                                        AddComment(
-                                          postId: widget.postId,
-                                          text: _commentController.text.trim(),
-                                        ),
-                                      );
+                                    AddComment(
+                                      postId: widget.postId,
+                                      text: _commentController.text.trim(),
+                                    ),
+                                  );
                                   _commentController.clear();
                                 }
                               },
@@ -983,8 +985,3 @@ class _CommentsBottomSheetContentState
     );
   }
 }
-
-
-
-
-

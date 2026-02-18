@@ -5,7 +5,6 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
-import 'package:sports_in/features/main/profile/view/widgets/post.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class ProfilePostsListScreen extends StatefulWidget {
@@ -100,7 +99,7 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         title: Text(
-          widget.isCurrentUser ? 'My Posts' : 'Posts',
+          widget.isCurrentUser ? string.myPosts : string.posts,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -115,7 +114,7 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
           if (state is PostDeleteSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Post deleted successfully'),
+                content: Text(string.postDeleted),
                 backgroundColor: theme.colorScheme.primary,
               ),
             );
@@ -151,7 +150,7 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
                   ),
                   SizedBox(height: 16.h),
                   Text(
-                    'Failed to load posts',
+                    string.postLoadFailed,
                     style: theme.textTheme.titleMedium,
                   ),
                   SizedBox(height: 8.h),
@@ -165,7 +164,7 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
                   SizedBox(height: 16.h),
                   ElevatedButton(
                     onPressed: _refreshPosts,
-                    child: const Text('Retry'),
+                    child: Text(string.retry),
                   ),
                 ],
               ),

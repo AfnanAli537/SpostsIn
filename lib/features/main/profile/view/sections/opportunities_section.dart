@@ -60,10 +60,6 @@ class OpportunitiesSection extends StatelessWidget {
                             size: 40.sp,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                            //  Icon(
-                            //   Icons.work,
-                            //   color: theme.colorScheme.onSurfaceVariant,
-                            // ),
                           );
                         },
                       ),

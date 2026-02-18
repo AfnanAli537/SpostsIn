@@ -57,7 +57,7 @@ class RegisterApiDataSource implements IRegisterDataSource {
         return true;
       }
       throw ApiException(
-        message: 'OTP verification failed',
+        message: response.data['errors']?[0]?? response.data['message'],
         key: StringKeys.validationError,
       );
     } on DioException catch (e) {

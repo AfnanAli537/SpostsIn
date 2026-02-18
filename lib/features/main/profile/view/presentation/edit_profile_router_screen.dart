@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
@@ -26,8 +27,8 @@ class EditProfileRouterScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is ProfileUpdated) {
           Fluttertoast.showToast(
-              msg: 'Profile updated successfully',
-              backgroundColor: Colors.green,
+              msg: string.editProfileSuccess,
+              backgroundColor: ColorManager.success,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
@@ -52,12 +53,15 @@ class EditProfileRouterScreen extends StatelessWidget {
                     children: [
                       const CircularProgressIndicator(),
                       SizedBox(height: 16.h),
-                      Text(
-                        string.updatingPost ?? 'Updating...',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: theme.onSecondary,
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 250.w),
+                        child: Text(
+                          string.updatingProfile,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: theme.onSecondary,
+                          ),
                         ),
                       ),
                     ],
@@ -77,12 +81,12 @@ class EditProfileRouterScreen extends StatelessWidget {
         } else if (state is ProfileError) {
           // ✅ Show error screen
           return Scaffold(
-            appBar: AppBar(title: Text(string.editProfile ?? 'Edit Profile')),
+            appBar: AppBar(title: Text(string.editProfile)),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
+                  Icon(Icons.error_outline, size: 64.sp, color: ColorManager.error),
                   SizedBox(height: 16.h),
                   Text(
                     state.message,
@@ -92,7 +96,7 @@ class EditProfileRouterScreen extends StatelessWidget {
                   SizedBox(height: 16.h),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Go Back'),
+                    child: Text(string.back),
                   ),
                 ],
               ),
@@ -103,9 +107,9 @@ class EditProfileRouterScreen extends StatelessWidget {
         // ✅ If no profile, show error
         if (profile == null) {
           return Scaffold(
-            appBar: AppBar(title: Text(string.editProfile ?? 'Edit Profile')),
+            appBar: AppBar(title: Text(string.editProfile)),
             body: Center(
-              child: Text('No profile data available'),
+              child: Text(string.noProfileData),
             ),
           );
         }

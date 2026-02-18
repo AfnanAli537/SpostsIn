@@ -59,6 +59,9 @@ class SharedPref {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);
     await _prefs.remove(StringKeys.userId);
+    await _prefs.remove(StringKeys.userType);
+    await _prefs.remove(StringKeys.email);
+    await _prefs.remove(StringKeys.name);
   }
 
 Future<void> saveExpiryDate(DateTime expiryDate) async {

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sports_in/core/mappers/enum_mapper.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/gender_helper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
@@ -107,8 +107,8 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
         listener: (context, state) {
           if (state is ProfileUpdated) {
             Fluttertoast.showToast(
-              msg: 'Profile updated successfully',
-              backgroundColor: Colors.green,
+              msg: string.editProfileSuccess,
+              backgroundColor: ColorManager.success,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
@@ -118,7 +118,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
           if (state is ProfileError) {
             Fluttertoast.showToast(
               msg: state.message,
-              backgroundColor: Colors.red,
+              backgroundColor: ColorManager.error,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );

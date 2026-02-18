@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
@@ -58,7 +59,7 @@ class _AchievementDetailView extends StatelessWidget {
         if (state is AchievementDeleted) {
           Fluttertoast.showToast(
               msg: string.achievementDeleted,
-              backgroundColor: Colors.red,
+              backgroundColor: ColorManager.error,
             );
           // Pop back to list/profile with refresh flag
           Navigator.pop(context, true);
@@ -142,19 +143,19 @@ class _AchievementDetailView extends StatelessWidget {
 
               _buildField(
                 context,
-                label: "Date",
+                label: string.date,
                 content: _formatDate(achievement.date),
               ),
 
               _buildField(
                 context,
-                label: "Title",
+                label: string.title,
                 content: achievement.title,
               ),
 
               _buildField(
                 context,
-                label: "Description",
+                label: string.description,
                 content: achievement.subtitle,
                 isLongText: true,
               ),
@@ -219,15 +220,15 @@ class _AchievementDetailView extends StatelessWidget {
   void _showDeleteConfirmation(BuildContext context) {
     ConfirmationDialog.show(
       context: context,
-      title: 'Delete Achievement',
-      message: 'Are you sure you want to delete this achievement?',
+      title: S.of(context).deleteachievement,
+      message: S.of(context).deleteachievementconfirmation,
       onConfirm: () {
         context.read<ProfileBloc>().add(
           DeleteAchievement(achievementId: achievement.id),
         );
       },
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      confirmText: S.of(context).delete,
+      cancelText: S.of(context).cancel,
       icon: Icons.delete_outline,
       isDestructive: true,
     );

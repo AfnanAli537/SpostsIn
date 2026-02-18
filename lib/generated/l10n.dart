@@ -1814,6 +1814,11 @@ class S {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
   }
 
+  /// `Retry`
+  String get retry {
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+  }
+
   /// `Confirm`
   String get confirm {
     return Intl.message('Confirm', name: 'confirm', desc: '', args: []);
@@ -1864,9 +1869,39 @@ class S {
     return Intl.message('Posts', name: 'posts', desc: '', args: []);
   }
 
+  /// `My Posts`
+  String get myPosts {
+    return Intl.message('My Posts', name: 'myPosts', desc: '', args: []);
+  }
+
+  /// `Post Title`
+  String get postTitle {
+    return Intl.message('Post Title', name: 'postTitle', desc: '', args: []);
+  }
+
   /// `No Posts`
   String get noPosts {
     return Intl.message('No Posts', name: 'noPosts', desc: '', args: []);
+  }
+
+  /// `Post deleted successfully`
+  String get postDeleteed {
+    return Intl.message(
+      'Post deleted successfully',
+      name: 'postDeleteed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post updated successfully!`
+  String get postUpdated {
+    return Intl.message(
+      'Post updated successfully!',
+      name: 'postUpdated',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Opportunities`
@@ -1937,6 +1972,51 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Are you sure you want to delete this achievement?`
+  String get deleteachievementconfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this achievement?',
+      name: 'deleteachievementconfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Achievement`
+  String get deleteachievement {
+    return Intl.message(
+      'Delete Achievement',
+      name: 'deleteachievement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update`
+  String get update {
+    return Intl.message('Update', name: 'update', desc: '', args: []);
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
+  }
+
+  /// `Title`
+  String get title {
+    return Intl.message('Title', name: 'title', desc: '', args: []);
+  }
+
+  /// `Description`
+  String get description {
+    return Intl.message('Description', name: 'description', desc: '', args: []);
+  }
+
+  /// `Date`
+  String get date {
+    return Intl.message('Date', name: 'date', desc: '', args: []);
   }
 
   /// `Analyzed Videos Reports`
@@ -2094,26 +2174,81 @@ class S {
     );
   }
 
+  /// `Profile updated successfully!`
+  String get editProfileSuccess {
+    return Intl.message(
+      'Profile updated successfully!',
+      name: 'editProfileSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No profile data available.`
+  String get noProfileData {
+    return Intl.message(
+      'No profile data available.',
+      name: 'noProfileData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to update profile.`
+  String get editProfileFailed {
+    return Intl.message(
+      'Failed to update profile.',
+      name: 'editProfileFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load profile. Please try again.`
+  String get profileLoadFailed {
+    return Intl.message(
+      'Failed to load profile. Please try again.',
+      name: 'profileLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit`
+  String get edit {
+    return Intl.message('Edit', name: 'edit', desc: '', args: []);
+  }
+
   /// `Description`
   String get bio {
     return Intl.message('Description', name: 'bio', desc: '', args: []);
   }
 
-  /// `Updating post...`
+  /// `No bio`
+  String get noBio {
+    return Intl.message('No bio', name: 'noBio', desc: '', args: []);
+  }
+
+  /// `Update Post`
+  String get updatePost {
+    return Intl.message('Update Post', name: 'updatePost', desc: '', args: []);
+  }
+
+  /// `Updating post`
   String get updatingPost {
     return Intl.message(
-      'Updating post...',
+      'Updating post',
       name: 'updatingPost',
       desc: '',
       args: [],
     );
   }
 
-  /// `Post updated successfully!`
-  String get postUpdated {
+  /// `Updating profile`
+  String get updatingProfile {
     return Intl.message(
-      'Post updated successfully!',
-      name: 'postUpdated',
+      'Updating profile',
+      name: 'updatingProfile',
       desc: '',
       args: [],
     );
@@ -2159,6 +2294,16 @@ class S {
     return Intl.message(
       'Failed to delete post. Please try again.',
       name: 'postDeleteFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load post. Please try again.`
+  String get postLoadFailed {
+    return Intl.message(
+      'Failed to load post. Please try again.',
+      name: 'postLoadFailed',
       desc: '',
       args: [],
     );

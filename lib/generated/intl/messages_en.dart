@@ -113,16 +113,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "currentlyInClub": MessageLookupByLibrary.simpleMessage(
       "Currently in a Club",
     ),
+    "date": MessageLookupByLibrary.simpleMessage("Date"),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
+    "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deletePost": MessageLookupByLibrary.simpleMessage("Delete Post"),
     "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this post?",
     ),
+    "deleteachievement": MessageLookupByLibrary.simpleMessage(
+      "Delete Achievement",
+    ),
+    "deleteachievementconfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this achievement?",
+    ),
+    "description": MessageLookupByLibrary.simpleMessage("Description"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "Disconnected successfully!",
     ),
     "done": MessageLookupByLibrary.simpleMessage("Done"),
+    "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
+    "editProfileFailed": MessageLookupByLibrary.simpleMessage(
+      "Failed to update profile.",
+    ),
+    "editProfileSuccess": MessageLookupByLibrary.simpleMessage(
+      "Profile updated successfully!",
+    ),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -259,15 +275,20 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
+    "myPosts": MessageLookupByLibrary.simpleMessage("My Posts"),
     "name": MessageLookupByLibrary.simpleMessage("name"),
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
+    "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No Internet Connection",
     ),
     "noOpportunities": MessageLookupByLibrary.simpleMessage("No Opportunities"),
     "noPosts": MessageLookupByLibrary.simpleMessage("No Posts"),
+    "noProfileData": MessageLookupByLibrary.simpleMessage(
+      "No profile data available.",
+    ),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("No results found"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
@@ -368,6 +389,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "postDeleted": MessageLookupByLibrary.simpleMessage(
       "Post deleted successfully!",
     ),
+    "postDeleteed": MessageLookupByLibrary.simpleMessage(
+      "Post deleted successfully",
+    ),
+    "postLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Failed to load post. Please try again.",
+    ),
+    "postTitle": MessageLookupByLibrary.simpleMessage("Post Title"),
     "postUpdateFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to update post. Please try again.",
     ),
@@ -380,6 +408,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Privacy & Policy",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profileLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Failed to load profile. Please try again.",
+    ),
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Registered successfully!",
@@ -403,6 +434,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "resourceNotFound": MessageLookupByLibrary.simpleMessage(
       "Resource not found.",
     ),
+    "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
     "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
@@ -460,6 +492,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
     "theme": MessageLookupByLibrary.simpleMessage("Light"),
+    "title": MessageLookupByLibrary.simpleMessage("Title"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
     ),
@@ -476,7 +509,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
       "Unfollowed successfully!",
     ),
-    "updatingPost": MessageLookupByLibrary.simpleMessage("Updating post..."),
+    "update": MessageLookupByLibrary.simpleMessage("Update"),
+    "updatePost": MessageLookupByLibrary.simpleMessage("Update Post"),
+    "updatingPost": MessageLookupByLibrary.simpleMessage("Updating post"),
+    "updatingProfile": MessageLookupByLibrary.simpleMessage("Updating profile"),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
     ),

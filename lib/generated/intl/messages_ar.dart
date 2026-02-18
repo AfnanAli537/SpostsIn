@@ -109,16 +109,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "create": MessageLookupByLibrary.simpleMessage("إنشاء"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
+    "date": MessageLookupByLibrary.simpleMessage("التاريخ"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
+    "delete": MessageLookupByLibrary.simpleMessage("حذف"),
     "deletePost": MessageLookupByLibrary.simpleMessage("حذف المنشور"),
     "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
     ),
+    "deleteachievement": MessageLookupByLibrary.simpleMessage("حذف الإنجاز"),
+    "deleteachievementconfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد أنك تريد حذف هذا الإنجاز؟",
+    ),
+    "description": MessageLookupByLibrary.simpleMessage("الوصف"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "تم قطع الاتصال بنجاح!",
     ),
     "done": MessageLookupByLibrary.simpleMessage("تم"),
+    "edit": MessageLookupByLibrary.simpleMessage("تعديل"),
     "editProfile": MessageLookupByLibrary.simpleMessage("عدل الحساب"),
+    "editProfileFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل تحديث الملف الشخصي.",
+    ),
+    "editProfileSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الملف الشخصي بنجاح!",
+    ),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -254,15 +268,20 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "moreDetails": MessageLookupByLibrary.simpleMessage("المزيد من التفاصيل"),
     "morocco": MessageLookupByLibrary.simpleMessage("المغرب"),
+    "myPosts": MessageLookupByLibrary.simpleMessage("منشوراتي"),
     "name": MessageLookupByLibrary.simpleMessage("الاسم"),
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
     "newPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور الجديدة"),
     "next": MessageLookupByLibrary.simpleMessage("التالي"),
+    "noBio": MessageLookupByLibrary.simpleMessage("لا وصف"),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",
     ),
     "noOpportunities": MessageLookupByLibrary.simpleMessage("لا توجد فرص"),
     "noPosts": MessageLookupByLibrary.simpleMessage("لا توجد منشورات"),
+    "noProfileData": MessageLookupByLibrary.simpleMessage(
+      "لا توجد بيانات ملف شخصي.",
+    ),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("لا توجد نتائج"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
     "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
@@ -377,6 +396,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "الخصوصية والسياسة",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("الملف الشخصي"),
+    "profileLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل تحميل الملف الشخصي. يرجى المحاولة مرة أخرى.",
+    ),
     "register": MessageLookupByLibrary.simpleMessage("تسجيل"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
@@ -456,6 +478,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
     "theme": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
+    "title": MessageLookupByLibrary.simpleMessage("العنوان"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),
@@ -470,8 +493,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "unfollowSuccess": MessageLookupByLibrary.simpleMessage(
       "تم إلغاء المتابعة بنجاح!",
     ),
-    "updatingPost": MessageLookupByLibrary.simpleMessage(
-      "جار تحديث المنشور...",
+    "update": MessageLookupByLibrary.simpleMessage("تحديث"),
+    "updatePost": MessageLookupByLibrary.simpleMessage("تحديث المنشور"),
+    "updatingPost": MessageLookupByLibrary.simpleMessage("جار تحديث المنشور"),
+    "updatingProfile": MessageLookupByLibrary.simpleMessage(
+      "جارٍ تحديث الملف الشخصي",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",

@@ -192,9 +192,6 @@
 //   UserModel({required this.username, required this.fullName, required this.isFollowing});
 // }
 
-
-
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:shimmer/shimmer.dart';
@@ -483,6 +480,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/features/main/home/view_model/likes_bloc/likes_bloc.dart';
 
@@ -503,14 +501,10 @@ class _LikesSheetState extends State<LikesSheet> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     if (!_isInitialized) {
       _bloc = context.read<LikesBloc>();
-      _bloc.add(FetchLikes(
-        postId: widget.postId,
-        page: 1,
-        isRefresh: true,
-      ));
+      _bloc.add(FetchLikes(postId: widget.postId, page: 1, isRefresh: true));
       _isInitialized = true;
     }
   }
@@ -523,17 +517,14 @@ class _LikesSheetState extends State<LikesSheet> {
 
   void _onScroll() {
     if (!mounted) return;
-    
+
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
       final state = _bloc.state;
       if (state is LikesLoaded && state.hasMore) {
         if (state is! LikesLoadingMore) {
           _currentPage++;
-          _bloc.add(FetchLikes(
-                postId: widget.postId,
-                page: _currentPage,
-              ));
+          _bloc.add(FetchLikes(postId: widget.postId, page: _currentPage));
         }
       }
     }
@@ -575,7 +566,11 @@ class _LikesSheetState extends State<LikesSheet> {
               ),
               const Text(
                 'Likes',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 12),
 
@@ -584,21 +579,27 @@ class _LikesSheetState extends State<LikesSheet> {
                   builder: (context, state) {
                     if (state is LikesLoading) {
                       return _buildShimmerLoading();
-                    } else if (state is LikesLoaded || state is LikesLoadingMore) {
+                    } else if (state is LikesLoaded ||
+                        state is LikesLoadingMore) {
                       final likes = state is LikesLoaded
                           ? state.likes
                           : (state as LikesLoadingMore).currentLikes;
 
                       if (likes.isEmpty) {
                         return const Center(
-                          child: Text('No likes yet', style: TextStyle(color: Colors.black)),
+                          child: Text(
+                            'No likes yet',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         );
                       }
 
                       return ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: likes.length + (state is LikesLoaded && state.hasMore ? 1 : 0),
+                        itemCount:
+                            likes.length +
+                            (state is LikesLoaded && state.hasMore ? 1 : 0),
                         itemBuilder: (context, index) {
                           if (index == likes.length) {
                             return const Padding(
@@ -614,7 +615,10 @@ class _LikesSheetState extends State<LikesSheet> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[300]!, width: 1),
+                              border: Border.all(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.1),
@@ -624,49 +628,66 @@ class _LikesSheetState extends State<LikesSheet> {
                                 ),
                               ],
                             ),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage: user.profilePhoto != null
-                                      ? NetworkImage(user.profilePhoto!)
-                                      : null,
-                                  backgroundColor: Colors.grey[300],
-                                  child: user.profilePhoto == null
-                                      ? Text(
-                                          user.fullName.isNotEmpty
-                                              ? user.fullName[0].toUpperCase()
-                                              : 'U',
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : null,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        user.fullName,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        formatTimeAgo(DateTime.parse(user.createdAt).toUtc()),
-                                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                                      ),
-                                    ],
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.userProfile,
+                                  arguments: user.userId,
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 24,
+                                    backgroundImage: user.profilePhoto != null
+                                        ? NetworkImage(user.profilePhoto!)
+                                        : null,
+                                    backgroundColor: Colors.grey[300],
+                                    child: user.profilePhoto == null
+                                        ? Text(
+                                            user.fullName.isNotEmpty
+                                                ? user.fullName[0].toUpperCase()
+                                                : 'U',
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : null,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          user.fullName,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          formatTimeAgo(
+                                            DateTime.parse(
+                                              user.createdAt,
+                                            ).toUtc(),
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -676,14 +697,22 @@ class _LikesSheetState extends State<LikesSheet> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Error: ${state.message}',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: Colors.red)),
+                            Text(
+                              'Error: ${state.message}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.red),
+                            ),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () {
                                 if (mounted) {
-                                  _bloc.add(FetchLikes(postId: widget.postId, page: 1, isRefresh: true));
+                                  _bloc.add(
+                                    FetchLikes(
+                                      postId: widget.postId,
+                                      page: 1,
+                                      isRefresh: true,
+                                    ),
+                                  );
                                 }
                               },
                               child: const Text('Retry'),

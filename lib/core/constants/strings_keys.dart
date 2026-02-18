@@ -4,11 +4,14 @@ class StringKeys {
   static const String privacyKey = 'seenPrivacy';
   static const String themeKey = 'theme_mode';
   static const String languageKey = 'language_code';
-  static const String tokenKey = 'token';
+  static const String tokenKey = 'Token';
   static const String userIdKey = 'userId';
+  static const String userType = 'userType';
 
-  static const String expireData = 'ExpireData';
-  static const String userId = 'UserId';
+  static const String expireData = 'expire';
+  static const String userId = 'userId';
+  static const String email = 'email';
+  static const String name = 'name';
 
   /// Network error
   static const String connectionTimedOut = 'connectionTimedOut';

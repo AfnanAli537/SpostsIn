@@ -151,8 +151,8 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
         if (state is PostUpdateSuccess) {
           setState(() => _isUpdating = false);
           Fluttertoast.showToast(
-            msg: 'Post updated successfully!',
-            backgroundColor: Colors.green,
+            msg: string.postUpdated,
+            backgroundColor: ColorManager.success,
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
           );
@@ -166,7 +166,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
           setState(() => _isUpdating = false);
           Fluttertoast.showToast(
             msg: state.message,
-            backgroundColor: Colors.red,
+            backgroundColor: ColorManager.error,
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
           );
@@ -182,7 +182,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
                 onPressed: _isUpdating ? null : () => Navigator.pop(context),
               ),
               title: Text(
-                'Edit Post',
+                string.updatePost,
                 style: TextStyle(
                   color: theme.onSurface,
                   fontSize: 18.sp,
@@ -290,12 +290,15 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
                     children: [
                       const CircularProgressIndicator(),
                       SizedBox(height: 16.h),
-                      Text(
-                        string.updatingPost,
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                          color: theme.onSecondary,
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 250.w),
+                        child: Text(
+                          string.updatingPost,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: theme.onSecondary,
+                          ),
                         ),
                       ),
                     ],

@@ -311,7 +311,8 @@ class AppDrawer extends StatelessWidget {
       iconColor: theme.colorScheme.error,
       isDestructive: true,
       onConfirm: () async {
-        await getIt<SharedPref>().clear(); // Use clear() to wipe all user data
+        // await getIt<SharedPref>().clear(); // Use clear() to wipe all user data
+        await getIt<SharedPref>().clearToken(); // Use clear() to wipe all user data
         rootNavigator.pushNamedAndRemoveUntil(
           AppRoutes.login,
           (route) => false,

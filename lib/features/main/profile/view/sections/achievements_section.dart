@@ -34,7 +34,10 @@ class AchievementsSection extends StatelessWidget {
     );
   }
 
-  void _navigateToAchievementDetail(BuildContext context, Achievement achievement) {
+  void _navigateToAchievementDetail(
+    BuildContext context,
+    Achievement achievement,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -57,12 +60,12 @@ class AchievementsSection extends StatelessWidget {
         // Use SectionHeader with Show All button
         SectionHeader(
           title: string.achievements,
-          onShowAllPressed: 
-          // achievements.length > 3?
-           () => _navigateToAchievementsList(context)
-              // : null,
+          onShowAllPressed:
+              // achievements.length > 3?
+              () => _navigateToAchievementsList(context),
+          // : null,
         ),
-        
+
         // Achievement Cards
         ListView.builder(
           shrinkWrap: true,
@@ -126,13 +129,12 @@ class _AchievementCard extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12.w),
-          
+
           // Achievement Details (Title and Date only)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // Title
                 Text(
                   achievement.title,
@@ -151,10 +153,6 @@ class _AchievementCard extends StatelessWidget {
                       horizontal: 8.w,
                       vertical: 2.h,
                     ),
-                    // decoration: BoxDecoration(
-                    //   color: theme.colorScheme.primaryContainer,
-                    //   borderRadius: BorderRadius.circular(4.r),
-                    // ),
                     child: Text(
                       achievement.date!.year.toString(),
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -164,8 +162,6 @@ class _AchievementCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                
-                
               ],
             ),
           ),

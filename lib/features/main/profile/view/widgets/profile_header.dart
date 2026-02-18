@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -75,7 +76,8 @@ class ProfileHeader extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Edit',
+                                // 'Edit',
+                                S.of(context).edit,
                                 style: TextStyle(
                                   color: theme.colorScheme.surface,
                                   fontSize: 14.sp,
@@ -83,7 +85,7 @@ class ProfileHeader extends StatelessWidget {
                               ),
                               SizedBox(
                                 width: 8.w,
-                              ), // Adds a small gap between text and icon
+                              ),
                               Icon(
                                 Icons.edit,
                                   color: theme.colorScheme.surface,
