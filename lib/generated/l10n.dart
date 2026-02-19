@@ -2655,6 +2655,336 @@ class S {
       args: [count],
     );
   }
+
+  /// `Select Sport`
+  String get selectSport {
+    return Intl.message(
+      'Select Sport',
+      name: 'selectSport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear`
+  String get clear {
+    return Intl.message('Clear', name: 'clear', desc: '', args: []);
+  }
+
+  /// `Opportunity created successfully!`
+  String get opportunityCreatedSuccessfully {
+    return Intl.message(
+      'Opportunity created successfully!',
+      name: 'opportunityCreatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Application submitted successfully!`
+  String get applicationSubmittedSuccessfully {
+    return Intl.message(
+      'Application submitted successfully!',
+      name: 'applicationSubmittedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Opportunities found`
+  String get noOpportunitiesFound {
+    return Intl.message(
+      'No Opportunities found',
+      name: 'noOpportunitiesFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear filters`
+  String get clearFilters {
+    return Intl.message(
+      'Clear filters',
+      name: 'clearFilters',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Since`
+  String get since {
+    return Intl.message('Since', name: 'since', desc: '', args: []);
+  }
+
+  /// `w ago`
+  String get weeksAgo {
+    return Intl.message('w ago', name: 'weeksAgo', desc: '', args: []);
+  }
+
+  /// `Apply opportunity`
+  String get applyOpportunity {
+    return Intl.message(
+      'Apply opportunity',
+      name: 'applyOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Opportunity`
+  String get deleteOpportunity {
+    return Intl.message(
+      'Delete Opportunity',
+      name: 'deleteOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this opportunity? This action cannot be undone.`
+  String get deleteOpportunityConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this opportunity? This action cannot be undone.',
+      name: 'deleteOpportunityConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deleting opportunity...`
+  String get deletingOpportunity {
+    return Intl.message(
+      'Deleting opportunity...',
+      name: 'deletingOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requirements`
+  String get requirements {
+    return Intl.message(
+      'Requirements',
+      name: 'requirements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End Date`
+  String get endDate {
+    return Intl.message('End Date', name: 'endDate', desc: '', args: []);
+  }
+
+  /// `Show Applicants`
+  String get showApplicants {
+    return Intl.message(
+      'Show Applicants',
+      name: 'showApplicants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Already Applied`
+  String get alreadyApplied {
+    return Intl.message(
+      'Already Applied',
+      name: 'alreadyApplied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apply Now`
+  String get applyNow {
+    return Intl.message('Apply Now', name: 'applyNow', desc: '', args: []);
+  }
+
+  /// `Apply`
+  String get apply {
+    return Intl.message('Apply', name: 'apply', desc: '', args: []);
+  }
+
+  /// `Applicants`
+  String get applicants {
+    return Intl.message('Applicants', name: 'applicants', desc: '', args: []);
+  }
+
+  /// `All`
+  String get all {
+    return Intl.message('All', name: 'all', desc: '', args: []);
+  }
+
+  /// `Accepted`
+  String get accepted {
+    return Intl.message('Accepted', name: 'accepted', desc: '', args: []);
+  }
+
+  /// `Rejected`
+  String get rejected {
+    return Intl.message('Rejected', name: 'rejected', desc: '', args: []);
+  }
+
+  /// `No accepted applicants`
+  String get noAcceptedApplicants {
+    return Intl.message(
+      'No accepted applicants',
+      name: 'noAcceptedApplicants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No rejected applicants`
+  String get noRejectedApplicants {
+    return Intl.message(
+      'No rejected applicants',
+      name: 'noRejectedApplicants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No applicants found`
+  String get noApplicantsFound {
+    return Intl.message(
+      'No applicants found',
+      name: 'noApplicantsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error loading applicants`
+  String get errorLoadingApplicants {
+    return Intl.message(
+      'Error loading applicants',
+      name: 'errorLoadingApplicants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accept`
+  String get accept {
+    return Intl.message('Accept', name: 'accept', desc: '', args: []);
+  }
+
+  /// `Reject`
+  String get reject {
+    return Intl.message('Reject', name: 'reject', desc: '', args: []);
+  }
+
+  /// `Upload an Image`
+  String get uploadAnImage {
+    return Intl.message(
+      'Upload an Image',
+      name: 'uploadAnImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to select from gallery`
+  String get tapToSelectFromGallery {
+    return Intl.message(
+      'Tap to select from gallery',
+      name: 'tapToSelectFromGallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Requirements (one per line)...`
+  String get enterYourRequirements {
+    return Intl.message(
+      'Enter Requirements (one per line)...',
+      name: 'enterYourRequirements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select End Date`
+  String get selectEndDate {
+    return Intl.message(
+      'Select End Date',
+      name: 'selectEndDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload`
+  String get upload {
+    return Intl.message('Upload', name: 'upload', desc: '', args: []);
+  }
+
+  /// `Please enter a title`
+  String get pleaseEnterTitle {
+    return Intl.message(
+      'Please enter a title',
+      name: 'pleaseEnterTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a description`
+  String get pleaseEnterDescription {
+    return Intl.message(
+      'Please enter a description',
+      name: 'pleaseEnterDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter requirements`
+  String get pleaseEnterRequirements {
+    return Intl.message(
+      'Please enter requirements',
+      name: 'pleaseEnterRequirements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a sport`
+  String get pleaseSelectSport {
+    return Intl.message(
+      'Please select a sport',
+      name: 'pleaseSelectSport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select an end date`
+  String get pleaseSelectEndDate {
+    return Intl.message(
+      'Please select an end date',
+      name: 'pleaseSelectEndDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Details`
+  String get details {
+    return Intl.message('Details', name: 'details', desc: '', args: []);
+  }
+
+  /// `No opportunities available`
+  String get noOpportunitiesAvailable {
+    return Intl.message(
+      'No opportunities available',
+      name: 'noOpportunitiesAvailable',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -2,7 +2,6 @@
   "selectLanguage": "اختر اللغة",
   "arabic": "العربية",
   "english": "الإنجليزية",
-
   "next": "التالي",
   "skip": "تخطي",
   "back": "رجوع",
@@ -30,7 +29,6 @@
   "chats": "المحادثات",
   "chat": "دردشة",
   "profile": "الملف الشخصي",
-
   "register": "تسجيل",
   "create": "إنشاء",
   "registeredSuccessfully": "تم التسجيل بنجاح!",
@@ -38,14 +36,12 @@
   "knowingYourGoal": "معرفة هدفك تساعدنا على تخصيص تجربتك",
   "continueText": "استمر",
   "alreadyHaveAnAccount": "لديك حساب بالفعل؟",
-
   "player": "لاعب",
   "coach": "مدرب",
   "scout": "مستكشف مواهب",
   "club": "نادي",
   "institute": "موْسسة",
   "other": "أخرى",
-
   "firstName": "الاسم الأول",
   "lastName": "اسم العائلة",
   "height": "الطول (سم)",
@@ -58,80 +54,65 @@
   "position": "المركز",
   "nationality": "الجنسية",
   "yearsOfExperience": "سنوات الخبرة",
-
   "instituteName": "اسم الموْسسة",
   "industary": "المجال",
   "clubName": "اسم النادي",
   "foundDate": "تاريخ التأسيس",
   "currentlyInClub": "حاليًا في نادٍ",
-
   "male": "ذكر",
   "female": "أنثى",
-
   "algeria": "الجزائر",
   "egypt": "مصر",
   "morocco": "المغرب",
   "tunisia": "تونس",
   "sudan": "السودان",
-
   "selectSports": "اختر الرياضة",
   "sport": "الرياضة",
-
   "footballer": "لاعب كرة القدم",
   "handballPlayer": "لاعب كرة اليد",
   "basketballer": "لاعب كرة السلة",
   "volleyballer": "لاعب كرة الطائرة",
   "teakwandoPlayer": "لاعب تايكوندو",
   "gymnast": "لاعب جمباز",
-
   "football": "كرة القدم",
   "handball": "كرة اليد",
   "basketball": "كرة السلة",
   "volleyball": "كرة الطائرة",
   "teakwando": "تايكوندو",
   "gymnastics": "الجمباز",
-
   "pointGuard": "صانع ألعاب (Point Guard)",
   "shootingGuard": "مدافع مسدد (Shooting Guard)",
   "smallForward": "مهاجم صغير (Small Forward)",
   "powerForward": "مهاجم قوي (Power Forward)",
   "center": "محور (Center)",
-
   "goalkeeper": "حارس المرمى",
   "defender": "مدافع",
   "midfielder": "لاعب وسط",
   "forward": "مهاجم",
-
   "setter": "موزع (Setter)",
   "outsideHitter": "مهاجم خارجي (Outside Hitter)",
   "oppositeHitter": "مهاجم معاكس (Opposite Hitter)",
   "middleBlocker": "حائط صد وسطي (Middle Blocker)",
   "libero": "ليبرو (Libero)",
-
   "leftWing": "جناح أيسر",
   "rightWing": "جناح أيمن",
   "leftBack": "ظهير أيسر",
   "centerBack": "صانع لعب (وسط خلفي)",
   "rightBack": "ظهير أيمن",
   "pivot": "محور (Pivot)",
-
-
   "yearsOfExperience0to2": "0-2 سنوات",
   "yearsOfExperience3to5": "3-5 سنوات",
   "yearsOfExperience5to10": "6-10 سنوات",
   "yearsOfExperience10Plus": "أكثر من 10 سنوات",
-
-
-
-  
   "enterEmail": "يرجى إدخال البريد الإلكتروني",
   "invalidEmail": "يرجى إدخال بريد إلكتروني صالح",
   "enterPassword": "يرجى إدخال كلمة المرور",
-"passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
-"passwordNeedsUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
-"passwordNeedsLowercase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
-"passwordNeedsNumber": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
-"passwordNeedsSpecialChar": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (!@#$%^&* إلخ).",  "passwordsDontMatch": "كلمتا المرور غير متطابقتين",
+  "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+  "passwordNeedsUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
+  "passwordNeedsLowercase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
+  "passwordNeedsNumber": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
+  "passwordNeedsSpecialChar": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (!@#$%^&* إلخ).",
+  "passwordsDontMatch": "كلمتا المرور غير متطابقتين",
   "enterField": "يرجى إدخال {field}",
   "fieldTooShort": "يجب أن يحتوي {field} على حرفين على الأقل",
   "invalidField": "{field} غير صالح",
@@ -142,7 +123,7 @@
   "invalidWeight": "يرجى إدخال وزن صالح (30–200 كجم)",
   "enterAge": "يرجى إدخال العمر",
   "invalidAge": "يرجى إدخال عمر صالح (5-99)",
-    "enterExperience": "يرجى إدخال عدد سنين الخبرة",
+  "enterExperience": "يرجى إدخال عدد سنين الخبرة",
   "invalidEperience": "يجب على سنين الخبرة ان لا تتجاوز ال 60 عاماً",
   "enterDate": "يرجى اختيار التاريخ",
   "select": "اختر",
@@ -151,17 +132,14 @@
   "number": "الرقم",
   "field": "الحقل",
   "done": "تم",
-
-    "getStarted":"ابدأ",
-
-    "oldPassword": "كلمة المرور القديمة",
-    "oldPasswordRequired": "كلمة المرور القديمة مطلوبة",
-    "newPasswordRequired": "كلمة المرور الجديدة مطلوبة",
-    "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
-    "confirmPasswordRequired": "تأكيد كلمة المرور الجديدة مطلوب",
-    "changePassword": "تغيير كلمة المرور",
-    "changePasswordSuccessfully": "تم تغيير كلمة المرور بنجاح",
-
+  "getStarted": "ابدأ",
+  "oldPassword": "كلمة المرور القديمة",
+  "oldPasswordRequired": "كلمة المرور القديمة مطلوبة",
+  "newPasswordRequired": "كلمة المرور الجديدة مطلوبة",
+  "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+  "confirmPasswordRequired": "تأكيد كلمة المرور الجديدة مطلوب",
+  "changePassword": "تغيير كلمة المرور",
+  "changePasswordSuccessfully": "تم تغيير كلمة المرور بنجاح",
   "onboarding1Title": "اكتشف المواهب الرياضية",
   "onboarding2Title": "انشر الفرص",
   "onboarding3Title": "أنشئ ملفك الرياضي",
@@ -171,39 +149,31 @@
   "onboarding2Desc": "أنشئ وانشر تجارب الأداء أو البطولات لجذب الرياضيين المناسبين.",
   "onboarding3Desc": "انضم إلى SportsIn وارتقِ بمسيرتك الرياضية إلى المستوى التالي.",
   "onboarding4Desc": "حمّل مقاطع الفيديو الخاصة بك واحصل على تحليل فوري مدعوم بالذكاء الاصطناعي.",
-  "onboarding5Desc": "تحدث مباشرة مع المدربين والأندية والرياضيين. كوّن شبكتك الرياضية وابقَ على اطلاع على الفرص الجديدة."
-    
-
-
-,
- "emailVerfiy": "التحقق من البريد الإلكتروني",
+  "onboarding5Desc": "تحدث مباشرة مع المدربين والأندية والرياضيين. كوّن شبكتك الرياضية وابقَ على اطلاع على الفرص الجديدة.",
+  "emailVerfiy": "التحقق من البريد الإلكتروني",
   "continueWith": "أو المتابعة باستخدام",
   "forgetYourPassword": "هل نسيت كلمة المرور؟",
   "welcome": "مرحبًا",
   "loginToYourAccount": "سجّل الدخول إلى حسابك",
-   "GetYourCode": "احصل على الرمز الخاص بك!",
+  "GetYourCode": "احصل على الرمز الخاص بك!",
   "otpHint": "يرجى إدخال رمز مكون من 6 أرقام تم إرساله إلى عنوان بريدك الإلكتروني",
-  "otpMsgError":"الرجاء إدخال جميع الأرقام الستة للتحقق من بريدك الإلكتروني",
+  "otpMsgError": "الرجاء إدخال جميع الأرقام الستة للتحقق من بريدك الإلكتروني",
   "otpMsgSuccess": "تم التحقق من بريدك الإلكتروني بنجاح",
   "VerifyAndProceed": "تحقق وتابع",
   "tokenEX": "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
-
-    "resetPassword": "إعادة تعيين كلمة المرور",
-      "resetPasswordSuccess": "تم إعادة تعيين كلمة المرور بنجاح",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "resetPasswordSuccess": "تم إعادة تعيين كلمة المرور بنجاح",
   "resetPasswordFailure": "فشل إعادة تعيين كلمة المرور. حاول مرة أخرى",
   "enterNewPassword": "أدخل كلمة المرور الجديدة",
   "passwordHintDesc": "يجب أن تكون كلمة المرور الجديدة مختلفة عن السابقة",
   "newPassword": "كلمة المرور الجديدة",
   "ok": "حسنًا",
-   "forgetPassword": "نسيت كلمة المرور",
+  "forgetPassword": "نسيت كلمة المرور",
   "enterEmailAddressHere": "أدخل عنوان البريد الإلكتروني هنا",
   "enterEmailAssociated": "أدخل عنوان البريد الإلكتروني المرتبط بحسابك",
   "sendVerificationCode": "إرسال رمز التحقق",
- "otpSentSuccessfully": "تم إرسال رمز التحقق بنجاح! يرجى التحقق من بريدك الإلكتروني.",
-
-
-
-   "privacyPolicyTitle": "الخصوصية والسياسة",
+  "otpSentSuccessfully": "تم إرسال رمز التحقق بنجاح! يرجى التحقق من بريدك الإلكتروني.",
+  "privacyPolicyTitle": "الخصوصية والسياسة",
   "lastUpdated": "آخر تحديث: 11 أكتوبر 2025",
   "introductionTitle": "المقدمة",
   "introductionBody": "سبورتس إن هي منصة اجتماعية احترافية للرياضيين والمدربين والأندية الرياضية للتواصل ومشاركة الخبرات واكتشاف الفرص.",
@@ -219,14 +189,12 @@
   "contactBody": "إذا كانت لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا عبر البريد الإلكتروني: support@sportsin.app",
   "agreeLabel": "أوافق",
   "continueButton": "استمر",
-    "strongPassword": "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
+  "strongPassword": "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
   "emptyPassword": "كلمة المرور مطلوبة",
   "emptyEmail": "البريد الإلكتروني مطلوب",
   "validEmail": "أدخل بريدًا إلكترونيًا صالحًا",
-  "signingIn":"جارٍ تسجيل الدخول...",
+  "signingIn": "جارٍ تسجيل الدخول...",
   "loginSuccess": "مرحبًا بعودتك، هيا نبدأ!",
-
-
   "connectionTimedOut": "انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى.",
   "requestCancelled": "تم إلغاء الطلب.",
   "unexpectedError": "حدث خطأ غير متوقع.",
@@ -236,7 +204,6 @@
   "resourceNotFound": "المورد غير موجود.",
   "serverError": "خطأ في الخادم. يرجى المحاولة لاحقًا.",
   "noInternetConnection": "لا يوجد اتصال بالإنترنت.",
-
   "registrationSuccessful": "تم التسجيل بنجاح!",
   "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
   "validationError": "خطأ في التحقق. يرجى التحقق من المدخلات.",
@@ -257,7 +224,6 @@
   "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
   "cancel": "إلغاء",
   "confirm": "تأكيد",
-
   "following": "متابع",
   "followers": "يتابع",
   "connections": "الاتصالات",
@@ -286,7 +252,6 @@
   "followError": "فشلت المتابعة",
   "unfollowSuccess": "تم إلغاء المتابعة بنجاح!",
   "disconnectSuccess": "تم قطع الاتصال بنجاح!",
-
   "search": "أبحث",
   "searchResults": "نتائج البحث",
   "noResultsFound": "لا توجد نتائج",
@@ -300,7 +265,6 @@
   "postUpdateFailed": "فشل تحديث المنشور. حاول مرة أخرى.",
   "postDeleted": "تم حذف المنشور بنجاح!",
   "postDeleteFailed": "فشل حذف المنشور. حاول مرة أخرى.",
- 
   "commentAddedSuccessfully": "تم إضافة التعليق بنجاح",
   "commentUpdatedSuccessfully": "تم تحديث التعليق بنجاح",
   "commentDeletedSuccessfully": "تم حذف التعليق بنجاح",
@@ -322,7 +286,7 @@
   "hi": "مرحباً",
   "guest": "ضيف",
   "happyToSeeYouToday": "سعداء برؤيتك اليوم",
- "latestPosts": "أحدث المنشورات",
+  "latestPosts": "أحدث المنشورات",
   "oopsSomethingWentWrong": "عذراً! حدث خطأ ما",
   "noPostsYet": "لا توجد منشورات بعد",
   "likes": "الإعجابات",
@@ -353,53 +317,94 @@
   "analyzeVideo": "تحليل الفيديو",
   "seeOriginal": "رؤية النص الأصلي",
   "translate": "ترجمة",
-  "forYou":"من اجلك",
-
-  
+  "forYou": "من اجلك",
   "justNow": "الآن",
-
   "yearsAgo": "{count, plural, =1 {منذ سنة} =2 {منذ سنتين} few {منذ # سنوات} many {منذ # سنة} other {منذ # سنة}}",
   "@yearsAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "monthsAgo": "{count, plural, =1 {منذ شهر} =2 {منذ شهرين} few {منذ # أشهر} many {منذ # شهرًا} other {منذ # شهر}}",
   "@monthsAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "daysAgo": "{count, plural, =1 {منذ يوم} =2 {منذ يومين} few {منذ # أيام} many {منذ # يومًا} other {منذ # يوم}}",
   "@daysAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "hoursAgo": "{count, plural, =1 {منذ ساعة} =2 {منذ ساعتين} few {منذ # ساعات} many {منذ # ساعة} other {منذ # ساعة}}",
   "@hoursAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "minutesAgo": "{count, plural, =1 {منذ دقيقة} =2 {منذ دقيقتين} few {منذ # دقائق} many {منذ # دقيقة} other {منذ # دقيقة}}",
   "@minutesAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "secondsAgo": "{count, plural, =1 {منذ ثانية} =2 {منذ ثانيتين} few {منذ # ثوانٍ} many {منذ # ثانية} other {منذ # ثانية}}",
   "@secondsAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
-  }
-
-
-
+  },
+  "selectSport": "اختر الرياضة",
+  "clear": "مسح",
+  "opportunityCreatedSuccessfully": "تم إنشاء الفرصة بنجاح!",
+  "applicationSubmittedSuccessfully": "تم تقديم الطلب بنجاح!",
+  "noOpportunitiesFound": "لم يتم العثور على فرص",
+  "clearFilters": "مسح الفلاتر",
+  "since": "منذ",
+  "weeksAgo": "أ",
+  "applyOpportunity": "التقديم على الفرصة",
+  "deleteOpportunity": "حذف الفرصة",
+  "deleteOpportunityConfirmation": "هل أنت متأكد من حذف هذه الفرصة؟ لا يمكن التراجع عن هذا الإجراء.",
+  "deletingOpportunity": "جاري حذف الفرصة...",
+  "requirements": "المتطلبات",
+  "endDate": "تاريخ الانتهاء",
+  "showApplicants": "عرض المتقدمين",
+  "alreadyApplied": "تم التقديم بالفعل",
+  "applyNow": "قدم الآن",
+  "apply": "تقديم",
+  "applicants": "المتقدمون",
+  "all": "الكل",
+  "accepted": "مقبول",
+  "rejected": "مرفوض",
+  "noAcceptedApplicants": "لا يوجد متقدمون مقبولون",
+  "noRejectedApplicants": "لا يوجد متقدمون مرفوضون",
+  "noApplicantsFound": "لم يتم العثور على متقدمين",
+  "errorLoadingApplicants": "خطأ في تحميل المتقدمين",
+  "accept": "قبول",
+  "reject": "رفض",
+  "uploadAnImage": "ارفع صورة",
+  "tapToSelectFromGallery": "اضغط للاختيار من المعرض",
+  "enterYourRequirements": "أدخل المتطلبات (واحد في كل سطر)...",
+  "selectEndDate": "اختر تاريخ الانتهاء",
+  "upload": "رفع",
+  "pleaseEnterTitle": "الرجاء إدخال عنوان",
+  "pleaseEnterDescription": "الرجاء إدخال وصف",
+  "pleaseEnterRequirements": "الرجاء إدخال المتطلبات",
+  "pleaseSelectSport": "الرجاء اختيار رياضة",
+  "pleaseSelectEndDate": "الرجاء اختيار تاريخ الانتهاء",
+  "details": "التفاصيل",
+  "noOpportunitiesAvailable": "لا توجد فرص متاحة"
 }

@@ -2,7 +2,6 @@
   "selectLanguage": "Select Language",
   "arabic": "Arabic",
   "english": "English",
-
   "next": "Next",
   "skip": "Skip",
   "back": "Back",
@@ -30,8 +29,6 @@
   "chats": "Chats",
   "chat": "Chat",
   "profile": "Profile",
-
-
   "register": "Register",
   "create": "Create",
   "registeredSuccessfully": "Registered successfully!",
@@ -39,16 +36,12 @@
   "knowingYourGoal": "Knowing your goal helps us tailor your experience",
   "continueText": "CONTINUE",
   "alreadyHaveAnAccount": "Already have an account?",
-
-
   "player": "Player",
   "coach": "Coach",
   "scout": "Scout",
   "club": "Club",
   "institute": "Institute",
   "other": "Other",
-
-
   "firstName": "First name",
   "lastName": "Last name",
   "height": "Height (cm)",
@@ -61,77 +54,64 @@
   "position": "Position",
   "nationality": "Nationality",
   "yearsOfExperience": "Years of experience",
-
-
   "instituteName": "Institute name",
   "industary": "Industry",
   "clubName": "Club name",
   "foundDate": "Foundation date",
   "currentlyInClub": "Currently in a Club",
-
   "male": "Male",
   "female": "Female",
-
   "algeria": "Algeria",
   "egypt": "Egypt",
   "morocco": "Morocco",
   "tunisia": "Tunisia",
   "sudan": "Sudan",
-
   "selectSports": "Select a Sport",
   "sport": "Sport",
   "footballer": "Footballer",
   "handballPlayer": "Handball Player",
   "basketballer": "Basketballer",
   "volleyballer": "Volleyballer",
-  "teakwandoPlayer": "Teakwando Player",  
-  "gymnast": "Gymnast", 
-
+  "teakwandoPlayer": "Teakwando Player",
+  "gymnast": "Gymnast",
   "football": "Football",
   "handball": "Handball",
   "basketball": "Basketball",
-  "volleyball": "Volleyball",  
-  "teakwando": "Teakwando",  
-  "gymnastics": "Gymnastics",  
-
+  "volleyball": "Volleyball",
+  "teakwando": "Teakwando",
+  "gymnastics": "Gymnastics",
   "pointGuard": "Point Guard",
   "shootingGuard": "Shooting Guard",
   "smallForward": "Small Forward",
   "powerForward": "Power Forward",
   "center": "Center",
-
   "goalkeeper": "Goalkeeper",
   "defender": "Defender",
   "midfielder": "Midfielder",
   "forward": "Forward",
-
   "setter": "Setter",
   "outsideHitter": "Outside Hitter",
   "oppositeHitter": "Opposite Hitter",
   "middleBlocker": "Middle Blocker",
   "libero": "Libero",
-
   "leftWing": "Left Wing",
   "rightWing": "Right Wing",
   "leftBack": "Left Back",
   "centerBack": "Center Back",
   "rightBack": "Right Back",
   "pivot": "Pivot",
-
   "yearsOfExperience0to2": "0-2 years",
   "yearsOfExperience3to5": "3-5 years",
   "yearsOfExperience5to10": "6-10 years",
   "yearsOfExperience10Plus": "10+ years",
-
-
-    "enterEmail": "Please enter your email",
+  "enterEmail": "Please enter your email",
   "invalidEmail": "Please enter a valid email",
   "enterPassword": "Please enter your password",
-"passwordMinLength": "Password must be at least 8 characters.",
-"passwordNeedsUppercase": "Password must contain at least one uppercase letter.",
-"passwordNeedsLowercase": "Password must contain at least one lowercase letter.",
-"passwordNeedsNumber": "Password must contain at least one number.",
-"passwordNeedsSpecialChar": "Password must contain at least one special character (!@#$%^&* etc).",
+  "passwordMinLength": "Password must be at least 8 characters.",
+  "passwordNeedsUppercase": "Password must contain at least one uppercase letter.",
+  "passwordNeedsLowercase": "Password must contain at least one lowercase letter.",
+  "passwordNeedsNumber": "Password must contain at least one number.",
+  "passwordNeedsSpecialChar": "Password must contain at least one special character (!@#$%^&* etc).",
   "passwordsDontMatch": "Passwords do not match",
   "enterHeight": "Please enter your height",
   "invalidHeight": "Please enter a valid height (100–250 cm)",
@@ -149,7 +129,6 @@
   "number": "number",
   "field": "field",
   "done": "Done",
-  
   "enterField": "Please enter your {field}",
   "@enterField": {
     "placeholders": {
@@ -158,7 +137,6 @@
       }
     }
   },
-  
   "fieldTooShort": "{field} is too short",
   "@fieldTooShort": {
     "placeholders": {
@@ -167,7 +145,6 @@
       }
     }
   },
-  
   "invalidField": "Invalid {field}",
   "@invalidField": {
     "placeholders": {
@@ -176,7 +153,6 @@
       }
     }
   },
-  
   "selectField": "Please select a {field}",
   "@selectField": {
     "placeholders": {
@@ -185,10 +161,7 @@
       }
     }
   },
-
   "getStarted": "Get Started",
-
-
   "onboarding1Title": "Discover Sports Talents",
   "onboarding2Title": "Post Opportunities",
   "onboarding3Title": "Build Your Sports Profile",
@@ -199,31 +172,29 @@
   "onboarding3Desc": "Join SportsIn and take your sports career to the next level.",
   "onboarding4Desc": "Upload your performance videos and get instant AI-powered analysis on your skills, movements, and progress.",
   "onboarding5Desc": "Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities.",
- 
- 
   "emailVerfiy": "Email Verification",
   "continueWith": "or continue with",
   "forgetYourPassword": "Forgot your password?",
   "welcome": "Welcome",
-   "loginToYourAccount":"Login to your Account",
-   "GetYourCode":"Get Your Code !",
-    "otpHint":"please enter 6 digits code that send to yor email address",
-    "otpMsgError":"Please enter all 6 digits to verify your email",
-    "otpMsgSuccess":"Your email has been verified successfully",
-            "VerifyAndProceed"   : "Verify and proceed",
-              "resetPassword": "Reset Password",
-               "resetPasswordSuccess": "Your password has been reset successfully",
+  "loginToYourAccount": "Login to your Account",
+  "GetYourCode": "Get Your Code !",
+  "otpHint": "please enter 6 digits code that send to yor email address",
+  "otpMsgError": "Please enter all 6 digits to verify your email",
+  "otpMsgSuccess": "Your email has been verified successfully",
+  "VerifyAndProceed": "Verify and proceed",
+  "resetPassword": "Reset Password",
+  "resetPasswordSuccess": "Your password has been reset successfully",
   "resetPasswordFailure": "Failed to reset password. Please try again",
   "enterNewPassword": "Enter your new password",
   "passwordHintDesc": "Your new password must be different than the previous password",
   "newPassword": "New Password",
-  "ok": "OK"  ,
-   "forgetPassword": "Forget Password",
+  "ok": "OK",
+  "forgetPassword": "Forget Password",
   "enterEmailAddressHere": "Enter Email Address here",
   "enterEmailAssociated": "Enter Email Address associated with your account",
   "sendVerificationCode": "Send verification code",
-"otpSentSuccessfully": "OTP sent successfully! Please check your email.",
-"tokenEX":"Session expired, please login again",
+  "otpSentSuccessfully": "OTP sent successfully! Please check your email.",
+  "tokenEX": "Session expired, please login again",
   "privacyPolicyTitle": "Privacy & Policy",
   "lastUpdated": "Last updated: 11 October 2025",
   "introductionTitle": "Introduction",
@@ -240,15 +211,12 @@
   "contactBody": "If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app",
   "agreeLabel": "I agree",
   "continueButton": "CONTINUE",
-
-  "strongPassword":"Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
-"emptyPassword":"Password is required",
-"emptyEmail":"Email is required",
-"validEmail":"Enter a valid email",
-"signingIn":"Signing in...",
-"loginSuccess":"Welcome back,let’s get started!",
-
-
+  "strongPassword": "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
+  "emptyPassword": "Password is required",
+  "emptyEmail": "Email is required",
+  "validEmail": "Enter a valid email",
+  "signingIn": "Signing in...",
+  "loginSuccess": "Welcome back,let’s get started!",
   "connectionTimedOut": "Connection timed out. Please try again.",
   "requestCancelled": "Request was cancelled.",
   "unexpectedError": "Unexpected error occurred.",
@@ -257,10 +225,7 @@
   "unauthorized": "Unauthorized. Please check your credentials.",
   "resourceNotFound": "Resource not found.",
   "serverError": "Server error. Please try again later.",
-  "noInternetConnection":"No Internet Connection",
-
-
-
+  "noInternetConnection": "No Internet Connection",
   "registrationSuccessful": "Registration successful!",
   "registrationFailed": "Registration failed. Please try again.",
   "validationError": "Validation error. Please check your inputs.",
@@ -272,7 +237,6 @@
   "conflict": "Data conflict occurred",
   "serviceUnavailable": "Service temporarily unavailable",
   "userNotFound": "User not found",
-  
   "notifications": "Notification",
   "settings": "Setting",
   "theme": "Light",
@@ -281,7 +245,6 @@
   "logout": "LOG OUT",
   "logoutConfirmation": "Are you sure you want to logout?",
   "confirm": "Confirm",
-
   "followers": "Followers",
   "following": "Following",
   "connections": "Connections",
@@ -310,8 +273,6 @@
   "followError": "Failed to follow",
   "unfollowSuccess": "Unfollowed successfully!",
   "disconnectSuccess": "Disconnected successfully!",
-
-
   "search": "Search",
   "searchResults": "Search Result",
   "noResultsFound": "No results found",
@@ -320,7 +281,6 @@
   "save": "Save",
   "editProfile": "Edit Profile",
   "bio": "Description",
-
   "updatingPost": "Updating post...",
   "postUpdated": "Post updated successfully!",
   "postUpdateFailed": "Failed to update post. Please try again.",
@@ -328,7 +288,6 @@
   "deletePostConfirmation": "Are you sure you want to delete this post?",
   "postDeleted": "Post deleted successfully!",
   "postDeleteFailed": "Failed to delete post. Please try again.",
-
   "commentAddedSuccessfully": "Comment added successfully",
   "commentUpdatedSuccessfully": "Comment updated successfully",
   "commentDeletedSuccessfully": "Comment deleted successfully",
@@ -351,8 +310,7 @@
   "hi": "Hi",
   "guest": "Guest",
   "happyToSeeYouToday": "Happy to see you today",
-
-"latestPosts": "Latest posts",
+  "latestPosts": "Latest posts",
   "oopsSomethingWentWrong": "Oops! Something went wrong",
   "noPostsYet": "No posts yet",
   "likes": "Likes",
@@ -381,11 +339,8 @@
   "analyzeVideo": "Analyze Video",
   "seeOriginal": "See Original",
   "translate": "Translate",
-  "forYou":"forYou",
-
-  
+  "forYou": "forYou",
   "justNow": "Just now",
-
   "yearsAgo": "{count, plural, =1 {# year ago} other {# years ago}}",
   "@yearsAgo": {
     "placeholders": {
@@ -394,44 +349,84 @@
       }
     }
   },
-
   "monthsAgo": "{count, plural, =1 {# month ago} other {# months ago}}",
   "@monthsAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "daysAgo": "{count, plural, =1 {# day ago} other {# days ago}}",
   "@daysAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "hoursAgo": "{count, plural, =1 {# hour ago} other {# hours ago}}",
   "@hoursAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "minutesAgo": "{count, plural, =1 {# minute ago} other {# minutes ago}}",
   "@minutesAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "secondsAgo": "{count, plural, =1 {# second ago} other {# seconds ago}}",
   "@secondsAgo": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
-  }
-
-
-  
-
-
+  },
+  "selectSport": "Select Sport",
+  "clear": "Clear",
+  "opportunityCreatedSuccessfully": "Opportunity created successfully!",
+  "applicationSubmittedSuccessfully": "Application submitted successfully!",
+  "noOpportunitiesFound": "No Opportunities found",
+  "clearFilters": "Clear filters",
+  "since": "Since",
+  "weeksAgo": "w ago",
+  "applyOpportunity": "Apply opportunity",
+  "deleteOpportunity": "Delete Opportunity",
+  "deleteOpportunityConfirmation": "Are you sure you want to delete this opportunity? This action cannot be undone.",
+  "deletingOpportunity": "Deleting opportunity...",
+  "requirements": "Requirements",
+  "endDate": "End Date",
+  "showApplicants": "Show Applicants",
+  "alreadyApplied": "Already Applied",
+  "applyNow": "Apply Now",
+  "apply": "Apply",
+  "applicants": "Applicants",
+  "all": "All",
+  "accepted": "Accepted",
+  "rejected": "Rejected",
+  "noAcceptedApplicants": "No accepted applicants",
+  "noRejectedApplicants": "No rejected applicants",
+  "noApplicantsFound": "No applicants found",
+  "errorLoadingApplicants": "Error loading applicants",
+  "accept": "Accept",
+  "reject": "Reject",
+  "uploadAnImage": "Upload an Image",
+  "tapToSelectFromGallery": "Tap to select from gallery",
+  "enterYourRequirements": "Enter Requirements (one per line)...",
+  "selectEndDate": "Select End Date",
+  "upload": "Upload",
+  "pleaseEnterTitle": "Please enter a title",
+  "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterRequirements": "Please enter requirements",
+  "pleaseSelectSport": "Please select a sport",
+  "pleaseSelectEndDate": "Please select an end date",
+   "details": "Details",
+  "noOpportunitiesAvailable": "No opportunities available"
 }

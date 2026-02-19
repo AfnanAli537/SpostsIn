@@ -3,7 +3,7 @@
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
-// import 'package:sports_in/features/main/opportunity/view_model/bloc/applicants_bloc.dart';
+// import 'package:sports_in/features/main/opportunity/view_model/applicants_bloc/applicants_bloc.dart';
 
 // class ApplicantsPage extends StatefulWidget {
 //   final String opportunityId;
@@ -20,11 +20,13 @@
 // class _ApplicantsPageState extends State<ApplicantsPage>
 //     with SingleTickerProviderStateMixin {
 //   late TabController _tabController;
+//   String? _currentStatus; // null = All, 'accepted', 'rejected'
 
 //   @override
 //   void initState() {
 //     super.initState();
 //     _tabController = TabController(length: 3, vsync: this);
+//     _currentStatus = null; // Start with "All" tab
     
 //     // Fetch all applicants initially
 //     context.read<ApplicantsBloc>().add(
@@ -36,6 +38,16 @@
 //   void dispose() {
 //     _tabController.dispose();
 //     super.dispose();
+//   }
+
+//   // Helper method to refresh current tab
+//   void _refreshCurrentTab() {
+//     context.read<ApplicantsBloc>().add(
+//           FetchApplicants(
+//             opportunityId: widget.opportunityId,
+//             status: _currentStatus,
+//           ),
+//         );
 //   }
 
 //   @override
@@ -78,6 +90,13 @@
 //                 status = 'rejected';
 //                 break;
 //             }
+            
+//             // Update current status
+//             setState(() {
+//               _currentStatus = status;
+//             });
+            
+//             // Fetch applicants for selected tab
 //             context.read<ApplicantsBloc>().add(
 //                   FetchApplicants(
 //                     opportunityId: widget.opportunityId,
@@ -99,8 +118,12 @@
 //               SnackBar(
 //                 content: Text(state.message),
 //                 backgroundColor: Colors.green,
+//                 duration: const Duration(seconds: 2),
 //               ),
 //             );
+            
+//             // Refresh the current tab after action success
+//             _refreshCurrentTab();
 //           }
 
 //           if (state is ApplicantsError) {
@@ -108,6 +131,7 @@
 //               SnackBar(
 //                 content: Text(state.message),
 //                 backgroundColor: Colors.red,
+//                 duration: const Duration(seconds: 3),
 //               ),
 //             );
 //           }
@@ -133,9 +157,7 @@
 //                   SizedBox(height: 8.h),
 //                   ElevatedButton(
 //                     onPressed: () {
-//                       context.read<ApplicantsBloc>().add(
-//                             FetchApplicants(opportunityId: widget.opportunityId),
-//                           );
+//                       _refreshCurrentTab();
 //                     },
 //                     child: const Text('Retry'),
 //                   ),
@@ -152,9 +174,21 @@
 
 //   Widget _buildApplicantsList(ApplicantsResponseModel response) {
 //     if (response.items.isEmpty) {
+//       String emptyMessage;
+//       switch (_currentStatus) {
+//         case 'accepted':
+//           emptyMessage = 'No accepted applicants';
+//           break;
+//         case 'rejected':
+//           emptyMessage = 'No rejected applicants';
+//           break;
+//         default:
+//           emptyMessage = 'No applicants found';
+//       }
+      
 //       return Center(
 //         child: Text(
-//           'No applicants found',
+//           emptyMessage,
 //           style: GoogleFonts.poppins(
 //             fontSize: 16.sp,
 //             color: Colors.grey,
@@ -239,7 +273,11 @@
 
 //           // Action Buttons
 //           if (isProcessing)
-//             const CircularProgressIndicator()
+//             SizedBox(
+//               width: 24.w,
+//               height: 24.h,
+//               child: const CircularProgressIndicator(strokeWidth: 2),
+//             )
 //           else
 //             _buildActionButtons(applicant),
 //         ],
@@ -275,6 +313,7 @@
 //               AcceptApplicant(
 //                 applicationId: applicant.applicationId,
 //                 status: "accepted",
+//                 opportunityId: widget.opportunityId,
 //               ),
 //             );
 //       },
@@ -287,7 +326,7 @@
 //         minimumSize: Size(0, 36.h),
 //       ),
 //       child: Text(
-//         isConvert ? 'Accept' : 'Accept',
+//         'Accept',
 //         style: GoogleFonts.poppins(
 //           fontSize: 13.sp,
 //           fontWeight: FontWeight.w600,
@@ -298,13 +337,13 @@
 //   }
 
 //   Widget _buildRejectButton(Applicant applicant, {bool isConvert = false}) {
-
 //     return ElevatedButton(
 //       onPressed: () {
 //         context.read<ApplicantsBloc>().add(
 //               RejectApplicant(
 //                 applicationId: applicant.applicationId,
-//               status  : 'rejected',
+//                 status: 'rejected',
+//                 opportunityId: widget.opportunityId,
 //               ),
 //             );
 //       },
@@ -317,7 +356,7 @@
 //         minimumSize: Size(0, 36.h),
 //       ),
 //       child: Text(
-//         isConvert ? 'Reject' : 'Reject',
+//         'Reject',
 //         style: GoogleFonts.poppins(
 //           fontSize: 13.sp,
 //           fontWeight: FontWeight.w600,
@@ -329,18 +368,13 @@
 // }
 
 
-
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
 import 'package:sports_in/features/main/opportunity/view_model/applicants_bloc/applicants_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class ApplicantsPage extends StatefulWidget {
   final String opportunityId;
@@ -357,15 +391,14 @@ class ApplicantsPage extends StatefulWidget {
 class _ApplicantsPageState extends State<ApplicantsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String? _currentStatus; // null = All, 'accepted', 'rejected'
+  String? _currentStatus;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _currentStatus = null; // Start with "All" tab
+    _currentStatus = null;
     
-    // Fetch all applicants initially
     context.read<ApplicantsBloc>().add(
           FetchApplicants(opportunityId: widget.opportunityId),
         );
@@ -377,7 +410,6 @@ class _ApplicantsPageState extends State<ApplicantsPage>
     super.dispose();
   }
 
-  // Helper method to refresh current tab
   void _refreshCurrentTab() {
     context.read<ApplicantsBloc>().add(
           FetchApplicants(
@@ -389,6 +421,8 @@ class _ApplicantsPageState extends State<ApplicantsPage>
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -399,7 +433,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Applicants',
+          strings.applicants,
           style: GoogleFonts.poppins(
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
@@ -418,7 +452,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
             String? status;
             switch (index) {
               case 0:
-                status = null; // All
+                status = null;
                 break;
               case 1:
                 status = 'accepted';
@@ -428,12 +462,10 @@ class _ApplicantsPageState extends State<ApplicantsPage>
                 break;
             }
             
-            // Update current status
             setState(() {
               _currentStatus = status;
             });
             
-            // Fetch applicants for selected tab
             context.read<ApplicantsBloc>().add(
                   FetchApplicants(
                     opportunityId: widget.opportunityId,
@@ -441,10 +473,10 @@ class _ApplicantsPageState extends State<ApplicantsPage>
                   ),
                 );
           },
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Accepted'),
-            Tab(text: 'Rejected'),
+          tabs: [
+            Tab(text: strings.all),
+            Tab(text: strings.accepted),
+            Tab(text: strings.rejected),
           ],
         ),
       ),
@@ -459,7 +491,6 @@ class _ApplicantsPageState extends State<ApplicantsPage>
               ),
             );
             
-            // Refresh the current tab after action success
             _refreshCurrentTab();
           }
 
@@ -479,7 +510,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
           }
 
           if (state is ApplicantsLoaded) {
-            return _buildApplicantsList(state.response);
+            return _buildApplicantsList(state.response, strings);
           }
 
           if (state is ApplicantsError) {
@@ -488,15 +519,13 @@ class _ApplicantsPageState extends State<ApplicantsPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Error loading applicants',
+                    strings.errorLoadingApplicants,
                     style: GoogleFonts.poppins(fontSize: 16.sp),
                   ),
                   SizedBox(height: 8.h),
                   ElevatedButton(
-                    onPressed: () {
-                      _refreshCurrentTab();
-                    },
-                    child: const Text('Retry'),
+                    onPressed: _refreshCurrentTab,
+                    child: Text(strings.retry),
                   ),
                 ],
               ),
@@ -509,18 +538,18 @@ class _ApplicantsPageState extends State<ApplicantsPage>
     );
   }
 
-  Widget _buildApplicantsList(ApplicantsResponseModel response) {
+  Widget _buildApplicantsList(ApplicantsResponseModel response, S strings) {
     if (response.items.isEmpty) {
       String emptyMessage;
       switch (_currentStatus) {
         case 'accepted':
-          emptyMessage = 'No accepted applicants';
+          emptyMessage = strings.noAcceptedApplicants;
           break;
         case 'rejected':
-          emptyMessage = 'No rejected applicants';
+          emptyMessage = strings.noRejectedApplicants;
           break;
         default:
-          emptyMessage = 'No applicants found';
+          emptyMessage = strings.noApplicantsFound;
       }
       
       return Center(
@@ -539,12 +568,12 @@ class _ApplicantsPageState extends State<ApplicantsPage>
       itemCount: response.items.length,
       itemBuilder: (context, index) {
         final applicant = response.items[index];
-        return _buildApplicantCard(applicant);
+        return _buildApplicantCard(applicant, strings);
       },
     );
   }
 
-  Widget _buildApplicantCard(Applicant applicant) {
+  Widget _buildApplicantCard(Applicant applicant, S strings) {
     final actionState = context.watch<ApplicantsBloc>().state;
     final isProcessing = actionState is ApplicantActionLoading &&
         actionState.applicationId == applicant.applicationId;
@@ -566,7 +595,6 @@ class _ApplicantsPageState extends State<ApplicantsPage>
       ),
       child: Row(
         children: [
-          // Profile Picture
           CircleAvatar(
             radius: 28.r,
             backgroundColor: const Color(0xFF1A5F4E).withOpacity(0.1),
@@ -581,10 +609,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
                   )
                 : null,
           ),
-
           SizedBox(width: 12.w),
-
-          // Name and Type
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -607,8 +632,6 @@ class _ApplicantsPageState extends State<ApplicantsPage>
               ],
             ),
           ),
-
-          // Action Buttons
           if (isProcessing)
             SizedBox(
               width: 24.w,
@@ -616,34 +639,31 @@ class _ApplicantsPageState extends State<ApplicantsPage>
               child: const CircularProgressIndicator(strokeWidth: 2),
             )
           else
-            _buildActionButtons(applicant),
+            _buildActionButtons(applicant, strings),
         ],
       ),
     );
   }
 
-  Widget _buildActionButtons(Applicant applicant) {
-    // If already accepted, show reject button
+  Widget _buildActionButtons(Applicant applicant, S strings) {
     if (applicant.isAccepted) {
-      return _buildRejectButton(applicant, isConvert: true);
+      return _buildRejectButton(applicant, strings);
     }
 
-    // If already rejected, show accept button
     if (applicant.isRejected) {
-      return _buildAcceptButton(applicant, isConvert: true);
+      return _buildAcceptButton(applicant, strings);
     }
 
-    // If pending, show both buttons
     return Row(
       children: [
-        _buildAcceptButton(applicant),
+        _buildAcceptButton(applicant, strings),
         SizedBox(width: 8.w),
-        _buildRejectButton(applicant),
+        _buildRejectButton(applicant, strings),
       ],
     );
   }
 
-  Widget _buildAcceptButton(Applicant applicant, {bool isConvert = false}) {
+  Widget _buildAcceptButton(Applicant applicant, S strings) {
     return ElevatedButton(
       onPressed: () {
         context.read<ApplicantsBloc>().add(
@@ -663,7 +683,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
         minimumSize: Size(0, 36.h),
       ),
       child: Text(
-        'Accept',
+        strings.accept,
         style: GoogleFonts.poppins(
           fontSize: 13.sp,
           fontWeight: FontWeight.w600,
@@ -673,7 +693,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
     );
   }
 
-  Widget _buildRejectButton(Applicant applicant, {bool isConvert = false}) {
+  Widget _buildRejectButton(Applicant applicant, S strings) {
     return ElevatedButton(
       onPressed: () {
         context.read<ApplicantsBloc>().add(
@@ -693,7 +713,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
         minimumSize: Size(0, 36.h),
       ),
       child: Text(
-        'Reject',
+        strings.reject,
         style: GoogleFonts.poppins(
           fontSize: 13.sp,
           fontWeight: FontWeight.w600,

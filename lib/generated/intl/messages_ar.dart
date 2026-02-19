@@ -53,6 +53,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
     "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
+    "accept": MessageLookupByLibrary.simpleMessage("قبول"),
+    "accepted": MessageLookupByLibrary.simpleMessage("مقبول"),
     "achievement": MessageLookupByLibrary.simpleMessage("الإنجاز"),
     "achievementDeleted": MessageLookupByLibrary.simpleMessage(
       "تم حذف الإنجاز بنجاح",
@@ -66,6 +68,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
+    "all": MessageLookupByLibrary.simpleMessage("الكل"),
+    "alreadyApplied": MessageLookupByLibrary.simpleMessage("تم التقديم بالفعل"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
       "لديك حساب بالفعل؟",
     ),
@@ -79,6 +83,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "analyzedPeople": MessageLookupByLibrary.simpleMessage("الأشخاص المحللون"),
     "analyzedVideosReports": MessageLookupByLibrary.simpleMessage(
       "تقارير الفيديو المحللة",
+    ),
+    "applicants": MessageLookupByLibrary.simpleMessage("المتقدمون"),
+    "applicationSubmittedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "تم تقديم الطلب بنجاح!",
+    ),
+    "apply": MessageLookupByLibrary.simpleMessage("تقديم"),
+    "applyNow": MessageLookupByLibrary.simpleMessage("قدم الآن"),
+    "applyOpportunity": MessageLookupByLibrary.simpleMessage(
+      "التقديم على الفرصة",
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("العربية"),
     "back": MessageLookupByLibrary.simpleMessage("رجوع"),
@@ -100,6 +113,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "chat": MessageLookupByLibrary.simpleMessage("دردشة"),
     "chats": MessageLookupByLibrary.simpleMessage("المحادثات"),
+    "clear": MessageLookupByLibrary.simpleMessage("مسح"),
+    "clearFilters": MessageLookupByLibrary.simpleMessage("مسح الفلاتر"),
     "club": MessageLookupByLibrary.simpleMessage("نادي"),
     "clubName": MessageLookupByLibrary.simpleMessage("اسم النادي"),
     "coach": MessageLookupByLibrary.simpleMessage("مدرب"),
@@ -156,11 +171,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteCommentConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذا التعليق؟",
     ),
+    "deleteOpportunity": MessageLookupByLibrary.simpleMessage("حذف الفرصة"),
+    "deleteOpportunityConfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد من حذف هذه الفرصة؟ لا يمكن التراجع عن هذا الإجراء.",
+    ),
     "deletePost": MessageLookupByLibrary.simpleMessage("حذف المنشور"),
     "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذا المنشور؟",
     ),
+    "deletingOpportunity": MessageLookupByLibrary.simpleMessage(
+      "جاري حذف الفرصة...",
+    ),
     "description": MessageLookupByLibrary.simpleMessage("الوصف"),
+    "details": MessageLookupByLibrary.simpleMessage("التفاصيل"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "تم قطع الاتصال بنجاح!",
     ),
@@ -183,6 +206,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "البريد الإلكتروني مطلوب",
     ),
     "emptyPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور مطلوبة"),
+    "endDate": MessageLookupByLibrary.simpleMessage("تاريخ الانتهاء"),
     "english": MessageLookupByLibrary.simpleMessage("الإنجليزية"),
     "enterAge": MessageLookupByLibrary.simpleMessage("يرجى إدخال العمر"),
     "enterDate": MessageLookupByLibrary.simpleMessage("يرجى اختيار التاريخ"),
@@ -210,8 +234,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterYourDescription": MessageLookupByLibrary.simpleMessage(
       "أدخل وصفك...",
     ),
+    "enterYourRequirements": MessageLookupByLibrary.simpleMessage(
+      "أدخل المتطلبات (واحد في كل سطر)...",
+    ),
     "enterYourTitle": MessageLookupByLibrary.simpleMessage("أدخل عنوانك."),
     "error": MessageLookupByLibrary.simpleMessage("خطأ"),
+    "errorLoadingApplicants": MessageLookupByLibrary.simpleMessage(
+      "خطأ في تحميل المتقدمين",
+    ),
     "failedToLoadImage": MessageLookupByLibrary.simpleMessage(
       "فشل تحميل الصورة",
     ),
@@ -343,6 +373,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
     "newPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور الجديدة"),
     "next": MessageLookupByLibrary.simpleMessage("التالي"),
+    "noAcceptedApplicants": MessageLookupByLibrary.simpleMessage(
+      "لا يوجد متقدمون مقبولون",
+    ),
+    "noApplicantsFound": MessageLookupByLibrary.simpleMessage(
+      "لم يتم العثور على متقدمين",
+    ),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage(
       "لا توجد تعليقات بعد",
     ),
@@ -351,8 +387,17 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noLikesYet": MessageLookupByLibrary.simpleMessage("لا توجد إعجابات بعد"),
     "noOpportunities": MessageLookupByLibrary.simpleMessage("لا توجد فرص"),
+    "noOpportunitiesAvailable": MessageLookupByLibrary.simpleMessage(
+      "لا توجد فرص متاحة",
+    ),
+    "noOpportunitiesFound": MessageLookupByLibrary.simpleMessage(
+      "لم يتم العثور على فرص",
+    ),
     "noPosts": MessageLookupByLibrary.simpleMessage("لا توجد منشورات"),
     "noPostsYet": MessageLookupByLibrary.simpleMessage("لا توجد منشورات بعد"),
+    "noRejectedApplicants": MessageLookupByLibrary.simpleMessage(
+      "لا يوجد متقدمون مرفوضون",
+    ),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("لا توجد نتائج"),
     "noUserDataFound": MessageLookupByLibrary.simpleMessage(
       "لم يتم العثور على بيانات المستخدم",
@@ -394,6 +439,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "عذراً! حدث خطأ ما",
     ),
     "opportunities": MessageLookupByLibrary.simpleMessage("الفرص"),
+    "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "تم إنشاء الفرصة بنجاح!",
+    ),
     "oppositeHitter": MessageLookupByLibrary.simpleMessage(
       "مهاجم معاكس (Opposite Hitter)",
     ),
@@ -448,11 +496,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "pickVideo": MessageLookupByLibrary.simpleMessage("اختر فيديو"),
     "pivot": MessageLookupByLibrary.simpleMessage("محور (Pivot)"),
     "player": MessageLookupByLibrary.simpleMessage("لاعب"),
+    "pleaseEnterDescription": MessageLookupByLibrary.simpleMessage(
+      "الرجاء إدخال وصف",
+    ),
+    "pleaseEnterRequirements": MessageLookupByLibrary.simpleMessage(
+      "الرجاء إدخال المتطلبات",
+    ),
+    "pleaseEnterTitle": MessageLookupByLibrary.simpleMessage(
+      "الرجاء إدخال عنوان",
+    ),
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال كلمة مرور قوية",
     ),
     "pleaseFillAllFields": MessageLookupByLibrary.simpleMessage(
       "يرجى ملء جميع الحقول",
+    ),
+    "pleaseSelectEndDate": MessageLookupByLibrary.simpleMessage(
+      "الرجاء اختيار تاريخ الانتهاء",
+    ),
+    "pleaseSelectSport": MessageLookupByLibrary.simpleMessage(
+      "الرجاء اختيار رياضة",
     ),
     "pointGuard": MessageLookupByLibrary.simpleMessage(
       "صانع ألعاب (Point Guard)",
@@ -492,7 +555,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "registrationSuccessful": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
     ),
+    "reject": MessageLookupByLibrary.simpleMessage("رفض"),
+    "rejected": MessageLookupByLibrary.simpleMessage("مرفوض"),
     "requestCancelled": MessageLookupByLibrary.simpleMessage("تم إلغاء الطلب."),
+    "requirements": MessageLookupByLibrary.simpleMessage("المتطلبات"),
     "resetPassword": MessageLookupByLibrary.simpleMessage(
       "إعادة تعيين كلمة المرور",
     ),
@@ -515,8 +581,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "secondsAgo": m7,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("رؤية النص الأصلي"),
     "select": MessageLookupByLibrary.simpleMessage("اختر"),
+    "selectEndDate": MessageLookupByLibrary.simpleMessage(
+      "اختر تاريخ الانتهاء",
+    ),
     "selectField": m8,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
+    "selectSport": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
     "selectSports": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "إرسال رمز التحقق",
@@ -537,9 +607,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "مدافع مسدد (Shooting Guard)",
     ),
     "showAll": MessageLookupByLibrary.simpleMessage("عرض الكل"),
+    "showApplicants": MessageLookupByLibrary.simpleMessage("عرض المتقدمين"),
     "signIn": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
     "signUp": MessageLookupByLibrary.simpleMessage("إنشاء حساب"),
     "signingIn": MessageLookupByLibrary.simpleMessage("جارٍ تسجيل الدخول..."),
+    "since": MessageLookupByLibrary.simpleMessage("منذ"),
     "skills": MessageLookupByLibrary.simpleMessage("المهارات"),
     "skip": MessageLookupByLibrary.simpleMessage("تخطي"),
     "smallForward": MessageLookupByLibrary.simpleMessage(
@@ -561,6 +633,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
     ),
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
+    "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
+      "اضغط للاختيار من المعرض",
+    ),
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
     "theme": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
@@ -584,6 +659,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "updatingPost": MessageLookupByLibrary.simpleMessage(
       "جار تحديث المنشور...",
     ),
+    "upload": MessageLookupByLibrary.simpleMessage("رفع"),
+    "uploadAnImage": MessageLookupByLibrary.simpleMessage("ارفع صورة"),
     "uploadContent": MessageLookupByLibrary.simpleMessage("رفع محتوى"),
     "uploadImageOrVideo": MessageLookupByLibrary.simpleMessage(
       "ارفع صورة أو فيديو",
@@ -607,6 +684,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "verify": MessageLookupByLibrary.simpleMessage("تحقق"),
     "volleyball": MessageLookupByLibrary.simpleMessage("كرة الطائرة"),
     "volleyballer": MessageLookupByLibrary.simpleMessage("لاعب كرة الطائرة"),
+    "weeksAgo": MessageLookupByLibrary.simpleMessage("أ"),
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
     "whatIsYourType": MessageLookupByLibrary.simpleMessage("ما هو نوعك؟"),
