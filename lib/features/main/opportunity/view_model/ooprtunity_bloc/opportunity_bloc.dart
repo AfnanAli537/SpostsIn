@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
@@ -105,7 +106,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       }
     } catch (e) {
       log('❌ Error fetching opportunities: $e');
-      emit(OpportunityError('Failed to load opportunities: ${e.toString()}'));
+      emit(OpportunityError('Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -139,7 +140,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       );
     } catch (e) {
       log('❌ Error searching opportunities: $e');
-      emit(OpportunityError('Failed to search opportunities: ${e.toString()}'));
+      emit(OpportunityError('Failed to search opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -174,7 +175,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       );
     } catch (e) {
       log('❌ Error filtering opportunities: $e');
-      emit(OpportunityError('Failed to filter opportunities: ${e.toString()}'));
+      emit(OpportunityError('Failed to filter opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -205,7 +206,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       );
     } catch (e) {
       log('❌ Error clearing filters: $e');
-      emit(OpportunityError('Failed to load opportunities: ${e.toString()}'));
+      emit(OpportunityError('Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -235,7 +236,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       add(const FetchOpportunities(isRefresh: true));
     } catch (e) {
       log('❌ Error creating opportunity: $e');
-      emit(OpportunityError('Failed to create opportunity: ${e.toString()}'));
+      emit(OpportunityError('Failed to create opportunity: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -256,7 +257,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
     } catch (e) {
       log('❌ Error fetching opportunity details: $e');
       emit(OpportunityError(
-        'Failed to load opportunity details: ${e.toString()}',
+        'Failed to load opportunity details: ${e is ApiException ? e.message : e.toString()}',
       ));
     }
   }
@@ -306,7 +307,7 @@ Future<void> _onFetchMyOpportunities(
       hasMore: response.hasNextPage,
     ));
   } catch (e) {
-    emit(OpportunityError(e.toString()));
+    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
   }
 }
 
@@ -329,7 +330,7 @@ Future<void> _onUpdateOpportunity(
     
     emit(OpportunityUpdated(opportunityId: event.opportunityId));
   } catch (e) {
-    emit(OpportunityError(e.toString()));
+    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
   }
 }
 
@@ -344,7 +345,7 @@ Future<void> _onDeleteOpportunity(
     
     emit(OpportunityDeleted(opportunityId: event.opportunityId));
   } catch (e) {
-    emit(OpportunityError(e.toString()));
+    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
   }
 }
 }

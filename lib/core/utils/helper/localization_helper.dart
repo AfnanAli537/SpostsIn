@@ -1,4 +1,8 @@
+// import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
+
+import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'package:translator/translator.dart';
 
 extension LocalizationHelper on S {
   String getErrorMessage(String key, {String? fallback}) {
@@ -48,7 +52,7 @@ extension LocalizationHelper on S {
         return userNotFound;
 
       default:
-        return fallback ?? 'An unexpected error occurred';
+        return fallback ?? key;
     }
   }
 
@@ -59,7 +63,31 @@ extension LocalizationHelper on S {
       case 'registrationFailed':
         return registrationFailed;
       default:
-        return fallback ?? 'Success';
+        return fallback ?? key;
+    }
+  }
+}
+
+class ErrorTranslator {
+  static final GoogleTranslator _translator = GoogleTranslator();
+
+  static Future<String> translate(String message, BuildContext context) async {
+    try {
+      final languageCode = Localizations.localeOf(context).languageCode;
+
+      // No need to translate if already in English or message is empty
+      if (languageCode == 'en' || message.trim().isEmpty) {
+        return message;
+      }
+
+      final translation = await _translator.translate(
+        message,
+        to: languageCode,
+      );
+
+      return translation.text;
+    } catch (e) {
+      return message; 
     }
   }
 }

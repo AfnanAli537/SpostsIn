@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'dart:io';
@@ -82,7 +83,18 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
       },
     );
   }
-
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    Fluttertoast.showToast(
+      msg: msg,
+      backgroundColor: Colors.red,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
@@ -109,12 +121,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
           // ✅ ارجع للصفحة السابقة
           Navigator.pop(context);
         } else if (state is PostsError) {
-          Fluttertoast.showToast(
-            msg: state.message,
-            backgroundColor: Colors.red,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-          );
+          _showError(context, state.message);
         }
       },
       child: Scaffold(

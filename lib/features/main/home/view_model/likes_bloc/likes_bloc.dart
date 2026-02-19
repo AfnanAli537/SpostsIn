@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/home/data/model/user_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 
@@ -48,7 +49,7 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
         }
       }
     } catch (e) {
-      emit(LikesError('Failed to fetch likes: ${e.toString()}'));
+      emit(LikesError('Failed to fetch likes: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 }

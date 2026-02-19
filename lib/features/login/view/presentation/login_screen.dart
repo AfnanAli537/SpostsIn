@@ -23,7 +23,18 @@ class LoginScreen extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    Fluttertoast.showToast(
+      msg: msg,
+      backgroundColor: Colors.red,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
@@ -61,16 +72,7 @@ class LoginScreen extends StatelessWidget {
               gravity: ToastGravity.TOP,
             );
           } else if (state is LoginFailure) {
-            final msg = TranslateErrorHelper.translateErrorKey(
-              context,
-              state.generalError ?? "",
-            );
-            Fluttertoast.showToast(
-              msg: msg,
-              backgroundColor: Colors.red,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,
-            );
+            _showError(context, state.generalError!);
           }
           if (state is GoogleSignInSuccess) {
             Fluttertoast.showToast(

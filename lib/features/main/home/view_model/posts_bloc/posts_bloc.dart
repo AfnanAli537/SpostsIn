@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/home/data/model/author_model.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
@@ -60,7 +61,7 @@ Future<void> _onFetchPosts(
       ),
     );
   } catch (e) {
-    emit(PostsError('Failed to fetch posts: ${e.toString()}'));
+    emit(PostsError('Failed to fetch posts: ${e is ApiException ? e.message : e.toString()}'));
   }
 }
 
@@ -97,7 +98,7 @@ Future<void> _onLoadMorePosts(
       ),
     );
   } catch (e) {
-    emit(PostsError('Failed to load more posts: ${e.toString()}'));
+    emit(PostsError('Failed to load more posts: ${e is ApiException ? e.message : e.toString()}'));
   } finally {
     _isFetching = false;
   }
@@ -125,7 +126,7 @@ Future<void> _onLoadMorePosts(
         hasNextPage: fetchedPosts.length >= event.pageSize,
       ));
     } catch (e) {
-      emit(PostsError('Failed to fetch user posts: ${e.toString()}'));
+      emit(PostsError('Failed to fetch user posts: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -271,16 +272,15 @@ Future<void> _onLoadMorePosts(
       await Future.delayed(const Duration(milliseconds: 100));
       emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
     } catch (e) {
-      log("Upload failed: ${e.toString()}");
+      log("Upload failed: ${e is ApiException ? e.message : e.toString()}");
       _posts.removeWhere((p) => p.id == tempId);
 
       emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
 
-      emit(PostsError("Failed to upload post: ${e.toString()}"));
+      emit(PostsError("Failed to upload post: ${e is ApiException ? e.message : e.toString()}"));
     }
   }
 
-  // ✅ New handler for update post
   Future<void> _onUpdatePost(UpdatePost event, Emitter<PostsState> emit) async {
     emit(PostsLoading());
 
@@ -302,11 +302,10 @@ Future<void> _onLoadMorePosts(
         emit(PostsLoaded(posts: currentState.posts, hasNextPage: currentState.hasNextPage));
       }
     } catch (e) {
-      emit(PostsError('Failed to update post: ${e.toString()}'));
+      emit(PostsError('Failed to update post: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
-  // ✅ New handler for delete post
   Future<void> _onDeletePost(DeletePost event, Emitter<PostsState> emit) async {
     final currentState = state;
     
@@ -345,7 +344,7 @@ Future<void> _onLoadMorePosts(
         ));
       }
     } catch (e) {
-      emit(PostsError('Failed to delete post: ${e.toString()}'));
+      emit(PostsError('Failed to delete post: ${e is ApiException ? e.message : e.toString()}'));
       
       // Re-emit previous state on error
       if (currentState is PostsLoaded) {

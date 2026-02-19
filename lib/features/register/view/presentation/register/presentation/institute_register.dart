@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/core/utils/helper/localization_helper.dart';
+import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -60,7 +60,18 @@ class InstituteRegisterScreen extends StatelessWidget {
       SubmitRegistrationEvent(userData: userData),
     );
   }
-
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    Fluttertoast.showToast(
+      msg: msg,
+      backgroundColor: Colors.red,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -91,17 +102,7 @@ class InstituteRegisterScreen extends StatelessWidget {
           }
 
           if (state is RegistrationError) {
-            final msg = string.getErrorMessage(
-              state.errorKey,
-              fallback: state.fallbackMessage,
-            );
-
-            Fluttertoast.showToast(
-              msg: msg,
-              backgroundColor: Colors.red,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,
-            );
+            _showError(context, state.message);
           }
         },
         builder: (context, state) {

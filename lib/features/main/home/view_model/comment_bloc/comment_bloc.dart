@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/enums/home_enums.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/home/data/model/comment_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 
@@ -69,7 +70,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         }
       }
     } catch (e) {
-      emit(CommentsError('Failed to load comments: ${e.toString()}'));
+      emit(CommentsError('Failed to load comments: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -154,7 +155,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         ),
       );
     } catch (e) {
-      emit(CommentsError('Failed to edit comment: ${e.toString()}'));
+      emit(CommentsError('Failed to edit comment: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 
@@ -197,7 +198,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         ),
       );
     } catch (e) {
-      emit(CommentsError('Failed to delete comment: ${e.toString()}'));
+      emit(CommentsError('Failed to delete comment: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
 }

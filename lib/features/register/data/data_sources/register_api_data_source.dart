@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
@@ -13,12 +12,19 @@ import 'package:sports_in/features/register/models/user_model.dart';
 @LazySingleton(as: IRegisterDataSource)
 class RegisterApiDataSource implements IRegisterDataSource {
   final ApiClient apiClient;
+
   RegisterApiDataSource(this.apiClient);
+
+  DioException _badResponse(Response response) => DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+        type: DioExceptionType.badResponse,
+      );
 
   @override
   Future<bool> sendRegistrationOtp(String email) async {
     try {
-      debugPrint("registered user email: $email");
+      debugPrint('Sending OTP for email: $email');
 
       final response = await apiClient.post(
         Endpoints.sendVerifyRegisterOtp,
@@ -26,21 +32,13 @@ class RegisterApiDataSource implements IRegisterDataSource {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("OTP sent successfully for email: $email");
+        debugPrint('OTP sent successfully for email: $email');
         return true;
       }
-      throw ApiException(
-        message: 'Failed to send OTP',
-        key: StringKeys.validationError,
-      );
-    } on DioException catch (e) {
-      debugPrint("OTP sent failed for email: $e");
 
-      final errorKey = ApiErrorHandler.handleDioErrorKey(e, isRegister: true);
-      throw ApiException(
-        message: e.message ?? 'Failed to send OTP',
-        key: errorKey,
-      );
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
     }
   }
 
@@ -53,19 +51,13 @@ class RegisterApiDataSource implements IRegisterDataSource {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("OTP verified successfully for email: $email");
+        debugPrint('OTP verified successfully for email: $email');
         return true;
       }
-      throw ApiException(
-        message: response.data['errors']?[0]?? response.data['message'],
-        key: StringKeys.validationError,
-      );
+
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
     } on DioException catch (e) {
-      final errorKey = ApiErrorHandler.handleDioErrorKey(e, isRegister: true);
-      throw ApiException(
-        message: e.message ?? 'OTP verification failed',
-        key: errorKey,
-      );
+      throw ApiErrorHandler.handleDioError(e);
     }
   }
 
@@ -78,19 +70,13 @@ class RegisterApiDataSource implements IRegisterDataSource {
       final response = await apiClient.post(endpoint, data: body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("User registered successfully");
+        debugPrint('User registered successfully');
         return response.data['isSuccess'] == true;
       }
-      throw ApiException(
-        message: 'Registration failed',
-        key: StringKeys.validationError,
-      );
+
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
     } on DioException catch (e) {
-      final errorKey = ApiErrorHandler.handleDioErrorKey(e, isRegister: true);
-      throw ApiException(
-        message: e.message ?? 'Registration failed',
-        key: errorKey,
-      );
+      throw ApiErrorHandler.handleDioError(e);
     }
   }
 }

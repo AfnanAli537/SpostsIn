@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-import 'package:sports_in/core/utils/helper/localization_helper.dart';
+import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/core/widgets/auth_title.dart';
@@ -62,7 +62,18 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
       }
     }
   }
-
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    Fluttertoast.showToast(
+      msg: msg,
+      backgroundColor: Colors.red,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
@@ -84,16 +95,8 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
         }
         
         if (state is RegistrationError) {
-          final msg = string.getErrorMessage(
-            state.errorKey,
-            fallback: state.fallbackMessage,
-          );
-          Fluttertoast.showToast(
-            msg: msg,
-            gravity: ToastGravity.TOP,
-            backgroundColor: Colors.red,
-            toastLength: Toast.LENGTH_LONG,
-          );
+
+        _showError(context, state.message);
         }
       },
       builder: (context, state) {

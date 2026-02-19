@@ -20,7 +20,18 @@ class ResetPasswordScreen extends StatelessWidget {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    Fluttertoast.showToast(
+      msg: msg,
+      backgroundColor: Colors.red,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
@@ -36,16 +47,7 @@ class ResetPasswordScreen extends StatelessWidget {
           Navigator.pushReplacementNamed(context, AppRoutes.login);
         }
         if (state is ForgotPasswordFailure) {
-          final msg = TranslateErrorHelper.translateErrorKey(
-            context,
-            state.message,
-          );
-          Fluttertoast.showToast(
-            msg: msg,
-            gravity: ToastGravity.TOP,
-            backgroundColor: Colors.red,
-            toastLength: Toast.LENGTH_LONG,
-          );
+          _showError(context, state.message);
         }
       },
       builder: (context, state) {

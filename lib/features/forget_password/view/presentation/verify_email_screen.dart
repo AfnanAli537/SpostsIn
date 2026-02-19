@@ -17,7 +17,18 @@ class ForgetPasswordScreen extends StatelessWidget {
 
   final emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    Fluttertoast.showToast(
+      msg: msg,
+      backgroundColor: Colors.red,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
@@ -33,16 +44,7 @@ class ForgetPasswordScreen extends StatelessWidget {
           Navigator.pushNamed(context, AppRoutes.otp, arguments: state.email);
         }
         if (state is ForgotPasswordFailure) {
-          final msg = TranslateErrorHelper.translateErrorKey(
-            context,
-            state.message,
-          );
-          Fluttertoast.showToast(
-            msg: msg,
-            backgroundColor: Colors.red,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-          );
+          _showError(context, state.message);
         }
       },
       builder: (context, state) {

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 
@@ -34,7 +35,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
       emit(ApplicantsLoaded(response: response));
     } catch (e) {
       log('❌ Error fetching applicants: $e');
-      emit(ApplicantsError(e.toString()));
+      emit(ApplicantsError(e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -106,7 +107,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
       add(FetchApplicants(opportunityId: event.applicationId));
     } catch (e) {
       log('❌ Error accepting applicant: $e');
-      emit(ApplicantsError(e.toString()));
+      emit(ApplicantsError(e is ApiException ? e.message : e.toString()));
       
       // Restore previous state if needed
       if (previousState is ApplicantsLoaded) {
@@ -138,7 +139,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
       add(FetchApplicants(opportunityId: event.applicationId));
     } catch (e) {
       log('❌ Error rejecting applicant: $e');
-      emit(ApplicantsError(e.toString()));
+      emit(ApplicantsError(e is ApiException ? e.message : e.toString()));
       
       // Restore previous state if needed
       if (previousState is ApplicantsLoaded) {

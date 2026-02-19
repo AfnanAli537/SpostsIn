@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/core/constants/strings_keys.dart';
+import 'package:sports_in/core/utils/helper/localization_helper.dart';
 import 'package:sports_in/generated/l10n.dart';
+
 class TranslateErrorHelper {
- static String translateErrorKey(BuildContext context, String key) {
-  final s = S.of(context);
-  switch (key) {
-    case StringKeys.connectionTimedOut:
-      return s.connectionTimedOut;
-    case StringKeys.requestCancelled:
-      return s.requestCancelled;
-    case StringKeys.somethingWentWrong:
-      return s.somethingWentWrong;
-    case StringKeys.invalidEmailOrPassword:
-      return s.invalidEmailOrPassword;
-    case StringKeys.unauthorized:
-      return s.unauthorized;
-    case StringKeys.resourceNotFound:
-      return s.resourceNotFound;
-    case StringKeys.serverError:
-      return s.serverError;
-      case StringKeys.noInternetConnection:
-      return s.noInternetConnection;
-    default:
-      return s.unexpectedError;
+  // Sync version — for known keys only (no API call needed)
+  static String translateErrorKey(BuildContext context, String key) {
+    return S.of(context).getErrorMessage(key);
   }
-}
+
+  // Async version — translates unknown server messages via Google Translate
+  static Future<String> translateErrorKeyAsync(
+    BuildContext context,
+    String key,
+  ) async {
+    //try local localization
+    final s = S.of(context);
+    final localized = s.getErrorMessage(key);
+
+    // If key unchanged, then translate it
+    if (localized == key) {
+      return await ErrorTranslator.translate(key, context);
+    }
+
+    return localized;
+  }
 }

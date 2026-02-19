@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import '../data/repo/profile_repo.dart';
 import '../model/profile_model.dart';
 import 'profile_event.dart';
@@ -38,7 +39,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final profile = await _repository.getMyProfile();
       emit(ProfileLoaded(profile: profile, isOwnProfile: true));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -51,7 +52,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final profile = await _repository.getUserProfile(event.userId);
       emit(ProfileLoaded(profile: profile, isOwnProfile: false));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -112,7 +113,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       }
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -359,7 +360,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       emit(AchievementsLoaded(achievements: achievements, hasMore: hasMore));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -377,7 +378,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       );
       emit(AchievementCreated(achievement: achievement));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -396,7 +397,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       );
       emit(AchievementUpdated(achievement: achievement));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -409,7 +410,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await _repository.deleteAchievement(event.achievementId);
       emit(AchievementDeleted(achievementId: event.achievementId));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -425,7 +426,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final hasMore = posts.length >= event.size;
       emit(PostsLoaded(posts: posts, hasMore: hasMore));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -445,7 +446,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final hasMore = opportunities.length >= event.pageSize;
       emit(OpportunitiesLoaded(opportunities: opportunities, hasMore: hasMore));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -465,7 +466,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final hasMore = courses.length >= event.pageSize;
       emit(CoursesLoaded(courses: courses, hasMore: hasMore));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -485,7 +486,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final hasMore = interests.length >= event.pageSize;
       emit(InterestsLoaded(interests: interests, hasMore: hasMore));
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
 }

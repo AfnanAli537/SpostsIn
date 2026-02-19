@@ -53,14 +53,9 @@ class RegistrationSuccess extends RegistrationState {
 }
 
 class RegistrationError extends RegistrationState {
-  final String errorKey;
-  final String? fallbackMessage;
-
-  const RegistrationError({
-    required this.errorKey,
-    this.fallbackMessage,
-  });
+  final String message;
+  const RegistrationError({required this.message});
 
   @override
-  List<Object?> get props => [errorKey, fallbackMessage];
+  List<Object?> get props => [message];
 }

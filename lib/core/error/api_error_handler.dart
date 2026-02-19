@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 
@@ -10,57 +10,87 @@ class ApiException implements Exception {
   ApiException({required this.message, required this.key});
 
   @override
-  String toString() => key; 
+  String toString() => message;
 }
 
 class ApiErrorHandler {
-  static String handleDioErrorKey(DioException error, {bool isRegister = false}) {
+  static ApiException handleDioError(DioException error) {
     if (error.error is SocketException) {
-      return StringKeys.noInternetConnection;
+      return ApiException(
+        message: 'No internet connection',
+        key: StringKeys.noInternetConnection,
+      );
     }
+
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.sendTimeout:
-        return StringKeys.connectionTimedOut;
-
+        return ApiException(
+          message: 'Connection timed out',
+          key: StringKeys.connectionTimedOut,
+        );
       case DioExceptionType.badResponse:
-        final statusCode = error.response?.statusCode;
-        final String key = _keyForStatus(statusCode, isRegister: isRegister);
-
-        return key;
+        return _handleBadResponse(error);
       case DioExceptionType.cancel:
-        return StringKeys.requestCancelled;
-
+        return ApiException(
+          message: 'Request cancelled',
+          key: StringKeys.requestCancelled,
+        );
       default:
-        return StringKeys.unexpectedError;
+        return ApiException(
+          message: 'Unexpected error',
+          key: StringKeys.unexpectedError,
+        );
     }
   }
 
-  static String _keyForStatus(int? statusCode, {bool isRegister = false}) {
+  static ApiException _handleBadResponse(DioException error) {
+    final statusCode = error.response?.statusCode;
+    final rawData = error.response?.data;
+
+    // Parse body — Dio may return it as String or Map
+    Map<String, dynamic>? body;
+    if (rawData is Map<String, dynamic>) {
+      body = rawData;
+    } else if (rawData is String && rawData.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawData);
+        if (decoded is Map<String, dynamic>) body = decoded;
+      } catch (_) {}
+    }
+
+    // Priority: errors[0] → message → status code fallback
+    String? serverMessage;
+    if (body != null) {
+      final errors = body['errors'];
+      if (errors is List && errors.isNotEmpty) {
+        serverMessage = errors.first.toString();
+      } else if (body['message'] != null &&
+          body['message'].toString().trim().isNotEmpty) {
+        serverMessage = body['message'].toString();
+      }
+    }
+
+    final fallbackKey = _keyForStatus(statusCode);
+
+    return ApiException(
+      message: serverMessage ?? fallbackKey,
+      key: fallbackKey,
+    );
+  }
+
+  static String _keyForStatus(int? statusCode) {
     switch (statusCode) {
-      case 400:
-        return isRegister == true 
-            ? StringKeys.emailAlreadyExists 
-            : StringKeys.invalidEmailOrPassword;
-      case 401:
-        return StringKeys.unauthorized;
-      case 404:
-        return StringKeys.resourceNotFound;
-      case 500:
-        return StringKeys.serverError;
-      case 503:
-        return StringKeys.serviceUnavailable;
-      default:
-        return StringKeys.unexpectedError;
+      case 400: return StringKeys.badRequest;
+      case 401: return StringKeys.unauthorized;
+      case 403: return StringKeys.forbidden;
+      case 404: return StringKeys.resourceNotFound;
+      case 409: return StringKeys.conflict;
+      case 422: return StringKeys.validationError;
+      case 500: return StringKeys.serverError;
+      case 503: return StringKeys.serviceUnavailable;
+      default:  return StringKeys.unexpectedError;
     }
-  }
-
-  static String handleStatusCodeKey(int? statusCode, {bool isRegister = false}) {
-    return _keyForStatus(statusCode, isRegister: isRegister);
-  }
-
-  static String handleUnknownErrorKey(Object e) {
-    return StringKeys.unexpectedError;
   }
 }

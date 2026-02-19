@@ -2,6 +2,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/core/constants/strings_keys.dart';
+import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/login/data/repo/login_repo.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
 part 'login_event.dart';
@@ -28,10 +30,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       password: event.password,
     );
 
-    emit(LoginSuccess(response.token));
-  } catch (e) {
-    emit(LoginFailure(generalError: e.toString()));
+  emit(LoginSuccess(response.token));
+  // ✅ Every catch block in every cubit should look like this
+} catch (e) {
+  if (e is ApiException) {
+    emit(LoginFailure(generalError: e.message)); // raw server message
+  } else {
+    emit(LoginFailure(generalError: StringKeys.unexpectedError));
   }
+}
 }
 
   // Future<void> _onCheckLoginStatus(
@@ -73,7 +80,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final LoginResponse user = await repository.loginWithGoogle();
       emit(GoogleSignInSuccess(user));
     } catch (e) {
-      emit(GoogleSignInFailure(e.toString()));
+      emit(GoogleSignInFailure(e is ApiException ? e.message : e.toString()));
     }
   }
 }
