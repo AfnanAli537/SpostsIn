@@ -244,8 +244,6 @@
   "contactUs": "Contact us",
   "logout": "LOG OUT",
   "logoutConfirmation": "Are you sure you want to logout?",
-  "cancel": "Cancel",
-  "retry": "Retry",
   "confirm": "Confirm",
   "followers": "Followers",
   "following": "Following",
@@ -270,10 +268,6 @@
   "achievementUpdated": "Achievement updated successfully",
   "deleteachievementconfirmation": "Are you sure you want to delete this achievement?",
   "deleteachievement": "Delete Achievement",
-  "update": "Update",
-  "delete": "Delete",
-  "title": "Title",
-  "description": "Description",
   "date": "Date",
   "analyzedVideosReports": "Analyzed Videos Reports",
   "interests": "Interests",
@@ -297,7 +291,6 @@
   "noProfileData": "No profile data available.",
   "editProfileFailed": "Failed to update profile.",
   "profileLoadFailed": "Failed to load profile. Please try again.",
-  "edit":"Edit",
   "bio": "Description",
   "noBio": "No bio",
   "updatePost": "Update Post",
@@ -308,6 +301,155 @@
   "deletePostConfirmation": "Are you sure you want to delete this post?",
   "postDeleted": "Post deleted successfully!",
   "postDeleteFailed": "Failed to delete post. Please try again.",
+  "commentAddedSuccessfully": "Comment added successfully",
+  "commentUpdatedSuccessfully": "Comment updated successfully",
+  "commentDeletedSuccessfully": "Comment deleted successfully",
+  "comments": "Comments",
+  "noCommentsYet": "No comments yet",
+  "retry": "Retry",
+  "edit": "Edit",
+  "delete": "Delete",
+  "deleteComment": "Delete Comment",
+  "deleteCommentConfirmation": "Are you sure you want to delete this comment?",
+  "cancel": "Cancel",
+  "editingComment": "Editing comment",
+  "editYourComment": "Edit your comment...",
+  "addAComment": "Add a comment...",
+  "update": "Update",
+  "post": "Post",
+  "error": "Error",
+  "loadingUserData": "Loading user data...",
+  "noUserDataFound": "No user data found",
+  "hi": "Hi",
+  "guest": "Guest",
+  "happyToSeeYouToday": "Happy to see you today",
+  "latestPosts": "Latest posts",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "noPostsYet": "No posts yet",
+  "likes": "Likes",
+  "noLikesYet": "No likes yet",
+  "beTheFirstToCreatePost": "Be the first to create a post!",
+  "pickImage": "Pick Image",
+  "pickVideo": "Pick Video",
+  "postUploadedSuccessfully": "Post uploaded successfully!",
+  "uploadContent": "Upload Content",
+  "uploadImageOrVideo": "Upload an Image or video",
+  "maximumFileSize": "Maximum file size is 200 MB",
+  "title": "Title",
+  "enterYourTitle": "Enter Your Title.",
+  "description": "Description",
+  "enterYourDescription": "Enter Your Description...",
+  "pleaseFillAllFields": "Please fill all fields",
+  "createPost": "Create Post",
+  "createAchievement": "Create Achievement",
+  "createOpportunity": "Create opportunity",
+  "createAdvertisement": "Create Advertisement",
+  "makeVideoAnalysis": "Make Video Analysis",
+  "failedToLoadImage": "Failed to load image",
+  "failedToTranslate": "Failed to translate",
+  "failedToLoadVideo": "Failed to load video",
+  "analyzeVideoComingSoon": "Analyze video feature coming soon",
+  "analyzeVideo": "Analyze Video",
+  "seeOriginal": "See Original",
+  "translate": "Translate",
+  "forYou": "forYou",
+  "justNow": "Just now",
+  "selectSport": "Select Sport",
+  "clear": "Clear",
+  "opportunityCreatedSuccessfully": "Opportunity created successfully!",
+  "applicationSubmittedSuccessfully": "Application submitted successfully!",
+  "noOpportunitiesFound": "No Opportunities found",
+  "clearFilters": "Clear filters",
+  "since": "Since",
+  "applyOpportunity": "Apply opportunity",
+  "deleteOpportunity": "Delete Opportunity",
+  "deleteOpportunityConfirmation": "Are you sure you want to delete this opportunity? This action cannot be undone.",
+  "deletingOpportunity": "Deleting opportunity...",
+  "requirements": "Requirements",
+  "endDate": "End Date",
+  "showApplicants": "Show Applicants",
+  "alreadyApplied": "Already Applied",
+  "applyNow": "Apply Now",
+  "apply": "Apply",
+  "applicants": "Applicants",
+  "all": "All",
+  "accepted": "Accepted",
+  "rejected": "Rejected",
+  "noAcceptedApplicants": "No accepted applicants",
+  "noRejectedApplicants": "No rejected applicants",
+  "noApplicantsFound": "No applicants found",
+  "errorLoadingApplicants": "Error loading applicants",
+  "accept": "Accept",
+  "reject": "Reject",
+  "uploadAnImage": "Upload an Image",
+  "tapToSelectFromGallery": "Tap to select from gallery",
+  "enterYourRequirements": "Enter Requirements (one per line)...",
+  "selectEndDate": "Select End Date",
+  "upload": "Upload",
+  "pleaseEnterTitle": "Please enter a title",
+  "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterRequirements": "Please enter requirements",
+  "pleaseSelectSport": "Please select a sport",
+  "pleaseSelectEndDate": "Please select an end date",
+  "details": "Details",
+  "noOpportunitiesAvailable": "No opportunities available",
+  "taekwondo": "Taekwondo",
+  "yearsAgo": "{count, plural, =1 {{count} year ago} other {{count} years ago}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthsAgo": "{count, plural, =1 {{count} month ago} other {{count} months ago}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksAgo": "{count, plural, =1 {{count} week ago} other {{count} weeks ago}}",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count, plural, =1 {{count} day ago} other {{count} days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count, plural, =1 {{count} hour ago} other {{count} hours ago}}",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgo": "{count, plural, =1 {{count} minute ago} other {{count} minutes ago}}",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "secondsAgo": "{count, plural, =1 {{count} second ago} other {{count} seconds ago}}",
+  "@secondsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "postLoadFailed": "Failed to load post. Please try again.",
   "edit_achievement": "Edit Achievement",
   "add_achievement_title": "Add Achievement",

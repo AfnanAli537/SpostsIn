@@ -1,60 +1,116 @@
-// /// Helper function to format time ago 
-// String formatTimeAgo(DateTime dateTime) {
-//   final now = DateTime.now();
-//   final difference = now.difference(dateTime);
+// // String formatTimeAgo(DateTime dateTime) {
+// //   final now = DateTime.now().toUtc();
+// //   final date = dateTime.toUtc();
 
-//   if (difference.inDays > 365) {
-//     final years = (difference.inDays / 365).floor();
-//     return '$years ${years == 1 ? 'year' : 'years'} ago';
-//   } else if (difference.inDays > 30) {
-//     final months = (difference.inDays / 30).floor();
-//     return '$months ${months == 1 ? 'month' : 'months'} ago';
-//   } else if (difference.inDays > 0) {
-//     return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
-//   } else if (difference.inHours > 0) {
-//     return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
-//   } else if (difference.inMinutes > 0) {
-//     return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
-//   } else {
-//     return 'Just now';
+// //   final difference = now.difference(date);
+// //   if (difference.inSeconds < 5) return 'Just now';
+// //   if (difference.inDays >= 365) {
+// //     final years = difference.inDays ~/ 365;
+// //     return '$years ${years == 1 ? 'year' : 'years'} ago';
+// //   }
+
+// //   if (difference.inDays >= 30) {
+// //     final months = difference.inDays ~/ 30;
+// //     return '$months ${months == 1 ? 'month' : 'months'} ago';
+// //   }
+
+// //   if (difference.inDays >= 1) {
+// //     return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+// //   }
+
+// //   if (difference.inHours >= 1) {
+// //     return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+// //   }
+
+// //   if (difference.inMinutes >= 1) {
+// //     return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+// //   }
+
+// //   return '${difference.inSeconds} seconds ago';
+// // }
+ 
+
+//  import 'package:flutter/material.dart';
+// import 'package:sports_in/generated/l10n.dart';
+
+// String formatTimeAgo(BuildContext context, DateTime dateTime) {
+//   final strings = S.of(context);
+
+//   final now = DateTime.now().toUtc();
+//   final date = dateTime.toUtc();
+//   final difference = now.difference(date);
+
+//   if (difference.inSeconds < 5) {
+//     return strings.justNow;
 //   }
+
+//   if (difference.inDays >= 365) {
+//     final years = difference.inDays ~/ 365;
+//     return strings.yearsAgo(years);
+//   }
+
+//   if (difference.inDays >= 30) {
+//     final months = difference.inDays ~/ 30;
+//     return strings.monthsAgo(months);
+//   }
+
+//   if (difference.inDays >= 1) {
+//     return strings.daysAgo(difference.inDays);
+//   }
+
+//   if (difference.inHours >= 1) {
+//     return strings.hoursAgo(difference.inHours);
+//   }
+
+//   if (difference.inMinutes >= 1) {
+//     return strings.minutesAgo(difference.inMinutes);
+//   }
+
+//   return strings.secondsAgo(difference.inSeconds);
 // }
 
 
 
-String formatTimeAgo(DateTime dateTime) {
-  // 1. Convert both to UTC to remove timezone offsets from the math
+import 'package:flutter/material.dart';
+import 'package:sports_in/generated/l10n.dart';
+
+String formatTimeAgo(BuildContext context, DateTime dateTime) {
+  final strings = S.of(context);
+
   final now = DateTime.now().toUtc();
   final date = dateTime.toUtc();
-
   final difference = now.difference(date);
 
-  // 2. Handle potential clock skew (if post time is slightly in the future)
-  if (difference.inSeconds < 5) return 'Just now';
+  if (difference.inSeconds < 5) {
+    return strings.justNow;
+  }
 
-  // 3. Logic for time units
   if (difference.inDays >= 365) {
     final years = difference.inDays ~/ 365;
-    return '$years ${years == 1 ? 'year' : 'years'} ago';
+    return strings.yearsAgo(years);
   }
 
   if (difference.inDays >= 30) {
     final months = difference.inDays ~/ 30;
-    return '$months ${months == 1 ? 'month' : 'months'} ago';
+    return strings.monthsAgo(months);
+  }
+
+  if (difference.inDays >= 7) {
+    final weeks = difference.inDays ~/ 7;
+    return strings.weeksAgo(weeks);
   }
 
   if (difference.inDays >= 1) {
-    return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+    return strings.daysAgo(difference.inDays);
   }
 
   if (difference.inHours >= 1) {
-    return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+    return strings.hoursAgo(difference.inHours);
   }
 
   if (difference.inMinutes >= 1) {
-    return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+    return strings.minutesAgo(difference.inMinutes);
   }
 
-  return '${difference.inSeconds} seconds ago';
+  return strings.secondsAgo(difference.inSeconds);
 }
- 

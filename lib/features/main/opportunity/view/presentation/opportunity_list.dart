@@ -1,416 +1,15 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// class OpportunitiesContent extends StatefulWidget {
-//   const OpportunitiesContent({super.key});
-
-//   @override
-//   State<OpportunitiesContent> createState() => _OpportunitiesContentState();
-// }
-
-// class _OpportunitiesContentState extends State<OpportunitiesContent> {
-//   final TextEditingController _searchController = TextEditingController();
-//   String _selectedSport = '';
-//   String _selectedLocation = '';
-//   String _selectedType = '';
-//   String _searchQuery = '';
-
-//   final List<Map<String, dynamic>> _allJobs = [
-//     {
-//       'id': '1',
-//       'title': 'Football Coach - Youth Academy',
-//       'organization': 'Elite Youth Football Club',
-//       'sport': 'Football',
-//       'location': 'London',
-//       'type': 'Full-time',
-//       'icon': '⚽',
-//       'color': const Color(0xFF1A5F4E),
-//     },
-//     {
-//       'id': '2',
-//       'title': 'Basketball Analyst',
-//       'organization': 'Pro Basketball League',
-//       'sport': 'Basketball',
-//       'location': 'New York',
-//       'type': 'Part-time',
-//       'icon': '🏀',
-//       'color': const Color(0xFFFF6B35),
-//     },
-//     {
-//       'id': '3',
-//       'title': 'Soccer Scout',
-//       'organization': 'International Soccer Agency',
-//       'sport': 'Football',
-//       'location': 'Madrid',
-//       'type': 'Contract',
-//       'icon': '⚽',
-//       'color': const Color(0xFF1A5F4E),
-//     },
-//     {
-//       'id': '4',
-//       'title': 'Tennis Coach',
-//       'organization': 'Top Tennis Academy',
-//       'sport': 'Tennis',
-//       'location': 'Paris',
-//       'type': 'Full-time',
-//       'icon': '🎾',
-//       'color': const Color(0xFF8B9D83),
-//     },
-//     {
-//       'id': '5',
-//       'title': 'Golf Instructor',
-//       'organization': 'Premier Golf Resort',
-//       'sport': 'Golf',
-//       'location': 'Scotland',
-//       'type': 'Seasonal',
-//       'icon': '⛳',
-//       'color': const Color(0xFF2D5F4F),
-//     },
-//   ];
-
-//   @override
-//   void dispose() {
-//     _searchController.dispose();
-//     super.dispose();
-//   }
-
-//   List<Map<String, dynamic>> get _filteredJobs {
-//     List<Map<String, dynamic>> filtered = _allJobs;
-
-//     if (_searchQuery.isNotEmpty) {
-//       filtered = filtered.where((job) {
-//         return job['title'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-//             job['organization'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-//             job['sport'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
-//       }).toList();
-//     }
-
-//     if (_selectedSport.isNotEmpty) {
-//       filtered = filtered.where((job) => job['sport'] == _selectedSport).toList();
-//     }
-
-//     if (_selectedLocation.isNotEmpty) {
-//       filtered = filtered.where((job) => job['location'] == _selectedLocation).toList();
-//     }
-
-//     if (_selectedType.isNotEmpty) {
-//       filtered = filtered.where((job) => job['type'] == _selectedType).toList();
-//     }
-
-//     return filtered;
-//   }
-
-//   void _clearFilters() {
-//     setState(() {
-//       _selectedSport = '';
-//       _selectedLocation = '';
-//       _selectedType = '';
-//       _searchQuery = '';
-//       _searchController.clear();
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final filteredJobs = _filteredJobs;
-    
-//     return SliverList(
-//       delegate: SliverChildListDelegate([
-//         // Search Section
-//         Padding(
-//           padding: EdgeInsets.all(16.w),
-//           child: Container(
-//             decoration: BoxDecoration(
-//               borderRadius: BorderRadius.circular(12.r),
-//               boxShadow: [
-//                 BoxShadow(
-//                   color: Colors.black.withOpacity(0.05),
-//                   blurRadius: 10,
-//                   offset: const Offset(0, 2),
-//                 ),
-//               ],
-//             ),
-//             child: TextField(
-//               controller: _searchController,
-//               onChanged: (value) {
-//                 setState(() {
-//                   _searchQuery = value;
-//                 });
-//               },
-//               decoration: InputDecoration(
-//                 hintText: 'Search',
-//                 hintStyle: TextStyle(
-//                   color: Colors.grey[400],
-//                   fontSize: 16.sp,
-//                 ),
-//                 prefixIcon: Icon(
-//                   Icons.search,
-//                   color: Colors.grey[400],
-//                 ),
-//                 suffixIcon: Icon(
-//                   Icons.tune,
-//                   color: Colors.grey[600],
-//                 ),
-//                 border: InputBorder.none,
-//                 contentPadding: EdgeInsets.symmetric(
-//                   horizontal: 16.w,
-//                   vertical: 14.h,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-        
-//         // Filter Section
-//         Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 16.w),
-//           child: SingleChildScrollView(
-//             scrollDirection: Axis.horizontal,
-//             child: Row(
-//               children: [
-//                 _buildFilterChip(
-//                   label: 'Sport',
-//                   icon: Icons.sports_soccer,
-//                   isSelected: _selectedSport.isNotEmpty,
-//                   onTap: () {
-//                     _showFilterDialog(
-//                       'Select Sport',
-//                       ['Football', 'Basketball', 'Tennis', 'Golf'],
-//                       (selected) {
-//                         setState(() {
-//                           _selectedSport = selected;
-//                         });
-//                       },
-//                     );
-//                   },
-//                 ),
-//                 SizedBox(width: 8.w),
-//                 _buildFilterChip(
-//                   label: 'Location',
-//                   icon: Icons.location_on,
-//                   isSelected: _selectedLocation.isNotEmpty,
-//                   onTap: () {
-//                     _showFilterDialog(
-//                       'Select Location',
-//                       ['London', 'New York', 'Madrid', 'Paris', 'Scotland'],
-//                       (selected) {
-//                         setState(() {
-//                           _selectedLocation = selected;
-//                         });
-//                       },
-//                     );
-//                   },
-//                 ),
-//                 SizedBox(width: 8.w),
-//                 _buildFilterChip(
-//                   label: 'Type',
-//                   icon: Icons.work_outline,
-//                   isSelected: _selectedType.isNotEmpty,
-//                   onTap: () {
-//                     _showFilterDialog(
-//                       'Select Type',
-//                       ['Full-time', 'Part-time', 'Contract', 'Seasonal'],
-//                       (selected) {
-//                         setState(() {
-//                           _selectedType = selected;
-//                         });
-//                       },
-//                     );
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-        
-//         SizedBox(height: 16.h),
-        
-//         // Jobs List
-//         if (filteredJobs.isEmpty)
-//           Padding(
-//             padding: EdgeInsets.all(40.w),
-//             child: Center(
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   Icon(
-//                     Icons.search_off,
-//                     size: 64.sp,
-//                     color: Colors.grey[400],
-//                   ),
-//                   SizedBox(height: 16.h),
-//                   Text(
-//                     'No jobs found',
-//                     style: GoogleFonts.poppins(
-//                       fontSize: 18.sp,
-//                       color: Colors.grey[600],
-//                       fontWeight: FontWeight.w500,
-//                     ),
-//                   ),
-//                   SizedBox(height: 8.h),
-//                   TextButton(
-//                     onPressed: _clearFilters,
-//                     child: const Text('Clear filters'),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           )
-//         else
-//           ...filteredJobs.map((job) => _buildJobCard(job)).toList(),
-        
-//         SizedBox(height: 100.h),
-//       ]),
-//     );
-//   }
-
-//   Widget _buildFilterChip({
-//     required String label,
-//     required IconData icon,
-//     required bool isSelected,
-//     required VoidCallback onTap,
-//   }) {
-//     return GestureDetector(
-//       onTap: onTap,
-//       child: Container(
-//         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-//         decoration: BoxDecoration(
-//           color: isSelected ? const Color(0xFF1A5F4E) : Colors.white,
-//           borderRadius: BorderRadius.circular(20.r),
-//           border: Border.all(
-//             color: isSelected ? const Color(0xFF1A5F4E) : Colors.grey.shade300,
-//             width: 1,
-//           ),
-//         ),
-//         child: Row(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Icon(
-//               icon,
-//               size: 18.sp,
-//               color: isSelected ? Colors.white : Colors.grey[700],
-//             ),
-//             SizedBox(width: 6.w),
-//             Text(
-//               label,
-//               style: GoogleFonts.poppins(
-//                 fontSize: 14.sp,
-//                 fontWeight: FontWeight.w500,
-//                 color: isSelected ? Colors.white : Colors.grey[700],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildJobCard(Map<String, dynamic> job) {
-//     return Container(
-//       margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
-//       decoration: BoxDecoration(
-//         borderRadius: BorderRadius.circular(16.r),
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.05),
-//             blurRadius: 10,
-//             offset: const Offset(0, 2),
-//           ),
-//         ],
-//       ),
-//       child: Padding(
-//         padding: EdgeInsets.all(16.w),
-//         child: Row(
-//           children: [
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     job['title'],
-//                     style: GoogleFonts.poppins(
-//                       fontSize: 16.sp,
-//                       fontWeight: FontWeight.w600,
-//                     ),
-//                   ),
-//                   SizedBox(height: 4.h),
-//                   Text(
-//                     job['organization'],
-//                     style: GoogleFonts.poppins(
-//                       fontSize: 14.sp,
-//                       color: Colors.grey[600],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             SizedBox(width: 12.w),
-//             Container(
-//               width: 80.w,
-//               height: 80.h,
-//               decoration: BoxDecoration(
-//                 color: job['color'],
-//                 borderRadius: BorderRadius.circular(12.r),
-//               ),
-//               child: Center(
-//                 child: Text(
-//                   job['icon'],
-//                   style: TextStyle(fontSize: 40.sp),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   void _showFilterDialog(
-//     String title,
-//     List<String> options,
-//     Function(String) onSelected,
-//   ) {
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext dialogContext) {
-//         return AlertDialog(
-//           title: Text(title),
-//           content: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: options.map((option) {
-//               return ListTile(
-//                 title: Text(option),
-//                 onTap: () {
-//                   onSelected(option);
-//                   Navigator.pop(dialogContext);
-//                 },
-//               );
-//             }).toList(),
-//           ),
-//           actions: [
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.pop(dialogContext);
-//               },
-//               child: const Text('Cancel'),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
-// }
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class OpportunitiesContent extends StatefulWidget {
   const OpportunitiesContent({super.key});
@@ -427,12 +26,23 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
   late AnimationController _shimmerController;
 
   final Map<String, int> _sportTypes = {
-    'Football': 1,
-    'Basketball': 2,
-    'Volleyball': 3,
-    'Handball': 4,
-    'Taekwondo': 5,
+    'football': 1,
+    'basketball': 2,
+    'volleyball': 3,
+    'handball': 4,
+    'taekwondo': 5,
   };
+
+  String _getLocalizedSportName(String key, S strings) {
+    final Map<String, String> names = {
+      'football': strings.football,
+      'basketball': strings.basketball,
+      'volleyball': strings.volleyball,
+      'handball': strings.handball,
+      'taekwondo': strings.taekwondo,
+    };
+    return names[key] ?? key;
+  }
 
   @override
   void initState() {
@@ -441,17 +51,22 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    
-    context.read<OpportunityBloc>().add(const FetchOpportunities(isRefresh: true));
+
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= 
+    if (!mounted) return;
+
+    if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
       final state = context.read<OpportunityBloc>().state;
       if (state is OpportunityLoaded && state.hasNextPage) {
-        context.read<OpportunityBloc>().add(const FetchOpportunities());
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.read<OpportunityBloc>().add(const FetchOpportunities());
+          }
+        });
       }
     }
   }
@@ -459,6 +74,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _shimmerController.dispose();
     _debounce?.cancel();
@@ -479,6 +95,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
+
     return BlocConsumer<OpportunityBloc, OpportunityState>(
       listener: (context, state) {
         if (state is OpportunityError) {
@@ -490,23 +108,26 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             ),
           );
         }
-        
+
         if (state is OpportunityCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Opportunity created successfully!'),
+            SnackBar(
+              content: Text(strings.opportunityCreatedSuccessfully),
               backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             ),
           );
+          context
+              .read<OpportunityBloc>()
+              .add(const FetchOpportunities(isRefresh: true));
         }
-        
+
         if (state is OpportunityApplied) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Application submitted successfully!'),
+            SnackBar(
+              content: Text(strings.applicationSubmittedSuccessfully),
               backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -514,113 +135,19 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       builder: (context, state) {
         return SliverList(
           delegate: SliverChildListDelegate([
-            // Search Section
-            Padding(
-              padding: EdgeInsets.all(16.w),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 16.sp,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey[400],
-                    ),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.clear,
-                              color: Colors.grey[600],
-                            ),
-                            onPressed: () {
-                              _searchController.clear();
-                              _onSearchChanged('');
-                            },
-                          )
-                        : Icon(
-                            Icons.tune,
-                            color: Colors.grey[600],
-                          ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 14.h,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            
-            // Filter Section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildFilterChip(
-                      label: state is OpportunityLoaded && state.sportName != null
-                          ? state.sportName!
-                          : 'Sport',
-                      isSelected: state is OpportunityLoaded && state.sportTypeId != null,
-                      onTap: () {
-                        _showFilterDialog(
-                          'Select Sport',
-                          _sportTypes.keys.toList(),
-                          (selected) {
-                            context.read<OpportunityBloc>().add(
-                                  UpdateSportFilter(
-                                    sportTypeId: _sportTypes[selected],
-                                    sportName: selected,
-                                  ),
-                                );
-                          },
-                        );
-                      },
-                    ),
-                    SizedBox(width: 8.w),
-                    if (state is OpportunityLoaded &&
-                        (state.sportTypeId != null || state.searchTerm != null))
-                      _buildFilterChip(
-                        label: 'Clear',
-                        icon: Icons.clear_all,
-                        isSelected: false,
-                        onTap: _clearFilters,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            
+            _buildSearchBar(strings),
+            _buildFilterSection(state, strings),
             SizedBox(height: 16.h),
-            
-            // Content based on state
-            if (state is OpportunityLoading)
+            if (state is OpportunityLoaded)
+              ..._buildOpportunitiesList(state, strings)
+            else if (state is OpportunityLoading)
               ..._buildShimmerList()
-            else if (state is OpportunityLoaded)
-              ..._buildOpportunitiesList(state)
             else if (state is OpportunityError)
-              _buildErrorState(state.message)
+              _buildErrorState(state.message, strings)
+            else if (state is OpportunityInitial)
+              ..._buildShimmerList()
             else
-              ..._buildShimmerList(),
-            
+              const SizedBox.shrink(),
             SizedBox(height: 100.h),
           ]),
         );
@@ -628,27 +155,129 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  List<Widget> _buildShimmerList() {
-    return List.generate(
-      5, // Show 5 shimmer cards
-      (index) => _buildShimmerCard(),
+  Widget _buildSearchBar(S strings) {
+    return Padding(
+      padding: EdgeInsets.all(16.w),
+      child: Container(
+        decoration: BoxDecoration(
+          // color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: TextField(
+          onTapOutside: (_) => FocusScope.of(context).unfocus(),
+          controller: _searchController,
+          onChanged: _onSearchChanged,
+          decoration: InputDecoration(
+            hintText: strings.search,
+            hintStyle: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 16.sp,
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.grey[400],
+            ),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: Icon(
+                      Icons.clear,
+                      color: Colors.grey[600],
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                      _onSearchChanged('');
+                    },
+                  )
+                : Icon(
+                    Icons.tune,
+                    color: Colors.grey[600],
+                  ),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 14.h,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildShimmerCard() {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  bool _hasValidImage(String? url) {
+    return url != null && url.isNotEmpty && url.trim().isNotEmpty;
+  }
+
+  Widget _buildFilterSection(OpportunityState state, S strings) {
+    String sportChipLabel = strings.sport;
+    if (state is OpportunityLoaded && state.sportTypeId != null) {
+      final selectedKey = _sportTypes.entries
+          .firstWhere(
+            (e) => e.value == state.sportTypeId,
+            orElse: () => const MapEntry('', 0),
+          )
+          .key;
+      if (selectedKey.isNotEmpty) {
+        sportChipLabel = _getLocalizedSportName(selectedKey, strings);
+      } else {
+        sportChipLabel = state.sportName ?? strings.sport;
+      }
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildFilterChip(
+              label: sportChipLabel,
+              isSelected: state is OpportunityLoaded && state.sportTypeId != null,
+              onTap: () {
+                _showFilterDialog(strings);
+              },
+            ),
+            SizedBox(width: 8.w),
+            if (state is OpportunityLoaded &&
+                (state.sportTypeId != null || state.searchTerm != null))
+              _buildFilterChip(
+                label: strings.clear,
+                icon: Icons.clear_all,
+                isSelected: false,
+                onTap: _clearFilters,
+              ),
+          ],
+        ),
       ),
+    );
+  }
+
+  List<Widget> _buildShimmerList() {
+    return List.generate(5, (index) => _buildShimmerCard());
+  }
+
+  Widget _buildShimmerCard() {
+    return Card(
+      margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
+ shape:BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
+ elevation: 3,
+      // decoration: BoxDecoration(
+      //   // color: Colors.grey[500],
+       
+      //   boxShadow: [
+      //     BoxShadow(
+      //       color: Colors.black.withOpacity(0.05),
+      //       blurRadius: 10,
+      //       offset: const Offset(0, 2),
+      //     ),
+      //   ],
+      // ),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: AnimatedBuilder(
@@ -677,7 +306,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Title shimmer - first line
                         Container(
                           width: double.infinity,
                           height: 18.h,
@@ -687,7 +315,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           ),
                         ),
                         SizedBox(height: 8.h),
-                        // Title shimmer - second line
                         Container(
                           width: 150.w,
                           height: 18.h,
@@ -697,7 +324,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           ),
                         ),
                         SizedBox(height: 12.h),
-                        // Publisher name shimmer
                         Container(
                           width: 120.w,
                           height: 14.h,
@@ -707,7 +333,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           ),
                         ),
                         SizedBox(height: 8.h),
-                        // Date shimmer
                         Container(
                           width: 100.w,
                           height: 12.h,
@@ -720,7 +345,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     ),
                   ),
                   SizedBox(width: 12.w),
-                  // Image shimmer
                   Container(
                     width: 80.w,
                     height: 80.h,
@@ -738,17 +362,17 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  List<Widget> _buildOpportunitiesList(OpportunityLoaded state) {
+  List<Widget> _buildOpportunitiesList(OpportunityLoaded state, S strings) {
     if (state.opportunities.isEmpty) {
-      return [_buildEmptyState()];
+      return [_buildEmptyState(strings)];
     }
 
     final widgets = <Widget>[];
-    
+
     for (var opportunity in state.opportunities) {
-      widgets.add(_buildJobCard(opportunity));
+      widgets.add(_buildJobCard(opportunity, strings));
     }
-    
+
     if (state.hasNextPage) {
       widgets.add(
         Padding(
@@ -761,11 +385,11 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
         ),
       );
     }
-    
+
     return widgets;
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(S strings) {
     return Padding(
       padding: EdgeInsets.all(40.w),
       child: Center(
@@ -779,17 +403,18 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             ),
             SizedBox(height: 16.h),
             Text(
-              'No Opportunities found',
+              strings.noOpportunitiesFound,
               style: GoogleFonts.poppins(
                 fontSize: 18.sp,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center, 
             ),
             SizedBox(height: 8.h),
             TextButton(
               onPressed: _clearFilters,
-              child: const Text('Clear filters'),
+              child: Text(strings.clearFilters),
             ),
           ],
         ),
@@ -797,7 +422,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  Widget _buildErrorState(String message) {
+  Widget _buildErrorState(String message, S strings) {
     return Padding(
       padding: EdgeInsets.all(40.w),
       child: Center(
@@ -811,12 +436,13 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             ),
             SizedBox(height: 16.h),
             Text(
-              'Something went wrong',
+              strings.somethingWentWrong,
               style: GoogleFonts.poppins(
                 fontSize: 18.sp,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center, 
             ),
             SizedBox(height: 8.h),
             Text(
@@ -825,7 +451,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                 fontSize: 14.sp,
                 color: Colors.grey[500],
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, 
             ),
             SizedBox(height: 16.h),
             TextButton.icon(
@@ -835,7 +461,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     );
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(strings.retry,style: TextStyle(color: Theme.of(context).colorScheme.surface),),
             ),
           ],
         ),
@@ -854,10 +480,13 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white,
+          color:
+              isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey.shade300,
             width: 1,
           ),
         ),
@@ -867,15 +496,20 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             Icon(
               icon ?? Icons.tune,
               size: 18.sp,
-              color: isSelected ? Colors.white : Colors.grey[700],
+              color: isSelected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
             ),
             SizedBox(width: 6.w),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : Colors.grey[700],
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 120.w),
+              child: Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected ? Theme.of(context).colorScheme.surface :Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
@@ -884,22 +518,27 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  Widget _buildJobCard(OpportunityModel opportunity) {
-    final defaultColor = ColorManager.lightPrimary;
+  Widget _buildJobCard(OpportunityModel opportunity, S strings) {
+    // final defaultColor = ColorManager.lightPrimary;
 
-    return Container(
+    return Card(
       margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      shadowColor: Theme.of(context).colorScheme.surface,
+      shape:BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 4,
+          // : BorderRadius.circular(16.r),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.05),
+        //     blurRadius: 10,
+        //     offset: const Offset(0, 2),
+        //   ),
+        // ],
+      // decoration: BoxDecoration(
+      //   // color: Colors.white,
+       
+    
+      // ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -908,9 +547,14 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<OpportunityBloc>(),
-                  child: OpportunityDetailsPage(opportunityId: opportunity.id,isOwner: opportunity.isOwner,),
+                builder: (_) => BlocProvider(
+                  create: (BuildContext context) => OpportunityBloc(
+                    opportunityRepo: getIt<OpportunityReposatory>(),
+                  ),
+                  child: OpportunityDetailsPage(
+                    opportunityId: opportunity.id,
+                    isOwner: opportunity.isOwner,
+                  ),
                 ),
               ),
             );
@@ -918,6 +562,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
           child: Padding(
             padding: EdgeInsets.all(16.w),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
@@ -930,7 +575,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis, 
                       ),
                       SizedBox(height: 4.h),
                       Text(
@@ -939,6 +584,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           fontSize: 14.sp,
                           color: Colors.grey[600],
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis, 
                       ),
                       SizedBox(height: 8.h),
                       Row(
@@ -949,11 +596,15 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                             color: Colors.grey[500],
                           ),
                           SizedBox(width: 4.w),
-                          Text(
-                            "Since ${_formatDate(opportunity.createdAt)}",
-                            style: GoogleFonts.poppins(
-                              fontSize: 12.sp,
-                              color: Colors.grey[500],
+                          Flexible( 
+                            child: Text(
+                              formatTimeAgo(context,opportunity.createdAt),
+                              style: GoogleFonts.poppins(
+                                fontSize: 12.sp,
+                                color: Colors.grey[500],
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
                           ),
                         ],
@@ -966,24 +617,55 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                   width: 80.w,
                   height: 80.h,
                   decoration: BoxDecoration(
-                    color: opportunity.mediaUrl != null ? null : defaultColor,
+                    color: _hasValidImage(opportunity.mediaUrl)
+                        ? Colors.grey[200]
+                        : Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(12.r),
-                    image: opportunity.mediaUrl != null
-                        ? DecorationImage(
-                            image: NetworkImage(opportunity.mediaUrl!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
                   ),
-                  child: opportunity.mediaUrl == null
-                      ? Center(
-                          child: Icon(
-                            Icons.event_available_outlined,
-                            size: 40.sp,
-                            color: Theme.of(context).colorScheme.surface,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: _hasValidImage(opportunity.mediaUrl)
+                        ? Image.network(
+                            opportunity.mediaUrl!,
+                            width: 80.w,
+                            height: 80.h,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                  strokeWidth: 2,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Theme.of(context).colorScheme.primary,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.event_available_outlined,
+                                    size: 40.sp,
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Center(
+                            child: Icon(
+                              Icons.event_available_outlined,
+                              size: 40.sp,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
                           ),
-                        )
-                      : null,
+                  ),
                 ),
               ],
             ),
@@ -992,52 +674,61 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       ),
     );
   }
-
-  void _showFilterDialog(
-    String title,
-    List<String> options,
-    Function(String) onSelected,
-  ) {
+  void _showFilterDialog(S strings) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(
-            title,
+            strings.selectSport,
             style: GoogleFonts.poppins(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: options.map((option) {
+              children: _sportTypes.entries.map((entry) {
+                final localizedName = _getLocalizedSportName(entry.key, strings);
                 return ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  title: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      option,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  title: Card(
+                        elevation: 6,
+                        // shadowColor: Theme.of(context).colorScheme.surface,
+                    // decoration: BoxDecoration(
+                    //   // color: Colors.grey[200],
+                    //   borderRadius: BorderRadius.circular(12.r),
+                    //   boxShadow: [
+                    //     BoxShadow(
+                    //       color: Colors.black.withOpacity(0.05),
+                    //       blurRadius: 6,
+                    //       offset: const Offset(0, 2),
+                    //     ),
+                    //   ],
+                    // ),
+                
+                    child: Padding(padding:  EdgeInsets.symmetric(
+                        horizontal: 14.w, vertical: 10.h),
+                   child:  Text(
+                      localizedName, 
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface
                       ),
+                    ),
                     ),
                   ),
                   onTap: () {
-                    onSelected(option);
+                    context.read<OpportunityBloc>().add(
+                          UpdateSportFilter(
+                            sportTypeId: entry.value,
+                            sportName: entry.key, 
+                          ),
+                        );
                     Navigator.pop(dialogContext);
                   },
                 );
@@ -1046,14 +737,10 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-              },
+              onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-                'Cancel',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[600],
-                ),
+                strings.cancel,
+                style: GoogleFonts.poppins(color: Colors.grey[600]),
               ),
             ),
           ],
@@ -1061,31 +748,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       },
     );
   }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) {
-          return 'Just now';
-        }
-        return '${difference.inMinutes}m ago';
-      }
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inDays < 30) {
-      final weeks = (difference.inDays / 7).floor();
-      return '${weeks}w ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
-  }
 }
 
-// Custom gradient transform for shimmer effect
 class _SlidingGradientTransform extends GradientTransform {
   final double slidePercent;
 

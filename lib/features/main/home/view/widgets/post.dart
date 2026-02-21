@@ -4,18 +4,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/comments.dart';
 import 'package:sports_in/features/main/home/view/presentation/likes.dart';
+import 'package:sports_in/features/main/home/view/widgets/full_screen_image.dart';
 import 'package:sports_in/features/main/home/view_model/likes_bloc/likes_bloc.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:translator/translator.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class PostWidget extends StatefulWidget {
   final PostModel post;
@@ -43,8 +45,8 @@ class _PostWidgetState extends State<PostWidget> {
   bool _showTranslation = false;
   final GoogleTranslator _translator = GoogleTranslator();
   late int _commentsCount;
-  late String _deviceLanguage;
-
+  String? _detectedLanguage;
+  String? _targetLanguage;
   late bool _isLiked;
   late int _likesCount;
 
@@ -55,7 +57,7 @@ class _PostWidgetState extends State<PostWidget> {
     _isLiked = widget.post.isLikedByCurrentUser;
     _likesCount = widget.post.likesCount;
     _initializeMedia();
-    _loadDeviceLanguage();
+    _detectLanguage();
   }
 
   @override
@@ -78,9 +80,34 @@ class _PostWidgetState extends State<PostWidget> {
     }
   }
 
-  Future<void> _loadDeviceLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    _deviceLanguage = prefs.getString('language_code') ?? 'ar';
+  Future<void> _detectLanguage() async {
+    try {
+      final detection = await _translator.translate(
+        widget.post.description,
+        from: 'auto',
+        to: 'en',
+      );
+
+      if (mounted) {
+        setState(() {
+          _detectedLanguage = detection.sourceLanguage.code;
+          _targetLanguage = _detectedLanguage == 'ar' ? 'en' : 'ar';
+        });
+      }
+    } catch (e) {
+      log('Language detection error: $e');
+      if (mounted) {
+        setState(() {
+          _detectedLanguage = _isArabic(widget.post.description) ? 'ar' : 'en';
+          _targetLanguage = _detectedLanguage == 'ar' ? 'en' : 'ar';
+        });
+      }
+    }
+  }
+
+  bool _isArabic(String text) {
+    final arabicRegex = RegExp(r'[\u0600-\u06FF]');
+    return arabicRegex.hasMatch(text);
   }
 
   Future<void> _translateDescription() async {
@@ -88,12 +115,15 @@ class _PostWidgetState extends State<PostWidget> {
       setState(() => _showTranslation = true);
       return;
     }
+
     setState(() => _isTranslating = true);
     try {
       final translation = await _translator.translate(
         widget.post.description,
-        to: _deviceLanguage,
+        from: _detectedLanguage ?? 'auto',
+        to: _targetLanguage!,
       );
+
       if (mounted) {
         setState(() {
           _translatedDesc = translation.text;
@@ -108,7 +138,16 @@ class _PostWidgetState extends State<PostWidget> {
           _isTranslating = false;
           _showTranslation = false;
         });
+        Fluttertoast.showToast(msg: S.of(context).failedToTranslate);
       }
+    }
+  }
+
+  void _toggleTranslation() {
+    if (_showTranslation) {
+      setState(() => _showTranslation = false);
+    } else {
+      _translateDescription();
     }
   }
 
@@ -144,7 +183,7 @@ class _PostWidgetState extends State<PostWidget> {
           if (mounted) {
             setState(() {
               _isInitializing = false;
-              _videoError = 'Failed to load video';
+              _videoError = S.of(context).failedToLoadVideo;
             });
           }
         }
@@ -164,15 +203,17 @@ class _PostWidgetState extends State<PostWidget> {
       _checkIfVideo(widget.post.mediaUrl!);
 
   void _showDeleteConfirmation() {
+    final strings = S.of(context);
+
     ConfirmationDialog.show(
       context: context,
-      title: 'Delete Post',
-      message: 'Are you sure you want to delete this post?',
+      title: strings.deletePost,
+      message: strings.deletePostConfirmation,
       onConfirm: () {
         context.read<PostsBloc>().add(DeletePost(postId: widget.post.id));
         widget.onDeleted?.call();
       },
-      confirmText: 'Delete',
+      confirmText: strings.delete,
       isDestructive: true,
     );
   }
@@ -193,6 +234,20 @@ class _PostWidgetState extends State<PostWidget> {
     context.read<PostsBloc>().add(LikePost(widget.post.id));
   }
 
+  void _openFullScreenMedia() {
+    if (widget.post.mediaUrl == null || widget.post.mediaUrl!.isEmpty) return;
+
+    if (!_isVideo) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              FullScreenImageViewer(imageUrl: widget.post.mediaUrl!),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _betterPlayerController?.dispose();
@@ -201,6 +256,7 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
 
     return Card(
@@ -212,143 +268,244 @@ class _PostWidgetState extends State<PostWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: _navigateToAuthorProfile,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20.r,
-                        backgroundImage:
-                            widget.post.author.profilePictureUrl != null
-                            ? NetworkImage(
-                                widget.post.author.profilePictureUrl!,
-                              )
-                            : null,
-                        child: widget.post.author.profilePictureUrl == null
-                            ? Icon(Icons.person, size: 24.sp)
-                            : null,
-                      ),
+            Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: _navigateToAuthorProfile,
+                  child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                      SizedBox(width: 12.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            widget.post.author.fullName,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          CircleAvatar(
+                            radius: 20.r,
+                            backgroundImage:
+                                widget.post.author.profilePictureUrl != null
+                                ? NetworkImage(
+                                    widget.post.author.profilePictureUrl!,
+                                  )
+                                : null,
+                            child: widget.post.author.profilePictureUrl == null
+                                ? Icon(Icons.person, size: 24.sp)
+                                : null,
                           ),
-                          Text(
-                            formatTimeAgo(widget.post.createdAt.toUtc()),
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey[600],
-                            ),
+
+                          SizedBox(width: 12.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.post.author.fullName,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                formatTimeAgo(
+                                  context,
+                                  widget.post.createdAt.toUtc(),
+                                ),
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
-                  PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert, color: theme.onSurface),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    onSelected: (value) async {
-                      if (value == 'analyze') {
-                        Fluttertoast.showToast(
-                          msg: 'Analyze video feature coming soon',
-                        );
-                      } else if (value == 'edit') {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.profilePostsEditScreen,
-                          arguments: widget.post,
-                        );
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmation();
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      if (_hasVideo)
-                        PopupMenuItem(
-                          value: 'analyze',
-                          child: Row(
-                            children: [
-                              Icon(Icons.analytics_outlined, size: 20.sp),
-                              SizedBox(width: 8.w),
-                              const Text('Analyze Video'),
-                            ],
+                ),
+                // Visibility(
+                //   visible: widget.isCurrentUser ||_isVideo,
+                //   child: PopupMenuButton<String>(
+                //     icon: Icon(Icons.more_vert, color: theme.onSurface),
+                //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                //     onSelected: (value) async {
+                //       if (value == 'analyze') {
+                //         Fluttertoast.showToast(msg: strings.analyzeVideoComingSoon);
+                //       } else if (value == 'edit') {
+                //         Navigator.pushNamed(context, AppRoutes.profilePostsEditScreen, arguments: widget.post);
+                //       } else if (value == 'delete') {
+                //         _showDeleteConfirmation();
+                //       }
+                //     },
+                //     itemBuilder: (context) => [
+                //       if (_hasVideo)
+                //         PopupMenuItem(
+                //           value: 'analyze',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.analytics_outlined, size: 20.sp),
+                //               SizedBox(width: 8.w),
+                //               Text(strings.analyzeVideo),
+                //             ],
+                //           ),
+                //         ),
+                //       if (widget.isCurrentUser) ...[
+                //         PopupMenuItem(
+                //           value: 'edit',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.edit_outlined, size: 20.sp),
+                //               SizedBox(width: 8.w),
+                //               Text(strings.edit),
+                //             ],
+                //           ),
+                //         ),
+                //         PopupMenuItem(
+                //           value: 'delete',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.delete_outline, size: 20.sp, color: Colors.red[700]),
+                //               SizedBox(width: 8.w),
+                //               Text(strings.delete, style: TextStyle(color: Colors.red[700])),
+                //             ],
+                //           ),
+                //         ),
+                //       ],
+                //     ],
+                //   ),
+                // ),
+               Visibility(
+                        visible: widget.isCurrentUser || _isVideo,
+                        child: PopupMenuButton<String>(
+                          icon: Icon(Icons.more_vert, color: theme.onSurface),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
-                        ),
-                      if (widget.isCurrentUser) ...[
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_outlined, size: 20.sp),
-                              SizedBox(width: 8.w),
-                              const Text('Edit'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.delete_outline,
-                                size: 20.sp,
-                                color: Colors.red[700],
+                          onSelected: (value) async {
+                            if (value == 'analyze') {
+                              Fluttertoast.showToast(
+                                msg: strings.analyzeVideoComingSoon,
+                              );
+                            } else if (value == 'edit') {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.profilePostsEditScreen,
+                                arguments: widget.post,
+                              );
+                            } else if (value == 'delete') {
+                              _showDeleteConfirmation();
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            if (_hasVideo)
+                              PopupMenuItem(
+                                value: 'analyze',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.analytics_outlined, size: 20.sp),
+                                    SizedBox(width: 8.w),
+                                    Text(strings.analyzeVideo),
+                                  ],
+                                ),
                               ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'Delete',
-                                style: TextStyle(color: Colors.red[700]),
+                            if (widget.isCurrentUser) ...[
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit_outlined, size: 20.sp),
+                                    SizedBox(width: 8.w),
+                                    Text(strings.edit),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.delete_outline,
+                                      size: 20.sp,
+                                      color: Colors.red[700],
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      strings.delete,
+                                      style: TextStyle(color: Colors.red[700]),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
-                          ),
+                          ],
                         ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
+                      ),
+              ],
             ),
             SizedBox(height: 16.h),
             Text(
               _showTranslation && _translatedDesc != null
                   ? _translatedDesc!
                   : widget.post.description,
-              style: TextStyle(fontSize: 14.sp, height: 1.4),
+              style: TextStyle(
+                fontSize: 14.sp,
+                height: 1.4,
+                fontStyle: _showTranslation && _translatedDesc != null
+                    ? FontStyle.italic
+                    : FontStyle.normal,
+                color: theme.onSurface
+              ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
             TextButton(
-              onPressed: _isTranslating
-                  ? null
-                  : () => _showTranslation
-                        ? setState(() => _showTranslation = false)
-                        : _translateDescription(),
+              onPressed: _isTranslating ? null : _toggleTranslation,
               child: _isTranslating
                   ? const SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(
-                      _showTranslation ? 'See Original' : 'Translate',
-                      style: const TextStyle(color: Colors.blue),
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _showTranslation
+                              ? Icons.translate_outlined
+                              : Icons.translate,
+                          size: 14.sp,
+                          color: Colors.blue,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          _showTranslation
+                              ? strings.seeOriginal
+                              : strings.translate,
+                          style: const TextStyle(color: Colors.blue),
+                        ),
+                      ],
                     ),
             ),
             if (widget.post.mediaUrl != null &&
                 widget.post.mediaUrl!.isNotEmpty)
-              _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
+              GestureDetector(
+                onTap: _openFullScreenMedia,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
+                    Visibility(
+                      visible: !_isVideo,
+                      child: Positioned(
+                        bottom: 8.h,
+                        right: 8.w,
+                        child: Icon(
+                          Icons.fullscreen,
+                          color: ColorManager.borderColor,
+                          size: 35.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             SizedBox(height: 16.h),
             Row(
               children: [
@@ -423,8 +580,9 @@ class _PostWidgetState extends State<PostWidget> {
 
   Widget _buildVideoPlayer() {
     if (_videoError != null) return Center(child: Text(_videoError!));
-    if (_isInitializing || _betterPlayerController == null)
+    if (_isInitializing || _betterPlayerController == null) {
       return const Center(child: CircularProgressIndicator());
+    }
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.r),
       child: AspectRatio(

@@ -15,7 +15,7 @@ class PostsLoaded extends PostsState {
   final bool hasNextPage;
   final bool isUploading;
 
-  PostsLoaded({
+  const PostsLoaded({
     required this.posts,
     required this.hasNextPage,
     this.isUploading = false,
@@ -25,13 +25,12 @@ class PostsLoaded extends PostsState {
   List<Object?> get props => [posts, hasNextPage, isUploading];
 }
 
-// ✅ New state for user-specific posts
 class UserPostsLoaded extends PostsState {
   final List<PostModel> posts;
   final bool hasNextPage;
   final bool isUploading;
 
-  UserPostsLoaded({
+  const UserPostsLoaded({
     required this.posts,
     required this.hasNextPage,
     this.isUploading = false,
@@ -44,11 +43,12 @@ class UserPostsLoaded extends PostsState {
 class PostsError extends PostsState {
   final String message;
 
-  PostsError(this.message);
+  const PostsError(this.message);
 
   @override
   List<Object?> get props => [message];
 }
+
 class PostsUploadSuccess extends PostsState {}
 
 class PostUpdateSuccess extends PostsState {}

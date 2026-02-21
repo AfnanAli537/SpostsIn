@@ -34,7 +34,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
 
       emit(ApplicantsLoaded(response: response));
     } catch (e) {
-      log('❌ Error fetching applicants: $e');
+      log('Error fetching applicants: $e');
       emit(ApplicantsError(e is ApiException ? e.message : e.toString()));
     }
   }
@@ -45,7 +45,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
   ) async {
     if (state is ApplicantsLoaded) {
       final currentState = state as ApplicantsLoaded;
-      
+
       if (!currentState.response.hasNextPage || currentState.isLoadingMore) {
         return;
       }
@@ -60,7 +60,6 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
           status: event.status,
         );
 
-        // Merge the items
         final updatedItems = [
           ...currentState.response.items,
           ...response.items,
@@ -78,7 +77,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
 
         emit(ApplicantsLoaded(response: updatedResponse));
       } catch (e) {
-        log('❌ Error loading more applicants: $e');
+        log(' Error loading more applicants: $e');
         emit(currentState.copyWith(isLoadingMore: false));
       }
     }
@@ -89,7 +88,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
     Emitter<ApplicantsState> emit,
   ) async {
     final previousState = state;
-    
+
     try {
       emit(ApplicantActionLoading(event.applicationId));
 
@@ -98,15 +97,14 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
         status: 'Accepted',
       );
 
-      emit(ApplicantActionSuccess(
-        message: 'Applicant accepted successfully',
-        applicationId: event.applicationId,
-      ));
-
-      // Refresh the list
-      add(FetchApplicants(opportunityId: event.applicationId));
+      emit(
+        ApplicantActionSuccess(
+          message: 'Applicant accepted successfully',
+          applicationId: event.applicationId,
+        ),
+      );
     } catch (e) {
-      log('❌ Error accepting applicant: $e');
+      log('Error accepting applicant: $e');
       emit(ApplicantsError(e is ApiException ? e.message : e.toString()));
       
       // Restore previous state if needed
@@ -121,7 +119,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
     Emitter<ApplicantsState> emit,
   ) async {
     final previousState = state;
-    
+
     try {
       emit(ApplicantActionLoading(event.applicationId));
 
@@ -130,13 +128,12 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
         status: 'Rejected',
       );
 
-      emit(ApplicantActionSuccess(
-        message: 'Applicant rejected successfully',
-        applicationId: event.applicationId,
-      ));
-
-      // Refresh the list
-      add(FetchApplicants(opportunityId: event.applicationId));
+      emit(
+        ApplicantActionSuccess(
+          message: 'Applicant rejected successfully',
+          applicationId: event.applicationId,
+        ),
+      );
     } catch (e) {
       log('❌ Error rejecting applicant: $e');
       emit(ApplicantsError(e is ApiException ? e.message : e.toString()));

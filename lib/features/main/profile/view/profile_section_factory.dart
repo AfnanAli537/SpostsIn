@@ -129,6 +129,7 @@ class ProfileSectionFactory {
     } else if (profile.opportunities!.isEmpty &&
         (profile.userType == UserType.coach ||
             profile.userType == UserType.scout ||
+            profile.userType == UserType.institute ||
             profile.userType == UserType.club)) {
       sections.add(EmptySection(title: string.opportunities, message: string.noOpportunities));
     }
@@ -240,7 +241,7 @@ class ProfileSectionFactory {
     );
     sections.add(Divider(height: 1, color: theme.colorScheme.onError));
 
-    if (!isOwnProfile) {
+    if (!profile.isOwner) {
       sections.add(
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),

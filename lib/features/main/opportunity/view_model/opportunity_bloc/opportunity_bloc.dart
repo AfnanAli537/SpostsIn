@@ -16,18 +16,14 @@ part 'opportunity_state.dart';
 @injectable
 class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
   final OpportunityReposatory opportunityRepo;
-  final  prefs = getIt<SharedPref>();
+  final prefs = getIt<SharedPref>();
 
-  // Current filters
   String? _currentSearchTerm;
   int? _currentSportTypeId;
   String? _currentSportName;
 
-  OpportunityBloc(
-    {
-    required this.opportunityRepo,
-   
-  }) : super(OpportunityInitial()) {
+  OpportunityBloc({required this.opportunityRepo})
+    : super(OpportunityInitial()) {
     on<FetchOpportunities>(_onFetchOpportunities);
     on<UpdateSearchTerm>(_onUpdateSearchTerm);
     on<UpdateSportFilter>(_onUpdateSportFilter);
@@ -38,7 +34,6 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
     on<UpdateOpportunity>(_onUpdateOpportunity);
     on<DeleteOpportunity>(_onDeleteOpportunity);
     on<FetchMyOpportunities>(_onFetchMyOpportunities);
-
   }
 
   String? get currentUserId => prefs.getUserId();
@@ -57,12 +52,12 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
           sportTypeId: _currentSportTypeId,
         );
 
-        log('📦 Fetched ${opportunities.length} opportunities');
+        log(' Fetched ${opportunities.length} opportunities');
 
         emit(
           OpportunityLoaded(
             opportunities: opportunities,
-            hasNextPage: opportunities.length >= 10, // Default page size
+            hasNextPage: opportunities.length >= 10,
             currentPage: 1,
             totalCount: opportunities.length,
             searchTerm: _currentSearchTerm,
@@ -84,7 +79,9 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
             sportTypeId: _currentSportTypeId,
           );
 
-          log('📦 Fetched ${newOpportunities.length} more opportunities (page $nextPage)');
+          log(
+            ' Fetched ${newOpportunities.length} more opportunities (page $nextPage)',
+          );
 
           final allOpportunities = [
             ...currentState.opportunities,
@@ -105,7 +102,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         }
       }
     } catch (e) {
-      log('❌ Error fetching opportunities: $e');
+      log('Error fetching opportunities: $e');
       emit(OpportunityError('Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
@@ -125,7 +122,9 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         sportTypeId: _currentSportTypeId,
       );
 
-      log('🔍 Search results: ${opportunities.length} opportunities for "${event.searchTerm}"');
+      log(
+        ' Search results: ${opportunities.length} opportunities for "${event.searchTerm}"',
+      );
 
       emit(
         OpportunityLoaded(
@@ -139,7 +138,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         ),
       );
     } catch (e) {
-      log('❌ Error searching opportunities: $e');
+      log('Error searching opportunities: $e');
       emit(OpportunityError('Failed to search opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
@@ -160,7 +159,9 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         sportTypeId: _currentSportTypeId,
       );
 
-      log('🏃 Filter by sport: ${opportunities.length} opportunities for "${event.sportName}"');
+      log(
+        ' Filter by sport: ${opportunities.length} opportunities for "${event.sportName}"',
+      );
 
       emit(
         OpportunityLoaded(
@@ -174,7 +175,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         ),
       );
     } catch (e) {
-      log('❌ Error filtering opportunities: $e');
+      log('Error filtering opportunities: $e');
       emit(OpportunityError('Failed to filter opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
@@ -194,7 +195,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         pageNumber: 1,
       );
 
-      log('🔄 Filters cleared: ${opportunities.length} opportunities');
+      log(' Filters cleared: ${opportunities.length} opportunities');
 
       emit(
         OpportunityLoaded(
@@ -205,7 +206,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         ),
       );
     } catch (e) {
-      log('❌ Error clearing filters: $e');
+      log('Error clearing filters: $e');
       emit(OpportunityError('Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
@@ -227,15 +228,14 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         mediaUrl: event.mediaUrl,
       );
 
-      log('✅ Opportunity created successfully');
+      log(' Opportunity created successfully');
 
       emit(const OpportunityCreated());
 
-      // Refresh the list after creating
       await Future.delayed(const Duration(milliseconds: 500));
       add(const FetchOpportunities(isRefresh: true));
     } catch (e) {
-      log('❌ Error creating opportunity: $e');
+      log('Error creating opportunity: $e');
       emit(OpportunityError('Failed to create opportunity: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
@@ -251,11 +251,11 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         opportunityID: event.opportunityId,
       );
 
-      log('📋 Fetched opportunity details: ${opportunity.title}');
+      log(' Fetched opportunity details: ${opportunity.title}');
 
       emit(OpportunityDetailsLoaded(opportunity: opportunity));
     } catch (e) {
-      log('❌ Error fetching opportunity details: $e');
+      log('Error fetching opportunity details: $e');
       emit(OpportunityError(
         'Failed to load opportunity details: ${e is ApiException ? e.message : e.toString()}',
       ));
@@ -273,20 +273,12 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
         opportunityID: event.opportunityId,
       );
 
-      log('✅ Applied to opportunity successfully');
+      log(' Applied to opportunity successfully');
 
       emit(const OpportunityApplied());
-
-      // Return to previous state after a delay
-      // await Future.delayed(const Duration(milliseconds: 1000));
-      // if (state is OpportunityApplied) {
-      //   add(const FetchOpportunities(isRefresh: true));
-      // }
     } catch (e) {
-      log('❌ Error applying to opportunity: $e');
-      emit(OpportunityError(
-        'Failed to apply to opportunity: ${e.toString()}',
-      ));
+      log(' Error applying to opportunity: $e');
+      emit(OpportunityError('Failed to apply to opportunity: ${e.toString()}'));
     }
   }
 Future<void> _onFetchMyOpportunities(

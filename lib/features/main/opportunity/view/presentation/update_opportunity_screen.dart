@@ -10,7 +10,7 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 
 class UpdateOpportunityScreen extends StatefulWidget {
   final String opportunityId;

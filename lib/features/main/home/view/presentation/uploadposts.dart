@@ -50,6 +50,8 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
   }
 
   void _showPickerOptions() {
+    final strings = S.of(context);
+    
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -62,16 +64,16 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.image, color: ColorManager.darkPrimary),
-                title: const Text('Pick Image'),
+                leading: Icon(Icons.image, color: Theme.of(context).colorScheme.primary),
+                title: Text(strings.pickImage),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage();
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.video_library, color: ColorManager.darkPrimary),
-                title: const Text('Pick Video'),
+                leading: Icon(Icons.video_library, color: Theme.of(context).colorScheme.primary),
+                title: Text(strings.pickVideo),
                 onTap: () {
                   Navigator.pop(context);
                   _pickVideo();
@@ -97,28 +99,25 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    final string = S.of(context);
+    final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
     
     return BlocListener<PostsBloc, PostsState>(
       listener: (context, state) {
-        // ✅ استمع للتغييرات
         if (state is PostsUploadSuccess) {
           Fluttertoast.showToast(
-            msg: 'Post uploaded successfully!',
+            msg: strings.postUploadedSuccessfully,
             backgroundColor: Colors.green,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
           );
           
-          // ✅ امسح الحقول
           _titleController.clear();
           _descriptionController.clear();
           sportNotifier.value = null;
           setState(() {
             _selectedFile = null;
           });
-          // ✅ ارجع للصفحة السابقة
           Navigator.pop(context);
         } else if (state is PostsError) {
           _showError(context, state.message);
@@ -132,7 +131,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            'Upload Content',
+            strings.uploadContent,
             style: TextStyle(
               color: theme.onSurface,
               fontSize: 18.sp,
@@ -147,11 +146,10 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Upload Area
                 GestureDetector(
                   onTap: _showPickerOptions,
                   child: DottedBorder(
-                    options: RoundedRectDottedBorderOptions(
+                 options: RoundedRectDottedBorderOptions(
                       color: Colors.grey[400]!,
                       strokeWidth: 2.w,
                       dashPattern: const [20, 6],
@@ -174,16 +172,16 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                                   ),
                                   SizedBox(height: 12.h),
                                   Text(
-                                    'Upload an Image or video',
+                                    strings.uploadImageOrVideo,
                                     style: TextStyle(
                                       fontSize: 14.sp,
-                                      color: Colors.grey[800],
+                                      color: Colors.grey[600],
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    'Maximum file size is 200 MB',
+                                    strings.maximumFileSize,
                                     style: TextStyle(
                                       fontSize: 12.sp,
                                       color: Colors.grey[500],
@@ -229,10 +227,8 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                   ),
                 ),
                 SizedBox(height: 28.h),
-
-                // Title Field
                 Text(
-                  'Title',
+                  strings.title,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -242,14 +238,11 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                 SizedBox(height: 8.h),
                 AuthTextField(
                   controller: _titleController,
-                  hintText: "Enter Your Title.",
+                  label: strings.enterYourTitle,
                 ),
-
                 SizedBox(height: 20.h),
-
-                // Description Field
                 Text(
-                  'Description',
+                  strings.description,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -259,105 +252,57 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                 SizedBox(height: 8.h),
                 AuthTextField(
                   controller: _descriptionController,
-                  hintText: 'Enter Your Description...',
+                  label: strings.enterYourDescription,
                   maxLines: 5,
                 ),
                 SizedBox(height: 16.h),
-
-                // Sport Dropdown
                 ValueListenableBuilder<String?>(
                   valueListenable: sportNotifier,
                   builder: (context, sport, _) {
                     return AppDropdownOverlay(
-                      labelText: string.sportProfession,
+                      labelText: strings.sportProfession,
                       value: sport,
-                      options: RegisterLists.sportNameOptions(string),
+                      options: RegisterLists.sportNameOptions(strings),
                       onChanged: (val) => sportNotifier.value = val,
                       validator: (v) => Validators.validateDropdown(
                         context: context,
                         value: v,
-                        fieldName: string.sportProfession.toLowerCase(),
+                        fieldName: strings.sportProfession.toLowerCase(),
                       ),
                     );
                   },
                 ),
-                
                 SizedBox(height: 40.h),
-
-                // ✅ Post Button with Loading State
                 BlocBuilder<PostsBloc, PostsState>(
                   builder: (context, state) {
                     final isUploading = state is PostsLoaded && state.isUploading;
-return CustomElevatedButton(
-  text: 'Post',
-  isLoading: isUploading,        // ✅ show spinner automatically
-  enabled: !isUploading,         // ✅ disable automatically
-  onPressed: () {
-    // ✅ Validation
-    if (_titleController.text.trim().isEmpty ||
-        _descriptionController.text.trim().isEmpty ||
-        sportNotifier.value == null) {
-      Fluttertoast.showToast(
-        msg: 'Please fill all fields',
-        backgroundColor: Colors.orange,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
-      return;
-    }
+                    return CustomElevatedButton(
+                      text: strings.post,
+                      isLoading: isUploading,
+                      enabled: !isUploading,
+                      onPressed: () {
+                        if (_titleController.text.trim().isEmpty ||
+                            _descriptionController.text.trim().isEmpty ||
+                            sportNotifier.value == null) {
+                          Fluttertoast.showToast(
+                            msg: strings.pleaseFillAllFields,
+                            backgroundColor: Colors.orange,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                          );
+                          return;
+                        }
 
-    // ✅ Upload Post
-    context.read<PostsBloc>().add(
-      UploadPost(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        sport: sportNotifier.value!,
-        mediaUrl: _selectedFile?.path,
-      ),
-    );
-  },
-);
-
-                    // return CustomElevatedButton(
-                    //   onPressed: isUploading
-                    //       ? null // ✅ Disable button while uploading
-                    //       : () {
-                    //           // ✅ Validation
-                    //           if (_titleController.text.trim().isEmpty ||
-                    //               _descriptionController.text.trim().isEmpty ||
-                    //               sportNotifier.value == null) {
-                    //             Fluttertoast.showToast(
-                    //               msg: 'Please fill all fields',
-                    //               backgroundColor: Colors.orange,
-                    //               toastLength: Toast.LENGTH_SHORT,
-                    //               gravity: ToastGravity.BOTTOM,
-                    //             );
-                    //             return;
-                    //           }
-
-                    //           // ✅ Upload Post
-                    //           context.read<PostsBloc>().add(
-                    //                 UploadPost(
-                    //                   title: _titleController.text.trim(),
-                    //                   description: _descriptionController.text.trim(),
-                    //                   sport: sportNotifier.value!,
-                    //                   mediaUrl: _selectedFile?.path,
-                    //                 ),
-                    //               );
-                    //         },
-                    //   text: isUploading ? '' : 'Post', // ✅ Empty text while loading
-                    //   child: isUploading
-                    //       ? SizedBox(
-                    //           height: 20.h,
-                    //           width: 20.w,
-                    //           child: const CircularProgressIndicator(
-                    //             strokeWidth: 2,
-                    //             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    //           ),
-                    //         )
-                    //       : null,
-                    // );
-                 
+                        context.read<PostsBloc>().add(
+                          UploadPost(
+                            title: _titleController.text.trim(),
+                            description: _descriptionController.text.trim(),
+                            sport: sportNotifier.value!,
+                            mediaUrl: _selectedFile?.path,
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
               ],

@@ -16,7 +16,6 @@ class PostsRepositoryImpl {
     return repo.getAllPosts(pageNumber: pageNumber, pageSize: pageSize);
   }
 
-  // ✅ New method for user-specific posts
   Future<List<PostModel>> getUserPosts({
     required String userId,
     required int page,
@@ -51,7 +50,7 @@ class PostsRepositoryImpl {
     );
   }
 
-  // ✅ New method for updating post
+
   Future<void> updatePost({
     required String postId,
     required String title,
@@ -68,7 +67,6 @@ class PostsRepositoryImpl {
     );
   }
 
-  // ✅ New method for deleting post
   Future<void> deletePost({required String postId}) {
     return repo.deletePost(postId: postId);
   }

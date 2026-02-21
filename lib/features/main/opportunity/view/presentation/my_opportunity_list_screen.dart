@@ -7,8 +7,8 @@ import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
-import 'package:sports_in/generated/l10n.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+// import 'package:sports_in/generated/l10n.dart';
 
 class MyOpportunitiesListScreen extends StatelessWidget {
   final bool showActiveOnly;
@@ -95,7 +95,7 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final strings = S.of(context);
+    // final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(

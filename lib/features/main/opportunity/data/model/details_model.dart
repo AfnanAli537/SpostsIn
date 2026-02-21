@@ -19,9 +19,6 @@ class DetailsModel {
      required this.isAlreadyApplied,
   });
 
-  // --------------------------
-  // From JSON
-  // --------------------------
   factory DetailsModel.fromJson(Map<String, dynamic> json) {
     return DetailsModel(
       title: json['title'] ?? '',
@@ -35,10 +32,6 @@ class DetailsModel {
     );
   }
 
-  // --------------------------
-  // To JSON
-  // ------------
- // --------------------------
   Map<String, dynamic> toJson() {
     return {
       'title': title,

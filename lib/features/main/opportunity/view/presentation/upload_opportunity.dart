@@ -6,10 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
-import 'package:sports_in/features/main/opportunity/view_model/ooprtunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class AddOpportunityScreen extends StatefulWidget {
   const AddOpportunityScreen({super.key});
@@ -22,25 +22,38 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _requirementsController = TextEditingController();
-  
+
   File? _selectedFile;
   final ImagePicker _picker = ImagePicker();
-  
-  String? _selectedSportName;
+
+  String? _selectedSportKey;
   int? _selectedSportId;
   DateTime? _selectedEndDate;
 
-  // Sport types mapping
   final Map<String, int> _sportTypes = {
-    'Football': 1,
-    'Basketball': 2,
-    'Volleyball': 3,
-    'Handball': 4,
-    'Taekwondo': 5,
+    'football': 1,
+    'basketball': 2,
+    'volleyball': 3,
+    'handball': 4,
+    'taekwondo': 5,
   };
 
+  String _getLocalizedSportName(String key, S strings) {
+    final Map<String, String> names = {
+      'football': strings.football,
+      'basketball': strings.basketball,
+      'volleyball': strings.volleyball,
+      'handball': strings.handball,
+      'taekwondo': strings.taekwondo,
+    };
+    return names[key] ?? key;
+  }
+
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (image != null) {
       setState(() {
         _selectedFile = File(image.path);
@@ -48,78 +61,45 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
     }
   }
 
-  Future<void> _pickVideo() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() {
-        _selectedFile = File(video.path);
-      });
-    }
+  Future<void> _selectEndDate(S strings) async {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now().add(const Duration(days: 1)),
+    firstDate: DateTime.now(),
+    lastDate: DateTime.now().add(const Duration(days: 365)),
+    builder: (context, child) {
+      final theme = Theme.of(context);
+
+      return Theme(
+        data: theme.copyWith(
+          colorScheme: isDark
+              ? ColorScheme.dark(
+                  primary: theme.colorScheme.primary,
+                  onPrimary: theme.colorScheme.onPrimary,
+                  surface: theme.colorScheme.surface,
+                  onSurface: theme.colorScheme.onSurface,
+                )
+              : ColorScheme.light(
+                  primary: theme.colorScheme.primary,
+                  onPrimary: theme.colorScheme.onPrimary,
+                  surface: theme.colorScheme.surface,
+                  onSurface: theme.colorScheme.onSurface,
+                ),
+        ),
+        child: child!,
+      );
+    },
+  );
+
+  if (picked != null) {
+    setState(() {
+      _selectedEndDate = picked;
+    });
   }
-
-  void _showPickerOptions() {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.image, color: ColorManager.darkPrimary),
-                title: const Text('Pick Image'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.video_library, color: ColorManager.darkPrimary),
-                title: const Text('Pick Video'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickVideo();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _selectEndDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1A5F4E),
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        _selectedEndDate = picked;
-      });
-    }
-  }
-
-  void _showSportDropdown() {
+}
+  void _showSportDropdown(S strings) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -128,7 +108,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
             borderRadius: BorderRadius.circular(16.r),
           ),
           title: Text(
-            'Select Sport',
+            strings.selectSport,
             style: GoogleFonts.poppins(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
@@ -138,18 +118,19 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: _sportTypes.entries.map((entry) {
-                final icon = _getSportIcon(entry.key);
+                // final icon = _getSportIcon(entry.key);
+                final localizedName = _getLocalizedSportName(entry.key, strings);
                 return ListTile(
-                  leading: Text(icon, style: TextStyle(fontSize: 24.sp)),
+                  // leading: Text(icon, style: TextStyle(fontSize: 24.sp)),
                   title: Text(
-                    entry.key,
+                    localizedName,
                     style: GoogleFonts.poppins(fontSize: 14.sp),
                   ),
-                  selected: _selectedSportName == entry.key,
-                  selectedTileColor: const Color(0xFF1A5F4E).withOpacity(0.1),
+                  selected: _selectedSportKey == entry.key,
+                  selectedTileColor: Theme.of(context).colorScheme.primary,
                   onTap: () {
                     setState(() {
-                      _selectedSportName = entry.key;
+                      _selectedSportKey = entry.key;
                       _selectedSportId = entry.value;
                     });
                     Navigator.pop(dialogContext);
@@ -162,7 +143,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-                'Cancel',
+                strings.cancel,
                 style: GoogleFonts.poppins(
                   color: Colors.grey[600],
                 ),
@@ -174,16 +155,16 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
     );
   }
 
-  String _getSportIcon(String sport) {
-    final icons = {
-      'Football': '⚽',
-      'Basketball': '🏀',
-      'Volleyball': '🏐',
-      'Handball': '🤾',
-      'Taekwondo': '🥋',
-    };
-    return icons[sport] ?? '🏆';
-  }
+  // String _getSportIcon(String key) {
+  //   final icons = {
+  //     'football': '⚽',
+  //     'basketball': '🏀',
+  //     'volleyball': '🏐',
+  //     'handball': '🤾',
+  //     'taekwondo': '🥋',
+  //   };
+  //   return icons[key] ?? '🏆';
+  // }
 
   String _formatDate(DateTime date) {
     final months = [
@@ -195,29 +176,33 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
+
     return BlocListener<OpportunityBloc, OpportunityState>(
       listener: (context, state) {
         if (state is OpportunityCreated) {
           Fluttertoast.showToast(
-            msg: 'Opportunity created successfully!',
+            msg: strings.opportunityCreatedSuccessfully,
             backgroundColor: Colors.green,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
           );
 
-          // Clear fields
+          context.read<OpportunityBloc>().add(
+                const FetchOpportunities(isRefresh: true),
+              );
+
           _titleController.clear();
           _descriptionController.clear();
           _requirementsController.clear();
           setState(() {
             _selectedFile = null;
-            _selectedSportName = null;
+            _selectedSportKey = null;
             _selectedSportId = null;
             _selectedEndDate = null;
           });
 
-          // Navigate back
           Navigator.pop(context);
         } else if (state is OpportunityError) {
           Fluttertoast.showToast(
@@ -229,18 +214,16 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
         appBar: AppBar(
-          backgroundColor: Colors.grey[50],
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon:  Icon(Icons.arrow_back, color: theme.onSurface),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            'Upload Content',
+            strings.uploadContent,
             style: GoogleFonts.poppins(
-              color: Colors.black,
+              color:  theme.onSurface,
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -253,11 +236,10 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Upload Area
                 GestureDetector(
-                  onTap: _showPickerOptions,
+                  onTap: _pickImage,
                   child: DottedBorder(
-                   options: RoundedRectDottedBorderOptions(
+                    options: RoundedRectDottedBorderOptions(
                       color: Colors.grey[400]!,
                       strokeWidth: 2.w,
                       dashPattern: const [20, 6],
@@ -268,7 +250,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                       child: Container(
                         height: 200.h,
                         width: double.infinity,
-                        color: Colors.white,
+                        color: theme.surface,
                         child: _selectedFile == null
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -280,7 +262,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                                   ),
                                   SizedBox(height: 12.h),
                                   Text(
-                                    'Upload an Image or video',
+                                    strings.uploadAnImage,
                                     style: GoogleFonts.poppins(
                                       fontSize: 14.sp,
                                       color: Colors.grey[800],
@@ -289,7 +271,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    'Maximum file size is 200 MB',
+                                    strings.tapToSelectFromGallery,
                                     style: GoogleFonts.poppins(
                                       fontSize: 12.sp,
                                       color: Colors.grey[500],
@@ -315,7 +297,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                                         });
                                       },
                                       child: Container(
-                                        padding: EdgeInsets.all(4.w),
+                                        padding: EdgeInsets.all(6.w),
                                         decoration: const BoxDecoration(
                                           color: Colors.black54,
                                           shape: BoxShape.circle,
@@ -335,10 +317,8 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                   ),
                 ),
                 SizedBox(height: 28.h),
-
-                // Title Field
                 Text(
-                  'Title',
+                  strings.title,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -348,13 +328,11 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                 SizedBox(height: 8.h),
                 AuthTextField(
                   controller: _titleController,
-                  hintText: "Enter Your Title.",
+                  label: strings.enterYourTitle,
                 ),
                 SizedBox(height: 20.h),
-
-                // Description Field
                 Text(
-                  'Description',
+                  strings.description,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -364,14 +342,12 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                 SizedBox(height: 8.h),
                 AuthTextField(
                   controller: _descriptionController,
-                  hintText: 'Enter Your Description...',
+                  label: strings.enterYourDescription,
                   maxLines: 5,
                 ),
                 SizedBox(height: 20.h),
-
-                // Requirements Field
                 Text(
-                  'Requirements',
+                  strings.requirements,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -381,14 +357,12 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                 SizedBox(height: 8.h),
                 AuthTextField(
                   controller: _requirementsController,
-                  hintText: 'Enter Requirements (one per line)...',
+                  label: strings.enterYourRequirements,
                   maxLines: 4,
                 ),
                 SizedBox(height: 20.h),
-
-                // Sport Dropdown
                 Text(
-                  'Sport',
+                  strings.sport,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -397,14 +371,14 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                 ),
                 SizedBox(height: 8.h),
                 InkWell(
-                  onTap: _showSportDropdown,
+                  onTap: () => _showSportDropdown(strings),
                   child: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: 16.w,
                       vertical: 16.h,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: theme.surface,
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(
                         color: Colors.grey.shade300,
@@ -415,10 +389,12 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _selectedSportName ?? 'Select Sport',
+                          _selectedSportKey != null
+                              ? _getLocalizedSportName(_selectedSportKey!, strings)
+                              : strings.selectSport,
                           style: GoogleFonts.poppins(
                             fontSize: 14.sp,
-                            color: _selectedSportName != null
+                            color: _selectedSportKey != null
                                 ? Colors.black87
                                 : Colors.grey[500],
                           ),
@@ -432,10 +408,8 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                   ),
                 ),
                 SizedBox(height: 20.h),
-
-                // End Date Picker
                 Text(
-                  'End Date',
+                  strings.endDate,
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -444,14 +418,14 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                 ),
                 SizedBox(height: 8.h),
                 InkWell(
-                  onTap: _selectEndDate,
+                  onTap: () => _selectEndDate(strings),
                   child: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: 16.w,
                       vertical: 16.h,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: theme.surface,
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(
                         color: Colors.grey.shade300,
@@ -464,7 +438,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                         Text(
                           _selectedEndDate != null
                               ? _formatDate(_selectedEndDate!)
-                              : 'Select End Date',
+                              : strings.selectEndDate,
                           style: GoogleFonts.poppins(
                             fontSize: 14.sp,
                             color: _selectedEndDate != null
@@ -482,21 +456,18 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                   ),
                 ),
                 SizedBox(height: 40.h),
-
-                // Upload Button with Loading State
                 BlocBuilder<OpportunityBloc, OpportunityState>(
                   builder: (context, state) {
                     final isCreating = state is OpportunityCreating;
 
                     return CustomElevatedButton(
-                      text: 'Upload',
+                      text: strings.upload,
                       isLoading: isCreating,
                       enabled: !isCreating,
                       onPressed: () {
-                        // Validation
                         if (_titleController.text.trim().isEmpty) {
                           Fluttertoast.showToast(
-                            msg: 'Please enter a title',
+                            msg: strings.pleaseEnterTitle,
                             backgroundColor: Colors.orange,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
@@ -506,7 +477,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
 
                         if (_descriptionController.text.trim().isEmpty) {
                           Fluttertoast.showToast(
-                            msg: 'Please enter a description',
+                            msg: strings.pleaseEnterDescription,
                             backgroundColor: Colors.orange,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
@@ -516,7 +487,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
 
                         if (_requirementsController.text.trim().isEmpty) {
                           Fluttertoast.showToast(
-                            msg: 'Please enter requirements',
+                            msg: strings.pleaseEnterRequirements,
                             backgroundColor: Colors.orange,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
@@ -526,7 +497,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
 
                         if (_selectedSportId == null) {
                           Fluttertoast.showToast(
-                            msg: 'Please select a sport',
+                            msg: strings.pleaseSelectSport,
                             backgroundColor: Colors.orange,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
@@ -536,7 +507,7 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
 
                         if (_selectedEndDate == null) {
                           Fluttertoast.showToast(
-                            msg: 'Please select an end date',
+                            msg: strings.pleaseSelectEndDate,
                             backgroundColor: Colors.orange,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
@@ -544,7 +515,6 @@ class _AddOpportunityScreenState extends State<AddOpportunityScreen> {
                           return;
                         }
 
-                        // Create Opportunity
                         context.read<OpportunityBloc>().add(
                               CreateOpportunity(
                                 title: _titleController.text.trim(),

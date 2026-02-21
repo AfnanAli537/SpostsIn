@@ -179,17 +179,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: theme.colorScheme.error,
           ),
           SizedBox(height: 16.h),
-          Text(string.profileLoadFailed, style: theme.textTheme.headlineMedium),
+          Text(string.profileLoadFailed, textAlign: TextAlign.center),
           SizedBox(height: 8.h),
           Text(
             message,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+              color: theme.colorScheme.primary,
             ),
           ),
           SizedBox(height: 24.h),
-          ElevatedButton(onPressed: _loadProfile, child: Text(string.done)),
+          ElevatedButton(onPressed: _loadProfile, child: Text(string.retry, style: TextStyle(color: theme.colorScheme.secondary))),
         ],
       ),
     );

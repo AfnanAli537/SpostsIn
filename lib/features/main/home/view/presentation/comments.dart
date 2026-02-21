@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,18 +5,21 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/utils/helper/time_formate.dart';
-import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/model/comment_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
+import 'package:sports_in/features/main/home/view/widgets/comment_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/comment_bloc/comment_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CommentsBottomSheet extends StatelessWidget {
   final String postId;
   final Function(int)? onCommentCountChanged;
+
   const CommentsBottomSheet({
     super.key,
     required this.postId,
@@ -58,9 +59,7 @@ class _CommentsBottomSheetContentState
     extends State<_CommentsBottomSheetContent> {
   final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
   String? _editingCommentId;
-  // int _currentPage = 1;
 
   @override
   void initState() {
@@ -76,18 +75,16 @@ class _CommentsBottomSheetContentState
       final state = context.read<CommentsBloc>().state;
       if (state is CommentsLoaded && state.hasNextPage) {
         if (state is! CommentsLoadingMore) {
-          // _currentPage++;
           context.read<CommentsBloc>().add(
-            FetchComments(
-              postId: widget.postId,
-              // pageNumber: _currentPage,
-            ),
-          );
+                FetchComments(postId: widget.postId),
+              );
         }
       }
     }
   }
-
+  void _navigateToUserProfile(BuildContext context, String userId) {
+    Navigator.pushNamed(context, AppRoutes.userProfile, arguments: userId);
+  }
   @override
   void dispose() {
     _commentController.dispose();
@@ -109,9 +106,11 @@ class _CommentsBottomSheetContentState
   }
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
+    final theme= Theme.of(context).colorScheme;
+
     return BlocListener<CommentsBloc, CommentsState>(
       listenWhen: (previous, current) {
-        // هنسمع لأي تغيير في الـ action
         if (current is CommentsLoaded && current.action != CommentAction.none) {
           return true;
         }
@@ -123,27 +122,27 @@ class _CommentsBottomSheetContentState
           switch (state.action) {
             case CommentAction.added:
               Fluttertoast.showToast(
-                msg: 'Comment added successfully',
+                msg: strings.commentAddedSuccessfully,
                 backgroundColor: Colors.green,
                 toastLength: Toast.LENGTH_LONG,
                 gravity: ToastGravity.TOP,
               );
-              _commentController.clear(); // ✅ امسح الـ input
+              _commentController.clear();
               break;
 
             case CommentAction.edited:
               Fluttertoast.showToast(
-                msg: 'Comment updated successfully',
+                msg: strings.commentUpdatedSuccessfully,
                 backgroundColor: Colors.blue,
                 toastLength: Toast.LENGTH_LONG,
                 gravity: ToastGravity.TOP,
               );
-              _cancelEdit(); // ✅ اخرج من وضع التعديل
+              _cancelEdit();
               break;
 
             case CommentAction.deleted:
               Fluttertoast.showToast(
-                msg: 'Comment deleted successfully',
+                msg: strings.commentDeletedSuccessfully,
                 backgroundColor: Colors.orange,
                 toastLength: Toast.LENGTH_LONG,
                 gravity: ToastGravity.TOP,
@@ -154,7 +153,12 @@ class _CommentsBottomSheetContentState
               break;
           }
         } else if (state is CommentsError) {
-          _showError(context, state.message);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       },
       child: DraggableScrollableSheet(
@@ -165,13 +169,12 @@ class _CommentsBottomSheetContentState
         builder: (context, scrollController) {
           return Container(
             width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            decoration: BoxDecoration(
+              color: theme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
             child: Column(
               children: [
-                // Handle bar
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Container(
@@ -183,27 +186,22 @@ class _CommentsBottomSheetContentState
                     ),
                   ),
                 ),
-
-                // Title with count
                 BlocBuilder<CommentsBloc, CommentsState>(
                   builder: (context, state) {
                     final count = state is CommentsLoaded
                         ? state.totalCount
                         : 0;
                     return Text(
-                      'Comments${count > 0 ? ' ($count)' : ''}',
+                      count > 0 ? '${strings.comments} ($count)' : strings.comments,
                       style: GoogleFonts.poppins(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w800,
-                        color: Colors.black,
+                        color: theme.onSurface,
                       ),
                     );
                   },
                 ),
-
                 const SizedBox(height: 12),
-
-                // Comments List
                 Expanded(
                   child: BlocBuilder<CommentsBloc, CommentsState>(
                     builder: (context, state) {
@@ -216,31 +214,25 @@ class _CommentsBottomSheetContentState
                             : (state as CommentsLoadingMore).currentComments;
 
                         if (comments.isEmpty) {
-                          return const Center(
+                          return Center(
                             child: Text(
-                              'No comments yet',
-                              style: TextStyle(color: Colors.grey),
+                              strings.noCommentsYet,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           );
                         }
 
                         return ListView.builder(
                           controller: _scrollController,
-                          itemCount:
-                              comments.length +
-                              (state is CommentsLoaded && state.hasNextPage
-                                  ? 1
-                                  : 0),
+                          itemCount: comments.length +
+                              (state is CommentsLoaded && state.hasNextPage ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index == comments.length) {
                               return const Padding(
                                 padding: EdgeInsets.all(16.0),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
+                                child: Center(child: CircularProgressIndicator()),
                               );
                             }
-
                             return _buildCommentItem(context, comments[index]);
                           },
                         );
@@ -264,9 +256,9 @@ class _CommentsBottomSheetContentState
                                     ),
                                   );
                                 },
-                                child: const Text(
-                                  'Retry',
-                                  style: TextStyle(color: Colors.black),
+                                child: Text(
+                                  strings.retry,
+                                  style:  TextStyle(color: theme.surface),
                                 ),
                               ),
                             ],
@@ -277,8 +269,6 @@ class _CommentsBottomSheetContentState
                     },
                   ),
                 ),
-
-                // Input
                 _buildCommentInput(context),
               ],
             ),
@@ -292,83 +282,15 @@ class _CommentsBottomSheetContentState
     return ListView.builder(
       itemCount: 5,
       itemBuilder: (context, index) {
-        return _buildCommentShimmer();
+        return buildCommentShimmer(context);
       },
     );
   }
 
-  Widget _buildCommentShimmer() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.withOpacity(0.2), width: 0.5),
-        ),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Avatar shimmer
-            CircleAvatar(radius: 18, backgroundColor: Colors.grey[300]),
-            const SizedBox(width: 12),
-
-            // Content shimmer
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 14,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 60,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildCommentItem(BuildContext context, CommentModel comment) {
+    final strings = S.of(context);
+    final theme= Theme.of(context).colorScheme;
     final bloc = context.read<CommentsBloc>();
     final isCurrentUser = comment.userId == bloc.currentUserId;
 
@@ -382,19 +304,13 @@ class _CommentsBottomSheetContentState
           bottom: BorderSide(color: Colors.grey.withOpacity(0.2), width: 0.5),
         ),
       ),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            AppRoutes.userProfile,
-            arguments: comment.userId,
-          );
-        },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Avatar
-            CircleAvatar(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          
+          GestureDetector(
+            onTap: () => _navigateToUserProfile(context, comment.userId),
+            child: CircleAvatar(
               radius: 18,
               backgroundImage: comment.profilePictureUrl != null
                   ? NetworkImage(comment.profilePictureUrl!)
@@ -404,17 +320,18 @@ class _CommentsBottomSheetContentState
                   ? Text(
                       (comment.fullName.isNotEmpty ? comment.fullName[0] : 'U')
                           .toUpperCase(),
-                      style: const TextStyle(
+                      style:  TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color:theme.onSurface,
                       ),
                     )
                   : null,
             ),
-            const SizedBox(width: 12),
-
-            // Content
-            Expanded(
+          ),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: () => _navigateToUserProfile(context, comment.userId),
+            child: Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -422,68 +339,64 @@ class _CommentsBottomSheetContentState
                     children: [
                       Text(
                         comment.fullName,
-                        style: const TextStyle(
+                        style:  TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: theme.onSurface,
                         ),
                       ),
                       const SizedBox(width: 8),
-
                       Text(
-                        formatTimeAgo(comment.createdAt.toUtc()),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
+                        formatTimeAgo(context,comment.createdAt.toUtc()),
+                        style:  TextStyle(color: theme.onSurface, fontSize: 12),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
                     comment.text,
-
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    style:  TextStyle(fontSize: 14, color:theme.onSurface ),
                   ),
                 ],
               ),
             ),
-
-            // Actions (Edit & Delete) - Only for current user
-            if (isCurrentUser)
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    _startEdit(comment);
-                  } else if (value == 'delete') {
-                    _showDeleteDialog(context, comment);
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, size: 18),
-                        SizedBox(width: 8),
-                        Text('Edit'),
-                      ],
-                    ),
+          ),
+          if (isCurrentUser)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
+              onSelected: (value) {
+                if (value == 'edit') {
+                  _startEdit(comment);
+                } else if (value == 'delete') {
+                  _showDeleteDialog(context, comment);
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit, size: 18),
+                      const SizedBox(width: 8),
+                      Text(strings.edit),
+                    ],
                   ),
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, size: 18, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
+                ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete, size: 18, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(
+                        strings.delete,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-          ],
-        ),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }
@@ -504,15 +417,17 @@ class _CommentsBottomSheetContentState
   }
 
   void _showDeleteDialog(BuildContext context, CommentModel comment) {
+    final strings = S.of(context);
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Comment'),
-        content: const Text('Are you sure you want to delete this comment?'),
+        title: Text(strings.deleteComment),
+        content: Text(strings.deleteCommentConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(strings.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -524,7 +439,10 @@ class _CommentsBottomSheetContentState
               );
               Navigator.pop(dialogContext);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              strings.delete,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -532,6 +450,8 @@ class _CommentsBottomSheetContentState
   }
 
   Widget _buildCommentInput(BuildContext context) {
+    final strings = S.of(context);
+
     return AnimatedPadding(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
@@ -545,7 +465,7 @@ class _CommentsBottomSheetContentState
           decoration: BoxDecoration(
             color: _editingCommentId != null
                 ? Colors.blue.withOpacity(0.05)
-                : Colors.white,
+                : Theme.of(context).colorScheme.surface,
             border: Border(
               top: BorderSide(color: Colors.grey.withOpacity(0.3)),
             ),
@@ -553,7 +473,6 @@ class _CommentsBottomSheetContentState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Edit mode indicator
               if (_editingCommentId != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -561,9 +480,9 @@ class _CommentsBottomSheetContentState
                     children: [
                       const Icon(Icons.edit, size: 16, color: Colors.blue),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Editing comment',
-                        style: TextStyle(
+                      Text(
+                        strings.editingComment,
+                        style: const TextStyle(
                           color: Colors.blue,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -581,8 +500,6 @@ class _CommentsBottomSheetContentState
                     ],
                   ),
                 ),
-
-              // Input row
               Row(
                 children: [
                   CircleAvatar(
@@ -597,8 +514,8 @@ class _CommentsBottomSheetContentState
                       controller: _commentController,
                       decoration: InputDecoration(
                         hintText: _editingCommentId != null
-                            ? 'Edit your comment...'
-                            : 'Add a comment...',
+                            ? strings.editYourComment
+                            : strings.addAComment,
                         border: InputBorder.none,
                       ),
                       maxLines: null,
@@ -617,7 +534,6 @@ class _CommentsBottomSheetContentState
                                 }
 
                                 if (_editingCommentId != null) {
-                                  // Edit
                                   context.read<CommentsBloc>().add(
                                     EditComment(
                                       commentId: _editingCommentId!,
@@ -625,7 +541,6 @@ class _CommentsBottomSheetContentState
                                     ),
                                   );
                                 } else {
-                                  // Add
                                   context.read<CommentsBloc>().add(
                                     AddComment(
                                       postId: widget.postId,
@@ -636,8 +551,10 @@ class _CommentsBottomSheetContentState
                                 }
                               },
                         child: Text(
-                          _editingCommentId != null ? 'Update' : 'Post',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          _editingCommentId != null
+                              ? strings.update
+                              : strings.post,
+                          style:  TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).colorScheme.onSurface),
                         ),
                       );
                     },
@@ -650,4 +567,5 @@ class _CommentsBottomSheetContentState
       ),
     );
   }
+
 }

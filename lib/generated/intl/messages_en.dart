@@ -20,13 +20,34 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(field) => "Please enter your ${field}";
+  static String m0(count) =>
+      "${Intl.plural(count, one: '${count} day ago', other: '${count} days ago')}";
 
-  static String m1(field) => "${field} is too short";
+  static String m1(field) => "Please enter your ${field}";
 
-  static String m2(field) => "Invalid ${field}";
+  static String m2(field) => "${field} is too short";
 
-  static String m3(field) => "Please select a ${field}";
+  static String m3(count) =>
+      "${Intl.plural(count, one: '${count} hour ago', other: '${count} hours ago')}";
+
+  static String m4(field) => "Invalid ${field}";
+
+  static String m5(count) =>
+      "${Intl.plural(count, one: '${count} minute ago', other: '${count} minutes ago')}";
+
+  static String m6(count) =>
+      "${Intl.plural(count, one: '${count} month ago', other: '${count} months ago')}";
+
+  static String m7(count) =>
+      "${Intl.plural(count, one: '${count} second ago', other: '${count} seconds ago')}";
+
+  static String m8(field) => "Please select a ${field}";
+
+  static String m9(count) =>
+      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+
+  static String m10(count) =>
+      "${Intl.plural(count, one: '${count} year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -35,6 +56,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Verify and proceed",
     ),
     "aboutUs": MessageLookupByLibrary.simpleMessage("About us"),
+    "accept": MessageLookupByLibrary.simpleMessage("Accept"),
+    "accepted": MessageLookupByLibrary.simpleMessage("Accepted"),
     "achievement": MessageLookupByLibrary.simpleMessage("Achievement"),
     "achievementDeleted": MessageLookupByLibrary.simpleMessage(
       "Achievement deleted successfully",
@@ -49,6 +72,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Achievement updated successfully",
     ),
     "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
+    "addAComment": MessageLookupByLibrary.simpleMessage("Add a comment..."),
     "addAchievement": MessageLookupByLibrary.simpleMessage(
       "Added New Achievement",
     ),
@@ -58,21 +82,39 @@ class MessageLookup extends MessageLookupByLibrary {
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
+    "all": MessageLookupByLibrary.simpleMessage("All"),
+    "alreadyApplied": MessageLookupByLibrary.simpleMessage("Already Applied"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Already have an account?",
     ),
     "alreadyHaveAnAccount": MessageLookupByLibrary.simpleMessage(
       "Already have an account?",
     ),
+    "analyzeVideo": MessageLookupByLibrary.simpleMessage("Analyze Video"),
+    "analyzeVideoComingSoon": MessageLookupByLibrary.simpleMessage(
+      "Analyze video feature coming soon",
+    ),
     "analyzedPeople": MessageLookupByLibrary.simpleMessage("Analyzed People"),
     "analyzedVideosReports": MessageLookupByLibrary.simpleMessage(
       "Analyzed Videos Reports",
+    ),
+    "applicants": MessageLookupByLibrary.simpleMessage("Applicants"),
+    "applicationSubmittedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Application submitted successfully!",
+    ),
+    "apply": MessageLookupByLibrary.simpleMessage("Apply"),
+    "applyNow": MessageLookupByLibrary.simpleMessage("Apply Now"),
+    "applyOpportunity": MessageLookupByLibrary.simpleMessage(
+      "Apply opportunity",
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
     "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
     "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
     "basketballer": MessageLookupByLibrary.simpleMessage("Basketballer"),
+    "beTheFirstToCreatePost": MessageLookupByLibrary.simpleMessage(
+      "Be the first to create a post!",
+    ),
     "bio": MessageLookupByLibrary.simpleMessage("Description"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
@@ -85,9 +127,21 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "chat": MessageLookupByLibrary.simpleMessage("Chat"),
     "chats": MessageLookupByLibrary.simpleMessage("Chats"),
+    "clear": MessageLookupByLibrary.simpleMessage("Clear"),
+    "clearFilters": MessageLookupByLibrary.simpleMessage("Clear filters"),
     "club": MessageLookupByLibrary.simpleMessage("Club"),
     "clubName": MessageLookupByLibrary.simpleMessage("Club name"),
     "coach": MessageLookupByLibrary.simpleMessage("Coach"),
+    "commentAddedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Comment added successfully",
+    ),
+    "commentDeletedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Comment deleted successfully",
+    ),
+    "commentUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Comment updated successfully",
+    ),
+    "comments": MessageLookupByLibrary.simpleMessage("Comments"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
     "confirmPassword": MessageLookupByLibrary.simpleMessage("Confirm Password"),
     "confirmPasswordIsRequired": MessageLookupByLibrary.simpleMessage(
@@ -116,27 +170,52 @@ class MessageLookup extends MessageLookupByLibrary {
     "continueWith": MessageLookupByLibrary.simpleMessage("or continue with"),
     "courses": MessageLookupByLibrary.simpleMessage("Courses"),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
+    "createAchievement": MessageLookupByLibrary.simpleMessage(
+      "Create Achievement",
+    ),
+    "createAdvertisement": MessageLookupByLibrary.simpleMessage(
+      "Create Advertisement",
+    ),
+    "createOpportunity": MessageLookupByLibrary.simpleMessage(
+      "Create opportunity",
+    ),
+    "createPost": MessageLookupByLibrary.simpleMessage("Create Post"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage(
       "Create your Account",
     ),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage(
       "Currently in a Club",
     ),
+    "daysAgo": m0,
     "date": MessageLookupByLibrary.simpleMessage("Date"),
     "date_label": MessageLookupByLibrary.simpleMessage("Date"),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+    "deleteComment": MessageLookupByLibrary.simpleMessage("Delete Comment"),
+    "deleteCommentConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this comment?",
+    ),
+    "deleteOpportunity": MessageLookupByLibrary.simpleMessage(
+      "Delete Opportunity",
+    ),
+    "deleteOpportunityConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this opportunity? This action cannot be undone.",
+    ),
     "deletePost": MessageLookupByLibrary.simpleMessage("Delete Post"),
     "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this post?",
     ),
+    "deletingOpportunity": MessageLookupByLibrary.simpleMessage(
+      "Deleting opportunity...",
+    ),
+    "description": MessageLookupByLibrary.simpleMessage("Description"),
+    "details": MessageLookupByLibrary.simpleMessage("Details"),
     "deleteachievement": MessageLookupByLibrary.simpleMessage(
       "Delete Achievement",
     ),
     "deleteachievementconfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this achievement?",
     ),
-    "description": MessageLookupByLibrary.simpleMessage("Description"),
     "description_hint": MessageLookupByLibrary.simpleMessage(
       "Explain your achievement...",
     ),
@@ -156,6 +235,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "edit_achievement": MessageLookupByLibrary.simpleMessage(
       "Edit Achievement",
     ),
+    "editYourComment": MessageLookupByLibrary.simpleMessage(
+      "Edit your comment...",
+    ),
+    "editingComment": MessageLookupByLibrary.simpleMessage("Editing comment"),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -166,6 +249,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emptyPassword": MessageLookupByLibrary.simpleMessage(
       "Password is required",
     ),
+    "endDate": MessageLookupByLibrary.simpleMessage("End Date"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "enterAge": MessageLookupByLibrary.simpleMessage("Please enter your age"),
     "enterDate": MessageLookupByLibrary.simpleMessage("Please select a date"),
@@ -181,7 +265,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterExperience": MessageLookupByLibrary.simpleMessage(
       "Please enter your Experience years.",
     ),
-    "enterField": m0,
+    "enterField": m1,
     "enterHeight": MessageLookupByLibrary.simpleMessage(
       "Please enter your height",
     ),
@@ -194,9 +278,29 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterWeight": MessageLookupByLibrary.simpleMessage(
       "Please enter your weight",
     ),
+    "enterYourDescription": MessageLookupByLibrary.simpleMessage(
+      "Enter Your Description...",
+    ),
+    "enterYourRequirements": MessageLookupByLibrary.simpleMessage(
+      "Enter Requirements (one per line)...",
+    ),
+    "enterYourTitle": MessageLookupByLibrary.simpleMessage("Enter Your Title."),
+    "error": MessageLookupByLibrary.simpleMessage("Error"),
+    "errorLoadingApplicants": MessageLookupByLibrary.simpleMessage(
+      "Error loading applicants",
+    ),
+    "failedToLoadImage": MessageLookupByLibrary.simpleMessage(
+      "Failed to load image",
+    ),
+    "failedToLoadVideo": MessageLookupByLibrary.simpleMessage(
+      "Failed to load video",
+    ),
+    "failedToTranslate": MessageLookupByLibrary.simpleMessage(
+      "Failed to translate",
+    ),
     "female": MessageLookupByLibrary.simpleMessage("Female"),
     "field": MessageLookupByLibrary.simpleMessage("field"),
-    "fieldTooShort": m1,
+    "fieldTooShort": m2,
     "firstName": MessageLookupByLibrary.simpleMessage("First name"),
     "follow": MessageLookupByLibrary.simpleMessage("Follow"),
     "followError": MessageLookupByLibrary.simpleMessage("Failed to follow"),
@@ -207,6 +311,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "following": MessageLookupByLibrary.simpleMessage("Following"),
     "football": MessageLookupByLibrary.simpleMessage("Football"),
     "footballer": MessageLookupByLibrary.simpleMessage("Footballer"),
+    "forYou": MessageLookupByLibrary.simpleMessage("forYou"),
     "forbidden": MessageLookupByLibrary.simpleMessage("Access forbidden"),
     "forgetPassword": MessageLookupByLibrary.simpleMessage("Forget Password"),
     "forgetYourPassword": MessageLookupByLibrary.simpleMessage(
@@ -219,12 +324,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
     "goalkeeper": MessageLookupByLibrary.simpleMessage("Goalkeeper"),
+    "guest": MessageLookupByLibrary.simpleMessage("Guest"),
     "gymnast": MessageLookupByLibrary.simpleMessage("Gymnast"),
     "gymnastics": MessageLookupByLibrary.simpleMessage("Gymnastics"),
     "handball": MessageLookupByLibrary.simpleMessage("Handball"),
     "handballPlayer": MessageLookupByLibrary.simpleMessage("Handball Player"),
+    "happyToSeeYouToday": MessageLookupByLibrary.simpleMessage(
+      "Happy to see you today",
+    ),
     "height": MessageLookupByLibrary.simpleMessage("Height (cm)"),
+    "hi": MessageLookupByLibrary.simpleMessage("Hi"),
     "home": MessageLookupByLibrary.simpleMessage("Home"),
+    "hoursAgo": m3,
     "industary": MessageLookupByLibrary.simpleMessage("Industry"),
     "informationBody": MessageLookupByLibrary.simpleMessage(
       "When you use SportsIn, we may collect the following types of information:\n\n• Personal data: your name, email, profile photo, sports skills, and interests.\n• Activity data: posts, messages, likes, and other interactions.\n• Device data: device type, operating system, and IP address.",
@@ -251,7 +362,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidExperience": MessageLookupByLibrary.simpleMessage(
       "Please enter your Experience years.",
     ),
-    "invalidField": m2,
+    "invalidField": m4,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid height (100–250 cm)",
     ),
@@ -259,6 +370,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidWeight": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid weight (30–200 kg)",
     ),
+    "justNow": MessageLookupByLibrary.simpleMessage("Just now"),
     "knowingYourGoal": MessageLookupByLibrary.simpleMessage(
       "Knowing your goal helps us tailor your experience",
     ),
@@ -266,10 +378,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "lastUpdated": MessageLookupByLibrary.simpleMessage(
       "Last updated: 11 October 2025",
     ),
+    "latestPosts": MessageLookupByLibrary.simpleMessage("Latest posts"),
     "leftBack": MessageLookupByLibrary.simpleMessage("Left Back"),
     "leftWing": MessageLookupByLibrary.simpleMessage("Left Wing"),
     "libero": MessageLookupByLibrary.simpleMessage("Libero"),
+    "likes": MessageLookupByLibrary.simpleMessage("Likes"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading"),
+    "loadingUserData": MessageLookupByLibrary.simpleMessage(
+      "Loading user data...",
+    ),
     "location": MessageLookupByLibrary.simpleMessage("Location"),
     "loginSuccess": MessageLookupByLibrary.simpleMessage(
       "Welcome back,let’s get started!",
@@ -284,12 +401,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 lowercase letter",
     ),
+    "makeVideoAnalysis": MessageLookupByLibrary.simpleMessage(
+      "Make Video Analysis",
+    ),
     "male": MessageLookupByLibrary.simpleMessage("Male"),
+    "maximumFileSize": MessageLookupByLibrary.simpleMessage(
+      "Maximum file size is 200 MB",
+    ),
     "middleBlocker": MessageLookupByLibrary.simpleMessage("Middle Blocker"),
     "midfielder": MessageLookupByLibrary.simpleMessage("Midfielder"),
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "At least 8 characters long",
     ),
+    "minutesAgo": m5,
+    "monthsAgo": m6,
     "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
     "myPosts": MessageLookupByLibrary.simpleMessage("My Posts"),
@@ -298,15 +423,36 @@ class MessageLookup extends MessageLookupByLibrary {
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
+    "noAcceptedApplicants": MessageLookupByLibrary.simpleMessage(
+      "No accepted applicants",
+    ),
+    "noApplicantsFound": MessageLookupByLibrary.simpleMessage(
+      "No applicants found",
+    ),
+    "noCommentsYet": MessageLookupByLibrary.simpleMessage("No comments yet"),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No Internet Connection",
     ),
+    "noLikesYet": MessageLookupByLibrary.simpleMessage("No likes yet"),
     "noOpportunities": MessageLookupByLibrary.simpleMessage("No Opportunities"),
+    "noOpportunitiesAvailable": MessageLookupByLibrary.simpleMessage(
+      "No opportunities available",
+    ),
+    "noOpportunitiesFound": MessageLookupByLibrary.simpleMessage(
+      "No Opportunities found",
+    ),
     "noPosts": MessageLookupByLibrary.simpleMessage("No Posts"),
     "noProfileData": MessageLookupByLibrary.simpleMessage(
       "No profile data available.",
     ),
+    "noPostsYet": MessageLookupByLibrary.simpleMessage("No posts yet"),
+    "noRejectedApplicants": MessageLookupByLibrary.simpleMessage(
+      "No rejected applicants",
+    ),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("No results found"),
+    "noUserDataFound": MessageLookupByLibrary.simpleMessage(
+      "No user data found",
+    ),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
@@ -346,7 +492,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "onboarding5Title": MessageLookupByLibrary.simpleMessage(
       "Connect & Communicate",
     ),
+    "oopsSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
+      "Oops! Something went wrong",
+    ),
     "opportunities": MessageLookupByLibrary.simpleMessage("Opportunities"),
+    "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Opportunity created successfully!",
+    ),
     "oppositeHitter": MessageLookupByLibrary.simpleMessage("Opposite Hitter"),
     "other": MessageLookupByLibrary.simpleMessage("Other"),
     "otpHint": MessageLookupByLibrary.simpleMessage(
@@ -393,16 +545,37 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
+    "pickImage": MessageLookupByLibrary.simpleMessage("Pick Image"),
+    "pickVideo": MessageLookupByLibrary.simpleMessage("Pick Video"),
     "pivot": MessageLookupByLibrary.simpleMessage("Pivot"),
     "player": MessageLookupByLibrary.simpleMessage("Player"),
+    "pleaseEnterDescription": MessageLookupByLibrary.simpleMessage(
+      "Please enter a description",
+    ),
+    "pleaseEnterRequirements": MessageLookupByLibrary.simpleMessage(
+      "Please enter requirements",
+    ),
+    "pleaseEnterTitle": MessageLookupByLibrary.simpleMessage(
+      "Please enter a title",
+    ),
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "Please enter a strong password",
     ),
     "please_select_date": MessageLookupByLibrary.simpleMessage(
       "Please select a date",
     ),
+    "pleaseFillAllFields": MessageLookupByLibrary.simpleMessage(
+      "Please fill all fields",
+    ),
+    "pleaseSelectEndDate": MessageLookupByLibrary.simpleMessage(
+      "Please select an end date",
+    ),
+    "pleaseSelectSport": MessageLookupByLibrary.simpleMessage(
+      "Please select a sport",
+    ),
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
+    "post": MessageLookupByLibrary.simpleMessage("Post"),
     "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to delete post. Please try again.",
     ),
@@ -421,6 +594,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postUpdated": MessageLookupByLibrary.simpleMessage(
       "Post updated successfully",
+    ),
+    "postUploadedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Post uploaded successfully!",
     ),
     "posts": MessageLookupByLibrary.simpleMessage("Posts"),
     "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
@@ -441,9 +617,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "registrationSuccessful": MessageLookupByLibrary.simpleMessage(
       "Registration successful!",
     ),
+    "reject": MessageLookupByLibrary.simpleMessage("Reject"),
+    "rejected": MessageLookupByLibrary.simpleMessage("Rejected"),
     "requestCancelled": MessageLookupByLibrary.simpleMessage(
       "Request was cancelled.",
     ),
+    "requirements": MessageLookupByLibrary.simpleMessage("Requirements"),
     "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
     "resetPasswordFailure": MessageLookupByLibrary.simpleMessage(
       "Failed to reset password. Please try again",
@@ -464,12 +643,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
+    "secondsAgo": m7,
+    "seeOriginal": MessageLookupByLibrary.simpleMessage("See Original"),
     "select": MessageLookupByLibrary.simpleMessage("Select"),
     "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
       "Please select at least one sport",
     ),
-    "selectField": m3,
+    "selectEndDate": MessageLookupByLibrary.simpleMessage("Select End Date"),
+    "selectField": m8,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
+    "selectSport": MessageLookupByLibrary.simpleMessage("Select Sport"),
     "selectSports": MessageLookupByLibrary.simpleMessage("Select a Sport"),
     "select_date_hint": MessageLookupByLibrary.simpleMessage("Select Date"),
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
@@ -491,9 +674,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
     "showAll": MessageLookupByLibrary.simpleMessage("Show all"),
+    "showApplicants": MessageLookupByLibrary.simpleMessage("Show Applicants"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
     "signingIn": MessageLookupByLibrary.simpleMessage("Signing in..."),
+    "since": MessageLookupByLibrary.simpleMessage("Since"),
     "skills": MessageLookupByLibrary.simpleMessage("Skills"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
     "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
@@ -513,6 +698,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
     ),
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
+    "taekwondo": MessageLookupByLibrary.simpleMessage("Taekwondo"),
+    "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
+      "Tap to select from gallery",
+    ),
     "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
     "theme": MessageLookupByLibrary.simpleMessage("Light"),
@@ -524,6 +713,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
     ),
+    "translate": MessageLookupByLibrary.simpleMessage("Translate"),
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage(
       "Try a different search",
     ),
@@ -545,6 +735,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
       "Upload Achievement Photo",
     ),
+    "upload": MessageLookupByLibrary.simpleMessage("Upload"),
+    "uploadAnImage": MessageLookupByLibrary.simpleMessage("Upload an Image"),
+    "uploadContent": MessageLookupByLibrary.simpleMessage("Upload Content"),
+    "uploadImageOrVideo": MessageLookupByLibrary.simpleMessage(
+      "Upload an Image or video",
+    ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
     ),
@@ -562,11 +758,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "volleyball": MessageLookupByLibrary.simpleMessage("Volleyball"),
     "volleyballer": MessageLookupByLibrary.simpleMessage("Volleyballer"),
+    "weeksAgo": m9,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "whatIsYourType": MessageLookupByLibrary.simpleMessage(
       "What Is Your Type?",
     ),
+    "yearsAgo": m10,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",
     ),

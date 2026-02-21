@@ -15,18 +15,16 @@ part 'posts_state.dart';
 @injectable
 class PostsBloc extends Bloc<PostsEvent, PostsState> {
   final PostsRepositoryImpl postRepo;
-  // final int pageSize;
   final prefs = getIt<SharedPref>();
 
-  PostsBloc({required this.postRepo})
-    : super(PostsInitial()) {
+  PostsBloc({required this.postRepo}) : super(PostsInitial()) {
     on<FetchPosts>(_onFetchPosts);
-    on<FetchUserPosts>(_onFetchUserPosts); 
+    on<FetchUserPosts>(_onFetchUserPosts);
     on<LikePost>(_onLikePost);
     on<UploadPost>(_onUploadPost);
     on<LoadMorePosts>(_onLoadMorePosts);
-    on<UpdatePost>(_onUpdatePost); 
-    on<DeletePost>(_onDeletePost); 
+    on<UpdatePost>(_onUpdatePost);
+    on<DeletePost>(_onDeletePost);
   }
 
   final List<PostModel> _posts = [];
@@ -35,77 +33,62 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   bool _isFetching = false;
   final int pageSize = 10;
 
-Future<void> _onFetchPosts(
-  FetchPosts event,
-  Emitter<PostsState> emit,
-) async {
-  try {
-    emit(PostsLoading());
+  Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
+    try {
+      emit(PostsLoading());
 
-    _posts.clear();
-    _currentPage = 1;
-    _hasNextPage = true;
+      _posts.clear();
+      _currentPage = 1;
+      _hasNextPage = true;
 
-    final fetchedPosts = await postRepo.getAllPosts(
-      pageNumber: 1,
-      pageSize: pageSize,
-    );
+      final fetchedPosts = await postRepo.getAllPosts(
+        pageNumber: 1,
+        pageSize: pageSize,
+      );
 
-    _posts.addAll(fetchedPosts);
-    _hasNextPage = fetchedPosts.length == pageSize;
+      _posts.addAll(fetchedPosts);
+      _hasNextPage = fetchedPosts.length == pageSize;
 
-    emit(
-      PostsLoaded(
-        posts: List.from(_posts),
-        hasNextPage: _hasNextPage,
-      ),
-    );
-  } catch (e) {
+      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
+    } catch (e) {
     emit(PostsError('Failed to fetch posts: ${e is ApiException ? e.message : e.toString()}'));
+    }
   }
-}
 
-Future<void> _onLoadMorePosts(
-  LoadMorePosts event,
-  Emitter<PostsState> emit,
-) async {
-  if (_isFetching || !_hasNextPage) return;
+  Future<void> _onLoadMorePosts(
+    LoadMorePosts event,
+    Emitter<PostsState> emit,
+  ) async {
+    if (_isFetching || !_hasNextPage) return;
 
-  _isFetching = true;
+    _isFetching = true;
 
-  final currentState = state;
-  if (currentState is! PostsLoaded) return;
+    final currentState = state;
+    if (currentState is! PostsLoaded) return;
 
-  try {
-    emit(PostsLoadingMore(currentState.posts));
+    try {
+      emit(PostsLoadingMore(currentState.posts));
 
-    final nextPage = _currentPage + 1;
+      final nextPage = _currentPage + 1;
 
-    final fetchedPosts = await postRepo.getAllPosts(
-      pageNumber: nextPage,
-      pageSize: pageSize,
-    );
+      final fetchedPosts = await postRepo.getAllPosts(
+        pageNumber: nextPage,
+        pageSize: pageSize,
+      );
 
-    _posts.addAll(fetchedPosts);
+      _posts.addAll(fetchedPosts);
 
-    _currentPage = nextPage;
-    _hasNextPage = fetchedPosts.length == pageSize;
+      _currentPage = nextPage;
+      _hasNextPage = fetchedPosts.length == pageSize;
 
-    emit(
-      PostsLoaded(
-        posts: List.from(_posts),
-        hasNextPage: _hasNextPage,
-      ),
-    );
-  } catch (e) {
+      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
+    } catch (e) {
     emit(PostsError('Failed to load more posts: ${e is ApiException ? e.message : e.toString()}'));
-  } finally {
-    _isFetching = false;
+    } finally {
+      _isFetching = false;
+    }
   }
-}
 
-
-  // ✅ New handler for user-specific posts
   Future<void> _onFetchUserPosts(
     FetchUserPosts event,
     Emitter<PostsState> emit,
@@ -121,10 +104,12 @@ Future<void> _onLoadMorePosts(
         pageSize: event.pageSize,
       );
 
-      emit(UserPostsLoaded(
-        posts: fetchedPosts,
-        hasNextPage: fetchedPosts.length >= event.pageSize,
-      ));
+      emit(
+        UserPostsLoaded(
+          posts: fetchedPosts,
+          hasNextPage: fetchedPosts.length >= event.pageSize,
+        ),
+      );
     } catch (e) {
       emit(PostsError('Failed to fetch user posts: ${e is ApiException ? e.message : e.toString()}'));
     }
@@ -160,10 +145,10 @@ Future<void> _onLoadMorePosts(
         PostsLoaded(posts: updatedPosts, hasNextPage: currentState.hasNextPage),
       );
       log("==========================like done/removed");
-      log("🔥 Like API called");
+      log(" Like API called");
       await postRepo.likePost(postId: event.postId);
     } catch (e) {
-      log('❌ Like failed: $e');
+      log(' Like failed: $e');
       final revertedPosts = currentState.posts.map((post) {
         if (post.id == event.postId) {
           final originalIsLiked = !post.isLikedByCurrentUser;
@@ -295,11 +280,15 @@ Future<void> _onLoadMorePosts(
 
       emit(PostUpdateSuccess());
       await Future.delayed(const Duration(milliseconds: 100));
-      
-      // Refresh posts list
+
       final currentState = state;
       if (currentState is PostsLoaded) {
-        emit(PostsLoaded(posts: currentState.posts, hasNextPage: currentState.hasNextPage));
+        emit(
+          PostsLoaded(
+            posts: currentState.posts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
       }
     } catch (e) {
       emit(PostsError('Failed to update post: ${e is ApiException ? e.message : e.toString()}'));
@@ -308,50 +297,57 @@ Future<void> _onLoadMorePosts(
 
   Future<void> _onDeletePost(DeletePost event, Emitter<PostsState> emit) async {
     final currentState = state;
-    
+
     try {
       await postRepo.deletePost(postId: event.postId);
 
-      // Remove post from local list
       if (currentState is PostsLoaded) {
         final updatedPosts = currentState.posts
             .where((post) => post.id != event.postId)
             .toList();
-        
-        emit(PostsLoaded(
-          posts: updatedPosts,
-          hasNextPage: currentState.hasNextPage,
-        ));
+
+        emit(
+          PostsLoaded(
+            posts: updatedPosts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
       } else if (currentState is UserPostsLoaded) {
         final updatedPosts = currentState.posts
             .where((post) => post.id != event.postId)
             .toList();
-        
-        emit(UserPostsLoaded(
-          posts: updatedPosts,
-          hasNextPage: currentState.hasNextPage,
-        ));
+
+        emit(
+          UserPostsLoaded(
+            posts: updatedPosts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
       }
 
       emit(PostDeleteSuccess());
       await Future.delayed(const Duration(milliseconds: 100));
-      
-      // Re-emit current state
+
       if (currentState is PostsLoaded) {
-        emit(PostsLoaded(
-          posts: currentState.posts.where((p) => p.id != event.postId).toList(),
-          hasNextPage: currentState.hasNextPage,
-        ));
+        emit(
+          PostsLoaded(
+            posts: currentState.posts
+                .where((p) => p.id != event.postId)
+                .toList(),
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
       }
     } catch (e) {
       emit(PostsError('Failed to delete post: ${e is ApiException ? e.message : e.toString()}'));
-      
-      // Re-emit previous state on error
+
       if (currentState is PostsLoaded) {
-        emit(PostsLoaded(
-          posts: currentState.posts,
-          hasNextPage: currentState.hasNextPage,
-        ));
+        emit(
+          PostsLoaded(
+            posts: currentState.posts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
       }
     }
   }
