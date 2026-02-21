@@ -21,30 +21,33 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ar';
 
   static String m0(count) =>
-      "${Intl.plural(count, one: 'منذ يوم', two: 'منذ يومين', few: 'منذ # أيام', many: 'منذ # يومًا', other: 'منذ # يوم')}";
+      "${Intl.plural(count, one: 'منذ يوم', two: 'منذ يومين', few: 'منذ ${count} أيام', many: 'منذ ${count} يومًا', other: 'منذ ${count} يوم')}";
 
   static String m1(field) => "يرجى إدخال ${field}";
 
   static String m2(field) => "يجب أن يحتوي ${field} على حرفين على الأقل";
 
   static String m3(count) =>
-      "${Intl.plural(count, one: 'منذ ساعة', two: 'منذ ساعتين', few: 'منذ # ساعات', many: 'منذ # ساعة', other: 'منذ # ساعة')}";
+      "${Intl.plural(count, one: 'منذ ساعة', two: 'منذ ساعتين', few: 'منذ ${count} ساعات', many: 'منذ ${count} ساعة', other: 'منذ ${count} ساعة')}";
 
   static String m4(field) => "${field} غير صالح";
 
   static String m5(count) =>
-      "${Intl.plural(count, one: 'منذ دقيقة', two: 'منذ دقيقتين', few: 'منذ # دقائق', many: 'منذ # دقيقة', other: 'منذ # دقيقة')}";
+      "${Intl.plural(count, one: 'منذ دقيقة', two: 'منذ دقيقتين', few: 'منذ ${count} دقائق', many: 'منذ ${count} دقيقة', other: 'منذ ${count} دقيقة')}";
 
   static String m6(count) =>
-      "${Intl.plural(count, one: 'منذ شهر', two: 'منذ شهرين', few: 'منذ # أشهر', many: 'منذ # شهرًا', other: 'منذ # شهر')}";
+      "${Intl.plural(count, one: 'منذ شهر', two: 'منذ شهرين', few: 'منذ ${count} أشهر', many: 'منذ ${count} شهرًا', other: 'منذ ${count} شهر')}";
 
   static String m7(count) =>
-      "${Intl.plural(count, one: 'منذ ثانية', two: 'منذ ثانيتين', few: 'منذ # ثوانٍ', many: 'منذ # ثانية', other: 'منذ # ثانية')}";
+      "${Intl.plural(count, one: 'منذ ثانية', two: 'منذ ثانيتين', few: 'منذ ${count} ثوانٍ', many: 'منذ ${count} ثانية', other: 'منذ ${count} ثانية')}";
 
   static String m8(field) => "يرجى اختيار ${field}";
 
   static String m9(count) =>
-      "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ # سنوات', many: 'منذ # سنة', other: 'منذ # سنة')}";
+      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+
+  static String m10(count) =>
+      "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ ${count} سنوات', many: 'منذ ${count} سنة', other: 'منذ ${count} سنة')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -235,7 +238,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "أدخل وصفك...",
     ),
     "enterYourRequirements": MessageLookupByLibrary.simpleMessage(
-      "أدخل المتطلبات (واحد في كل سطر)...",
+      "أدخل المتطلبات...",
     ),
     "enterYourTitle": MessageLookupByLibrary.simpleMessage("أدخل عنوانك."),
     "error": MessageLookupByLibrary.simpleMessage("خطأ"),
@@ -633,6 +636,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
     ),
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
+    "taekwondo": MessageLookupByLibrary.simpleMessage("التايكوندو"),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "اضغط للاختيار من المعرض",
     ),
@@ -684,11 +688,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "verify": MessageLookupByLibrary.simpleMessage("تحقق"),
     "volleyball": MessageLookupByLibrary.simpleMessage("كرة الطائرة"),
     "volleyballer": MessageLookupByLibrary.simpleMessage("لاعب كرة الطائرة"),
-    "weeksAgo": MessageLookupByLibrary.simpleMessage("أ"),
+    "weeksAgo": m9,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
     "whatIsYourType": MessageLookupByLibrary.simpleMessage("ما هو نوعك؟"),
-    "yearsAgo": m9,
+    "yearsAgo": m10,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),
     "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(

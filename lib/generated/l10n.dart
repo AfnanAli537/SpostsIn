@@ -2584,78 +2584,6 @@ class S {
     return Intl.message('Just now', name: 'justNow', desc: '', args: []);
   }
 
-  /// `{count, plural, =1 {# year ago} other {# years ago}}`
-  String yearsAgo(int count) {
-    return Intl.plural(
-      count,
-      one: '# year ago',
-      other: '# years ago',
-      name: 'yearsAgo',
-      desc: '',
-      args: [count],
-    );
-  }
-
-  /// `{count, plural, =1 {# month ago} other {# months ago}}`
-  String monthsAgo(int count) {
-    return Intl.plural(
-      count,
-      one: '# month ago',
-      other: '# months ago',
-      name: 'monthsAgo',
-      desc: '',
-      args: [count],
-    );
-  }
-
-  /// `{count, plural, =1 {# day ago} other {# days ago}}`
-  String daysAgo(int count) {
-    return Intl.plural(
-      count,
-      one: '# day ago',
-      other: '# days ago',
-      name: 'daysAgo',
-      desc: '',
-      args: [count],
-    );
-  }
-
-  /// `{count, plural, =1 {# hour ago} other {# hours ago}}`
-  String hoursAgo(int count) {
-    return Intl.plural(
-      count,
-      one: '# hour ago',
-      other: '# hours ago',
-      name: 'hoursAgo',
-      desc: '',
-      args: [count],
-    );
-  }
-
-  /// `{count, plural, =1 {# minute ago} other {# minutes ago}}`
-  String minutesAgo(int count) {
-    return Intl.plural(
-      count,
-      one: '# minute ago',
-      other: '# minutes ago',
-      name: 'minutesAgo',
-      desc: '',
-      args: [count],
-    );
-  }
-
-  /// `{count, plural, =1 {# second ago} other {# seconds ago}}`
-  String secondsAgo(int count) {
-    return Intl.plural(
-      count,
-      one: '# second ago',
-      other: '# seconds ago',
-      name: 'secondsAgo',
-      desc: '',
-      args: [count],
-    );
-  }
-
   /// `Select Sport`
   String get selectSport {
     return Intl.message(
@@ -2714,11 +2642,6 @@ class S {
   /// `Since`
   String get since {
     return Intl.message('Since', name: 'since', desc: '', args: []);
-  }
-
-  /// `w ago`
-  String get weeksAgo {
-    return Intl.message('w ago', name: 'weeksAgo', desc: '', args: []);
   }
 
   /// `Apply opportunity`
@@ -2983,6 +2906,95 @@ class S {
       name: 'noOpportunitiesAvailable',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Taekwondo`
+  String get taekwondo {
+    return Intl.message('Taekwondo', name: 'taekwondo', desc: '', args: []);
+  }
+
+  /// `{count, plural, =1 {{count} year ago} other {{count} years ago}}`
+  String yearsAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count year ago',
+      other: '$count years ago',
+      name: 'yearsAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {{count} month ago} other {{count} months ago}}`
+  String monthsAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count month ago',
+      other: '$count months ago',
+      name: 'monthsAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {{count} week ago} other {{count} weeks ago}}`
+  String weeksAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count week ago',
+      other: '$count weeks ago',
+      name: 'weeksAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {{count} day ago} other {{count} days ago}}`
+  String daysAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count day ago',
+      other: '$count days ago',
+      name: 'daysAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {{count} hour ago} other {{count} hours ago}}`
+  String hoursAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count hour ago',
+      other: '$count hours ago',
+      name: 'hoursAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {{count} minute ago} other {{count} minutes ago}}`
+  String minutesAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count minute ago',
+      other: '$count minutes ago',
+      name: 'minutesAgo',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count, plural, =1 {{count} second ago} other {{count} seconds ago}}`
+  String secondsAgo(int count) {
+    return Intl.plural(
+      count,
+      one: '$count second ago',
+      other: '$count seconds ago',
+      name: 'secondsAgo',
+      desc: '',
+      args: [count],
     );
   }
 }

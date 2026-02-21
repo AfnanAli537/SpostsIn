@@ -17,7 +17,7 @@ class PostsTab extends StatelessWidget {
     
     return BlocBuilder<PostsBloc, PostsState>(
       builder: (context, state) {
-        if (state is PostsLoading) {
+        if (state is PostsLoading|| state is PostsInitial) {
           return SliverList(
             delegate: SliverChildListDelegate([
               _buildHeader(strings),

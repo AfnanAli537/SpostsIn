@@ -341,54 +341,6 @@
   "translate": "Translate",
   "forYou": "forYou",
   "justNow": "Just now",
-  "yearsAgo": "{count, plural, =1 {# year ago} other {# years ago}}",
-  "@yearsAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "monthsAgo": "{count, plural, =1 {# month ago} other {# months ago}}",
-  "@monthsAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "daysAgo": "{count, plural, =1 {# day ago} other {# days ago}}",
-  "@daysAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hoursAgo": "{count, plural, =1 {# hour ago} other {# hours ago}}",
-  "@hoursAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "minutesAgo": "{count, plural, =1 {# minute ago} other {# minutes ago}}",
-  "@minutesAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "secondsAgo": "{count, plural, =1 {# second ago} other {# seconds ago}}",
-  "@secondsAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "selectSport": "Select Sport",
   "clear": "Clear",
   "opportunityCreatedSuccessfully": "Opportunity created successfully!",
@@ -396,7 +348,6 @@
   "noOpportunitiesFound": "No Opportunities found",
   "clearFilters": "Clear filters",
   "since": "Since",
-  "weeksAgo": "w ago",
   "applyOpportunity": "Apply opportunity",
   "deleteOpportunity": "Delete Opportunity",
   "deleteOpportunityConfirmation": "Are you sure you want to delete this opportunity? This action cannot be undone.",
@@ -428,5 +379,29 @@
   "pleaseSelectSport": "Please select a sport",
   "pleaseSelectEndDate": "Please select an end date",
    "details": "Details",
-  "noOpportunitiesAvailable": "No opportunities available"
+  "noOpportunitiesAvailable": "No opportunities available",
+"taekwondo": "Taekwondo",
+
+  "yearsAgo": "{count, plural, =1 {{count} year ago} other {{count} years ago}}",
+  "@yearsAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "monthsAgo": "{count, plural, =1 {{count} month ago} other {{count} months ago}}",
+  "@monthsAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "weeksAgo": "{count, plural, =1 {{count} week ago} other {{count} weeks ago}}",
+  "@weeksAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "daysAgo": "{count, plural, =1 {{count} day ago} other {{count} days ago}}",
+  "@daysAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "hoursAgo": "{count, plural, =1 {{count} hour ago} other {{count} hours ago}}",
+  "@hoursAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "minutesAgo": "{count, plural, =1 {{count} minute ago} other {{count} minutes ago}}",
+  "@minutesAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "secondsAgo": "{count, plural, =1 {{count} second ago} other {{count} seconds ago}}",
+  "@secondsAgo": { "placeholders": { "count": { "type": "int" } } }
+
+
 }

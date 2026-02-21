@@ -21,30 +21,33 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   static String m0(count) =>
-      "${Intl.plural(count, one: '# day ago', other: '# days ago')}";
+      "${Intl.plural(count, one: '${count} day ago', other: '${count} days ago')}";
 
   static String m1(field) => "Please enter your ${field}";
 
   static String m2(field) => "${field} is too short";
 
   static String m3(count) =>
-      "${Intl.plural(count, one: '# hour ago', other: '# hours ago')}";
+      "${Intl.plural(count, one: '${count} hour ago', other: '${count} hours ago')}";
 
   static String m4(field) => "Invalid ${field}";
 
   static String m5(count) =>
-      "${Intl.plural(count, one: '# minute ago', other: '# minutes ago')}";
+      "${Intl.plural(count, one: '${count} minute ago', other: '${count} minutes ago')}";
 
   static String m6(count) =>
-      "${Intl.plural(count, one: '# month ago', other: '# months ago')}";
+      "${Intl.plural(count, one: '${count} month ago', other: '${count} months ago')}";
 
   static String m7(count) =>
-      "${Intl.plural(count, one: '# second ago', other: '# seconds ago')}";
+      "${Intl.plural(count, one: '${count} second ago', other: '${count} seconds ago')}";
 
   static String m8(field) => "Please select a ${field}";
 
   static String m9(count) =>
-      "${Intl.plural(count, one: '# year ago', other: '# years ago')}";
+      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+
+  static String m10(count) =>
+      "${Intl.plural(count, one: '${count} year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -643,6 +646,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
     ),
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
+    "taekwondo": MessageLookupByLibrary.simpleMessage("Taekwondo"),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Tap to select from gallery",
     ),
@@ -692,13 +696,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "verify": MessageLookupByLibrary.simpleMessage("Verify"),
     "volleyball": MessageLookupByLibrary.simpleMessage("Volleyball"),
     "volleyballer": MessageLookupByLibrary.simpleMessage("Volleyballer"),
-    "weeksAgo": MessageLookupByLibrary.simpleMessage("w ago"),
+    "weeksAgo": m9,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "whatIsYourType": MessageLookupByLibrary.simpleMessage(
       "What Is Your Type?",
     ),
-    "yearsAgo": m9,
+    "yearsAgo": m10,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",
     ),

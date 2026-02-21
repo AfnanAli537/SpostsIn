@@ -319,54 +319,6 @@
   "translate": "ترجمة",
   "forYou": "من اجلك",
   "justNow": "الآن",
-  "yearsAgo": "{count, plural, =1 {منذ سنة} =2 {منذ سنتين} few {منذ # سنوات} many {منذ # سنة} other {منذ # سنة}}",
-  "@yearsAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "monthsAgo": "{count, plural, =1 {منذ شهر} =2 {منذ شهرين} few {منذ # أشهر} many {منذ # شهرًا} other {منذ # شهر}}",
-  "@monthsAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "daysAgo": "{count, plural, =1 {منذ يوم} =2 {منذ يومين} few {منذ # أيام} many {منذ # يومًا} other {منذ # يوم}}",
-  "@daysAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "hoursAgo": "{count, plural, =1 {منذ ساعة} =2 {منذ ساعتين} few {منذ # ساعات} many {منذ # ساعة} other {منذ # ساعة}}",
-  "@hoursAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "minutesAgo": "{count, plural, =1 {منذ دقيقة} =2 {منذ دقيقتين} few {منذ # دقائق} many {منذ # دقيقة} other {منذ # دقيقة}}",
-  "@minutesAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "secondsAgo": "{count, plural, =1 {منذ ثانية} =2 {منذ ثانيتين} few {منذ # ثوانٍ} many {منذ # ثانية} other {منذ # ثانية}}",
-  "@secondsAgo": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "selectSport": "اختر الرياضة",
   "clear": "مسح",
   "opportunityCreatedSuccessfully": "تم إنشاء الفرصة بنجاح!",
@@ -374,7 +326,6 @@
   "noOpportunitiesFound": "لم يتم العثور على فرص",
   "clearFilters": "مسح الفلاتر",
   "since": "منذ",
-  "weeksAgo": "أ",
   "applyOpportunity": "التقديم على الفرصة",
   "deleteOpportunity": "حذف الفرصة",
   "deleteOpportunityConfirmation": "هل أنت متأكد من حذف هذه الفرصة؟ لا يمكن التراجع عن هذا الإجراء.",
@@ -397,7 +348,7 @@
   "reject": "رفض",
   "uploadAnImage": "ارفع صورة",
   "tapToSelectFromGallery": "اضغط للاختيار من المعرض",
-  "enterYourRequirements": "أدخل المتطلبات (واحد في كل سطر)...",
+  "enterYourRequirements": "أدخل المتطلبات...",
   "selectEndDate": "اختر تاريخ الانتهاء",
   "upload": "رفع",
   "pleaseEnterTitle": "الرجاء إدخال عنوان",
@@ -406,5 +357,27 @@
   "pleaseSelectSport": "الرجاء اختيار رياضة",
   "pleaseSelectEndDate": "الرجاء اختيار تاريخ الانتهاء",
   "details": "التفاصيل",
-  "noOpportunitiesAvailable": "لا توجد فرص متاحة"
+  "noOpportunitiesAvailable": "لا توجد فرص متاحة",
+"taekwondo": "التايكوندو",
+  "yearsAgo": "{count, plural, =1 {منذ سنة} =2 {منذ سنتين} few {منذ {count} سنوات} many {منذ {count} سنة} other {منذ {count} سنة}}",
+  "@yearsAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "monthsAgo": "{count, plural, =1 {منذ شهر} =2 {منذ شهرين} few {منذ {count} أشهر} many {منذ {count} شهرًا} other {منذ {count} شهر}}",
+  "@monthsAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "weeksAgo": "{count, plural, =1 {منذ أسبوع} =2 {منذ أسبوعين} few {منذ {count} أسابيع} many {منذ {count} أسبوعًا} other {منذ {count} أسبوع}}",
+  "@weeksAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "daysAgo": "{count, plural, =1 {منذ يوم} =2 {منذ يومين} few {منذ {count} أيام} many {منذ {count} يومًا} other {منذ {count} يوم}}",
+  "@daysAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "hoursAgo": "{count, plural, =1 {منذ ساعة} =2 {منذ ساعتين} few {منذ {count} ساعات} many {منذ {count} ساعة} other {منذ {count} ساعة}}",
+  "@hoursAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "minutesAgo": "{count, plural, =1 {منذ دقيقة} =2 {منذ دقيقتين} few {منذ {count} دقائق} many {منذ {count} دقيقة} other {منذ {count} دقيقة}}",
+  "@minutesAgo": { "placeholders": { "count": { "type": "int" } } },
+
+  "secondsAgo": "{count, plural, =1 {منذ ثانية} =2 {منذ ثانيتين} few {منذ {count} ثوانٍ} many {منذ {count} ثانية} other {منذ {count} ثانية}}",
+  "@secondsAgo": { "placeholders": { "count": { "type": "int" } } }
+
 }
