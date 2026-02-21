@@ -1894,10 +1894,10 @@ class S {
     );
   }
 
-  /// `Post updated successfully!`
+  /// `Post updated successfully`
   String get postUpdated {
     return Intl.message(
-      'Post updated successfully!',
+      'Post updated successfully',
       name: 'postUpdated',
       desc: '',
       args: [],
@@ -2304,6 +2304,131 @@ class S {
     return Intl.message(
       'Failed to load post. Please try again.',
       name: 'postLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Achievement`
+  String get edit_achievement {
+    return Intl.message(
+      'Edit Achievement',
+      name: 'edit_achievement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Achievement`
+  String get add_achievement_title {
+    return Intl.message(
+      'Add Achievement',
+      name: 'add_achievement_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload Achievement Photo`
+  String get upload_photo_hint {
+    return Intl.message(
+      'Upload Achievement Photo',
+      name: 'upload_photo_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Date`
+  String get date_label {
+    return Intl.message('Date', name: 'date_label', desc: '', args: []);
+  }
+
+  /// `Select Date`
+  String get select_date_hint {
+    return Intl.message(
+      'Select Date',
+      name: 'select_date_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Title`
+  String get title_label {
+    return Intl.message('Title', name: 'title_label', desc: '', args: []);
+  }
+
+  /// `e.g. National Championship`
+  String get title_hint {
+    return Intl.message(
+      'e.g. National Championship',
+      name: 'title_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get description_label {
+    return Intl.message(
+      'Description',
+      name: 'description_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explain your achievement...`
+  String get description_hint {
+    return Intl.message(
+      'Explain your achievement...',
+      name: 'description_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update`
+  String get update_button {
+    return Intl.message('Update', name: 'update_button', desc: '', args: []);
+  }
+
+  /// `Save Achievement`
+  String get save_achievement_button {
+    return Intl.message(
+      'Save Achievement',
+      name: 'save_achievement_button',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a date`
+  String get please_select_date {
+    return Intl.message(
+      'Please select a date',
+      name: 'please_select_date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Achievement added successfully`
+  String get achievement_added_success {
+    return Intl.message(
+      'Achievement added successfully',
+      name: 'achievement_added_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Achievement updated successfully`
+  String get achievement_updated_success {
+    return Intl.message(
+      'Achievement updated successfully',
+      name: 'achievement_updated_success',
       desc: '',
       args: [],
     );

@@ -1,16 +1,20 @@
+import 'dart:io';
+import 'package:dotted_border/dotted_border.dart'; // Ensure this matches your ^3.1.0 version
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
+import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
 import 'package:sports_in/features/main/profile/view_model/profile_state.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'dart:io';
 
 class AchievementEditScreen extends StatefulWidget {
   final Achievement? achievement;
@@ -55,73 +59,16 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     super.dispose();
   }
 
-  Widget _buildLabel(String text, ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8.h, left: 4.w),
-      child: Text(
-        text,
-        style: theme.textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.onSurface,
-        ),
-      ),
-    );
-  }
-
-  InputDecoration _getFieldDecoration(ThemeData theme, String hint) {
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: theme.colorScheme.onSurface.withOpacity(0.05),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-    );
-  }
-
-  void _showDeleteConfirmation(BuildContext context) {
-    ConfirmationDialog.show(
-      context: context,
-      title: 'Delete Achievement',
-      message: 'Are you sure you want to delete this achievement?',
-      onConfirm: () {
-        context.read<ProfileBloc>().add(
-          DeleteAchievement(achievementId: widget.achievement!.id),
-        );
-      },
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
-      icon: Icons.delete_outline,
-      isDestructive: true,
-    );
-  }
-
   Future<void> _pickImageFromGallery() async {
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1920,
-        maxHeight: 1080,
-        imageQuality: 85,
-      );
-
-      if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-          _imageUrlController.text = image.path;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error picking image: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+        _imageUrlController.text = image.path;
+      });
     }
   }
 
@@ -132,32 +79,24 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
     }
   }
 
   void _saveAchievement(BuildContext context) {
-    FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    final string = S.of(context);
+    if (!_formKey.currentState!.validate()) return;
 
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please select a date'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      Fluttertoast.showToast(
+        msg: string.please_select_date,
+        backgroundColor: Colors.orange,
       );
       return;
     }
 
     final bloc = context.read<ProfileBloc>();
-
     if (isEditMode) {
       bloc.add(
         UpdateAchievement(
@@ -180,181 +119,178 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     }
   }
 
+  void _showDeleteConfirmation(BuildContext context) {
+    ConfirmationDialog.show(
+      context: context,
+      title: S.of(context).deleteachievement,
+      message: S.of(context).deleteachievementconfirmation,
+      onConfirm: () {
+        context.read<ProfileBloc>().add(
+          DeleteAchievement(achievementId: widget.achievement!.id),
+        );
+      },
+      confirmText: S.of(context).delete,
+      cancelText: S.of(context).cancel,
+      icon: Icons.delete_outline,
+      isDestructive: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = Theme.of(context).colorScheme;
     final string = S.of(context);
-    final colorScheme = theme.colorScheme;
 
     return BlocProvider(
       create: (context) => getIt<ProfileBloc>(),
       child: BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          if (state is AchievementCreated ) {
+          if (state is AchievementCreated) {
             Fluttertoast.showToast(
-              msg: string.addAchievement,
+              msg: string.achievement_added_success,
               backgroundColor: Colors.green,
             );
             Navigator.pop(context, true);
-          }else if (state is AchievementUpdated) {
+          } else if (state is AchievementUpdated) {
             Fluttertoast.showToast(
-              msg: string.achievementUpdated,
+              msg: string.achievement_updated_success,
               backgroundColor: Colors.green,
             );
-            } else if (state is AchievementDeleted) {
+            Navigator.pop(context, true);
+          } else if (state is AchievementDeleted) {
             Fluttertoast.showToast(
               msg: string.achievementDeleted,
               backgroundColor: Colors.red,
             );
-
-            // Pop twice: once from Edit screen, once from Detail screen
-            // This returns to the List screen or Profile screen
-            Navigator.pop(context); // Pop Edit screen
-            Navigator.pop(context, true); // Pop Detail screen with refresh flag
+            Navigator.pop(context);
+            Navigator.pop(context, true);
           }
         },
         child: Scaffold(
-          backgroundColor: colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: colorScheme.surface,
             elevation: 0,
-            centerTitle: true,
-            title: Text(
-              isEditMode ? 'Edit' : 'Add Achievement',
-              style: TextStyle(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+              icon: Icon(Icons.arrow_back, color: theme.onSurface),
               onPressed: () => Navigator.pop(context),
             ),
+            title: Text(
+              isEditMode
+                  ? string.edit_achievement
+                  : string.add_achievement_title,
+              style: TextStyle(
+                color: theme.onSurface,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            centerTitle: true,
             actions: [
               if (isEditMode)
                 TextButton(
                   onPressed: () => _showDeleteConfirmation(context),
                   child: Text(
-                    'Delete',
-                    style: TextStyle(color: colorScheme.error),
+                    string.delete,
+                    style: TextStyle(color: theme.error),
                   ),
                 ),
             ],
           ),
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(20.w),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 200.h,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0D2B3D),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: _buildImagePreview(theme),
-                  ),
-                  SizedBox(height: 12.h),
-                  Center(
-                    child: TextButton(
-                      onPressed: _pickImageFromGallery,
-                      child: Text(
-                        "Change Media",
-                        style: TextStyle(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
+            child: Padding(
+              padding: EdgeInsets.all(24.w),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // --- Fixed DottedBorder for v3.1.0 ---
+                    GestureDetector(
+                      onTap: _pickImageFromGallery,
+                      child: DottedBorder(
+                        options: RoundedRectDottedBorderOptions(
+                          color: Colors.grey[400]!,
+                          strokeWidth: 2.w,
+                          dashPattern: const [20, 6],
+                          radius: Radius.circular(12.r),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: Container(
+                            height: 200.h,
+                            width: double.infinity,
+                            color: theme.surface,
+                            child: _buildMediaPreview(theme, string),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 28.h),
 
-                  _buildLabel("Date", theme),
-                  InkWell(
-                    onTap: () => _selectDate(context),
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 14.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurface.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Text(
-                        _selectedDate != null
-                            ? _formatDate(_selectedDate!)
-                            : "Select Date",
-                        style: theme.textTheme.bodyMedium,
+                    _buildLabel(string.date_label, theme),
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 14.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.onSurface.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedDate != null
+                                  ? _formatDate(_selectedDate!)
+                                  : string.select_date_hint,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: theme.onSurface,
+                              ),
+                            ),
+                            Icon(
+                              Icons.calendar_month,
+                              color: theme.primary,
+                              size: 20.sp,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 20.h),
 
-                  _buildLabel("Title", theme),
-                  TextFormField(
-                    controller: _titleController,
-                    decoration: _getFieldDecoration(
-                      theme,
-                      "National Championship",
+                    _buildLabel(string.title_label, theme),
+                    AuthTextField(
+                      controller: _titleController,
+                      hintText: string.title_hint,
                     ),
-                    style: theme.textTheme.bodyMedium,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a title';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 20.h),
 
-                  _buildLabel("Description", theme),
-                  TextFormField(
-                    controller: _descriptionController,
-                    maxLines: 4,
-                    decoration: _getFieldDecoration(
-                      theme,
-                      "Explain your achievement...",
+                    _buildLabel(string.description_label, theme),
+                    AuthTextField(
+                      controller: _descriptionController,
+                      hintText: string.description_hint,
+                      maxLines: 5,
                     ),
-                    style: theme.textTheme.bodyMedium,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a description';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 30.h),
+                    SizedBox(height: 40.h),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: BlocBuilder<ProfileBloc, ProfileState>(
+                    BlocBuilder<ProfileBloc, ProfileState>(
                       builder: (context, state) {
                         final isLoading = state is ProfileLoading;
-
-                        return ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => _saveAchievement(context),
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : Text(
-                                  'Save Achievement',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onPrimary,
-                                  ),
-                                ),
+                        return CustomElevatedButton(
+                          text: isEditMode
+                              ? string.update_button
+                              : string.save_achievement_button,
+                          isLoading: isLoading,
+                          onPressed: () => _saveAchievement(context),
                         );
                       },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -363,57 +299,71 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     );
   }
 
-  Widget _buildImagePreview(ThemeData theme) {
-    if (_selectedImage != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12.r),
-        child: Image.file(_selectedImage!, fit: BoxFit.cover),
-      );
-    }
-    if (_imageUrlController.text.isNotEmpty &&
-        !_imageUrlController.text.startsWith('/')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12.r),
-        child: Image.network(
-          _imageUrlController.text,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              _buildPlaceholder(theme),
+  Widget _buildLabel(String text, ColorScheme theme) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.h),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+          color: theme.onSurface,
         ),
-      );
-    }
-    return _buildPlaceholder(theme);
+      ),
+    );
   }
 
-  Widget _buildPlaceholder(ThemeData theme) {
+  Widget _buildMediaPreview(ColorScheme theme, S string) {
+    if (_selectedImage != null) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.file(_selectedImage!, fit: BoxFit.cover),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: GestureDetector(
+              onTap: () => setState(() {
+                _selectedImage = null;
+                _imageUrlController.clear();
+              }),
+              child: Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.close, color: Colors.white, size: 20.sp),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_imageUrlController.text.isNotEmpty &&
+        !_imageUrlController.text.startsWith('/')) {
+      return Image.network(_imageUrlController.text, fit: BoxFit.cover);
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.add_a_photo_outlined, size: 48.sp, color: Colors.white),
-        SizedBox(height: 8.h),
+        Icon(Icons.cloud_upload_outlined, size: 60.sp, color: Colors.grey[600]),
+        SizedBox(height: 12.h),
         Text(
-          'Add Achievement Photo',
-          style: theme.textTheme.labelLarge?.copyWith(color: Colors.white),
+          string.upload_photo_hint,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.grey[800],
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );
   }
 
   String _formatDate(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

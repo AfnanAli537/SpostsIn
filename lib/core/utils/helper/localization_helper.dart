@@ -8,7 +8,7 @@ extension LocalizationHelper on S {
   String getErrorMessage(String key, {String? fallback}) {
     switch (key) {
       // Network errors
-      case 'noInternetConnection':
+      case 'No internet connection':
         return noInternetConnection;
       case 'connectionTimedOut':
         return connectionTimedOut;

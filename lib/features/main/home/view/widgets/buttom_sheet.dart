@@ -69,7 +69,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   title: 'Create Achievement',
                   onTap: () async {
                     final sharedPref = getIt<SharedPref>();
-                    final result = await Navigator.push(
+                    // final result =
+                      await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) =>

@@ -42,8 +42,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "achievementUpdated": MessageLookupByLibrary.simpleMessage(
       "تم تحديث الإنجاز بنجاح",
     ),
+    "achievement_added_success": MessageLookupByLibrary.simpleMessage(
+      "تم إضافة الإنجاز بنجاح",
+    ),
+    "achievement_updated_success": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الإنجاز بنجاح",
+    ),
     "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
     "addAchievement": MessageLookupByLibrary.simpleMessage("إنجاز الجديد"),
+    "add_achievement_title": MessageLookupByLibrary.simpleMessage(
+      "إضافة إنجاز",
+    ),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
@@ -110,6 +119,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
     "date": MessageLookupByLibrary.simpleMessage("التاريخ"),
+    "date_label": MessageLookupByLibrary.simpleMessage("التاريخ"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
     "delete": MessageLookupByLibrary.simpleMessage("حذف"),
     "deletePost": MessageLookupByLibrary.simpleMessage("حذف المنشور"),
@@ -121,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "هل أنت متأكد أنك تريد حذف هذا الإنجاز؟",
     ),
     "description": MessageLookupByLibrary.simpleMessage("الوصف"),
+    "description_hint": MessageLookupByLibrary.simpleMessage("اشرح إنجازك..."),
+    "description_label": MessageLookupByLibrary.simpleMessage("الوصف"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "تم قطع الاتصال بنجاح!",
     ),
@@ -133,6 +145,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "editProfileSuccess": MessageLookupByLibrary.simpleMessage(
       "تم تحديث الملف الشخصي بنجاح!",
     ),
+    "edit_achievement": MessageLookupByLibrary.simpleMessage("تعديل الإنجاز"),
     "egypt": MessageLookupByLibrary.simpleMessage("مصر"),
     "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -372,6 +385,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال كلمة مرور قوية",
     ),
+    "please_select_date": MessageLookupByLibrary.simpleMessage(
+      "يرجى اختيار تاريخ",
+    ),
     "pointGuard": MessageLookupByLibrary.simpleMessage(
       "صانع ألعاب (Point Guard)",
     ),
@@ -425,6 +441,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "rightBack": MessageLookupByLibrary.simpleMessage("ظهير أيمن"),
     "rightWing": MessageLookupByLibrary.simpleMessage("جناح أيمن"),
     "save": MessageLookupByLibrary.simpleMessage("حفظ"),
+    "save_achievement_button": MessageLookupByLibrary.simpleMessage(
+      "حفظ الإنجاز",
+    ),
     "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
     "search": MessageLookupByLibrary.simpleMessage("أبحث"),
     "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
@@ -432,6 +451,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectField": m3,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
     "selectSports": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
+    "select_date_hint": MessageLookupByLibrary.simpleMessage("اختر التاريخ"),
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "إرسال رمز التحقق",
     ),
@@ -479,6 +499,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
     "theme": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
     "title": MessageLookupByLibrary.simpleMessage("العنوان"),
+    "title_hint": MessageLookupByLibrary.simpleMessage("مثال: البطولة الوطنية"),
+    "title_label": MessageLookupByLibrary.simpleMessage("العنوان"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),
@@ -495,9 +517,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "update": MessageLookupByLibrary.simpleMessage("تحديث"),
     "updatePost": MessageLookupByLibrary.simpleMessage("تحديث المنشور"),
+    "update_button": MessageLookupByLibrary.simpleMessage("تحديث"),
     "updatingPost": MessageLookupByLibrary.simpleMessage("جار تحديث المنشور"),
     "updatingProfile": MessageLookupByLibrary.simpleMessage(
       "جارٍ تحديث الملف الشخصي",
+    ),
+    "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
+      "رفع صورة الإنجاز",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",

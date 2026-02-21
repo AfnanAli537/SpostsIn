@@ -62,6 +62,7 @@ class UpdateProfileBodyBuilder {
     }
 
     // Convert sports to IDs if provided
+    // ignore: unused_local_variable
     List<String>? sportIds;
     if (sports != null && sports.isNotEmpty) {
       sportIds = sports

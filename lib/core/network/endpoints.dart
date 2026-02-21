@@ -63,4 +63,27 @@ class Endpoints {
   static const String toggleFollow = "/api/Social/follow/{targetId}";//(post) takes the targetId  as a parameter
   static const String toggleConnect = "/api/Social/connect";//(post) takes the { "receiverId": "string" } in the request body and the connection now in pendding state so there is 3 states in totle (not connect, pending, connected)
 
+
+  // Discovery & List
+  static const String courses = "/api/courses";                    // GET: List/search courses
+  static const String courseDetails = "/api/courses/{courseId}";   // GET: Course overview
+  
+  // Lessons
+  static const String courseLessons = "/api/courses/{courseId}/lessons";  // GET: Paginated lessons
+  static const String updateProgress = "/api/courses/{courseId}/progress"; // PUT: Update watch progress
+  
+  // Enrollment (Client)
+  static const String enrollCourse = "/api/courses/{courseId}/enroll";    // POST: Enroll in course
+  static const String enrolledCourses = "/api/courses/enrolled";           // GET: My enrolled courses
+  
+  // Provider Actions
+  static const String createCourse = "/api/courses";                       // POST: Create new course
+  static const String uploadVideo = "/api/courses/{courseId}/videos";     // POST: Upload lesson video
+  static const String userCourses = "/api/users/{userId}/courses";        // GET: Courses by user
+  
+  // Provider Analytics
+  static const String courseEnrollees = "/api/courses/{courseId}/enrollments";          // GET: Who enrolled
+  static const String enrolleeProgress = "/api/courses/{courseId}/enrollments/{userId}"; // GET: Individual progress
+  static const String revenueTimeline = "/api/courses/{courseId}/revenue-timeline";     // GET: Revenue chart
+
 }

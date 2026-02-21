@@ -42,9 +42,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "achievementUpdated": MessageLookupByLibrary.simpleMessage(
       "Achievement updated successfully",
     ),
+    "achievement_added_success": MessageLookupByLibrary.simpleMessage(
+      "Achievement added successfully",
+    ),
+    "achievement_updated_success": MessageLookupByLibrary.simpleMessage(
+      "Achievement updated successfully",
+    ),
     "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
     "addAchievement": MessageLookupByLibrary.simpleMessage(
       "Added New Achievement",
+    ),
+    "add_achievement_title": MessageLookupByLibrary.simpleMessage(
+      "Add Achievement",
     ),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
@@ -114,6 +123,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Currently in a Club",
     ),
     "date": MessageLookupByLibrary.simpleMessage("Date"),
+    "date_label": MessageLookupByLibrary.simpleMessage("Date"),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deletePost": MessageLookupByLibrary.simpleMessage("Delete Post"),
@@ -127,6 +137,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Are you sure you want to delete this achievement?",
     ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
+    "description_hint": MessageLookupByLibrary.simpleMessage(
+      "Explain your achievement...",
+    ),
+    "description_label": MessageLookupByLibrary.simpleMessage("Description"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "Disconnected successfully!",
     ),
@@ -138,6 +152,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editProfileSuccess": MessageLookupByLibrary.simpleMessage(
       "Profile updated successfully!",
+    ),
+    "edit_achievement": MessageLookupByLibrary.simpleMessage(
+      "Edit Achievement",
     ),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
@@ -381,6 +398,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "Please enter a strong password",
     ),
+    "please_select_date": MessageLookupByLibrary.simpleMessage(
+      "Please select a date",
+    ),
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
     "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
@@ -400,7 +420,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Failed to update post. Please try again.",
     ),
     "postUpdated": MessageLookupByLibrary.simpleMessage(
-      "Post updated successfully!",
+      "Post updated successfully",
     ),
     "posts": MessageLookupByLibrary.simpleMessage("Posts"),
     "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
@@ -438,6 +458,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
     "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
+    "save_achievement_button": MessageLookupByLibrary.simpleMessage(
+      "Save Achievement",
+    ),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
@@ -448,6 +471,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectField": m3,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
     "selectSports": MessageLookupByLibrary.simpleMessage("Select a Sport"),
+    "select_date_hint": MessageLookupByLibrary.simpleMessage("Select Date"),
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Send verification code",
     ),
@@ -493,6 +517,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
     "theme": MessageLookupByLibrary.simpleMessage("Light"),
     "title": MessageLookupByLibrary.simpleMessage("Title"),
+    "title_hint": MessageLookupByLibrary.simpleMessage(
+      "e.g. National Championship",
+    ),
+    "title_label": MessageLookupByLibrary.simpleMessage("Title"),
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
     ),
@@ -511,8 +539,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "update": MessageLookupByLibrary.simpleMessage("Update"),
     "updatePost": MessageLookupByLibrary.simpleMessage("Update Post"),
+    "update_button": MessageLookupByLibrary.simpleMessage("Update"),
     "updatingPost": MessageLookupByLibrary.simpleMessage("Updating post"),
     "updatingProfile": MessageLookupByLibrary.simpleMessage("Updating profile"),
+    "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
+      "Upload Achievement Photo",
+    ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",
     ),

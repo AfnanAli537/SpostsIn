@@ -317,5 +317,19 @@
   "deletePost": "حذف المنشور",
   "deletePostConfirmation": "هل أنت متأكد أنك تريد حذف هذا المنشور؟",
   "postDeleted": "تم حذف المنشور بنجاح!",
-  "postDeleteFailed": "فشل حذف المنشور. حاول مرة أخرى."
+  "postDeleteFailed": "فشل حذف المنشور. حاول مرة أخرى.",
+  "edit_achievement": "تعديل الإنجاز",
+  "add_achievement_title": "إضافة إنجاز",
+  "upload_photo_hint": "رفع صورة الإنجاز",
+  "date_label": "التاريخ",
+  "select_date_hint": "اختر التاريخ",
+  "title_label": "العنوان",
+  "title_hint": "مثال: البطولة الوطنية",
+  "description_label": "الوصف",
+  "description_hint": "اشرح إنجازك...",
+  "update_button": "تحديث",
+  "save_achievement_button": "حفظ الإنجاز",
+  "please_select_date": "يرجى اختيار تاريخ",
+  "achievement_added_success": "تم إضافة الإنجاز بنجاح",
+  "achievement_updated_success": "تم تحديث الإنجاز بنجاح"
 }
