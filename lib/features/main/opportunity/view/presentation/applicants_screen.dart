@@ -107,7 +107,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
         bottom: TabBar(
           dividerColor: theme.surface,
           controller: _tabController,
-          labelColor: theme.primary,
+          labelColor: theme.onSurface,
           unselectedLabelColor: Colors.grey,
           indicator: UnderlineTabIndicator(
             borderRadius: BorderRadius.circular(4),
@@ -233,7 +233,7 @@ class _ApplicantsPageState extends State<ApplicantsPage>
   Widget _buildShimmerList({required bool isDark}) {
     return ListView.builder(
       padding: EdgeInsets.all(16.w),
-      itemCount: 4,
+      itemCount: 6,
       itemBuilder: (_, __) => _buildShimmerCard(isDark: isDark),
     );
   }
