@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sports_in/core/enums/home_enums.dart';
-import 'package:sports_in/features/main/home/view/presentation/courses_tab.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/courses_tab.dart';
 import 'package:sports_in/features/main/home/view/presentation/home_tab.dart';
 import 'package:sports_in/features/main/home/view/presentation/posts_tab.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_list.dart';

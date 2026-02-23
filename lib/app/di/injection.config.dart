@@ -32,6 +32,14 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
+import 'package:sports_in/features/main/courses/data/data_sources/course_remote_data_source.dart'
+    as _i8;
+import 'package:sports_in/features/main/courses/data/interface/i_course_data_source.dart'
+    as _i592;
+import 'package:sports_in/features/main/courses/data/repo/course_repository.dart'
+    as _i674;
+import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart'
+    as _i567;
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart'
     as _i833;
 import 'package:sports_in/features/main/home/data/interface/post_interface.dart'
@@ -47,7 +55,7 @@ import 'package:sports_in/features/main/opportunity/data/interface/opportunity_i
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
     as _i294;
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart'
-    as _i743;
+    as _i1047;
 import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
     as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
@@ -140,10 +148,13 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
-    gh.factory<_i743.OpportunityBloc>(
-      () => _i743.OpportunityBloc(
+    gh.factory<_i1047.OpportunityBloc>(
+      () => _i1047.OpportunityBloc(
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
       ),
+    );
+    gh.lazySingleton<_i592.ICourseDataSource>(
+      () => _i8.CourseRemoteDataSource(gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i651.PostsRepositoryImpl>(
       () => _i651.PostsRepositoryImpl(gh<_i423.PostsRepository>()),
@@ -162,6 +173,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
+    );
+    gh.factory<_i674.CourseRepository>(
+      () => _i674.CourseRepository(gh<_i592.ICourseDataSource>()),
+    );
+    gh.factory<_i567.CoursesBloc>(
+      () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
     );
     return this;
   }

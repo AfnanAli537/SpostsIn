@@ -1,141 +1,119 @@
+// ✅ CORRECTED: ALL durations in SECONDS (not minutes or hours!)
+// API specification:
+// - lesson.duration: SECONDS
+// - lesson.watchedTime: SECONDS  
+// - course.totalDurationHours: HOURS (only this one!)
+
+import 'dart:io';
+
 class CourseModel {
-  final String courseId;
+  final String id;
   final String title;
-  final String? thumbnailUrl;
-  final String sport;
-  final String level;
-  final int totalLessons;
-  final String? totalDurationFormatted;
-  final int enrolledCount;
-  final double rating;
-  final int? reviewCount;
-  final double price;
-  final String currency;
-  final bool isFree;
-  final bool isEnrolled;
-  final CourseProvider provider;
   final String? description;
-  final int? completedLessons;
-  final int? progressPercent;
-  final DateTime? enrolledAt;
-  final DateTime? lastAccessedAt;
+  final double price;
+  final String? thumbnailUrl;
+  final int sportTypeId;
   final DateTime? createdAt;
-  final double? totalRevenue; // Only for owner
-  final String? status; // draft, published
+  final CourseOwner owner;
+  final bool isEnrolled;
+  final bool isOwner;
+  final int progress; // 0-100
+  final int lessonsCount;
+  final double totalDurationHours; // ✅ HOURS (only this field!)
+  final int enrolledUsersCount;
 
   CourseModel({
-    required this.courseId,
+    required this.id,
     required this.title,
-    this.thumbnailUrl,
-    required this.sport,
-    required this.level,
-    required this.totalLessons,
-    this.totalDurationFormatted,
-    required this.enrolledCount,
-    this.rating = 0.0,
-    this.reviewCount,
-    required this.price,
-    required this.currency,
-    required this.isFree,
-    required this.isEnrolled,
-    required this.provider,
     this.description,
-    this.completedLessons,
-    this.progressPercent,
-    this.enrolledAt,
-    this.lastAccessedAt,
+    required this.price,
+    this.thumbnailUrl,
+    required this.sportTypeId,
     this.createdAt,
-    this.totalRevenue,
-    this.status,
+    required this.owner,
+    required this.isEnrolled,
+    required this.isOwner,
+    required this.progress,
+    required this.lessonsCount,
+    required this.totalDurationHours,
+    required this.enrolledUsersCount,
   });
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
-      courseId: json['courseId'] as String? ?? '',
+      id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? '',
-      thumbnailUrl: json['thumbnailUrl'] as String?,
-      sport: json['sport'] as String? ?? '',
-      level: json['level'] as String? ?? '',
-      totalLessons: json['totalLessons'] as int? ?? 0,
-      totalDurationFormatted: json['totalDurationFormatted'] as String?,
-      enrolledCount: json['enrolledCount'] as int? ?? 0,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      reviewCount: json['reviewCount'] as int?,
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      currency: json['currency'] as String? ?? 'EGP',
-      isFree: json['isFree'] as bool? ?? false,
-      isEnrolled: json['isEnrolled'] as bool? ?? false,
-      provider: CourseProvider.fromJson(
-        json['provider'] as Map<String, dynamic>? ?? {},
-      ),
       description: json['description'] as String?,
-      completedLessons: json['completedLessons'] as int?,
-      progressPercent: json['progressPercent'] as int?,
-      enrolledAt: json['enrolledAt'] != null
-          ? DateTime.parse(json['enrolledAt'] as String)
-          : null,
-      lastAccessedAt: json['lastAccessedAt'] != null
-          ? DateTime.parse(json['lastAccessedAt'] as String)
-          : null,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      thumbnailUrl: json['thumbnailUrl'] as String?,
+      sportTypeId: json['sportTypeId'] as int? ?? 0,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : null,
-      totalRevenue: (json['totalRevenue'] as num?)?.toDouble(),
-      status: json['status'] as String?,
+      owner: CourseOwner.fromJson(
+        json['owner'] as Map<String, dynamic>? ?? {},
+      ),
+      isEnrolled: json['isEnrolled'] as bool? ?? false,
+      isOwner: json['isOwner'] as bool? ?? false,
+      progress: json['progress'] as int? ?? 0,
+      lessonsCount: json['lessonsCount'] as int? ?? 0,
+      totalDurationHours: (json['totalDurationHours'] as num?)?.toDouble() ?? 0.0,
+      enrolledUsersCount: json['enrolledUsersCount'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'courseId': courseId,
+      'id': id,
       'title': title,
-      'thumbnailUrl': thumbnailUrl,
-      'sport': sport,
-      'level': level,
-      'totalLessons': totalLessons,
-      'totalDurationFormatted': totalDurationFormatted,
-      'enrolledCount': enrolledCount,
-      'rating': rating,
-      'reviewCount': reviewCount,
-      'price': price,
-      'currency': currency,
-      'isFree': isFree,
-      'isEnrolled': isEnrolled,
-      'provider': provider.toJson(),
       'description': description,
-      'completedLessons': completedLessons,
-      'progressPercent': progressPercent,
-      'enrolledAt': enrolledAt?.toIso8601String(),
-      'lastAccessedAt': lastAccessedAt?.toIso8601String(),
+      'price': price,
+      'thumbnailUrl': thumbnailUrl,
+      'sportTypeId': sportTypeId,
       'createdAt': createdAt?.toIso8601String(),
-      'totalRevenue': totalRevenue,
-      'status': status,
+      'owner': owner.toJson(),
+      'isEnrolled': isEnrolled,
+      'isOwner': isOwner,
+      'progress': progress,
+      'lessonsCount': lessonsCount,
+      'totalDurationHours': totalDurationHours,
+      'enrolledUsersCount': enrolledUsersCount,
     };
+  }
+
+  bool get isFree => price == 0;
+
+  // ✅ Format course total duration (input: hours)
+  String get formattedDuration {
+    if (totalDurationHours < 1) {
+      final minutes = (totalDurationHours * 60).round();
+      return '${minutes}min';
+    }
+    final hours = totalDurationHours.floor();
+    final minutes = ((totalDurationHours - hours) * 60).round();
+    if (minutes == 0) {
+      return '${hours}h';
+    }
+    return '${hours}h ${minutes}min';
   }
 }
 
-class CourseProvider {
+class CourseOwner {
   final String userId;
   final String fullName;
   final String? profilePictureUrl;
-  final String userType;
-  final bool isVerified;
 
-  CourseProvider({
+  CourseOwner({
     required this.userId,
     required this.fullName,
     this.profilePictureUrl,
-    required this.userType,
-    this.isVerified = false,
   });
 
-  factory CourseProvider.fromJson(Map<String, dynamic> json) {
-    return CourseProvider(
+  factory CourseOwner.fromJson(Map<String, dynamic> json) {
+    return CourseOwner(
       userId: json['userId'] as String? ?? '',
       fullName: json['fullName'] as String? ?? '',
       profilePictureUrl: json['profilePictureUrl'] as String?,
-      userType: json['userType'] as String? ?? '',
-      isVerified: json['isVerified'] as bool? ?? false,
     );
   }
 
@@ -144,184 +122,212 @@ class CourseProvider {
       'userId': userId,
       'fullName': fullName,
       'profilePictureUrl': profilePictureUrl,
-      'userType': userType,
-      'isVerified': isVerified,
     };
   }
 }
 
 class LessonModel {
-  final String lessonId;
-  final int order;
+  final String id;
   final String title;
-  final String durationFormatted;
-  final int durationSeconds;
+  final String? description;
   final String? videoUrl;
-  final String? thumbnailUrl;
+  final double duration; // ✅ SECONDS (not minutes!)
+  final int order;
   final bool isWatched;
-  final int watchedDurationSeconds;
-  final bool? isPreview;
-  final DateTime? completedAt;
+  final double watchedTime; // ✅ SECONDS (not minutes!)
+  final double videoZoomScale;
 
   LessonModel({
-    required this.lessonId,
-    required this.order,
+    required this.id,
     required this.title,
-    required this.durationFormatted,
-    required this.durationSeconds,
+    this.description,
     this.videoUrl,
-    this.thumbnailUrl,
-    this.isWatched = false,
-    this.watchedDurationSeconds = 0,
-    this.isPreview,
-    this.completedAt,
+    required this.duration,
+    required this.order,
+    required this.isWatched,
+    required this.watchedTime,
+    required this.videoZoomScale,
   });
 
   factory LessonModel.fromJson(Map<String, dynamic> json) {
     return LessonModel(
-      lessonId: json['lessonId'] as String? ?? '',
-      order: json['order'] as int? ?? 0,
+      id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? '',
-      durationFormatted: json['durationFormatted'] as String? ?? '00:00',
-      durationSeconds: json['durationSeconds'] as int? ?? 0,
+      description: json['description'] as String?,
       videoUrl: json['videoUrl'] as String?,
-      thumbnailUrl: json['thumbnailUrl'] as String?,
+      duration: (json['duration'] as num?)?.toDouble() ?? 0.0,
+      order: json['order'] as int? ?? 0,
       isWatched: json['isWatched'] as bool? ?? false,
-      watchedDurationSeconds: json['watchedDurationSeconds'] as int? ?? 0,
-      isPreview: json['isPreview'] as bool?,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'] as String)
-          : null,
+      watchedTime: (json['watchedTime'] as num?)?.toDouble() ?? 0.0,
+      videoZoomScale: (json['videoZoomScale'] as num?)?.toDouble() ?? 1.0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'lessonId': lessonId,
-      'order': order,
+      'id': id,
       'title': title,
-      'durationFormatted': durationFormatted,
-      'durationSeconds': durationSeconds,
+      'description': description,
       'videoUrl': videoUrl,
-      'thumbnailUrl': thumbnailUrl,
+      'duration': duration,
+      'order': order,
       'isWatched': isWatched,
-      'watchedDurationSeconds': watchedDurationSeconds,
-      'isPreview': isPreview,
-      'completedAt': completedAt?.toIso8601String(),
+      'watchedTime': watchedTime,
+      'videoZoomScale': videoZoomScale,
     };
   }
 
-  double get progressPercentage {
-    if (durationSeconds == 0) return 0.0;
-    return (watchedDurationSeconds / durationSeconds * 100).clamp(0.0, 100.0);
+  // ✅ Format lesson duration (input: seconds)
+  String get formattedDuration {
+    final totalSeconds = duration.round();
+    if (totalSeconds < 60) {
+      return '${totalSeconds}s';
+    }
+    if (totalSeconds < 3600) {
+      final minutes = (totalSeconds / 60).floor();
+      final seconds = totalSeconds % 60;
+      if (seconds == 0) {
+        return '${minutes}min';
+      }
+      return '${minutes}min ${seconds}s';
+    }
+    final hours = (totalSeconds / 3600).floor();
+    final minutes = ((totalSeconds % 3600) / 60).floor();
+    if (minutes == 0) {
+      return '${hours}h';
+    }
+    return '${hours}h ${minutes}min';
   }
+
+  // Progress percentage
+  double get progressPercentage {
+    if (duration == 0) return 0.0;
+    return (watchedTime / duration * 100).clamp(0.0, 100.0);
+  }
+
+  // ✅ For video player: already in seconds!
+  int get durationInSeconds => duration.round();
+  int get watchedTimeInSeconds => watchedTime.round();
 }
 
-class EnrolleeModel {
+class EnrolledUserModel {
+  final DateTime enrolledAt;
+  final int progress;
   final String userId;
   final String fullName;
   final String? profilePictureUrl;
-  final String userType;
-  final String role;
-  final DateTime joinDate;
-  final int progressPercent;
-  final int completedLessons;
-  final String performanceLabel;
 
-  EnrolleeModel({
+  EnrolledUserModel({
+    required this.enrolledAt,
+    required this.progress,
     required this.userId,
     required this.fullName,
     this.profilePictureUrl,
-    required this.userType,
-    required this.role,
-    required this.joinDate,
-    required this.progressPercent,
-    required this.completedLessons,
-    required this.performanceLabel,
   });
 
-  factory EnrolleeModel.fromJson(Map<String, dynamic> json) {
-    return EnrolleeModel(
+  factory EnrolledUserModel.fromJson(Map<String, dynamic> json) {
+    return EnrolledUserModel(
+      enrolledAt: DateTime.parse(json['enrolledAt'] as String),
+      progress: json['progress'] as int? ?? 0,
       userId: json['userId'] as String? ?? '',
       fullName: json['fullName'] as String? ?? '',
       profilePictureUrl: json['profilePictureUrl'] as String?,
-      userType: json['userType'] as String? ?? '',
-      role: json['role'] as String? ?? '',
-      joinDate: DateTime.parse(json['joinDate'] as String),
-      progressPercent: json['progressPercent'] as int? ?? 0,
-      completedLessons: json['completedLessons'] as int? ?? 0,
-      performanceLabel: json['performanceLabel'] as String? ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'enrolledAt': enrolledAt.toIso8601String(),
+      'progress': progress,
+      'userId': userId,
+      'fullName': fullName,
+      'profilePictureUrl': profilePictureUrl,
+    };
   }
 }
 
-class RevenueTimelineModel {
-  final String courseId;
-  final String period;
-  final double totalEarnings;
-  final String currency;
-  final int totalEnrolled;
-  final List<RevenueDataPoint> timeline;
+class RevenueReportModel {
+  final double totalAllTimeRevenue;
+  final double totalMonthRevenue;
+  final List<WeeklyRevenueModel> weeklyBreakdown;
+  final int month;
+  final int year;
 
-  RevenueTimelineModel({
-    required this.courseId,
-    required this.period,
-    required this.totalEarnings,
-    required this.currency,
-    required this.totalEnrolled,
-    required this.timeline,
+  RevenueReportModel({
+    required this.totalAllTimeRevenue,
+    required this.totalMonthRevenue,
+    required this.weeklyBreakdown,
+    required this.month,
+    required this.year,
   });
 
-  factory RevenueTimelineModel.fromJson(Map<String, dynamic> json) {
-    return RevenueTimelineModel(
-      courseId: json['courseId'] as String? ?? '',
-      period: json['period'] as String? ?? 'month',
-      totalEarnings: (json['totalEarnings'] as num?)?.toDouble() ?? 0.0,
-      currency: json['currency'] as String? ?? 'EGP',
-      totalEnrolled: json['totalEnrolled'] as int? ?? 0,
-      timeline: (json['timeline'] as List<dynamic>?)
-              ?.map((e) => RevenueDataPoint.fromJson(e as Map<String, dynamic>))
+  factory RevenueReportModel.fromJson(Map<String, dynamic> json) {
+    return RevenueReportModel(
+      totalAllTimeRevenue:
+          (json['totalAllTimeRevenue'] as num?)?.toDouble() ?? 0.0,
+      totalMonthRevenue: (json['totalMonthRevenue'] as num?)?.toDouble() ?? 0.0,
+      weeklyBreakdown: (json['weeklyBreakdown'] as List<dynamic>?)
+              ?.map((e) => WeeklyRevenueModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      month: json['month'] as int? ?? 0,
+      year: json['year'] as int? ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'totalAllTimeRevenue': totalAllTimeRevenue,
+      'totalMonthRevenue': totalMonthRevenue,
+      'weeklyBreakdown': weeklyBreakdown.map((e) => e.toJson()).toList(),
+      'month': month,
+      'year': year,
+    };
   }
 }
 
-class RevenueDataPoint {
-  final String label;
-  final int enrollments;
-  final double revenueEGP;
+class WeeklyRevenueModel {
+  final String weekLabel;
+  final double revenue;
 
-  RevenueDataPoint({
-    required this.label,
-    required this.enrollments,
-    required this.revenueEGP,
+  WeeklyRevenueModel({
+    required this.weekLabel,
+    required this.revenue,
   });
 
-  factory RevenueDataPoint.fromJson(Map<String, dynamic> json) {
-    return RevenueDataPoint(
-      label: json['label'] as String? ?? '',
-      enrollments: json['enrollments'] as int? ?? 0,
-      revenueEGP: (json['revenueEGP'] as num?)?.toDouble() ?? 0.0,
+  factory WeeklyRevenueModel.fromJson(Map<String, dynamic> json) {
+    return WeeklyRevenueModel(
+      weekLabel: json['weekLabel'] as String? ?? '',
+      revenue: (json['revenue'] as num?)?.toDouble() ?? 0.0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'weekLabel': weekLabel,
+      'revenue': revenue,
+    };
   }
 }
 
+// Paginated response wrapper
 class PaginatedCoursesResponse {
   final List<CourseModel> items;
   final int totalCount;
-  final int page;
+  final int pageNumber;
   final int pageSize;
   final int totalPages;
-  final bool? isOwner; // For provider's uploaded courses
+  final bool hasNextPage;
+  final bool hasPreviousPage;
 
   PaginatedCoursesResponse({
     required this.items,
     required this.totalCount,
-    required this.page,
+    required this.pageNumber,
     required this.pageSize,
     required this.totalPages,
-    this.isOwner,
+    required this.hasNextPage,
+    required this.hasPreviousPage,
   });
 
   factory PaginatedCoursesResponse.fromJson(Map<String, dynamic> json) {
@@ -331,80 +337,112 @@ class PaginatedCoursesResponse {
               .toList() ??
           [],
       totalCount: json['totalCount'] as int? ?? 0,
-      page: json['page'] as int? ?? 1,
+      pageNumber: json['pageNumber'] as int? ?? 1,
       pageSize: json['pageSize'] as int? ?? 10,
       totalPages: json['totalPages'] as int? ?? 1,
-      isOwner: json['isOwner'] as bool?,
+      hasNextPage: json['hasNextPage'] as bool? ?? false,
+      hasPreviousPage: json['hasPreviousPage'] as bool? ?? false,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'items': items.map((e) => e.toJson()).toList(),
+      'totalCount': totalCount,
+      'pageNumber': pageNumber,
+      'pageSize': pageSize,
+      'totalPages': totalPages,
+      'hasNextPage': hasNextPage,
+      'hasPreviousPage': hasPreviousPage,
+    };
   }
 }
 
-class PaginatedLessonsResponse {
-  final String courseId;
-  final bool isEnrolled;
-  final List<LessonModel> items;
-  final int totalCount;
-  final int page;
-  final int pageSize;
-  final int totalPages;
+// Request models for creating/updating
+class CreateCourseRequest {
+  final String title;
+  final String description;
+  final double price;
+  final int sportTypeId;
+  final File? thumbnailFile;
 
-  PaginatedLessonsResponse({
-    required this.courseId,
-    required this.isEnrolled,
-    required this.items,
-    required this.totalCount,
-    required this.page,
-    required this.pageSize,
-    required this.totalPages,
+  CreateCourseRequest({
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.sportTypeId,
+    this.thumbnailFile,
   });
-
-  factory PaginatedLessonsResponse.fromJson(Map<String, dynamic> json) {
-    return PaginatedLessonsResponse(
-      courseId: json['courseId'] as String? ?? '',
-      isEnrolled: json['isEnrolled'] as bool? ?? false,
-      items: (json['items'] as List<dynamic>?)
-              ?.map((e) => LessonModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      totalCount: json['totalCount'] as int? ?? 0,
-      page: json['page'] as int? ?? 1,
-      pageSize: json['pageSize'] as int? ?? 20,
-      totalPages: json['totalPages'] as int? ?? 1,
-    );
-  }
 }
 
-class PaginatedEnrolleesResponse {
-  final String courseId;
-  final String courseTitle;
-  final int totalEnrolled;
-  final List<EnrolleeModel> items;
-  final int page;
-  final int pageSize;
-  final int totalPages;
+class UpdateCourseRequest {
+  final String id;
+  final String title;
+  final String description;
+  final double price;
+  final int sportTypeId;
+  final File? thumbnailFile;
 
-  PaginatedEnrolleesResponse({
-    required this.courseId,
-    required this.courseTitle,
-    required this.totalEnrolled,
-    required this.items,
-    required this.page,
-    required this.pageSize,
-    required this.totalPages,
+  UpdateCourseRequest({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.sportTypeId,
+    this.thumbnailFile,
+  });
+}
+
+class CreateLessonRequest {
+  final String title;
+  final String description;
+  final double duration; // ✅ IN SECONDS
+  final int? order;
+  final File videoFile;
+
+  CreateLessonRequest({
+    required this.title,
+    required this.description,
+    required this.duration,
+    this.order,
+    required this.videoFile,
+  });
+}
+
+class UpdateLessonRequest {
+  final String lessonId;
+  final String title;
+  final String description;
+  final double duration; // ✅ IN SECONDS
+  final int order;
+  final File? videoFile;
+
+  UpdateLessonRequest({
+    required this.lessonId,
+    required this.title,
+    required this.description,
+    required this.duration,
+    required this.order,
+    this.videoFile,
+  });
+}
+
+class UpdateProgressRequest {
+  final double watchedTime; // ✅ IN SECONDS
+  final bool isWatched;
+  final double zoomScale;
+
+  UpdateProgressRequest({
+    required this.watchedTime,
+    required this.isWatched,
+    this.zoomScale = 0,
   });
 
-  factory PaginatedEnrolleesResponse.fromJson(Map<String, dynamic> json) {
-    return PaginatedEnrolleesResponse(
-      courseId: json['courseId'] as String? ?? '',
-      courseTitle: json['courseTitle'] as String? ?? '',
-      totalEnrolled: json['totalEnrolled'] as int? ?? 0,
-      items: (json['items'] as List<dynamic>?)
-              ?.map((e) => EnrolleeModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      page: json['page'] as int? ?? 1,
-      pageSize: json['pageSize'] as int? ?? 20,
-      totalPages: json['totalPages'] as int? ?? 1,
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'watchedTime': watchedTime,
+      'isWatched': isWatched,
+      'zoomScale': zoomScale,
+    };
   }
 }

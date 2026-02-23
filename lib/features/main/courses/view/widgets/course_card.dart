@@ -5,55 +5,55 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 class CourseCard extends StatelessWidget {
   final CourseModel course;
   final VoidCallback onTap;
-  final bool showProgress; // For enrolled courses
+  final VoidCallback? onEdit; // ✅ Added optional callback
+  final VoidCallback? onDelete; // ✅ Added optional callback
+  
   const CourseCard({
     super.key,
     required this.course,
     required this.onTap,
-    this.showProgress = false,
+    this.onEdit,
+    this.onDelete,
   });
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          color: Colors.white,
-          boxShadow: [/* ... */],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Thumbnail
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-                  child: Image.network(
-                    course.thumbnailUrl ?? '',
-                    height: 120.h,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
+              child: Image.network(
+                course.thumbnailUrl ?? '',
+                height: 160.h,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 160.h,
+                  color: Colors.grey[300],
+                  child: Icon(Icons.image_not_supported, size: 48.sp),
                 ),
-                // Free badge
-                if (course.isFree)
-                  Positioned(
-                    top: 8.h,
-                    right: 8.w,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Text('FREE'),
-                    ),
-                  ),
-              ],
+              ),
             ),
-            
+
             Padding(
               padding: EdgeInsets.all(12.r),
               child: Column(
@@ -62,84 +62,148 @@ class CourseCard extends StatelessWidget {
                   // Title
                   Text(
                     course.title,
-                    style: TextStyle(
-                      fontSize: 16.sp,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  SizedBox(height: 4.h),
+
+                  // Description
+                  if (course.description != null && course.description!.isNotEmpty)
+                    Text(
+                      course.description!,
+                      style: theme.textTheme.bodySmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   SizedBox(height: 8.h),
-                  
+
                   // Provider info
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 12.r,
-                        backgroundImage: NetworkImage(
-                          course.provider.profilePictureUrl ?? '',
-                        ),
+                        backgroundImage: course.owner.profilePictureUrl != null
+                            ? NetworkImage(course.owner.profilePictureUrl!)
+                            : null,
+                        child: course.owner.profilePictureUrl == null
+                            ? Icon(Icons.person, size: 16.sp)
+                            : null,
                       ),
                       SizedBox(width: 8.w),
-                      Text(
-                        course.provider.fullName,
-                        style: TextStyle(fontSize: 12.sp),
+                      Expanded(
+                        child: Text(
+                          course.owner.fullName,
+                          style: theme.textTheme.bodySmall,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
                   SizedBox(height: 8.h),
-                  
-                  // Stats row
+
+                  // Stats
                   Row(
                     children: [
                       Icon(Icons.play_circle_outline, size: 16.sp),
                       SizedBox(width: 4.w),
-                      Text('${course.totalLessons} lessons'),
-                      SizedBox(width: 16.w),
-                      Icon(Icons.star, size: 16.sp, color: Colors.amber),
+                      Text(
+                        '${course.lessonsCount} lessons',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      SizedBox(width: 12.w),
+                      Icon(Icons.access_time, size: 16.sp),
                       SizedBox(width: 4.w),
-                      Text('${course.rating}'),
+                      Text(
+                        course.formattedDuration,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      SizedBox(width: 12.w),
+                      Icon(Icons.people_outline, size: 16.sp),
+                      SizedBox(width: 4.w),
+                      Text(
+                        '${course.enrolledUsersCount}',
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ],
                   ),
-                  
-                  // Progress bar (if enrolled and showProgress)
-                  if (showProgress && course.progressPercent != null) ...[
-                    SizedBox(height: 8.h),
+                  SizedBox(height: 8.h),
+
+                  // Progress bar (if enrolled)
+                  if (course.isEnrolled) ...[
                     LinearProgressIndicator(
-                      value: course.progressPercent! / 100,
+                      value: course.progress / 100,
                       backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.colorScheme.primary,
+                      ),
                     ),
                     SizedBox(height: 4.h),
                     Text(
-                      '${course.progressPercent}% complete',
-                      style: TextStyle(fontSize: 12.sp),
+                      '${course.progress}% complete',
+                      style: theme.textTheme.bodySmall,
                     ),
+                    SizedBox(height: 8.h),
                   ],
-                  
+
                   // Price or enrolled badge
-                  SizedBox(height: 8.h),
-                  if (!course.isEnrolled)
-                    Text(
-                      course.isFree ? 'FREE' : '${course.price} ${course.currency}',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: course.isFree ? Colors.green : Colors.black,
-                      ),
-                    )
-                  else
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Text(
-                        'Enrolled',
-                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
-                      ),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (!course.isEnrolled)
+                        Text(
+                          course.isFree ? 'FREE' : '${course.price} EGP',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: course.isFree ? Colors.green : null,
+                          ),
+                        )
+                      else
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            'Enrolled',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+
+                      // Provider controls
+                      if (course.isOwner && (onEdit != null || onDelete != null))
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (onEdit != null)
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                iconSize: 20.sp,
+                                onPressed: onEdit,
+                                tooltip: 'Edit Course',
+                              ),
+                            if (onDelete != null)
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red[700],
+                                ),
+                                iconSize: 20.sp,
+                                onPressed: onDelete,
+                                tooltip: 'Delete Course',
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),

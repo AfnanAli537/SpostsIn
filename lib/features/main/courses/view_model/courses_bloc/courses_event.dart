@@ -4,147 +4,244 @@ abstract class CoursesEvent extends Equatable {
   const CoursesEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
-// Browse & Search
-class FetchCourses extends CoursesEvent {
-  final String? search;
-  final String? sport;
-  final String? level;
-  final int page;
 
-  const FetchCourses({
-    this.search,
-    this.sport,
-    this.level,
-    required this.page,
+// ==================== BROWSE & DISCOVERY ====================
+
+class FetchAvailableCourses extends CoursesEvent {
+  final String? searchTerm;
+  final int? sportTypeId;
+  final int page;
+  final int size;
+  final bool isRefresh;
+
+  const FetchAvailableCourses({
+    this.searchTerm,
+    this.sportTypeId,
+    this.page = 1,
+    this.size = 10,
+    this.isRefresh = false,
   });
 
   @override
-  List<Object> get props => [search ?? '', sport ?? '', level ?? '', page];
+  List<Object?> get props => [searchTerm, sportTypeId, page, size, isRefresh];
 }
 
 class FetchEnrolledCourses extends CoursesEvent {
-  const FetchEnrolledCourses();
-}
+  final String? searchTerm;
+  final int? sportTypeId;
+  final int page;
+  final int size;
+  final bool isRefresh;
 
-class FetchMyCourses extends CoursesEvent {
-  final String userId;
-
-  const FetchMyCourses({required this.userId});
+  const FetchEnrolledCourses({
+    this.searchTerm,
+    this.sportTypeId,
+    this.page = 1,
+    this.size = 10,
+    this.isRefresh = false,
+  });
 
   @override
-  List<Object> get props => [userId];
+  List<Object?> get props => [searchTerm, sportTypeId, page, size, isRefresh];
 }
 
-// Course Detail
+class FetchCreatedCourses extends CoursesEvent {
+  final String? searchTerm;
+  final int? sportTypeId;
+  final int page;
+  final int size;
+  final bool isRefresh;
+
+  const FetchCreatedCourses({
+    this.searchTerm,
+    this.sportTypeId,
+    this.page = 1,
+    this.size = 10,
+    this.isRefresh = false,
+  });
+
+  @override
+  List<Object?> get props => [searchTerm, sportTypeId, page, size, isRefresh];
+}
+
+// ==================== COURSE DETAIL ====================
+
 class FetchCourseDetail extends CoursesEvent {
   final String courseId;
 
   const FetchCourseDetail({required this.courseId});
 
   @override
-  List<Object> get props => [courseId];
+  List<Object?> get props => [courseId];
 }
 
-class FetchLessons extends CoursesEvent {
+class FetchCourseLessons extends CoursesEvent {
   final String courseId;
-  final int page;
 
-  const FetchLessons({required this.courseId, required this.page});
+  const FetchCourseLessons({required this.courseId});
 
   @override
-  List<Object> get props => [courseId, page];
+  List<Object?> get props => [courseId];
 }
 
-// Enrollment
-class EnrollInCourse extends CoursesEvent {
-  final String courseId;
-  final String? paymentMethodId;
+// ==================== COURSE CRUD ====================
 
-  const EnrollInCourse({
-    required this.courseId,
-    this.paymentMethodId,
-  });
-
-  @override
-  List<Object> get props => [courseId, paymentMethodId ?? ''];
-}
-
-// Progress
-class UpdateLessonProgress extends CoursesEvent {
-  final String courseId;
-  final String lessonId;
-  final int watchedDurationSeconds;
-
-  const UpdateLessonProgress({
-    required this.courseId,
-    required this.lessonId,
-    required this.watchedDurationSeconds,
-  });
-
-  @override
-  List<Object> get props => [courseId, lessonId, watchedDurationSeconds];
-}
-
-// Provider
 class CreateCourse extends CoursesEvent {
   final String title;
-  final String sport;
-  final String level;
-  final double price;
   final String description;
-  final File thumbnailFile;
+  final double price;
+  final int sportTypeId;
+  final File? thumbnailFile;
 
   const CreateCourse({
     required this.title,
-    required this.sport,
-    required this.level,
-    required this.price,
     required this.description,
-    required this.thumbnailFile,
+    required this.price,
+    required this.sportTypeId,
+    this.thumbnailFile,
   });
 
   @override
-  List<Object> get props => [title, sport, level, price, description, thumbnailFile];
+  List<Object?> get props => [title, description, price, sportTypeId, thumbnailFile];
 }
 
-class UploadVideo extends CoursesEvent {
+class UpdateCourse extends CoursesEvent {
   final String courseId;
   final String title;
-  final int order;
-  final File videoFile;
+  final String description;
+  final double price;
+  final int sportTypeId;
+  final File? thumbnailFile;
 
-  const UploadVideo({
+  const UpdateCourse({
     required this.courseId,
     required this.title,
-    required this.order,
-    required this.videoFile,
+    required this.description,
+    required this.price,
+    required this.sportTypeId,
+    this.thumbnailFile,
   });
 
   @override
-  List<Object> get props => [courseId, title, order, videoFile];
+  List<Object?> get props => [courseId, title, description, price, sportTypeId, thumbnailFile];
 }
 
-class FetchEnrollees extends CoursesEvent {
+class DeleteCourse extends CoursesEvent {
   final String courseId;
-  final int page;
 
-  const FetchEnrollees({required this.courseId, required this.page});
+  const DeleteCourse({required this.courseId});
 
   @override
-  List<Object> get props => [courseId, page];
+  List<Object?> get props => [courseId];
 }
 
-class FetchRevenueTimeline extends CoursesEvent {
-  final String courseId;
-  final String period; // week, month, year
+// ==================== LESSON CRUD ====================
 
-  const FetchRevenueTimeline({
+class CreateLesson extends CoursesEvent {
+  final String courseId;
+  final String title;
+  final String description;
+  final double duration;
+  final File videoFile;
+  final int? order; // Auto-calculated if null
+
+  const CreateLesson({
     required this.courseId,
-    required this.period,
+    required this.title,
+    required this.description,
+    required this.duration,
+    required this.videoFile,
+    this.order,
   });
 
   @override
-  List<Object> get props => [courseId, period];
+  List<Object?> get props => [courseId, title, description, duration, videoFile, order];
+}
+
+class UpdateLesson extends CoursesEvent {
+  final String lessonId;
+  final String title;
+  final String description;
+  final double duration;
+  final int order;
+  final File? videoFile;
+
+  const UpdateLesson({
+    required this.lessonId,
+    required this.title,
+    required this.description,
+    required this.duration,
+    required this.order,
+    this.videoFile,
+  });
+
+  @override
+  List<Object?> get props => [lessonId, title, description, duration, order, videoFile];
+}
+
+class DeleteLesson extends CoursesEvent {
+  final String lessonId;
+
+  const DeleteLesson({required this.lessonId});
+
+  @override
+  List<Object?> get props => [lessonId];
+}
+
+// ==================== ENROLLMENT ====================
+
+class EnrollInCourse extends CoursesEvent {
+  final String courseId;
+
+  const EnrollInCourse({required this.courseId});
+
+  @override
+  List<Object?> get props => [courseId];
+}
+
+// ==================== PROGRESS ====================
+
+class UpdateLessonProgress extends CoursesEvent {
+  final String lessonId;
+  final double watchedTime;
+  final bool isWatched;
+  final double zoomScale;
+
+  const UpdateLessonProgress({
+    required this.lessonId,
+    required this.watchedTime,
+    required this.isWatched,
+    this.zoomScale = 0,
+  });
+
+  @override
+  List<Object?> get props => [lessonId, watchedTime, isWatched, zoomScale];
+}
+
+// ==================== ANALYTICS (PROVIDER) ====================
+
+class FetchEnrolledUsers extends CoursesEvent {
+  final String courseId;
+
+  const FetchEnrolledUsers({required this.courseId});
+
+  @override
+  List<Object?> get props => [courseId];
+}
+
+class FetchRevenueReport extends CoursesEvent {
+  final String courseId;
+  final int? month;
+  final int? year;
+
+  const FetchRevenueReport({
+    required this.courseId,
+    this.month,
+    this.year,
+  });
+
+  @override
+  List<Object?> get props => [courseId, month, year];
 }

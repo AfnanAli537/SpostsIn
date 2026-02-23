@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/features/main/courses/view/presentation/provider/create_course_screen.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/uploadposts.dart';
 import 'package:sports_in/features/main/home/view/widgets/option_card.dart';
@@ -66,8 +67,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   title: strings.createAchievement,
                   onTap: () async {
                     final sharedPref = getIt<SharedPref>();
-                    // final result =
-                      await Navigator.push(
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => AchievementEditScreen(userId: sharedPref.getUserId()!),
@@ -79,6 +79,39 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 16.h),
+                
+                FutureBuilder(
+                  future: getIt<SharedPref>().getUserFromPrefs(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+
+                    final userType = snapshot.data!.userType?.toLowerCase();
+                    final canCreateCourse = userType == 'coach' ||
+                        userType == 'club' ||
+                        userType == 'institute';
+
+                    return Visibility(
+                      visible: canCreateCourse,
+                      child: Column(
+                        children: [
+                          buildOptionCard(
+                            icon: Icons.school_outlined,
+                            iconColor: const Color(0xFF66BB6A),
+                            title: 
+                            // strings.createCourse ??
+                             'Create Course',
+                            onTap: () {
+                              Navigator.pop(context);
+                              showCreateCourseBottomSheet(context);
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                
                 FutureBuilder(
                   future: getIt<SharedPref>().getUserFromPrefs(),
                   builder: (context, snapshot) {
@@ -121,7 +154,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     final userType = snapshot.data!.userType?.toLowerCase();
                     final canCreateOpportunity = userType == 'coach' ||
                         userType == 'scout' ||
-                        userType == 'club';
+                        userType == 'club' ||
+                        userType == 'institute';
 
                     return Visibility(
                       visible: canCreateOpportunity,
