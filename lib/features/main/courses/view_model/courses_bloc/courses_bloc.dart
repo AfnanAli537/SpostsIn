@@ -147,26 +147,48 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     }
   }
 
-  Future<void> _onFetchCourseLessons(
-    FetchCourseLessons event,
-    Emitter<CoursesState> emit,
-  ) async {
-    try {
-      final lessons = await _repository.getCourseLessons(event.courseId);
+// Replace _onFetchCourseLessons in courses_bloc.dart with this version:
 
-      // Get course to check enrollment status
-      final course = await _repository.getCourseById(event.courseId);
-
-      emit(LessonsLoaded(
-        lessons: lessons,
-        isEnrolled: course.isEnrolled,
-      ));
-    } catch (e) {
-      debugPrint('Error fetching lessons: $e');
-      emit(CoursesError(message: e.toString()));
+Future<void> _onFetchCourseLessons(
+  FetchCourseLessons event,
+  Emitter<CoursesState> emit,
+) async {
+  try {
+    debugPrint('📚 STEP 1: Starting to fetch lessons for course: ${event.courseId}');
+    
+    // Don't emit loading if we already have data
+    if (state is! LessonsLoaded) {
+      debugPrint('📚 STEP 2: Current state is not LessonsLoaded, emitting loading...');
+      emit(const CoursesLoading());
+    } else {
+      debugPrint('📚 STEP 2: Current state is LessonsLoaded, skipping loading state');
     }
-  }
 
+    debugPrint('📚 STEP 3: Calling repository.getCourseLessons...');
+    final lessons = await _repository.getCourseLessons(event.courseId);
+    debugPrint('📚 STEP 4: ✅ Got ${lessons.length} lessons from repository');
+    
+    // Log lesson details
+    for (var i = 0; i < lessons.length; i++) {
+      debugPrint('   Lesson ${i + 1}: ${lessons[i].title} (Order: ${lessons[i].order})');
+    }
+
+    debugPrint('📚 STEP 5: Calling repository.getCourseById...');
+    final course = await _repository.getCourseById(event.courseId);
+    debugPrint('📚 STEP 6: ✅ Got course, isEnrolled: ${course.isEnrolled}, isOwner: ${course.isOwner}');
+
+    debugPrint('📚 STEP 7: Emitting LessonsLoaded state...');
+    emit(LessonsLoaded(
+      lessons: lessons,
+      isEnrolled: course.isEnrolled,
+    ));
+    debugPrint('📚 STEP 8: ✅✅✅ Successfully emitted LessonsLoaded state with ${lessons.length} lessons');
+  } catch (e, stackTrace) {
+    debugPrint('📚 ❌❌❌ ERROR in _onFetchCourseLessons: $e');
+    debugPrint('📚 Stack trace: $stackTrace');
+    emit(CoursesError(message: e.toString()));
+  }
+}
   // ==================== COURSE CRUD ====================
 
   Future<void> _onCreateCourse(

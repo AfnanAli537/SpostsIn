@@ -5,8 +5,8 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 class CourseCard extends StatelessWidget {
   final CourseModel course;
   final VoidCallback onTap;
-  final VoidCallback? onEdit; // ✅ Added optional callback
-  final VoidCallback? onDelete; // ✅ Added optional callback
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   
   const CourseCard({
     super.key,
@@ -37,6 +37,7 @@ class CourseCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // ✅ Fix overflow in Column
           children: [
             // Thumbnail
             ClipRRect(
@@ -54,157 +55,203 @@ class CourseCard extends StatelessWidget {
               ),
             ),
 
-            Padding(
-              padding: EdgeInsets.all(12.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    course.title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4.h),
-
-                  // Description
-                  if (course.description != null && course.description!.isNotEmpty)
+            // ✅ Use Flexible/Expanded for content to prevent overflow
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.all(12.r),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title
                     Text(
-                      course.description!,
-                      style: theme.textTheme.bodySmall,
+                      course.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  SizedBox(height: 8.h),
+                    SizedBox(height: 4.h),
 
-                  // Provider info
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 12.r,
-                        backgroundImage: course.owner.profilePictureUrl != null
-                            ? NetworkImage(course.owner.profilePictureUrl!)
-                            : null,
-                        child: course.owner.profilePictureUrl == null
-                            ? Icon(Icons.person, size: 16.sp)
-                            : null,
+                    // Description
+                    if (course.description != null && course.description!.isNotEmpty)
+                      Text(
+                        course.description!,
+                        style: theme.textTheme.bodySmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Text(
-                          course.owner.fullName,
-                          style: theme.textTheme.bodySmall,
-                          overflow: TextOverflow.ellipsis,
+                    SizedBox(height: 8.h),
+
+                    // // Provider info
+                    // Row(
+                    //   children: [
+                    //     CircleAvatar(
+                    //       radius: 12.r,
+                    //       backgroundImage: course.owner.profilePictureUrl != null
+                    //           ? NetworkImage(course.owner.profilePictureUrl!)
+                    //           : null,
+                    //       child: course.owner.profilePictureUrl == null
+                    //           ? Icon(Icons.person, size: 16.sp)
+                    //           : null,
+                    //     ),
+                    //     SizedBox(width: 8.w),
+                    //     Expanded(
+                    //       child: Text(
+                    //         course.owner.fullName,
+                    //         style: theme.textTheme.bodySmall,
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 8.h),
+
+                    // ✅ FIXED: Stats row with Flexible widgets to prevent overflow
+                    // Row(
+                    //   children: [
+                    //     // Lessons count
+                    //     Flexible(
+                    //       child: Row(
+                    //         mainAxisSize: MainAxisSize.min,
+                    //         children: [
+                    //           Icon(Icons.play_circle_outline, size: 14.sp),
+                    //           SizedBox(width: 4.w),
+                    //           Flexible(
+                    //             child: Text(
+                    //               '${course.lessonsCount}',
+                    //               style: theme.textTheme.bodySmall,
+                    //               overflow: TextOverflow.ellipsis,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 8.w),
+                        
+                    //     // Duration
+                    //     Flexible(
+                    //       child: Row(
+                    //         mainAxisSize: MainAxisSize.min,
+                    //         children: [
+                    //           Icon(Icons.access_time, size: 14.sp),
+                    //           SizedBox(width: 4.w),
+                    //           Flexible(
+                    //             child: Text(
+                    //               course.formattedDuration,
+                    //               style: theme.textTheme.bodySmall,
+                    //               overflow: TextOverflow.ellipsis,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 8.w),
+                        
+                    //     // Enrolled users count
+                    //     Flexible(
+                    //       child: Row(
+                    //         mainAxisSize: MainAxisSize.min,
+                    //         children: [
+                    //           Icon(Icons.people_outline, size: 14.sp),
+                    //           SizedBox(width: 4.w),
+                    //           Flexible(
+                    //             child: Text(
+                    //               '${course.enrolledUsersCount}',
+                    //               style: theme.textTheme.bodySmall,
+                    //               overflow: TextOverflow.ellipsis,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    SizedBox(height: 8.h),
+
+                    // Progress bar (if enrolled)
+                    if (course.isEnrolled) ...[
+                      LinearProgressIndicator(
+                        value: course.progress / 100,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          theme.colorScheme.primary,
                         ),
                       ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        '${course.progress}% complete',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      // SizedBox(height: 8.h),
                     ],
-                  ),
-                  SizedBox(height: 8.h),
 
-                  // Stats
-                  Row(
-                    children: [
-                      Icon(Icons.play_circle_outline, size: 16.sp),
-                      SizedBox(width: 4.w),
-                      Text(
-                        '${course.lessonsCount} lessons',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      SizedBox(width: 12.w),
-                      Icon(Icons.access_time, size: 16.sp),
-                      SizedBox(width: 4.w),
-                      Text(
-                        course.formattedDuration,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      SizedBox(width: 12.w),
-                      Icon(Icons.people_outline, size: 16.sp),
-                      SizedBox(width: 4.w),
-                      Text(
-                        '${course.enrolledUsersCount}',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-
-                  // Progress bar (if enrolled)
-                  if (course.isEnrolled) ...[
-                    LinearProgressIndicator(
-                      value: course.progress / 100,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        theme.colorScheme.primary,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      '${course.progress}% complete',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    SizedBox(height: 8.h),
-                  ],
-
-                  // Price or enrolled badge
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (!course.isEnrolled)
-                        Text(
-                          course.isFree ? 'FREE' : '${course.price} EGP',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: course.isFree ? Colors.green : null,
-                          ),
-                        )
-                      else
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                          child: Text(
-                            'Enrolled',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
+                    // Price or enrolled badge
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (!course.isEnrolled)
+                          Flexible(
+                            child: Text(
+                              course.isFree ? 'FREE' : '${course.price} EGP',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: course.isFree ? Colors.green : null,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
+                        // else
+                        //   Container(
+                        //     padding: EdgeInsets.symmetric(
+                        //       horizontal: 8.w,
+                        //       vertical: 4.h,
+                        //     ),
+                        //     decoration: BoxDecoration(
+                        //       color: theme.colorScheme.primary,
+                        //       borderRadius: BorderRadius.circular(4.r),
+                        //     ),
+                        //     child: Text(
+                        //       'Enrolled',
+                        //       style: theme.textTheme.bodySmall?.copyWith(
+                        //         color: Colors.white,
+                        //       ),
+                        //     ),
+                        //   ),
 
-                      // Provider controls
-                      if (course.isOwner && (onEdit != null || onDelete != null))
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (onEdit != null)
-                              IconButton(
-                                icon: const Icon(Icons.edit_outlined),
-                                iconSize: 20.sp,
-                                onPressed: onEdit,
-                                tooltip: 'Edit Course',
-                              ),
-                            if (onDelete != null)
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red[700],
+                        // Provider controls
+                        if (course.isOwner && (onEdit != null || onDelete != null))
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (onEdit != null)
+                                IconButton(
+                                  icon: const Icon(Icons.edit_outlined),
+                                  iconSize: 20.sp,
+                                  onPressed: onEdit,
+                                  padding: EdgeInsets.all(4.w),
+                                  constraints: const BoxConstraints(),
+                                  tooltip: 'Edit',
                                 ),
-                                iconSize: 20.sp,
-                                onPressed: onDelete,
-                                tooltip: 'Delete Course',
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ],
+                              if (onDelete != null)
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red[700],
+                                  ),
+                                  iconSize: 20.sp,
+                                  onPressed: onDelete,
+                                  padding: EdgeInsets.all(4.w),
+                                  constraints: const BoxConstraints(),
+                                  tooltip: 'Delete',
+                                ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

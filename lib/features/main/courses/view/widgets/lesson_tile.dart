@@ -2,122 +2,176 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 
-// class LessonTile extends StatelessWidget {
-//   final LessonModel lesson;
-//   final bool isEnrolled;
-//   final VoidCallback onTap;
-//   const LessonTile({
-//     super.key,
-//     required this.lesson,
-//     required this.isEnrolled,
-//     required this.onTap,
-//   });
-//   @override
-//   Widget build(BuildContext context) {
-//     final canPlay = isEnrolled || (lesson.isPreview ?? false);
-    
-//     return ListTile(
-//       leading: Stack(
-//         alignment: Alignment.center,
-//         children: [
-//           // Thumbnail
-//           ClipRRect(
-//             borderRadius: BorderRadius.circular(8.r),
-//             child: Image.network(
-//               lesson.thumbnailUrl ?? '',
-//               width: 60.w,
-//               height: 45.h,
-//               fit: BoxFit.cover,
-//             ),
-//           ),
-//           // Play/Lock icon
-//           CircleAvatar(
-//             radius: 16.r,
-//             backgroundColor: Colors.black.withOpacity(0.7),
-//             child: Icon(
-//               canPlay ? Icons.play_arrow : Icons.lock,
-//               color: Colors.white,
-//               size: 20.sp,
-//             ),
-//           ),
-//         ],
-//       ),
-//       title: Text(
-//         '${lesson.order}. ${lesson.title}',
-//         maxLines: 2,
-//         overflow: TextOverflow.ellipsis,
-//       ),
-//       subtitle: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(lesson.durationFormatted),
-//           if (lesson.isWatched)
-//             Row(
-//               children: [
-//                 Icon(Icons.check_circle, size: 16.sp, color: Colors.green),
-//                 SizedBox(width: 4.w),
-//                 Text('Completed', style: TextStyle(color: Colors.green)),
-//               ],
-//             )
-//           else if (lesson.watchedDurationSeconds > 0)
-//             LinearProgressIndicator(
-//               value: lesson.progressPercentage / 100,
-//               backgroundColor: Colors.grey[200],
-//             ),
-//         ],
-//       ),
-//       trailing: lesson.isWatched
-//           ? Icon(Icons.check_circle, color: Colors.green)
-//           : null,
-//       onTap: canPlay ? onTap : null,
-//     );
-//   }
-// }
-
 class LessonTile extends StatelessWidget {
   final LessonModel lesson;
   final bool isEnrolled;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
+
   const LessonTile({
     super.key,
     required this.lesson,
     required this.isEnrolled,
     required this.onTap,
   });
+
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Stack(
-        children: [
-          Icon(Icons.play_circle_outline, size: 48.sp),
-          if (!isEnrolled)
-            Icon(Icons.lock, size: 24.sp), // Locked
-        ],
-      ),
-      title: Text('${lesson.order}. ${lesson.title}'),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (lesson.description != null)
-            Text(lesson.description!),
-          Text(lesson.formattedDuration),
-          if (lesson.isWatched)
-            Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green),
-                Text('Completed'),
-              ],
-            )
-          else if (lesson.watchedTime > 0)
-            LinearProgressIndicator(
-              value: lesson.progressPercentage / 100,
+    final theme = Theme.of(context);
+    final canPlay = isEnrolled;
+
+    return InkWell(
+      onTap: canPlay ? onTap : null,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: lesson.isWatched
+                ? theme.colorScheme.primary.withOpacity(0.3)
+                : Colors.grey[300]!,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Play icon with watched indicator
+            Container(
+              width: 48.w,
+              height: 48.w,
+              decoration: BoxDecoration(
+                color: lesson.isWatched
+                    ? theme.colorScheme.primary.withOpacity(0.2) // ✅ Different shade
+                    : theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                lesson.isWatched ? Icons.check_circle : Icons.play_arrow, // ✅ Check if watched
+                color: lesson.isWatched
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.primary.withOpacity(0.7),
+                size: 24.sp,
+              ),
             ),
-        ],
+            SizedBox(width: 16.w),
+
+            // Lesson info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Lesson ${lesson.order}',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (lesson.isWatched) ...[
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            'Watched',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    lesson.title,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (lesson.description != null) ...[
+                    SizedBox(height: 4.h),
+                    Text(
+                      lesson.description!,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  SizedBox(height: 8.h),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14.sp,
+                        color: Colors.grey[600],
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        lesson.formattedDuration,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      if (lesson.progressPercentage > 0) ...[
+                        SizedBox(width: 16.w),
+                        Text(
+                          '${lesson.progressPercentage.toInt()}% watched',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (lesson.progressPercentage > 0 && !lesson.isWatched)
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.h),
+                      child: LinearProgressIndicator(
+                        value: lesson.progressPercentage / 100,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          theme.colorScheme.primary,
+                        ),
+                        minHeight: 4.h,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            // Arrow or lock icon
+            Icon(
+              canPlay ? Icons.arrow_forward_ios : Icons.lock_outline, // ✅ Arrow for description
+              size: 16.sp,
+              color: canPlay
+                  ? theme.colorScheme.onSurface.withOpacity(0.5)
+                  : Colors.grey[400],
+            ),
+          ],
+        ),
       ),
-      trailing: lesson.isWatched
-          ? Icon(Icons.check_circle, color: Colors.green)
-          : null,
-      onTap: isEnrolled ? onTap : null, // Only clickable if enrolled
     );
   }
 }

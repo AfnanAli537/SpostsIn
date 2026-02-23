@@ -316,7 +316,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                   SizedBox(height: 16.h),
 
                   // Description field
-                  _buildLabel(string.description ?? 'Description', theme),
+                  _buildLabel(string.description, theme),
                   AuthTextField(
                     controller: _descriptionController,
                     hintText: 

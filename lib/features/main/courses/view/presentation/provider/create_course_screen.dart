@@ -16,15 +16,14 @@ import 'package:sports_in/features/register/data/data_sources/register_lists.dar
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-class CreateCourseBottomSheet extends StatefulWidget {
-  const CreateCourseBottomSheet({super.key});
+class CreateCourseScreen extends StatefulWidget {
+  const CreateCourseScreen({super.key});
 
   @override
-  State<CreateCourseBottomSheet> createState() =>
-      _CreateCourseBottomSheetState();
+  State<CreateCourseScreen> createState() => _CreateCourseScreenState();
 }
 
-class _CreateCourseBottomSheetState extends State<CreateCourseBottomSheet> {
+class _CreateCourseScreenState extends State<CreateCourseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -76,17 +75,13 @@ class _CreateCourseBottomSheetState extends State<CreateCourseBottomSheet> {
     return sportMap[sportName];
   }
 
-  void _createCourse() {
-    // final string = S.of(context);
-
+  void _createCourse(BuildContext context) {
     if (!_formKey.currentState!.validate()) return;
 
     final sportId = _getSportIdFromName(_sportNotifier.value);
     if (sportId == null) {
       Fluttertoast.showToast(
-        msg: 
-        // string.sportError ??
-         'Please select a sport',
+        msg: 'Please select a sport',
         backgroundColor: Colors.orange,
       );
       return;
@@ -112,208 +107,222 @@ class _CreateCourseBottomSheetState extends State<CreateCourseBottomSheet> {
 
     return BlocProvider(
       create: (context) => getIt<CoursesBloc>(),
-      child: BlocListener<CoursesBloc, CoursesState>(
-        listener: (context, state) {
-          if (state is CourseCreated) {
-            Fluttertoast.showToast(
-              msg: 
-              // string.courseCreated ??
-               'Course created successfully',
-              backgroundColor: Colors.green,
-            );
-            Navigator.pop(context);
-
-            // Show dialog to add lesson or skip
-            _showAddLessonDialog(context, state.course);
-          } else if (state is CoursesError) {
-            Fluttertoast.showToast(
-              msg: state.message,
-              backgroundColor: Colors.red,
-            );
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: theme.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
-          ),
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.all(20.w),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Handle bar
-                    Center(
-                      child: Container(
-                        width: 100.w,
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1D2D3D),
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-
-                    // Title
-                    Text(
-                      // string.createCourse ??
-                       'Create Course',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                        color: theme.onSurface,
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-
-                    // Thumbnail picker
-                    GestureDetector(
-                      onTap: _pickThumbnail,
-                      child: DottedBorder(
-                        options: RoundedRectDottedBorderOptions(
-                          color: Colors.grey[400]!,
-                          strokeWidth: 2.w,
-                          dashPattern: const [20, 6],
-                          radius: Radius.circular(12.r),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12.r),
-                          child: Container(
-                            height: 150.h,
-                            width: double.infinity,
-                            color: theme.surface,
-                            child: _selectedThumbnail != null
-                                ? Image.file(
-                                    _selectedThumbnail!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.add_photo_alternate_outlined,
-                                        size: 48.sp,
-                                        color: Colors.grey[600],
-                                      ),
-                                      SizedBox(height: 8.h),
-                                      Text(
-                                        // string.uploadThumbnail ??
-                                            'Upload Course Thumbnail',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
+      // ✅ FIX: Use Builder to get correct context with BLoC
+      child: Builder(
+        builder: (builderContext) => BlocListener<CoursesBloc, CoursesState>(
+          listener: (context, state) {
+            if (state is CourseCreated) {
+              Fluttertoast.showToast(
+                msg: 'Course created successfully',
+                backgroundColor: Colors.green,
+              );
+              Navigator.pop(context);
+              _showAddLessonDialog(context, state.course);
+            } else if (state is CoursesError) {
+              Fluttertoast.showToast(
+                msg: state.message,
+                backgroundColor: Colors.red,
+              );
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: theme.onSurface),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                'Create Course',
+                style: TextStyle(
+                  color: theme.onSurface,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              centerTitle: true,
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(24.w),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Thumbnail picker
+                      GestureDetector(
+                        onTap: _pickThumbnail,
+                        child: DottedBorder(
+                          options: RoundedRectDottedBorderOptions(
+                            color: Colors.grey[400]!,
+                            strokeWidth: 2.w,
+                            dashPattern: const [20, 6],
+                            radius: Radius.circular(12.r),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.r),
+                            child: Container(
+                              height: 200.h,
+                              width: double.infinity,
+                              color: theme.surface,
+                              child: _selectedThumbnail != null
+                                  ? Stack(
+                                      children: [
+                                        Image.file(
+                                          _selectedThumbnail!,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        Positioned(
+                                          top: 8.h,
+                                          right: 8.w,
+                                          child: GestureDetector(
+                                            onTap: () => setState(() {
+                                              _selectedThumbnail = null;
+                                            }),
+                                            child: Container(
+                                              padding: EdgeInsets.all(4.w),
+                                              decoration: const BoxDecoration(
+                                                color: Colors.black54,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 20.sp,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add_photo_alternate_outlined,
+                                          size: 60.sp,
                                           color: Colors.grey[600],
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                        SizedBox(height: 12.h),
+                                        Text(
+                                          'Upload Course Thumbnail',
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Colors.grey[600],
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 16.h),
+                      SizedBox(height: 28.h),
 
-                    // Title field
-                    _buildLabel(string.title, theme),
-                    AuthTextField(
-                      controller: _titleController,
-                      hintText: 
-                      // string.courseTitle ??
-                       'Course Title',
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return
-                          //  string.titleError ??
-                            'Please enter a title';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16.h),
+                      // Title field
+                      Text(
+                        string.title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: theme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      AuthTextField(
+                        controller: _titleController,
+                        hintText: 'Course Title',
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a title';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20.h),
 
-                    // Description field
-                    _buildLabel(string.description, theme),
-                    AuthTextField(
-                      controller: _descriptionController,
-                      hintText: 
-                      // string.courseDescription ??
-                       'Course Description',
-                      maxLines: 4,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return
-                          //  string.descriptionError ??
-                              'Please enter a description';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16.h),
+                      // Description field
+                      Text(
+                        string.description,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: theme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      AuthTextField(
+                        controller: _descriptionController,
+                        hintText: 'Course Description',
+                        maxLines: 5,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a description';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20.h),
 
-                    // Sport dropdown
-                    _buildLabel(string.sport, theme),
-                    ValueListenableBuilder<String?>(
-                      valueListenable: _sportNotifier,
-                      builder: (context, sport, _) {
-                        return AppDropdownOverlay(
-                          labelText: string.selectSport,
-                          value: sport,
-                          options: RegisterLists.sportNameOptions(string),
-                          onChanged: (val) => _sportNotifier.value = val,
-                        );
-                      },
-                    ),
-                    SizedBox(height: 16.h),
+                      // Sport dropdown
+                      ValueListenableBuilder<String?>(
+                        valueListenable: _sportNotifier,
+                        builder: (context, sport, _) {
+                          return AppDropdownOverlay(
+                            labelText: string.selectSport,
+                            value: sport,
+                            options: RegisterLists.sportNameOptions(string),
+                            onChanged: (val) => _sportNotifier.value = val,
+                          );
+                        },
+                      ),
+                      SizedBox(height: 20.h),
 
-                    // Price field
-                    _buildLabel(
-                      // string.price ??
-                       'Price', theme),
-                    AuthTextField(
-                      controller: _priceController,
-                      hintText: 
-                      // string.enterPrice ?? 
-                      'Enter price (0 for free)',
-                      // keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return
-                          //  string.priceError ??
-                            'Please enter a price';
-                        }
-                        final price = double.tryParse(value);
-                        if (price == null || price < 0) {
-                          return 
-                          // string.invalidPrice ??
-                           'Invalid price';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 24.h),
+                      // Price field
+                      Text(
+                        'Price',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: theme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      AuthTextField(
+                        controller: _priceController,
+                        hintText: 'Enter price (0 for free)',
+                        // keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a price';
+                          }
+                          final price = double.tryParse(value);
+                          if (price == null || price < 0) {
+                            return 'Invalid price';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 40.h),
 
-                    // Create button
-                    BlocBuilder<CoursesBloc, CoursesState>(
-                      builder: (context, state) {
-                        final isLoading = state is CourseActionLoading;
-                        return CustomElevatedButton(
-                          text: 
-                          // string.createCourse ??
-                           'Create Course',
-                          isLoading: isLoading,
-                          onPressed: isLoading ? () => {} : _createCourse,
-                        );
-                      },
-                    ),
-                    SizedBox(height: 20.h),
-                  ],
+                      // Create button
+                      BlocBuilder<CoursesBloc, CoursesState>(
+                        builder: (context, state) {
+                          final isLoading = state is CourseActionLoading;
+                          return CustomElevatedButton(
+                            text: 'Create Course',
+                            isLoading: isLoading,
+                            enabled: !isLoading,
+                            onPressed: isLoading ? ()=>{} : () => _createCourse(builderContext),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -322,74 +331,82 @@ class _CreateCourseBottomSheetState extends State<CreateCourseBottomSheet> {
       ),
     );
   }
-
-  Widget _buildLabel(String text, ColorScheme theme) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
-      child: Text(
-        text,
-        style: GoogleFonts.poppins(
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w600,
-          color: theme.onSurface,
-        ),
-      ),
-    );
-  }
-
-  void _showAddLessonDialog(BuildContext context, CourseModel course) {
-    // final string = S.of(context);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          // string.addLesson ??
-           'Add Lesson'),
-        content: Text(
-          // string.addLessonPrompt ??
-              'Would you like to add a lesson to this course now?',
+void _showAddLessonDialog(BuildContext context, CourseModel course) {
+  // ✅ Save BLoC reference FIRST (while we have access to it)
+  final coursesBloc = context.read<CoursesBloc>();
+  
+  showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Add Lesson'),
+        content: const Text(
+          'Would you like to add a lesson to this course now?',
         ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
             },
-            child: Text(
-              // string.addLater ??
-               'Add Later'),
+            child: const Text('Add Later'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<CoursesBloc>(),
-                    child: UploadVideoScreen(
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(dialogContext);
+            Navigator.push(
+              context, // Use original context
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: coursesBloc, // ✅ Use saved reference
+                  child: UploadVideoScreen(
                       courseId: course.id,
                       existingLessonsCount: 0, // First lesson
                     ),
-                  ),
                 ),
-              );
-            },
-            child: Text(
-              // string.addNow ?? 
-            'Add Now'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-void showCreateCourseBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => const CreateCourseBottomSheet(),
+              ),
+            );
+          },
+          child: const Text('Add Now'),
+        ),
+      ],
+    ),
   );
+}
+  // void _showAddLessonDialog(BuildContext context, CourseModel course) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (dialogContext) => AlertDialog(
+  //       title: const Text('Add Lesson'),
+  //       content: const Text(
+  //         'Would you like to add a lesson to this course now?',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.pop(dialogContext);
+  //           },
+  //           child: const Text('Add Later'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             Navigator.pop(dialogContext);
+  //             Navigator.push(
+  //               context,
+  //               MaterialPageRoute(
+  //                 builder: (_) => BlocProvider.value(
+  //                   value: context.read<CoursesBloc>(),
+  //                   child: UploadVideoScreen(
+  //                     courseId: course.id,
+  //                     existingLessonsCount: 0, // First lesson
+  //                   ),
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //           child: const Text('Add Now'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

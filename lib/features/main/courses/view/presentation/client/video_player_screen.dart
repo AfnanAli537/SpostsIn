@@ -114,7 +114,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     if (!_controller.value.isInitialized) return;
 
     final currentSeconds = _controller.value.position.inSeconds;
-    final totalSeconds = _controller.value.duration.inSeconds;
+    // final totalSeconds = _controller.value.duration.inSeconds;
     
     // ✅ Already in seconds! No conversion needed
     final watchedSeconds = currentSeconds.toDouble();

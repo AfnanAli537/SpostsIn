@@ -202,14 +202,42 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               ],
             ),
         ],
-        bottom: TabBar(
+        // bottom: TabBar(
+        //   controller: _tabController,
+        //   tabs: _buildTabs(course, string),
+        // ),
+      ),
+      body: Column(
+        children: [
+                 // Thumbnail image
+        if (course.thumbnailUrl != null)
+           ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: Image.network(
+                course.thumbnailUrl!,
+                width: double.infinity,
+                height: 200.h,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 200.h,
+                  color: Colors.grey[300],
+                  child: Icon(Icons.image_not_supported, size: 48.sp),
+                ),
+              ),
+            ),
+        
+        // ✅ Tabs here (not in AppBar)
+        TabBar(
           controller: _tabController,
           tabs: _buildTabs(course, string),
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: _buildTabViews(course, theme, string),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: _buildTabViews(course, theme, string),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: !course.isOwner && !course.isEnrolled
           ? _buildEnrollButton(course, theme, string)
@@ -268,22 +296,22 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Thumbnail
-          if (course.thumbnailUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12.r),
-              child: Image.network(
-                course.thumbnailUrl!,
-                width: double.infinity,
-                height: 200.h,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200.h,
-                  color: Colors.grey[300],
-                  child: Icon(Icons.image_not_supported, size: 48.sp),
-                ),
-              ),
-            ),
-          SizedBox(height: 16.h),
+          // if (course.thumbnailUrl != null)
+          //   ClipRRect(
+          //     borderRadius: BorderRadius.circular(12.r),
+          //     child: Image.network(
+          //       course.thumbnailUrl!,
+          //       width: double.infinity,
+          //       height: 200.h,
+          //       fit: BoxFit.cover,
+          //       errorBuilder: (context, error, stackTrace) => Container(
+          //         height: 200.h,
+          //         color: Colors.grey[300],
+          //         child: Icon(Icons.image_not_supported, size: 48.sp),
+          //       ),
+          //     ),
+          //   ),
+          // SizedBox(height: 16.h),
 
           // Title
           Text(

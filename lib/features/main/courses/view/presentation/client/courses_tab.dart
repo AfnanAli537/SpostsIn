@@ -18,6 +18,13 @@ class CoursesTab extends StatefulWidget {
 
 class _CoursesTabState extends State<CoursesTab> {
   late final CoursesBloc _coursesBloc;
+  
+  // ✅ FIX: Store courses locally to prevent disappearing
+  List<CourseModel> _enrolledCourses = [];
+  List<CourseModel> _availableCourses = [];
+  bool _isLoadingEnrolled = true;
+  bool _isLoadingAvailable = true;
+
   @override
   void initState() {
     super.initState();
@@ -27,30 +34,43 @@ class _CoursesTabState extends State<CoursesTab> {
 
   void _loadData() {
     _coursesBloc
-      ..add(const FetchEnrolledCourses(page: 1, size: 3))
-      ..add(const FetchAvailableCourses(page: 1, size: 6));
+      ..add(const FetchEnrolledCourses(page: 1, size: 10)) // ✅ Increased to 10
+      ..add(const FetchAvailableCourses(page: 1, size: 10)); // ✅ Increased to 10
   }
 
   @override
   void dispose() {
-    _coursesBloc.close();
+    // ✅ DON'T close the bloc - let it persist
+    // _coursesBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      // create: (context) => getIt<CoursesBloc>(),
-      create: (_) => _coursesBloc,
-      child: BlocBuilder<CoursesBloc, CoursesState>(
-        builder: (context, state) {
-          return _buildSliverContent(context, state);
+    return BlocProvider.value(
+      value: _coursesBloc,
+      child: BlocListener<CoursesBloc, CoursesState>(
+        listener: (context, state) {
+          // ✅ FIX: Store courses in local state to prevent overwriting
+          if (state is EnrolledCoursesLoaded) {
+            setState(() {
+              _enrolledCourses = state.courses;
+              _isLoadingEnrolled = false;
+            });
+          }
+          if (state is CoursesLoaded) {
+            setState(() {
+              _availableCourses = state.courses;
+              _isLoadingAvailable = false;
+            });
+          }
         },
+        child: _buildSliverContent(context),
       ),
     );
   }
 
-  Widget _buildSliverContent(BuildContext context, CoursesState state) {
+  Widget _buildSliverContent(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
 
@@ -59,27 +79,27 @@ class _CoursesTabState extends State<CoursesTab> {
         SizedBox(height: 16.h),
 
         // Continue Watching Section
-        _buildContinueWatchingSection(context, state, theme, string),
+        _buildContinueWatchingSection(context, theme, string),
 
-        // Enrolled Courses Section
-        _buildEnrolledCoursesSection(context, state, theme, string),
+        // New Courses Section (✅ Fixed with local state)
+        _buildNewCoursesSection(context, theme, string),
+        
+        // Enrolled Courses Section (✅ Fixed with local state)
+        _buildEnrolledCoursesSection(context, theme, string),
+        SizedBox(height: 44.h),
 
-        // New Courses Section
-        _buildNewCoursesSection(context, state, theme, string),
-
-        SizedBox(height: 24.h),
       ]),
     );
   }
 
   Widget _buildContinueWatchingSection(
     BuildContext context,
-    CoursesState state,
     ThemeData theme,
     S string,
   ) {
-    if (state is EnrolledCoursesLoaded && state.courses.isNotEmpty) {
-      final inProgressCourses = state.courses
+    // ✅ Use local state instead of bloc state
+    if (_enrolledCourses.isNotEmpty) {
+      final inProgressCourses = _enrolledCourses
           .where((c) => c.progress > 0 && c.progress < 100)
           .toList()
         ..sort((a, b) => b.progress.compareTo(a.progress));
@@ -91,7 +111,6 @@ class _CoursesTabState extends State<CoursesTab> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Text(
-                // string.continueWatching ?? 
                 'Continue Watching',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -113,33 +132,46 @@ class _CoursesTabState extends State<CoursesTab> {
 
   Widget _buildEnrolledCoursesSection(
     BuildContext context,
-    CoursesState state,
     ThemeData theme,
     S string,
   ) {
-    if (state is EnrolledCoursesLoaded && state.courses.isNotEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  // string.enrolledCourses ?? 
-                  'Enrolled Courses',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+    // ✅ Use local state
+    if (_isLoadingEnrolled) {
+      return Padding(
+        padding: EdgeInsets.all(32.h),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_enrolledCourses.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // ✅ Show first 3 courses in horizontal scroll
+    final displayCourses = _enrolledCourses.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Enrolled Courses',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              if (_enrolledCourses.length > 3)
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => BlocProvider.value(
-                          value: context.read<CoursesBloc>(),
+                          value: _coursesBloc,
                           child: const CourseListScreen(
                             listType: CourseListType.enrolled,
                           ),
@@ -147,90 +179,87 @@ class _CoursesTabState extends State<CoursesTab> {
                       ),
                     );
                   },
-                  child: Text(
-                    // string.showMore ?? 
-                    'Show More'),
+                  child: const Text('Show More'),
                 ),
-              ],
-            ),
+            ],
           ),
-          SizedBox(
-            height: 280.h,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              itemCount: state.courses.length > 3 ? 3 : state.courses.length,
-              itemBuilder: (context, index) {
-                final course = state.courses[index];
-                return Container(
-                  width: 250.w,
-                  margin: EdgeInsets.only(right: 16.w),
-                  child: CourseCard(
-                    course: course,
-                    onTap: () => _navigateToCourseDetail(context, course.id),
-                  ),
-                );
-              },
-            ),
+        ),
+        SizedBox(height: 8.h),
+        // ✅ Horizontal scrolling with proper sizing
+        SizedBox(
+          height: 320.h, // Increased height for card content
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: displayCourses.length,
+            itemBuilder: (context, index) {
+              final course = displayCourses[index];
+              return Container(
+                width: 280.w, // ✅ Fixed width for horizontal scroll
+                margin: EdgeInsets.only(right: 16.w),
+                child: CourseCard(
+                  course: course,
+                  onTap: () => _navigateToCourseDetail(context, course.id),
+                ),
+              );
+            },
           ),
-          SizedBox(height: 24.h),
-        ],
-      );
-    }
-    return const SizedBox.shrink();
+        ),
+        SizedBox(height: 24.h),
+      ],
+    );
   }
 
   Widget _buildNewCoursesSection(
     BuildContext context,
-    CoursesState state,
     ThemeData theme,
     S string,
   ) {
-    if (state is CoursesLoading) {
+    // ✅ Use local state
+    if (_isLoadingAvailable) {
+      return Padding(
+        padding: EdgeInsets.all(32.h),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_availableCourses.isEmpty) {
       return Center(
         child: Padding(
           padding: EdgeInsets.all(32.h),
-          child: const CircularProgressIndicator(),
+          child: Text(
+            'No courses available',
+            style: theme.textTheme.bodyLarge,
+          ),
         ),
       );
     }
 
-    if (state is CoursesLoaded) {
-      if (state.courses.isEmpty) {
-        return Center(
-          child: Padding(
-            padding: EdgeInsets.all(32.h),
-            child: Text(
-              // string.noCoursesAvailable ?? 
-              'No courses available',
-              style: theme.textTheme.bodyLarge,
-            ),
-          ),
-        );
-      }
+    // ✅ Show first 3 courses in horizontal scroll
+    final displayCourses = _availableCourses.take(3).toList();
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  // string.newCourses ?? 
-                  'New Courses',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'New Courses',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              if (_availableCourses.length > 3)
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => BlocProvider.value(
-                          value: context.read<CoursesBloc>(),
+                          value: _coursesBloc,
                           child: const CourseListScreen(
                             listType: CourseListType.available,
                           ),
@@ -238,65 +267,40 @@ class _CoursesTabState extends State<CoursesTab> {
                       ),
                     );
                   },
-                  child: Text(
-                    // string.showMore ?? 
-                    'Show More'),
+                  child: const Text('Show More'),
                 ),
-              ],
-            ),
-          ),
-          ...state.courses.take(6).map((course) => CourseCard(
-                course: course,
-                onTap: () => _navigateToCourseDetail(context, course.id),
-              )),
-        ],
-      );
-    }
-
-    if (state is CoursesError) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(32.h),
-          child: Column(
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 48.sp,
-                color: theme.colorScheme.error,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                state.message,
-                style: theme.textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 16.h),
-              ElevatedButton(
-                onPressed: _loadData,
-                child: Text(string.retry),
-              ),
             ],
           ),
         ),
-      );
-    }
-
-    return const SizedBox.shrink();
+        SizedBox(height: 8.h),
+        // ✅ Horizontal scrolling with proper sizing
+        SizedBox(
+          height: 320.h,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: displayCourses.length,
+            itemBuilder: (context, index) {
+              final course = displayCourses[index];
+              return Container(
+                width: 280.w,
+                margin: EdgeInsets.only(right: 16.w),
+                child: CourseCard(
+                  course: course,
+                  onTap: () => _navigateToCourseDetail(context, course.id),
+                ),
+              );
+            },
+          ),
+        ),
+        SizedBox(height: 24.h),
+      ],
+    );
   }
 
   Widget _buildLastViewedCard(BuildContext context, CourseModel course, ThemeData theme) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: context.read<CoursesBloc>(),
-              child: CourseDetailScreen(courseId: course.id),
-            ),
-          ),
-        );
-      },
+      onTap: () => _navigateToCourseDetail(context, course.id),
       child: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
@@ -362,37 +366,33 @@ class _CoursesTabState extends State<CoursesTab> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 8.h),
-                  Text(course.owner.fullName, style: theme.textTheme.bodySmall),
+                  // SizedBox(height: 8.h),
+                  // Text(course.owner.fullName, style: theme.textTheme.bodySmall),
                   SizedBox(height: 12.h),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${course.progress}% Complete',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            course.formattedDuration,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8.h),
-                      LinearProgressIndicator(
-                        value: course.progress / 100,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colorScheme.primary,
+                      Text(
+                        '${course.progress}% Complete',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                        minHeight: 6.h,
+                      ),
+                      Text(
+                        // course.formattedDuration,
+                        '${(course.progress / 100 * course.lessonsCount).ceil()} lesson left',
+                        style: theme.textTheme.bodySmall,
                       ),
                     ],
+                  ),
+                  SizedBox(height: 8.h),
+                  LinearProgressIndicator(
+                    value: course.progress / 100,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      theme.colorScheme.primary,
+                    ),
+                    minHeight: 6.h,
                   ),
                 ],
               ),
@@ -408,7 +408,7 @@ class _CoursesTabState extends State<CoursesTab> {
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
-          value: context.read<CoursesBloc>(),
+          value: _coursesBloc, // ✅ Pass same bloc instance
           child: CourseDetailScreen(courseId: courseId),
         ),
       ),

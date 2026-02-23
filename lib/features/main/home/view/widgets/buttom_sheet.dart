@@ -102,7 +102,12 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                              'Create Course',
                             onTap: () {
                               Navigator.pop(context);
-                              showCreateCourseBottomSheet(context);
+                              Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => const CreateCourseScreen(),
+  ),
+);
                             },
                           ),
                           SizedBox(height: 16.h),
