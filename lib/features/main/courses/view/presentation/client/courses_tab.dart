@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
@@ -303,7 +304,7 @@ class _CoursesTabState extends State<CoursesTab> {
       onTap: () => _navigateToCourseDetail(context, course.id),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: theme.colorScheme.primary,
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
@@ -328,7 +329,7 @@ class _CoursesTabState extends State<CoursesTab> {
                     errorBuilder: (context, error, stackTrace) => Container(
                       height: 180.h,
                       color: Colors.grey[300],
-                      child: Icon(Icons.image_not_supported, size: 48.sp),
+                      child: Center(child: Icon(Icons.image_not_supported, size: 48.sp)),
                     ),
                   ),
                   Positioned.fill(
@@ -338,7 +339,7 @@ class _CoursesTabState extends State<CoursesTab> {
                         child: Container(
                           padding: EdgeInsets.all(16.r),
                           decoration: const BoxDecoration(
-                            color: Colors.white,
+                            color: Color.fromARGB(205, 255, 255, 255),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -362,6 +363,7 @@ class _CoursesTabState extends State<CoursesTab> {
                     course.title,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -376,12 +378,14 @@ class _CoursesTabState extends State<CoursesTab> {
                         '${course.progress}% Complete',
                         style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onPrimary,
                         ),
                       ),
                       Text(
                         // course.formattedDuration,
                         '${(course.progress / 100 * course.lessonsCount).ceil()} lesson left',
-                        style: theme.textTheme.bodySmall,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onPrimary,),
                       ),
                     ],
                   ),
@@ -390,7 +394,8 @@ class _CoursesTabState extends State<CoursesTab> {
                     value: course.progress / 100,
                     backgroundColor: Colors.grey[200],
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      theme.colorScheme.primary,
+                      // theme.colorScheme.primary,
+                      ColorManager.warning
                     ),
                     minHeight: 6.h,
                   ),

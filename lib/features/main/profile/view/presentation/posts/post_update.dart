@@ -7,7 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
-import 'package:sports_in/core/utils/validators/regex.dart';
+// import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';

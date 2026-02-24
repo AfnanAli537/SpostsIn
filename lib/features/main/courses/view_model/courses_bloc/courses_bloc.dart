@@ -148,6 +148,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   }
 
 // Replace _onFetchCourseLessons in courses_bloc.dart with this version:
+// ✅ FIX: Replace _onFetchCourseLessons in courses_bloc.dart
 
 Future<void> _onFetchCourseLessons(
   FetchCourseLessons event,
@@ -156,33 +157,28 @@ Future<void> _onFetchCourseLessons(
   try {
     debugPrint('📚 STEP 1: Starting to fetch lessons for course: ${event.courseId}');
     
-    // Don't emit loading if we already have data
-    if (state is! LessonsLoaded) {
-      debugPrint('📚 STEP 2: Current state is not LessonsLoaded, emitting loading...');
-      emit(const CoursesLoading());
-    } else {
-      debugPrint('📚 STEP 2: Current state is LessonsLoaded, skipping loading state');
-    }
-
-    debugPrint('📚 STEP 3: Calling repository.getCourseLessons...');
+    // ✅ FIX: Don't emit CoursesLoading - it interferes with CourseDetailLoaded
+    // Instead, just fetch lessons and emit LessonsLoaded
+    
+    debugPrint('📚 STEP 2: Calling repository.getCourseLessons...');
     final lessons = await _repository.getCourseLessons(event.courseId);
-    debugPrint('📚 STEP 4: ✅ Got ${lessons.length} lessons from repository');
+    debugPrint('📚 STEP 3: ✅ Got ${lessons.length} lessons from repository');
     
     // Log lesson details
     for (var i = 0; i < lessons.length; i++) {
       debugPrint('   Lesson ${i + 1}: ${lessons[i].title} (Order: ${lessons[i].order})');
     }
 
-    debugPrint('📚 STEP 5: Calling repository.getCourseById...');
+    debugPrint('📚 STEP 4: Calling repository.getCourseById...');
     final course = await _repository.getCourseById(event.courseId);
-    debugPrint('📚 STEP 6: ✅ Got course, isEnrolled: ${course.isEnrolled}, isOwner: ${course.isOwner}');
+    debugPrint('📚 STEP 5: ✅ Got course, isEnrolled: ${course.isEnrolled}, isOwner: ${course.isOwner}');
 
-    debugPrint('📚 STEP 7: Emitting LessonsLoaded state...');
+    debugPrint('📚 STEP 6: Emitting LessonsLoaded state...');
     emit(LessonsLoaded(
       lessons: lessons,
       isEnrolled: course.isEnrolled,
     ));
-    debugPrint('📚 STEP 8: ✅✅✅ Successfully emitted LessonsLoaded state with ${lessons.length} lessons');
+    debugPrint('📚 STEP 7: ✅✅✅ Successfully emitted LessonsLoaded state with ${lessons.length} lessons');
   } catch (e, stackTrace) {
     debugPrint('📚 ❌❌❌ ERROR in _onFetchCourseLessons: $e');
     debugPrint('📚 Stack trace: $stackTrace');
@@ -353,6 +349,8 @@ Future<void> _onFetchCourseLessons(
 
   // ==================== PROGRESS ====================
 
+//  ==================== PROGRESS ====================
+
   Future<void> _onUpdateLessonProgress(
     UpdateLessonProgress event,
     Emitter<CoursesState> emit,
@@ -369,16 +367,20 @@ Future<void> _onFetchCourseLessons(
         request: request,
       );
 
-      emit(ProgressUpdated(
-        lessonId: event.lessonId,
-        isWatched: event.isWatched,
-      ));
+      // ✅ DON'T emit state - this causes rebuilds
+      // Just silently save progress in background
+      debugPrint('✅ Progress saved silently');
+      
+      // ❌ OLD CODE (causes rebuilds):
+      // emit(ProgressUpdated(
+      //   lessonId: event.lessonId,
+      //   isWatched: event.isWatched,
+      // ));
     } catch (e) {
-      debugPrint('Error updating progress: $e');
+      debugPrint('❌ Error updating progress: $e');
       // Don't emit error for progress updates, just log it
     }
   }
-
   // ==================== ANALYTICS (PROVIDER) ====================
 
   Future<void> _onFetchEnrolledUsers(

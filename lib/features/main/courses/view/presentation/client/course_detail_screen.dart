@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
-import 'package:sports_in/features/main/courses/view/presentation/client/lessons_screen.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/inline_lesson_video_player.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/enrollees_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/revenue_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/upload_video_screen.dart';
@@ -28,12 +29,24 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   CourseModel? _course;
+  LessonModel? _currentPlayingLesson;
+  List<LessonModel> _allLessons = [];
 
   @override
   void initState() {
     super.initState();
     context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
-    _tabController = TabController(length: 2, vsync: this); // Will update based on isOwner/isEnrolled
+    _tabController = TabController(length: 2, vsync: this);
+    
+    // ✅ Listen to tab changes
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          // Clear playing lesson when switching tabs
+          _currentPlayingLesson = null;
+        });
+      }
+    });
   }
 
   @override
@@ -48,17 +61,32 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _course!.isEnrolled != course.isEnrolled) {
       _tabController.dispose();
       
-      // Determine tab count
-      int tabLength = 2; // Default: Description, Lessons
+      int tabLength = 2;
       if (course.isOwner) {
-        tabLength = 4; // Description, Lessons, Enrolled, Revenue
+        tabLength = 4;
       } else if (course.isEnrolled) {
-        tabLength = 3; // Description, Lessons, Progress
+        tabLength = 3;
       }
       
       _tabController = TabController(length: tabLength, vsync: this);
       _course = course;
+      
+      // Listen to new controller
+      _tabController.addListener(() {
+        if (_tabController.indexIsChanging) {
+          setState(() {
+            _currentPlayingLesson = null;
+          });
+        }
+      });
+      
+      context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
     }
+  }
+
+  // ✅ Helper to check if we're on lessons tab
+  bool get _isLessonsTab {
+    return _tabController.index == 1;
   }
 
   @override
@@ -70,18 +98,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       listener: (context, state) {
         if (state is EnrollmentSuccess) {
           Fluttertoast.showToast(
-            msg:
-            //  string.enrolledSuccessfully ?? 
-             'Enrolled successfully',
+            msg: 'Enrolled successfully',
             backgroundColor: Colors.green,
           );
-          // Refresh course details
           context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
         } else if (state is CourseDeleted) {
           Fluttertoast.showToast(
-            msg:
-            //  string.courseDeleted ?? 
-             'Course deleted',
+            msg: 'Course deleted',
             backgroundColor: Colors.green,
           );
           Navigator.pop(context, true);
@@ -92,7 +115,16 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           );
         }
       },
+      buildWhen: (previous, current) {
+        return current is CourseDetailLoading ||
+            current is CourseDetailLoaded ||
+            (current is CoursesError && previous is! CourseDetailLoaded);
+      },
       builder: (context, state) {
+        if (_course != null && (state is CoursesLoading || state is LessonsLoaded)) {
+          return _buildDetailScreen(_course!, theme, string);
+        }
+
         if (state is CourseDetailLoading) {
           return Scaffold(
             appBar: AppBar(),
@@ -141,7 +173,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   Widget _buildDetailScreen(CourseModel course, ThemeData theme, S string) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(course.title),
+        title: Text(
+          course.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           if (course.isOwner)
             PopupMenuButton<String>(
@@ -166,15 +202,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 }
               },
               itemBuilder: (context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'add_lesson',
                   child: Row(
                     children: [
-                      const Icon(Icons.video_library),
-                      SizedBox(width: 8.w),
-                      Text(
-                        // string.addLesson ??
-                         'Add Lesson'),
+                      Icon(Icons.video_library),
+                      SizedBox(width: 8),
+                      Text('Add Lesson'),
                     ],
                   ),
                 ),
@@ -183,7 +217,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   child: Row(
                     children: [
                       const Icon(Icons.edit),
-                      SizedBox(width: 8.w),
+                      SizedBox(width: 8),
                       Text(string.edit),
                     ],
                   ),
@@ -193,44 +227,48 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   child: Row(
                     children: [
                       Icon(Icons.delete, color: Colors.red[700]),
-                      SizedBox(width: 8.w),
-                      Text(string.delete, 
-                           style: TextStyle(color: Colors.red[700])),
+                      SizedBox(width: 8),
+                      Text(string.delete, style: TextStyle(color: Colors.red[700])),
                     ],
                   ),
                 ),
               ],
             ),
         ],
-        // bottom: TabBar(
-        //   controller: _tabController,
-        //   tabs: _buildTabs(course, string),
-        // ),
       ),
       body: Column(
         children: [
-                 // Thumbnail image
-        if (course.thumbnailUrl != null)
-           ClipRRect(
-              borderRadius: BorderRadius.circular(12.r),
-              child: Image.network(
-                course.thumbnailUrl!,
-                width: double.infinity,
-                height: 200.h,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200.h,
-                  color: Colors.grey[300],
-                  child: Icon(Icons.image_not_supported, size: 48.sp),
-                ),
-              ),
-            ),
+          // ✅ Thumbnail - hide smoothly when on lessons tab OR when video is playing
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: (_isLessonsTab || _currentPlayingLesson != null) ? 0 : 200.h,
+            child: (_isLessonsTab || _currentPlayingLesson != null)
+                ? const SizedBox.shrink()
+                : course.thumbnailUrl != null
+                    ? Image.network(
+                        course.thumbnailUrl!,
+                        width: double.infinity,
+                        height: 200.h,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 200.h,
+                          color: Colors.grey[300],
+                          child: Icon(Icons.image_not_supported, size: 48.sp),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+          ),
         
-        // ✅ Tabs here (not in AppBar)
-        TabBar(
-          controller: _tabController,
-          tabs: _buildTabs(course, string),
-        ),
+          // Tabs
+          TabBar(
+            labelColor: theme.colorScheme.primary,
+            unselectedLabelColor: theme.colorScheme.onError,
+            controller: _tabController,
+            isScrollable: true,
+            tabs: _buildTabs(course, string),
+          ),
+          
+          // Tab content
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -248,24 +286,16 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   List<Widget> _buildTabs(CourseModel course, S string) {
     final tabs = <Widget>[
       Tab(text: string.description),
-      Tab(text: 
-      // string.lessons ??
-       'Lessons'),
+      const Tab(text: 'Lessons'),
     ];
 
     if (course.isOwner) {
       tabs.addAll([
-        Tab(text: 
-        // string.enrolled ?? 
-        'Enrolled'),
-        Tab(text: 
-        // string.revenue ??
-         'Revenue'),
+        const Tab(text: 'Enrolled'),
+        const Tab(text: 'Revenue'),
       ]);
     } else if (course.isEnrolled) {
-      tabs.add(Tab(text:
-      //  string.progress ??
-        'Progress'));
+      tabs.add(const Tab(text: 'Progress'));
     }
 
     return tabs;
@@ -274,7 +304,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   List<Widget> _buildTabViews(CourseModel course, ThemeData theme, S string) {
     final views = <Widget>[
       _buildDescriptionTab(course, theme, string),
-      LessonsScreen(courseId: course.id, isEnrolled: course.isEnrolled),
+      _buildLessonsTab(course, theme, string),
     ];
 
     if (course.isOwner) {
@@ -295,25 +325,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Thumbnail
-          // if (course.thumbnailUrl != null)
-          //   ClipRRect(
-          //     borderRadius: BorderRadius.circular(12.r),
-          //     child: Image.network(
-          //       course.thumbnailUrl!,
-          //       width: double.infinity,
-          //       height: 200.h,
-          //       fit: BoxFit.cover,
-          //       errorBuilder: (context, error, stackTrace) => Container(
-          //         height: 200.h,
-          //         color: Colors.grey[300],
-          //         child: Icon(Icons.image_not_supported, size: 48.sp),
-          //       ),
-          //     ),
-          //   ),
-          // SizedBox(height: 16.h),
-
-          // Title
           Text(
             course.title,
             style: theme.textTheme.headlineSmall?.copyWith(
@@ -322,7 +333,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           ),
           SizedBox(height: 8.h),
 
-          // Provider info
           Row(
             children: [
               CircleAvatar(
@@ -335,48 +345,68 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                     : null,
               ),
               SizedBox(width: 12.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    course.owner.fullName,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.owner.fullName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    '${course.enrolledUsersCount} ${
-                      // string.students ??
-                       "students"}',
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
+                    Text(
+                      '${course.enrolledUsersCount} students',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           SizedBox(height: 16.h),
 
-          // Stats
           Row(
             children: [
-              _buildStatItem(
-                Icons.play_circle_outline,
-                '${course.lessonsCount} ${
-                  // string.lessons ??
-                   "lessons"}',
-                theme,
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.play_circle_outline, size: 16.sp, color: theme.colorScheme.primary),
+                    SizedBox(width: 4.w),
+                    Flexible(
+                      child: Text(
+                        '${course.lessonsCount} lessons',
+                        style: theme.textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(width: 24.w),
-              _buildStatItem(
-                Icons.access_time,
-                course.formattedDuration,
-                theme,
+              SizedBox(width: 16.w),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
+                    SizedBox(width: 4.w),
+                    Flexible(
+                      child: Text(
+                        course.formattedDuration,
+                        style: theme.textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           SizedBox(height: 16.h),
 
-          // Price
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
@@ -384,11 +414,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(
-              course.isFree ? 
-              // string.free ?? 
-              'FREE' : '${course.price} ${
-                // string.egp ??
-                 "EGP"}',
+              course.isFree ? 'FREE' : '${course.price} EGP',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: course.isFree ? Colors.green : theme.colorScheme.onPrimaryContainer,
@@ -397,8 +423,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           ),
           SizedBox(height: 24.h),
 
-          // Description
-          if (course.description != null) ...[
+          // ✅ Description - single line with ellipsis
+          if (course.description != null && course.description!.isNotEmpty) ...[
             Text(
               string.description,
               style: theme.textTheme.titleMedium?.copyWith(
@@ -409,8 +435,338 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             Text(
               course.description!,
               style: theme.textTheme.bodyMedium,
+              maxLines: 1, // ✅ Single line
+              overflow: TextOverflow.ellipsis, // ✅ Ellipsis
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  // ✅ Lessons Tab
+  Widget _buildLessonsTab(CourseModel course, ThemeData theme, S string) {
+    return BlocBuilder<CoursesBloc, CoursesState>(
+      builder: (context, state) {
+        if (state is LessonsLoaded) {
+          _allLessons = state.lessons;
+          
+          if (state.lessons.isEmpty) {
+            return _buildEmptyLessonsState(theme, string);
+          }
+
+          return Column(
+            children: [
+              // ✅ Video Player (if lesson selected)
+              if (_currentPlayingLesson != null)
+                InlineLessonVideoPlayer(
+                  lesson: _currentPlayingLesson!,
+                  courseId: widget.courseId,
+                  allLessons: _allLessons,
+                  onBack: () {
+                    setState(() => _currentPlayingLesson = null);
+                    context.read<CoursesBloc>().add(
+                          FetchCourseLessons(courseId: widget.courseId),
+                        );
+                  },
+                  onNextLesson: (nextLesson) {
+                    setState(() => _currentPlayingLesson = nextLesson);
+                  },
+                  onPreviousLesson: (prevLesson) {
+                    setState(() => _currentPlayingLesson = prevLesson);
+                  },
+                ),
+              
+              // ✅ Lessons List
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<CoursesBloc>().add(
+                          FetchCourseLessons(courseId: widget.courseId),
+                        );
+                    await Future.delayed(const Duration(milliseconds: 500));
+                  },
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(16.r),
+                    itemCount: state.lessons.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final lesson = state.lessons[index];
+                      final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
+                      
+                      return _buildLessonCard(
+                        lesson,
+                        state.isEnrolled,
+                        isCurrentlyPlaying,
+                        theme,
+                        string,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+
+        if (state is CoursesError) {
+          return _buildLessonsErrorState(state.message, theme, string);
+        }
+
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildLessonCard(
+    LessonModel lesson,
+    bool isEnrolled,
+    bool isCurrentlyPlaying,
+    ThemeData theme,
+    S string,
+  ) {
+    final canPlay = isEnrolled;
+
+    return InkWell(
+      onTap: canPlay
+          ? () {
+              setState(() {
+                _currentPlayingLesson = lesson;
+              });
+            }
+          : null,
+      child: Container(
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: isCurrentlyPlaying
+              ? theme.colorScheme.primary.withOpacity(0.1)
+              : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: lesson.isWatched
+                ? theme.colorScheme.primary.withOpacity(0.3)
+                : (isCurrentlyPlaying
+                    ? theme.colorScheme.primary
+                    : Colors.grey[300]!),
+            width: isCurrentlyPlaying ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 56.w,
+              height: 56.w,
+              decoration: BoxDecoration(
+                color: lesson.isWatched
+                    ? Colors.green.withOpacity(0.2)
+                    : theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                lesson.isWatched
+                    ? Icons.check_circle
+                    : Icons.play_circle_outline,
+                color: lesson.isWatched
+                    ? Colors.green
+                    : theme.colorScheme.primary,
+                size: 32.sp,
+              ),
+            ),
+            SizedBox(width: 16.w),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Lesson ${lesson.order}',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (lesson.isWatched) ...[
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            'Completed',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (isCurrentlyPlaying) ...[
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            'Playing',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: 4.h),
+                  
+                  Text(
+                    lesson.title,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 8.h),
+                  
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14.sp,
+                        color: Colors.grey[600],
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        _formatDuration(lesson.duration),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+                        SizedBox(width: 16.w),
+                        Text(
+                          '${lesson.progressPercentage.toInt()}% watched',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  
+                  if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+                    SizedBox(height: 8.h),
+                    LinearProgressIndicator(
+                      value: lesson.progressPercentage / 100,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.colorScheme.primary,
+                      ),
+                      minHeight: 4.h,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            Icon(
+              canPlay ? Icons.arrow_forward_ios : Icons.lock_outline,
+              size: 20.sp,
+              color: canPlay
+                  ? theme.colorScheme.onSurface.withOpacity(0.5)
+                  : Colors.grey[400],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDuration(double durationSeconds) {
+    final totalSeconds = durationSeconds.round();
+    if (totalSeconds < 60) {
+      return '${totalSeconds}s';
+    }
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+    if (minutes < 60) {
+      return seconds > 0 ? '${minutes}m ${seconds}s' : '${minutes}m';
+    }
+    final hours = minutes ~/ 60;
+    final remainingMinutes = minutes % 60;
+    return remainingMinutes > 0
+        ? '${hours}h ${remainingMinutes}m'
+        : '${hours}h';
+  }
+
+  Widget _buildEmptyLessonsState(ThemeData theme, S string) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.video_library_outlined,
+            size: 64.sp,
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            'No lessons available',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLessonsErrorState(String message, ThemeData theme, S string) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64.sp,
+            color: theme.colorScheme.error,
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            message,
+            style: theme.textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 16.h),
+          ElevatedButton(
+            onPressed: () {
+              context.read<CoursesBloc>().add(
+                    FetchCourseLessons(courseId: widget.courseId),
+                  );
+            },
+            child: Text(string.retry),
+          ),
         ],
       ),
     );
@@ -422,7 +778,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Overall progress
           Container(
             padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
@@ -440,7 +795,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  // string.courseProgress ?? 
                   'Course Progress',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
@@ -452,7 +806,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   minHeight: 8.h,
                   backgroundColor: theme.colorScheme.surface,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.colorScheme.primary,
+                    // theme.colorScheme.onTertiaryContainer,
+                    ColorManager.warning,
                   ),
                 ),
               ],
@@ -460,12 +815,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           ),
           SizedBox(height: 24.h),
 
-          // Stats
           Row(
             children: [
               Expanded(
                 child: _buildProgressStat(
-                  // string.completed ?? 
                   'Completed',
                   '${(course.lessonsCount * course.progress / 100).round()}/${course.lessonsCount}',
                   Icons.check_circle,
@@ -476,7 +829,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               SizedBox(width: 16.w),
               Expanded(
                 child: _buildProgressStat(
-                  // string.timeSpent ?? 
                   'Time Spent',
                   '${(course.totalDurationHours * course.progress / 100).toStringAsFixed(1)}h',
                   Icons.access_time,
@@ -488,16 +840,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatItem(IconData icon, String text, ThemeData theme) {
-    return Row(
-      children: [
-        Icon(icon, size: 20.sp, color: theme.colorScheme.primary),
-        SizedBox(width: 4.w),
-        Text(text, style: theme.textTheme.bodyMedium),
-      ],
     );
   }
 
@@ -555,17 +897,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             final isLoading = state is EnrollmentLoading;
             return CustomElevatedButton(
               text: course.isFree
-                  ? (
-                    // string.enrollNow ??
-                     'Enroll Now')
-                  : '${
-                    // string.enrollFor ??
-                     "Enroll for"} ${course.price} ${
-                      // string.egp ??
-                       "EGP"}',
+                  ? 'Enroll Now'
+                  : 'Enroll for ${course.price} EGP',
               isLoading: isLoading,
               onPressed: isLoading
-                  ? (){}
+                  ? ()=>{}
                   : () {
                       context.read<CoursesBloc>().add(
                             EnrollInCourse(courseId: course.id),
@@ -581,12 +917,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   void _showDeleteConfirmation(String courseId) {
     ConfirmationDialog.show(
       context: context,
-      title:
-      //  S.of(context).deleteCourse ?? 
-       'Delete Course',
-      message:
-      //  S.of(context).deleteCourseConfirmation ??
-          'Are you sure you want to delete this course? This action cannot be undone.',
+      title: 'Delete Course',
+      message: 'Are you sure you want to delete this course? This action cannot be undone.',
       onConfirm: () {
         context.read<CoursesBloc>().add(DeleteCourse(courseId: courseId));
       },
