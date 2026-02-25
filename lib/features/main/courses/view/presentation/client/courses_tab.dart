@@ -7,6 +7,7 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view/widgets/course_card.dart';
+import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -19,7 +20,7 @@ class CoursesTab extends StatefulWidget {
 
 class _CoursesTabState extends State<CoursesTab> {
   late final CoursesBloc _coursesBloc;
-  
+
   // ✅ FIX: Store courses locally to prevent disappearing
   List<CourseModel> _enrolledCourses = [];
   List<CourseModel> _availableCourses = [];
@@ -36,7 +37,9 @@ class _CoursesTabState extends State<CoursesTab> {
   void _loadData() {
     _coursesBloc
       ..add(const FetchEnrolledCourses(page: 1, size: 10)) // ✅ Increased to 10
-      ..add(const FetchAvailableCourses(page: 1, size: 10)); // ✅ Increased to 10
+      ..add(
+        const FetchAvailableCourses(page: 1, size: 10),
+      ); // ✅ Increased to 10
   }
 
   @override
@@ -84,11 +87,10 @@ class _CoursesTabState extends State<CoursesTab> {
 
         // New Courses Section (✅ Fixed with local state)
         _buildNewCoursesSection(context, theme, string),
-        
+
         // Enrolled Courses Section (✅ Fixed with local state)
         _buildEnrolledCoursesSection(context, theme, string),
         SizedBox(height: 44.h),
-
       ]),
     );
   }
@@ -100,10 +102,11 @@ class _CoursesTabState extends State<CoursesTab> {
   ) {
     // ✅ Use local state instead of bloc state
     if (_enrolledCourses.isNotEmpty) {
-      final inProgressCourses = _enrolledCourses
-          .where((c) => c.progress > 0 && c.progress < 100)
-          .toList()
-        ..sort((a, b) => b.progress.compareTo(a.progress));
+      final inProgressCourses =
+          _enrolledCourses
+              .where((c) => c.progress > 0 && c.progress < 100)
+              .toList()
+            ..sort((a, b) => b.progress.compareTo(a.progress));
 
       if (inProgressCourses.isNotEmpty) {
         return Column(
@@ -121,7 +124,11 @@ class _CoursesTabState extends State<CoursesTab> {
             SizedBox(height: 12.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: _buildLastViewedCard(context, inProgressCourses.first, theme),
+              child: _buildLastViewedCard(
+                context,
+                inProgressCourses.first,
+                theme,
+              ),
             ),
             SizedBox(height: 24.h),
           ],
@@ -137,10 +144,24 @@ class _CoursesTabState extends State<CoursesTab> {
     S string,
   ) {
     // ✅ Use local state
+    // AFTER
     if (_isLoadingEnrolled) {
-      return Padding(
-        padding: EdgeInsets.all(32.h),
-        child: const Center(child: CircularProgressIndicator()),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Text(
+              'Enrolled Courses',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          const CoursesListShimmer(),
+          SizedBox(height: 24.h),
+        ],
       );
     }
 
@@ -217,10 +238,24 @@ class _CoursesTabState extends State<CoursesTab> {
     S string,
   ) {
     // ✅ Use local state
+    // AFTER
     if (_isLoadingAvailable) {
-      return Padding(
-        padding: EdgeInsets.all(32.h),
-        child: const Center(child: CircularProgressIndicator()),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Text(
+              'New Courses',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          const CoursesListShimmer(),
+          SizedBox(height: 24.h),
+        ],
       );
     }
 
@@ -228,10 +263,7 @@ class _CoursesTabState extends State<CoursesTab> {
       return Center(
         child: Padding(
           padding: EdgeInsets.all(32.h),
-          child: Text(
-            'No courses available',
-            style: theme.textTheme.bodyLarge,
-          ),
+          child: Text('No courses available', style: theme.textTheme.bodyLarge),
         ),
       );
     }
@@ -299,7 +331,11 @@ class _CoursesTabState extends State<CoursesTab> {
     );
   }
 
-  Widget _buildLastViewedCard(BuildContext context, CourseModel course, ThemeData theme) {
+  Widget _buildLastViewedCard(
+    BuildContext context,
+    CourseModel course,
+    ThemeData theme,
+  ) {
     return GestureDetector(
       onTap: () => _navigateToCourseDetail(context, course.id),
       child: Container(
@@ -329,7 +365,9 @@ class _CoursesTabState extends State<CoursesTab> {
                     errorBuilder: (context, error, stackTrace) => Container(
                       height: 180.h,
                       color: Colors.grey[300],
-                      child: Center(child: Icon(Icons.image_not_supported, size: 48.sp)),
+                      child: Center(
+                        child: Icon(Icons.image_not_supported, size: 48.sp),
+                      ),
                     ),
                   ),
                   Positioned.fill(
@@ -378,14 +416,15 @@ class _CoursesTabState extends State<CoursesTab> {
                         '${course.progress}% Complete',
                         style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onPrimary,
+                          color: theme.colorScheme.onPrimary,
                         ),
                       ),
                       Text(
                         // course.formattedDuration,
                         '${(course.progress / 100 * course.lessonsCount).ceil()} lesson left',
                         style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onPrimary,),
+                          color: theme.colorScheme.onPrimary,
+                        ),
                       ),
                     ],
                   ),
@@ -395,7 +434,7 @@ class _CoursesTabState extends State<CoursesTab> {
                     backgroundColor: Colors.grey[200],
                     valueColor: AlwaysStoppedAnimation<Color>(
                       // theme.colorScheme.primary,
-                      ColorManager.warning
+                      ColorManager.warning,
                     ),
                     minHeight: 6.h,
                   ),

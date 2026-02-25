@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
@@ -10,6 +9,7 @@ import 'package:sports_in/features/main/courses/view/presentation/client/inline_
 import 'package:sports_in/features/main/courses/view/presentation/provider/enrollees_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/revenue_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/upload_video_screen.dart';
+import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -37,16 +37,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     super.initState();
     context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     _tabController = TabController(length: 2, vsync: this);
-    
-    // ✅ Listen to tab changes
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        setState(() {
-          // Clear playing lesson when switching tabs
-          _currentPlayingLesson = null;
-        });
-      }
-    });
   }
 
   @override
@@ -61,32 +51,20 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _course!.isEnrolled != course.isEnrolled) {
       _tabController.dispose();
       
-      int tabLength = 2;
+      // ✅ NEW: Lessons tab is FIRST
+      int tabLength = 2; // Default: Lessons, Description
       if (course.isOwner) {
-        tabLength = 4;
+        tabLength = 4; // Lessons, Description, Enrolled, Revenue
       } else if (course.isEnrolled) {
-        tabLength = 3;
+        tabLength = 3; // Lessons, Description, Progress
       }
       
       _tabController = TabController(length: tabLength, vsync: this);
       _course = course;
       
-      // Listen to new controller
-      _tabController.addListener(() {
-        if (_tabController.indexIsChanging) {
-          setState(() {
-            _currentPlayingLesson = null;
-          });
-        }
-      });
-      
+      // Fetch lessons
       context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
     }
-  }
-
-  // ✅ Helper to check if we're on lessons tab
-  bool get _isLessonsTab {
-    return _tabController.index == 1;
   }
 
   @override
@@ -128,7 +106,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         if (state is CourseDetailLoading) {
           return Scaffold(
             appBar: AppBar(),
-            body: const Center(child: CircularProgressIndicator()),
+            body: const CourseDetailShimmer(), // ✅ Shimmer instead of loading
           );
         }
 
@@ -164,7 +142,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
         return Scaffold(
           appBar: AppBar(),
-          body: const Center(child: CircularProgressIndicator()),
+          body: const CourseDetailShimmer(), // ✅ Shimmer fallback
         );
       },
     );
@@ -238,37 +216,49 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       ),
       body: Column(
         children: [
-          // ✅ Thumbnail - hide smoothly when on lessons tab OR when video is playing
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: (_isLessonsTab || _currentPlayingLesson != null) ? 0 : 200.h,
-            child: (_isLessonsTab || _currentPlayingLesson != null)
-                ? const SizedBox.shrink()
-                : course.thumbnailUrl != null
-                    ? Image.network(
-                        course.thumbnailUrl!,
-                        width: double.infinity,
-                        height: 200.h,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          height: 200.h,
-                          color: Colors.grey[300],
-                          child: Icon(Icons.image_not_supported, size: 48.sp),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-          ),
+          // ✅ 1. VIDEO HEADER (fixed, always visible)
+          if (_currentPlayingLesson != null)
+            InlineLessonVideoPlayer(
+              lesson: _currentPlayingLesson!,
+              courseId: widget.courseId,
+              allLessons: _allLessons,
+              onBack: () {
+                setState(() => _currentPlayingLesson = null);
+              },
+              onNextLesson: (nextLesson) {
+                setState(() => _currentPlayingLesson = nextLesson);
+              },
+              onPreviousLesson: (prevLesson) {
+                setState(() => _currentPlayingLesson = prevLesson);
+              },
+            )
+          else
+            // ✅ Thumbnail when no video playing
+            if (course.thumbnailUrl != null)
+              SizedBox(
+                width: double.infinity,
+                height: 200.h,
+                child: Image.network(
+                  course.thumbnailUrl!,
+                  width: double.infinity,
+                  height: 200.h,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 200.h,
+                    color: Colors.grey[300],
+                    child: Icon(Icons.image_not_supported, size: 48.sp),
+                  ),
+                ),
+              ),
         
-          // Tabs
+          // ✅ 2. TABS (fixed, always visible)
           TabBar(
-            labelColor: theme.colorScheme.primary,
-            unselectedLabelColor: theme.colorScheme.onError,
             controller: _tabController,
             isScrollable: true,
             tabs: _buildTabs(course, string),
           ),
           
-          // Tab content
+          // ✅ 3. TAB CONTENT (scrollable)
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -283,165 +273,42 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     );
   }
 
+  // ✅ NEW TAB ORDER: Lessons → Description → Progress/Enrolled → Revenue
   List<Widget> _buildTabs(CourseModel course, S string) {
     final tabs = <Widget>[
-      Tab(text: string.description),
-      const Tab(text: 'Lessons'),
+      const Tab(text: 'Lessons'),      // ✅ First tab
+      Tab(text: string.description),   // ✅ Second tab
     ];
 
     if (course.isOwner) {
       tabs.addAll([
-        const Tab(text: 'Enrolled'),
-        const Tab(text: 'Revenue'),
+        const Tab(text: 'Enrolled'),   // ✅ Third tab
+        const Tab(text: 'Revenue'),    // ✅ Fourth tab
       ]);
     } else if (course.isEnrolled) {
-      tabs.add(const Tab(text: 'Progress'));
+      tabs.add(const Tab(text: 'Progress')); // ✅ Third tab
     }
 
     return tabs;
   }
 
+  // ✅ NEW TAB VIEW ORDER: Lessons → Description → Progress/Enrolled → Revenue
   List<Widget> _buildTabViews(CourseModel course, ThemeData theme, S string) {
     final views = <Widget>[
-      _buildDescriptionTab(course, theme, string),
-      _buildLessonsTab(course, theme, string),
+      _buildLessonsTab(course, theme, string),  // ✅ First view
+      _buildDescriptionTab(course, theme, string), // ✅ Second view
     ];
 
     if (course.isOwner) {
       views.addAll([
-        EnrolleesScreen(courseId: course.id),
-        RevenueScreen(courseId: course.id),
+        EnrolleesScreen(courseId: course.id),    // ✅ Third view
+        RevenueScreen(courseId: course.id),       // ✅ Fourth view
       ]);
     } else if (course.isEnrolled) {
-      views.add(_buildProgressTab(course, theme, string));
+      views.add(_buildProgressTab(course, theme, string)); // ✅ Third view
     }
 
     return views;
-  }
-
-  Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            course.title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8.h),
-
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20.r,
-                backgroundImage: course.owner.profilePictureUrl != null
-                    ? NetworkImage(course.owner.profilePictureUrl!)
-                    : null,
-                child: course.owner.profilePictureUrl == null
-                    ? const Icon(Icons.person)
-                    : null,
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      course.owner.fullName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      '${course.enrolledUsersCount} students',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          Row(
-            children: [
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.play_circle_outline, size: 16.sp, color: theme.colorScheme.primary),
-                    SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        '${course.lessonsCount} lessons',
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
-                    SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        course.formattedDuration,
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: course.isFree ? Colors.green.withOpacity(0.1) : theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Text(
-              course.isFree ? 'FREE' : '${course.price} EGP',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: course.isFree ? Colors.green : theme.colorScheme.onPrimaryContainer,
-              ),
-            ),
-          ),
-          SizedBox(height: 24.h),
-
-          // ✅ Description - single line with ellipsis
-          if (course.description != null && course.description!.isNotEmpty) ...[
-            Text(
-              string.description,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              course.description!,
-              style: theme.textTheme.bodyMedium,
-              maxLines: 1, // ✅ Single line
-              overflow: TextOverflow.ellipsis, // ✅ Ellipsis
-            ),
-          ],
-        ],
-      ),
-    );
   }
 
   // ✅ Lessons Tab
@@ -455,57 +322,30 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             return _buildEmptyLessonsState(theme, string);
           }
 
-          return Column(
-            children: [
-              // ✅ Video Player (if lesson selected)
-              if (_currentPlayingLesson != null)
-                InlineLessonVideoPlayer(
-                  lesson: _currentPlayingLesson!,
-                  courseId: widget.courseId,
-                  allLessons: _allLessons,
-                  onBack: () {
-                    setState(() => _currentPlayingLesson = null);
-                    context.read<CoursesBloc>().add(
-                          FetchCourseLessons(courseId: widget.courseId),
-                        );
-                  },
-                  onNextLesson: (nextLesson) {
-                    setState(() => _currentPlayingLesson = nextLesson);
-                  },
-                  onPreviousLesson: (prevLesson) {
-                    setState(() => _currentPlayingLesson = prevLesson);
-                  },
-                ),
-              
-              // ✅ Lessons List
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<CoursesBloc>().add(
-                          FetchCourseLessons(courseId: widget.courseId),
-                        );
-                    await Future.delayed(const Duration(milliseconds: 500));
-                  },
-                  child: ListView.separated(
-                    padding: EdgeInsets.all(16.r),
-                    itemCount: state.lessons.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
-                    itemBuilder: (context, index) {
-                      final lesson = state.lessons[index];
-                      final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
-                      
-                      return _buildLessonCard(
-                        lesson,
-                        state.isEnrolled,
-                        isCurrentlyPlaying,
-                        theme,
-                        string,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<CoursesBloc>().add(
+                    FetchCourseLessons(courseId: widget.courseId),
+                  );
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: ListView.separated(
+              padding: EdgeInsets.all(16.r),
+              itemCount: state.lessons.length,
+              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                final lesson = state.lessons[index];
+                final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
+                
+                return _buildLessonCard(
+                  lesson,
+                  state.isEnrolled,
+                  isCurrentlyPlaying,
+                  theme,
+                  string,
+                );
+              },
+            ),
           );
         }
 
@@ -513,7 +353,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           return _buildLessonsErrorState(state.message, theme, string);
         }
 
-        return const Center(child: CircularProgressIndicator());
+        // ✅ Shimmer while loading
+        return const LessonsListShimmer();
       },
     );
   }
@@ -703,70 +544,123 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     );
   }
 
-  String _formatDuration(double durationSeconds) {
-    final totalSeconds = durationSeconds.round();
-    if (totalSeconds < 60) {
-      return '${totalSeconds}s';
-    }
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (minutes < 60) {
-      return seconds > 0 ? '${minutes}m ${seconds}s' : '${minutes}m';
-    }
-    final hours = minutes ~/ 60;
-    final remainingMinutes = minutes % 60;
-    return remainingMinutes > 0
-        ? '${hours}h ${remainingMinutes}m'
-        : '${hours}h';
-  }
-
-  Widget _buildEmptyLessonsState(ThemeData theme, S string) {
-    return Center(
+  Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.r),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.video_library_outlined,
-            size: 64.sp,
-            color: Colors.grey[400],
-          ),
-          SizedBox(height: 16.h),
           Text(
-            'No lessons available',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: Colors.grey[600],
+            course.title,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
-      ),
-    );
-  }
+          SizedBox(height: 8.h),
 
-  Widget _buildLessonsErrorState(String message, ThemeData theme, S string) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 64.sp,
-            color: theme.colorScheme.error,
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20.r,
+                backgroundImage: course.owner.profilePictureUrl != null
+                    ? NetworkImage(course.owner.profilePictureUrl!)
+                    : null,
+                child: course.owner.profilePictureUrl == null
+                    ? const Icon(Icons.person)
+                    : null,
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.owner.fullName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      '${course.enrolledUsersCount} students',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16.h),
-          Text(
-            message,
-            style: theme.textTheme.bodyLarge,
-            textAlign: TextAlign.center,
+
+          Row(
+            children: [
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.play_circle_outline, size: 16.sp, color: theme.colorScheme.primary),
+                    SizedBox(width: 4.w),
+                    Flexible(
+                      child: Text(
+                        '${course.lessonsCount} lessons',
+                        style: theme.textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 16.w),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
+                    SizedBox(width: 4.w),
+                    Flexible(
+                      child: Text(
+                        course.formattedDuration,
+                        style: theme.textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16.h),
-          ElevatedButton(
-            onPressed: () {
-              context.read<CoursesBloc>().add(
-                    FetchCourseLessons(courseId: widget.courseId),
-                  );
-            },
-            child: Text(string.retry),
+
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: course.isFree ? Colors.green.withOpacity(0.1) : theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Text(
+              course.isFree ? 'FREE' : '${course.price} EGP',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: course.isFree ? Colors.green : theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
           ),
+          SizedBox(height: 24.h),
+
+          if (course.description != null && course.description!.isNotEmpty) ...[
+            Text(
+              string.description,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              course.description!,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ],
         ],
       ),
     );
@@ -806,8 +700,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   minHeight: 8.h,
                   backgroundColor: theme.colorScheme.surface,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    // theme.colorScheme.onTertiaryContainer,
-                    ColorManager.warning,
+                    theme.colorScheme.primary,
                   ),
                 ),
               ],
@@ -872,6 +765,75 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             label,
             style: theme.textTheme.bodySmall,
             textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(double durationSeconds) {
+    final totalSeconds = durationSeconds.round();
+    if (totalSeconds < 60) {
+      return '${totalSeconds}s';
+    }
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+    if (minutes < 60) {
+      return seconds > 0 ? '${minutes}m ${seconds}s' : '${minutes}m';
+    }
+    final hours = minutes ~/ 60;
+    final remainingMinutes = minutes % 60;
+    return remainingMinutes > 0
+        ? '${hours}h ${remainingMinutes}m'
+        : '${hours}h';
+  }
+
+  Widget _buildEmptyLessonsState(ThemeData theme, S string) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.video_library_outlined,
+            size: 64.sp,
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            'No lessons available',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLessonsErrorState(String message, ThemeData theme, S string) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64.sp,
+            color: theme.colorScheme.error,
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            message,
+            style: theme.textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 16.h),
+          ElevatedButton(
+            onPressed: () {
+              context.read<CoursesBloc>().add(
+                    FetchCourseLessons(courseId: widget.courseId),
+                  );
+            },
+            child: Text(string.retry),
           ),
         ],
       ),

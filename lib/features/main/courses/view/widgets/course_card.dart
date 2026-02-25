@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 
 class CourseCard extends StatelessWidget {
@@ -61,13 +62,14 @@ class CourseCard extends StatelessWidget {
                 padding: EdgeInsets.all(12.r),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  // mainAxisSize: MainAxisSize.min,
                   children: [
                     // Title
                     Text(
                       course.title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -78,9 +80,10 @@ class CourseCard extends StatelessWidget {
                     if (course.description != null && course.description!.isNotEmpty)
                       Text(
                         course.description!,
-                        style: theme.textTheme.bodySmall,
+                        style: theme.textTheme.bodySmall?.copyWith(fontSize: 12.sp),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        
                       ),
                     SizedBox(height: 8.h),
 
@@ -176,13 +179,13 @@ class CourseCard extends StatelessWidget {
                         value: course.progress / 100,
                         backgroundColor: Colors.grey[200],
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colorScheme.primary,
+                          ColorManager.warning,
                         ),
                       ),
                       SizedBox(height: 4.h),
                       Text(
                         '${course.progress}% complete',
-                        style: theme.textTheme.bodySmall,
+                        style: theme.textTheme.bodySmall?.copyWith(fontSize: 12.sp),
                       ),
                       // SizedBox(height: 8.h),
                     ],

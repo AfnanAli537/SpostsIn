@@ -33,8 +33,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   bool _isInitialized = false;
   String? _errorMessage;
   Timer? _progressSaveTimer;
-  Timer? _controlsHideTimer;
-  bool _showCustomControls = true; // ✅ For fading effect
+  bool _showCustomControls = true; // ✅ For toggle effect
   
   // ✅ Progress tracking
   double _lastSavedPosition = 0.0;
@@ -100,30 +99,14 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   void dispose() {
     _saveProgressIfNeeded();
     _progressSaveTimer?.cancel();
-    _controlsHideTimer?.cancel();
     _controller?.dispose();
     super.dispose();
   }
 
-  // ✅ Show controls and hide after 3 seconds
+  // ✅ Toggle controls on tap (no auto-hide)
   void _toggleControls() {
     setState(() {
       _showCustomControls = !_showCustomControls;
-    });
-    
-    if (_showCustomControls) {
-      _resetControlsHideTimer();
-    }
-  }
-
-  void _resetControlsHideTimer() {
-    _controlsHideTimer?.cancel();
-    _controlsHideTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted && _controller?.isPlaying() == true) {
-        setState(() {
-          _showCustomControls = false;
-        });
-      }
     });
   }
 
@@ -212,13 +195,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
               _errorMessage = null;
             });
           }
-        } else if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-          _resetControlsHideTimer();
-        } else if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
-          _controlsHideTimer?.cancel();
-          setState(() {
-            _showCustomControls = true;
-          });
         }
       });
 
@@ -312,7 +288,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                       ? MediaQuery.of(context).size.height 
                       : constraints.maxWidth * 9 / 16,
                   child: GestureDetector(
-                    onTap: _toggleControls,
+                    onTap: _toggleControls, // ✅ Simple toggle
                     child: Stack(
                       children: [
                         // Video
@@ -320,12 +296,12 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                           child: BetterPlayer(controller: _controller!),
                         ),
                         
-                        // ✅ Custom controls (fading)
-                        if (_showCustomControls && !isFullscreen)
+                        // ✅ Custom controls (toggle on tap, work in fullscreen too)
+                        if (_showCustomControls)
                           AnimatedOpacity(
                             opacity: _showCustomControls ? 1.0 : 0.0,
                             duration: const Duration(milliseconds: 300),
-                            child: _buildCustomControls(),
+                            child: _buildCustomControls(isFullscreen),
                           ),
                       ],
                     ),
@@ -378,114 +354,120 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     );
   }
 
-  // ✅ Custom controls overlay
-  Widget _buildCustomControls() {
+  // ✅ Custom controls overlay (works in normal and fullscreen)
+  Widget _buildCustomControls(bool isFullscreen) {
     return Container(
       color: Colors.transparent,
       child: Stack(
         children: [
-          // Top gradient with back button
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 60,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.transparent,
-                  ],
+          // ✅ Top gradient with back button (only when NOT fullscreen)
+          if (!isFullscreen)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.7),
+                      Colors.transparent,
+                    ],
+                  ),
                 ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    iconSize: 28,
-                    onPressed: () {
-                      _saveProgressIfNeeded();
-                      widget.onBack();
-                    },
+                child: SafeArea(
+                  bottom: false,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      iconSize: 28,
+                      onPressed: () {
+                        _saveProgressIfNeeded();
+                        widget.onBack();
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
           
-          // ✅ Center next/previous buttons
+          // ✅ Center next/previous buttons (ALWAYS visible, even in fullscreen)
           Positioned.fill(
             child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  // Previous button
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: hasPreviousLesson ? _playPreviousLesson : null,
-                      borderRadius: BorderRadius.circular(30),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                          border: Border.all(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: isFullscreen ? 80 : 0, // ✅ Move up in fullscreen to avoid controls
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    // Previous button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: hasPreviousLesson ? _playPreviousLesson : null,
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: hasPreviousLesson 
+                                  ? Colors.white 
+                                  : Colors.white.withOpacity(0.3),
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.skip_previous,
                             color: hasPreviousLesson 
                                 ? Colors.white 
                                 : Colors.white.withOpacity(0.3),
-                            width: 2,
+                            size: 32,
                           ),
-                        ),
-                        child: Icon(
-                          Icons.skip_previous,
-                          color: hasPreviousLesson 
-                              ? Colors.white 
-                              : Colors.white.withOpacity(0.3),
-                          size: 32,
                         ),
                       ),
                     ),
-                  ),
-                  
-                  // Spacer
-                  const SizedBox(width: 100),
-                  
-                  // Next button
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: hasNextLesson ? _playNextLesson : null,
-                      borderRadius: BorderRadius.circular(30),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                          border: Border.all(
+                    
+                    // Spacer
+                    const SizedBox(width: 100),
+                    
+                    // Next button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: hasNextLesson ? _playNextLesson : null,
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: hasNextLesson 
+                                  ? Colors.white 
+                                  : Colors.white.withOpacity(0.3),
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.skip_next,
                             color: hasNextLesson 
                                 ? Colors.white 
                                 : Colors.white.withOpacity(0.3),
-                            width: 2,
+                            size: 32,
                           ),
-                        ),
-                        child: Icon(
-                          Icons.skip_next,
-                          color: hasNextLesson 
-                              ? Colors.white 
-                              : Colors.white.withOpacity(0.3),
-                          size: 32,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
