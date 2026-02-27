@@ -163,8 +163,8 @@ class _HomePageState extends State<HomePage> {
                   onRefresh: () async {
                     context.read<PostsBloc>().add(const FetchPosts(page: 1));
                     context.read<OpportunityBloc>().add(
-                          const FetchOpportunities(isRefresh: true),
-                        );
+                      const FetchOpportunities(isRefresh: true),
+                    );
                   },
                   child: CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -194,14 +194,18 @@ class _HomePageState extends State<HomePage> {
                                       fontWeight: FontWeight.bold,
                                       color: ColorManager.yellow,
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
                                     strings.happyToSeeYouToday,
                                     style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -211,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.w,),
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -220,27 +224,29 @@ class _HomePageState extends State<HomePage> {
                                 return Padding(
                                   padding: EdgeInsets.only(right: 6.w),
                                   child: ChoiceChip(
-                                    label:  Text(tab.getName(strings)),
+                                    label: Text(tab.getName(strings)),
                                     selected: isSelected,
                                     onSelected: (_) {
                                       setState(() {
                                         _currentTab = tab;
                                       });
                                     },
-                                    selectedColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    checkmarkColor:
-                                        Theme.of(context).colorScheme.secondary,
+                                    selectedColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    checkmarkColor: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
                                     labelStyle: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 14.sp,
                                       color: isSelected
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .secondary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.secondary
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                     ),
                                   ),
                                 );

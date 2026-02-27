@@ -209,7 +209,7 @@ class _CoursesTabState extends State<CoursesTab> {
         SizedBox(height: 8.h),
         // ✅ Horizontal scrolling with proper sizing
         SizedBox(
-          height: 320.h, // Increased height for card content
+          height: 250.h, // Increased height for card content
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -227,7 +227,7 @@ class _CoursesTabState extends State<CoursesTab> {
             },
           ),
         ),
-        SizedBox(height: 24.h),
+        SizedBox(height: 36.h),
       ],
     );
   }
@@ -308,7 +308,7 @@ class _CoursesTabState extends State<CoursesTab> {
         SizedBox(height: 8.h),
         // ✅ Horizontal scrolling with proper sizing
         SizedBox(
-          height: 320.h,
+          height: 310.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 16.w),
