@@ -51,7 +51,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _course!.isEnrolled != course.isEnrolled) {
       _tabController.dispose();
       
-      // ✅ NEW: Lessons tab is FIRST
       int tabLength = 2; // Default: Lessons, Description
       if (course.isOwner) {
         tabLength = 4; // Lessons, Description, Enrolled, Revenue
@@ -106,7 +105,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         if (state is CourseDetailLoading) {
           return Scaffold(
             appBar: AppBar(),
-            body: const CourseDetailShimmer(), // ✅ Shimmer instead of loading
+            body: const CourseDetailShimmer(), 
           );
         }
 
@@ -142,21 +141,17 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
         return Scaffold(
           appBar: AppBar(),
-          body: const CourseDetailShimmer(), // ✅ Shimmer fallback
+          body: const CourseDetailShimmer(), 
         );
       },
     );
   }
-
+  
   Widget _buildDetailScreen(CourseModel course, ThemeData theme, S string) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          course.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: [
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(course.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+      actions: [
           if (course.isOwner)
             PopupMenuButton<String>(
               onSelected: (value) {
@@ -214,104 +209,112 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             ),
         ],
       ),
-      body: Column(
-        children: [
-          // ✅ 1. VIDEO HEADER (fixed, always visible)
-          if (_currentPlayingLesson != null)
-            InlineLessonVideoPlayer(
+    body: NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: _buildVideoOrThumbnail(course),
+          ),
+          SliverPersistentHeader(
+            pinned: true, // This keeps the tabs visible at the top
+            delegate: _SliverAppBarDelegate(
+              TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                labelColor: theme.colorScheme.primary,
+                unselectedLabelColor: Colors.grey,
+                indicatorSize: TabBarIndicatorSize.label,
+                tabs: _buildTabs(course, string),
+              ),
+            ),
+          ),
+        ];
+      },
+      body: TabBarView(
+        controller: _tabController,
+        children: _buildTabViews(course, theme, string),
+      ),
+    ),
+    bottomNavigationBar: !course.isOwner && !course.isEnrolled
+        ? _buildEnrollButton(course, theme, string)
+        : null,
+  );
+}
+
+Widget _buildVideoOrThumbnail(CourseModel course) {
+  return Container(
+    // Ensure the background is black for videos
+    color: Colors.black, 
+    constraints: BoxConstraints(
+      // Limits height on large screens but allows it to be responsive
+      maxHeight: 0.4.sh, 
+    ),
+    width: double.infinity,
+    child: _currentPlayingLesson != null
+        ? AspectRatio(
+            aspectRatio: 16 / 9, // Force standard video ratio
+            child: InlineLessonVideoPlayer(
               lesson: _currentPlayingLesson!,
               courseId: widget.courseId,
               allLessons: _allLessons,
-              onBack: () {
-                setState(() => _currentPlayingLesson = null);
-              },
-              onNextLesson: (nextLesson) {
-                setState(() => _currentPlayingLesson = nextLesson);
-              },
-              onPreviousLesson: (prevLesson) {
-                setState(() => _currentPlayingLesson = prevLesson);
-              },
-            )
-          else
-            // ✅ Thumbnail when no video playing
-            if (course.thumbnailUrl != null)
-              SizedBox(
-                width: double.infinity,
-                height: 200.h,
-                child: Image.network(
-                  course.thumbnailUrl!,
-                  width: double.infinity,
-                  height: 200.h,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 200.h,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_not_supported, size: 48.sp),
-                  ),
-                ),
-              ),
-        
-          // ✅ 2. TABS (fixed, always visible)
-          TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabs: _buildTabs(course, string),
-          ),
-          
-          // ✅ 3. TAB CONTENT (scrollable)
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: _buildTabViews(course, theme, string),
+              onBack: () => setState(() => _currentPlayingLesson = null),
+              onNextLesson: (next) => setState(() => _currentPlayingLesson = next),
+              onPreviousLesson: (prev) => setState(() => _currentPlayingLesson = prev),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: !course.isOwner && !course.isEnrolled
-          ? _buildEnrollButton(course, theme, string)
-          : null,
-    );
-  }
+          )
+        : course.thumbnailUrl != null
+            ? Image.network(
+                course.thumbnailUrl!,
+                fit: BoxFit.cover,
+                height: 200.h,
+                errorBuilder: (context, _, __) => Container(
+                  height: 200.h,
+                  color: Colors.grey[300],
+                  child: Icon(Icons.image_not_supported, size: 48.sp),
+                ),
+              )
+            : SizedBox(height: 100.h), // Placeholder if no thumbnail
+  );
+}
 
-  // ✅ NEW TAB ORDER: Lessons → Description → Progress/Enrolled → Revenue
   List<Widget> _buildTabs(CourseModel course, S string) {
     final tabs = <Widget>[
-      const Tab(text: 'Lessons'),      // ✅ First tab
-      Tab(text: string.description),   // ✅ Second tab
+      const Tab(text: 'Lessons'),      
+      Tab(text: string.description), 
     ];
 
     if (course.isOwner) {
       tabs.addAll([
-        const Tab(text: 'Enrolled'),   // ✅ Third tab
-        const Tab(text: 'Revenue'),    // ✅ Fourth tab
+        const Tab(text: 'Enrolled'), 
+        const Tab(text: 'Revenue'),  
+
       ]);
     } else if (course.isEnrolled) {
-      tabs.add(const Tab(text: 'Progress')); // ✅ Third tab
+      tabs.add(const Tab(text: 'Progress'));
     }
 
     return tabs;
   }
 
-  // ✅ NEW TAB VIEW ORDER: Lessons → Description → Progress/Enrolled → Revenue
   List<Widget> _buildTabViews(CourseModel course, ThemeData theme, S string) {
     final views = <Widget>[
-      _buildLessonsTab(course, theme, string),  // ✅ First view
-      _buildDescriptionTab(course, theme, string), // ✅ Second view
+      _buildLessonsTab(course, theme, string),  
+      _buildDescriptionTab(course, theme, string),
     ];
 
     if (course.isOwner) {
       views.addAll([
-        EnrolleesScreen(courseId: course.id),    // ✅ Third view
-        RevenueScreen(courseId: course.id),       // ✅ Fourth view
+        EnrolleesScreen(courseId: course.id),    
+        RevenueScreen(courseId: course.id),      
+
       ]);
     } else if (course.isEnrolled) {
-      views.add(_buildProgressTab(course, theme, string)); // ✅ Third view
+      views.add(_buildProgressTab(course, theme, string)); 
     }
 
     return views;
   }
 
-  // ✅ Lessons Tab
   Widget _buildLessonsTab(CourseModel course, ThemeData theme, S string) {
     return BlocBuilder<CoursesBloc, CoursesState>(
       builder: (context, state) {
@@ -353,7 +356,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           return _buildLessonsErrorState(state.message, theme, string);
         }
 
-        // ✅ Shimmer while loading
         return const LessonsListShimmer();
       },
     );
@@ -890,4 +892,26 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       isDestructive: true,
     );
   }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor, // Matches screen bg
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }

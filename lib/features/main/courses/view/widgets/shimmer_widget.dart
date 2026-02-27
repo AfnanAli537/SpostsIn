@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 
-// ✅ 1. Course Card Shimmer (for courses list)
 class CourseCardShimmer extends StatelessWidget {
   const CourseCardShimmer({super.key});
 
@@ -105,149 +104,31 @@ class CourseCardShimmer extends StatelessWidget {
   }
 }
 
-// ✅ 2. Course Detail Shimmer (for detail screen loading)
 class CourseDetailShimmer extends StatelessWidget {
   const CourseDetailShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Thumbnail
-            Container(
-              width: double.infinity,
-              height: 200.h,
-              color: Colors.grey[300],
-            ),
-            
-            Padding(
-              padding: EdgeInsets.all(16.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Container(
-                    width: double.infinity,
-                    height: 24.h,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  
-                  // Author row
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20.r,
-                        backgroundColor: Colors.grey[300],
-                      ),
-                      SizedBox(width: 12.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 120.w,
-                            height: 14.h,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Container(
-                            width: 80.w,
-                            height: 12.h,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.h),
-                  
-                  // Stats
-                  Row(
-                    children: [
-                      Container(
-                        width: 80.w,
-                        height: 14.h,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(4.r),
-                        ),
-                      ),
-                      SizedBox(width: 24.w),
-                      Container(
-                        width: 80.w,
-                        height: 14.h,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(4.r),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.h),
-                  
-                  // Price
-                  Container(
-                    width: 100.w,
-                    height: 32.h,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  
-                  // Description lines
-                  Container(
-                    width: double.infinity,
-                    height: 14.h,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    width: double.infinity,
-                    height: 14.h,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    width: 200.w,
-                    height: 14.h,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Column(
+      children: [
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: double.infinity,
+            height: 200.h,
+            color: Colors.grey[300],
+          ),
         ),
-      ),
+    
+        Expanded(
+          child: LessonsListShimmer(),
+        ),
+      ],
     );
   }
 }
 
-// ✅ 3. Lesson Card Shimmer (for lessons list)
 class LessonCardShimmer extends StatelessWidget {
   const LessonCardShimmer({super.key});
 
@@ -333,7 +214,6 @@ class LessonCardShimmer extends StatelessWidget {
   }
 }
 
-// ✅ 4. Courses List Shimmer (shows 3 cards)
 class CoursesListShimmer extends StatelessWidget {
   const CoursesListShimmer({super.key});
 
@@ -351,7 +231,6 @@ class CoursesListShimmer extends StatelessWidget {
   }
 }
 
-// ✅ 5. Lessons List Shimmer (shows 5 cards)
 class LessonsListShimmer extends StatelessWidget {
   const LessonsListShimmer({super.key});
 

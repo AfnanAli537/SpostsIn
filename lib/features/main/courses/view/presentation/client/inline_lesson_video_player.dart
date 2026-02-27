@@ -33,7 +33,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   bool _isInitialized = false;
   String? _errorMessage;
   Timer? _progressSaveTimer;
-  bool _showCustomControls = true; // ✅ For toggle effect
+  bool _isFullscreen = false; // ✅ Track fullscreen state locally
   
   // ✅ Progress tracking
   double _lastSavedPosition = 0.0;
@@ -59,6 +59,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
       _currentPosition = 0.0;
       _isInitialized = false;
       _errorMessage = null;
+      _isFullscreen = false;
       _initializePlayer();
     }
   }
@@ -103,12 +104,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     super.dispose();
   }
 
-  // ✅ Toggle controls on tap (no auto-hide)
-  void _toggleControls() {
-    setState(() {
-      _showCustomControls = !_showCustomControls;
-    });
-  }
 
   // ✅ Initialize better player
   Future<void> _initializePlayer() async {
@@ -159,7 +154,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
       if (widget.lesson.watchedTime > 0) {
         debugPrint('⏩ Seeking to ${widget.lesson.watchedTime} seconds');
         await _controller?.setupDataSource(betterPlayerDataSource);
-        await Future.delayed(const Duration(milliseconds: 500)); // Wait for setup
+        await Future.delayed(const Duration(milliseconds: 500));
         _controller?.seekTo(Duration(seconds: widget.lesson.watchedTime.round()));
         _lastSavedPosition = widget.lesson.watchedTime;
         _currentPosition = widget.lesson.watchedTime;
@@ -195,6 +190,26 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
               _errorMessage = null;
             });
           }
+        } else if (event.betterPlayerEventType == BetterPlayerEventType.openFullscreen) {
+          // ✅ Fullscreen opened - update state after current frame
+          debugPrint('📺 Entering fullscreen');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _isFullscreen = true;
+              });
+            }
+          });
+        } else if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen) {
+          // ✅ Fullscreen closed - update state after current frame
+          debugPrint('📱 Exiting fullscreen');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _isFullscreen = false;
+              });
+            }
+          });
         }
       });
 
@@ -225,7 +240,8 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
 
   // ✅ Save progress if position increased
   void _saveProgressIfNeeded() {
-    if (_controller == null) return;
+    // ✅ Check if widget is still mounted
+    if (!mounted || _controller == null) return;
     
     final currentPos = _currentPosition;
     
@@ -235,25 +251,33 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
       
       final isWatched = currentPos >= widget.lesson.duration * 0.9;
       
-      // ✅ Don't listen to state changes, just fire and forget
-      context.read<CoursesBloc>().add(
-        UpdateLessonProgress(
-          lessonId: widget.lesson.id,
-          watchedTime: currentPos,
-          isWatched: isWatched,
-          zoomScale: 1.0,
-        ),
-      );
-      
-      _lastSavedPosition = currentPos;
+      // ✅ Wrap in try-catch to handle context issues
+      try {
+        context.read<CoursesBloc>().add(
+          UpdateLessonProgress(
+            lessonId: widget.lesson.id,
+            watchedTime: currentPos,
+            isWatched: isWatched,
+            zoomScale: 1.0,
+          ),
+        );
+        
+        _lastSavedPosition = currentPos;
+      } catch (e) {
+        debugPrint('⚠️ Could not save progress (widget disposed): $e');
+      }
     }
   }
 
   // ✅ Mark lesson as watched (≥90% completion)
   void _markAsWatched() {
-    if (!widget.lesson.isWatched) {
-      debugPrint('✅ Marking lesson as watched');
-      
+    // ✅ Check if widget is still mounted
+    if (!mounted || widget.lesson.isWatched) return;
+    
+    debugPrint('✅ Marking lesson as watched');
+    
+    // ✅ Wrap in try-catch to handle context issues
+    try {
       context.read<CoursesBloc>().add(
         UpdateLessonProgress(
           lessonId: widget.lesson.id,
@@ -262,6 +286,8 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
           zoomScale: 1.0,
         ),
       );
+    } catch (e) {
+      debugPrint('⚠️ Could not mark as watched (widget disposed): $e');
     }
   }
 
@@ -269,212 +295,164 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    final isFullscreen = _controller?.isFullScreen ?? false;
+    // ✅ Use local state instead of checking controller during build
+    final isFullscreen = _isFullscreen;
 
     return Container(
       color: Colors.black,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ✅ Video Player (responsive to orientation)
-          if (_errorMessage != null)
-            _buildErrorView()
-          else if (_isInitialized && _controller != null)
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return SizedBox(
-                  width: constraints.maxWidth,
-                  height: isLandscape 
-                      ? MediaQuery.of(context).size.height 
-                      : constraints.maxWidth * 9 / 16,
-                  child: GestureDetector(
-                    onTap: _toggleControls, // ✅ Simple toggle
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ✅ Video Player with edge buttons
+            if (_errorMessage != null)
+              _buildErrorView()
+            else if (_isInitialized && _controller != null)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return SizedBox(
+                    width: constraints.maxWidth,
+                    height: isLandscape 
+                        ? MediaQuery.of(context).size.height 
+                        : constraints.maxWidth * 9 / 16,
                     child: Stack(
                       children: [
-                        // Video
+                        // ✅ Video player (native controls)
                         Positioned.fill(
                           child: BetterPlayer(controller: _controller!),
                         ),
                         
-                        // ✅ Custom controls (toggle on tap, work in fullscreen too)
-                        if (_showCustomControls)
-                          AnimatedOpacity(
-                            opacity: _showCustomControls ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 300),
-                            child: _buildCustomControls(isFullscreen),
+                        // ✅ Back button (top left, only when NOT fullscreen)
+                        if (!isFullscreen)
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: SafeArea(
+                              child: Material(
+                                color: Colors.black.withOpacity(0.5),
+                                shape: const CircleBorder(),
+                                child: IconButton(
+                                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                                  iconSize: 24,
+                                  onPressed: () {
+                                    _saveProgressIfNeeded();
+                                    widget.onBack();
+                                  },
+                                ),
+                              ),
+                            ),
                           ),
+                        
+                        // ✅ Previous button (left edge)
+                        Positioned(
+                          left: 8,
+                          top: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: hasPreviousLesson ? _playPreviousLesson : null,
+                                customBorder: const CircleBorder(),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.5),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.skip_previous,
+                                    color: hasPreviousLesson 
+                                        ? Colors.white 
+                                        : Colors.white.withOpacity(0.3),
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        
+                        // ✅ Next button (right edge)
+                        Positioned(
+                          right: 8,
+                          top: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: hasNextLesson ? _playNextLesson : null,
+                                customBorder: const CircleBorder(),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.5),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.skip_next,
+                                    color: hasNextLesson 
+                                        ? Colors.white 
+                                        : Colors.white.withOpacity(0.3),
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                );
-              },
-            )
-          else
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                color: Colors.black,
-                child: const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-              ),
-            ),
-          
-          // ✅ Lesson Description (only in portrait, not in fullscreen)
-          if (!isLandscape && 
-              !isFullscreen &&
-              widget.lesson.description != null && 
-              widget.lesson.description!.isNotEmpty)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16.r),
-              color: theme.colorScheme.surface,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Lesson Description',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    widget.lesson.description!,
-                    style: theme.textTheme.bodyMedium,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  // ✅ Custom controls overlay (works in normal and fullscreen)
-  Widget _buildCustomControls(bool isFullscreen) {
-    return Container(
-      color: Colors.transparent,
-      child: Stack(
-        children: [
-          // ✅ Top gradient with back button (only when NOT fullscreen)
-          if (!isFullscreen)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.7),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      iconSize: 28,
-                      onPressed: () {
-                        _saveProgressIfNeeded();
-                        widget.onBack();
-                      },
-                    ),
+                  );
+                },
+              )
+            else
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  color: Colors.black,
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
                   ),
                 ),
               ),
-            ),
-          
-          // ✅ Center next/previous buttons (ALWAYS visible, even in fullscreen)
-          Positioned.fill(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: isFullscreen ? 80 : 0, // ✅ Move up in fullscreen to avoid controls
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
+            
+            // ✅ Lesson Description (only in portrait, not in fullscreen)
+            if (!isLandscape && 
+                !isFullscreen &&
+                widget.lesson.description != null && 
+                widget.lesson.description!.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(16.r),
+                color: theme.colorScheme.surface,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Previous button
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: hasPreviousLesson ? _playPreviousLesson : null,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: hasPreviousLesson 
-                                  ? Colors.white 
-                                  : Colors.white.withOpacity(0.3),
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.skip_previous,
-                            color: hasPreviousLesson 
-                                ? Colors.white 
-                                : Colors.white.withOpacity(0.3),
-                            size: 32,
-                          ),
-                        ),
+                    Text(
+                      'Lesson Description',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    
-                    // Spacer
-                    const SizedBox(width: 100),
-                    
-                    // Next button
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: hasNextLesson ? _playNextLesson : null,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: hasNextLesson 
-                                  ? Colors.white 
-                                  : Colors.white.withOpacity(0.3),
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.skip_next,
-                            color: hasNextLesson 
-                                ? Colors.white 
-                                : Colors.white.withOpacity(0.3),
-                            size: 32,
-                          ),
-                        ),
-                      ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      widget.lesson.description!,
+                      style: theme.textTheme.bodyMedium,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
 
   // ✅ Error view
   Widget _buildErrorView() {
