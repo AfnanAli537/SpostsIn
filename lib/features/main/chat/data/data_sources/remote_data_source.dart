@@ -35,9 +35,20 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
       log('📦 getAllChats status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        return PaginatedChatsResponse.fromJson(
-          response.data as Map<String, dynamic>,
-        );
+        final List data = response.data;
+
+return PaginatedChatsResponse(
+  items: data.map((e) => ChatModel.fromJson(e)).toList(),
+  totalCount: data.length,
+  pageNumber: 1,
+  pageSize: data.length,
+  totalPages: 1,
+  hasNextPage: false,
+  hasPreviousPage: false,
+);
+        // return PaginatedChatsResponse.fromJson(
+        //   response.data ,
+        // );
       }
 
       throw ApiErrorHandler.handleDioError(_badResponse(response));
@@ -59,7 +70,7 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
 
       if (response.statusCode == 200) {
         return PaginatedContactsResponse.fromJson(
-          response.data as Map<String, dynamic>,
+          response.data ,
         );
       }
 
@@ -91,7 +102,7 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
 
       if (response.statusCode == 200) {
         return PaginatedChatsResponse.fromJson(
-          response.data as Map<String, dynamic>,
+          response.data ,
         );
       }
 
@@ -129,10 +140,16 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
         data: formData,
       );
 
-      log('📦 sendMessage status: ${response.statusCode}');
+//       log('📦 sendMessage status: ${response.statusCode}');
+// if (response.statusCode != null &&
+//     response.statusCode! >= 200 &&
+//     response.statusCode! < 300) {
+//   return;
+// }
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return MessageModel.fromJson(response.data as Map<String, dynamic>);
+
+     if (response.statusCode == 200 || response.statusCode == 201) {
+        return MessageModel.fromJson(response.data );
       }
 
       throw ApiErrorHandler.handleDioError(_badResponse(response));
@@ -142,42 +159,83 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
   }
 
   // ─── Get Message History ──────────────────────────────────────────────────────
+@override
+Future<PaginatedMessagesResponse> getAllMessages({
+  String? targetUserId,
+  String? groupId,
+  int page = 1,
+}) async {
+  assert(
+    targetUserId != null || groupId != null,
+    'Either targetUserId or groupId must be provided',
+  );
 
-
-  @override
-  Future<PaginatedMessagesResponse> getAllMessages({
-    String? targetUserId,
-    String? groupId,
-    int page = 1,
-  }) async {
-    assert(
-      targetUserId != null || groupId != null,
-      'Either targetUserId or groupId must be provided',
+  try {
+    final response = await apiClient.get(
+      Endpoints.getAllMessages,
+      params: {
+        if (targetUserId != null) 'targetUserId': targetUserId,
+        if (groupId != null) 'groupId': groupId,
+        'page': page,
+      },
     );
 
-    try {
-      final response = await apiClient.get(
-        Endpoints.getAllMessages,
-        params: {
-          if (targetUserId != null) 'targetUserId': targetUserId,
-          if (groupId != null) 'groupId': groupId,
-          'page': page,
-        },
+    log('📦 getAllMessages status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final List data = response.data;
+
+      return PaginatedMessagesResponse(
+        items: data.map((e) => MessageModel.fromJson(e)).toList(),
+        totalCount: data.length,
+        pageNumber: 1,
+        pageSize: data.length,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
       );
-
-      log('📦 getAllMessages status: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        return PaginatedMessagesResponse.fromJson(
-          response.data as Map<String, dynamic>,
-        );
-      }
-
-      throw ApiErrorHandler.handleDioError(_badResponse(response));
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioError(e);
     }
+
+    throw ApiErrorHandler.handleDioError(_badResponse(response));
+  } on DioException catch (e) {
+    throw ApiErrorHandler.handleDioError(e);
   }
+}
+
+  // @override
+  // Future<PaginatedMessagesResponse> getAllMessages({
+  //   String? targetUserId,
+  //   String? groupId,
+  //   int page = 1,
+  // }) async {
+  //   assert(
+  //     targetUserId != null || groupId != null,
+  //     'Either targetUserId or groupId must be provided',
+  //   );
+
+  //   try {
+  //     final response = await apiClient.get(
+  //       Endpoints.getAllMessages,
+  //       params: {
+  //         if (targetUserId != null) 'targetUserId': targetUserId,
+  //         if (groupId != null) 'groupId': groupId,
+  //         'page': page,
+  //       },
+  //     );
+
+  //     log('📦 getAllMessages status: ${response.statusCode}');
+
+  //     if (response.statusCode == 200) {
+  //       return PaginatedMessagesResponse.fromJson(
+  //         response.data ,
+  //       );
+  //     }
+
+  //     throw ApiErrorHandler.handleDioError(_badResponse(response));
+  //   } on DioException catch (e) {
+  //     throw ApiErrorHandler.handleDioError(e);
+  //   }
+  // }
 
   // ─── Create Group ─────────────────────────────────────────────────────────────
   // API body: Title* (string), Description (string), GroupPhoto (binary), MemberIds* (array<string>)
@@ -206,7 +264,7 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
       log('📦 createGroup status: ${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return ChatModel.fromJson(response.data as Map<String, dynamic>);
+        return ChatModel.fromJson(response.data );
       }
 
       throw ApiErrorHandler.handleDioError(_badResponse(response));
@@ -233,7 +291,7 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
       log('📦 editMessage status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        return MessageModel.fromJson(response.data as Map<String, dynamic>);
+        return MessageModel.fromJson(response.data );
       }
 
       throw ApiErrorHandler.handleDioError(_badResponse(response));

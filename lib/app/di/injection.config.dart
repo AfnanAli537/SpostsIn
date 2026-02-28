@@ -32,6 +32,13 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
+import 'package:sports_in/features/main/chat/data/data_sources/remote_data_source.dart'
+    as _i183;
+import 'package:sports_in/features/main/chat/data/interfaces/chat_interface.dart'
+    as _i860;
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
+    as _i679;
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart'
     as _i833;
 import 'package:sports_in/features/main/home/data/interface/post_interface.dart'
@@ -47,7 +54,7 @@ import 'package:sports_in/features/main/opportunity/data/interface/opportunity_i
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
     as _i294;
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart'
-    as _i743;
+    as _i1047;
 import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
     as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
@@ -83,6 +90,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
+    gh.lazySingleton<_i679.ChatHubService>(() => _i679.ChatHubService());
     gh.lazySingleton<_i109.ISearchDataSource>(
       () => _i1019.MockSearchDataSource(),
     );
@@ -106,6 +114,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i803.SearchBloc>(
       () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
+    );
+    gh.lazySingleton<_i860.ChatInterface>(
+      () => _i183.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
@@ -140,8 +151,11 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
-    gh.factory<_i743.OpportunityBloc>(
-      () => _i743.OpportunityBloc(
+    gh.lazySingleton<_i503.ChatRepository>(
+      () => _i503.ChatRepository(gh<_i860.ChatInterface>()),
+    );
+    gh.factory<_i1047.OpportunityBloc>(
+      () => _i1047.OpportunityBloc(
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
       ),
     );

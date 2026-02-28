@@ -1,3 +1,6 @@
+
+
+
 // ─── Message Model ────────────────────────────────────────────────────────────
 
 class MessageModel {
@@ -5,19 +8,21 @@ class MessageModel {
   final String senderId;
   final String senderName;
   final String? senderAvatar;
-  final String content;
+  String content;         // ✅ non-final → mutable for optimistic edit
   final String? attachmentUrl;
   final DateTime sentAt;
-  final bool isEdited;
+  bool isEdited;          // ✅ non-final → mutable for optimistic edit
   final bool isDeleted;
+  final bool isMe;
 
-  const MessageModel({
+  MessageModel({
     required this.id,
     required this.senderId,
     required this.senderName,
     this.senderAvatar,
     required this.content,
     this.attachmentUrl,
+   required this.isMe,
     required this.sentAt,
     required this.isEdited,
     required this.isDeleted,
@@ -33,6 +38,7 @@ class MessageModel {
         sentAt: DateTime.tryParse(json['sentAt'] ?? '') ?? DateTime.now(),
         isEdited: json['isEdited'] ?? false,
         isDeleted: json['isDeleted'] ?? false,
+        isMe: json['isMe']??false
       );
 
   Map<String, dynamic> toJson() => {
@@ -48,12 +54,43 @@ class MessageModel {
       };
 }
 
+// ─── Chat Member Model ────────────────────────────────────────────────────────
+
+class ChatMemberModel {
+  final String userId;
+  final String userName;
+  final String? avatar;
+  final String? bio;      // ✅ added — used in contacts list & create group
+  final bool isAdmin;
+
+  const ChatMemberModel({
+    required this.userId,
+    required this.userName,
+    this.avatar,
+    this.bio,
+    this.isAdmin = false, // ✅ default false — no need to pass it every time
+  });
+
+  factory ChatMemberModel.fromJson(Map<String, dynamic> json) => ChatMemberModel(
+        userId: json['userId']?.toString() ?? '',
+        userName: json['userName'] ?? '',
+        avatar: json['avatar'],
+        bio: json['bio'],
+        isAdmin: json['isAdmin'] ?? false,
+      );
+}
+
+// ✅ ContactModel is now a typedef alias for ChatMemberModel
+// This fixes: "The element type 'ContactModel' can't be assigned to 'ChatMemberModel'"
+// All existing ContactModel usage keeps working without any changes
+typedef ContactModel = ChatMemberModel;
+
 // ─── Chat / Conversation Model ────────────────────────────────────────────────
 
 class ChatModel {
   final String id;
-  final String? title;        // group title (null for direct chats)
-  final String? description;  // group description (null for direct chats)
+  final String? title;
+  final String? description;
   final bool isGroup;
   final String? groupPhoto;
   final List<ChatMemberModel> members;
@@ -61,7 +98,7 @@ class ChatModel {
   final int unreadCount;
   final DateTime? updatedAt;
 
-  const ChatModel({
+  ChatModel({                   // ✅ removed const — List can't always be const
     required this.id,
     this.title,
     this.description,
@@ -73,68 +110,62 @@ class ChatModel {
     this.updatedAt,
   });
 
-  factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
-        id: json['id']?.toString() ?? '',
-        title: json['title'],
-        description: json['description'],
-        isGroup: json['isGroup'] ?? false,
-        groupPhoto: json['groupPhoto'],
-        members: (json['members'] as List? ?? [])
-            .map((e) => ChatMemberModel.fromJson(e))
-            .toList(),
-        lastMessage: json['lastMessage'] != null
-            ? MessageModel.fromJson(json['lastMessage'])
-            : null,
-        unreadCount: json['unreadCount'] ?? 0,
-        updatedAt: DateTime.tryParse(json['updatedAt'] ?? ''),
-      );
+  // ✅ Safe display name — no more widget.chat.title! crashes
+  String get displayName =>
+      isGroup ? (title ?? 'Group') : (members.firstOrNull?.userName ?? '');
+
+  // ✅ Safe display avatar
+  String? get displayAvatar =>
+      isGroup ? groupPhoto : members.firstOrNull?.avatar;
+factory ChatModel.fromJson(Map<String, dynamic> json) {
+  final lastMsg = json['lastMessage'];
+
+  MessageModel? parsedLastMessage;
+
+  if (lastMsg is Map<String, dynamic>) {
+    parsedLastMessage = MessageModel.fromJson(lastMsg);
+  } else if (lastMsg is String) {
+    parsedLastMessage = MessageModel(
+      id: '',
+      senderId: json['targetId'] ?? '',
+    senderName: json['senderName'] ?? 'User',
+      content: lastMsg,
+      sentAt: DateTime.tryParse(json['lastMessageTime'] ?? '') ?? DateTime.now(),
+      isEdited: false,
+      isDeleted: false,
+      isMe: json['isMe']??false
+    );
+  }
+
+  return ChatModel(
+    id: json['targetId'] ?? '',
+    title: json['name'] ?? 'Chat',
+    // title: json['name'],
+    description: null,
+    isGroup: json['isGroup'] ?? false,
+    groupPhoto: json['imageUrl'],
+    members: [],
+    lastMessage: parsedLastMessage,
+    unreadCount: json['unreadCount'] ?? 0,
+    updatedAt: DateTime.tryParse(json['lastMessageTime'] ?? ''),
+  );
 }
+  // factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
+  //       id: json['id']?.toString() ?? '',
+  //       title: json['title'],
+  //       description: json['description'],
+  //       isGroup: json['isGroup'] ?? false,
+  //       groupPhoto: json['groupPhoto'],
+  //       members: (json['members'] as List? ?? [])
+  //           .map((e) => ChatMemberModel.fromJson(e))
+  //           .toList(),
+  //       lastMessage: json['lastMessage'] != null
+  //           ? MessageModel.fromJson(json['lastMessage'])
+  //           : null,
+  //       unreadCount: json['unreadCount'] ?? 0,
+  //       updatedAt: DateTime.tryParse(json['updatedAt'] ?? ''),
+  //     );
 
-// ─── Chat Member Model ────────────────────────────────────────────────────────
-
-class ChatMemberModel {
-  final String userId;
-  final String userName;
-  final String? avatar;
-  final bool isAdmin;
-
-  const ChatMemberModel({
-    required this.userId,
-    required this.userName,
-    this.avatar,
-    required this.isAdmin,
-  });
-
-  factory ChatMemberModel.fromJson(Map<String, dynamic> json) =>
-      ChatMemberModel(
-        userId: json['userId']?.toString() ?? '',
-        userName: json['userName'] ?? '',
-        avatar: json['avatar'],
-        isAdmin: json['isAdmin'] ?? false,
-      );
-}
-
-// ─── Contact Model ────────────────────────────────────────────────────────────
-
-class ContactModel {
-  final String userId;
-  final String userName;
-  final String? avatar;
-  final String? bio;
-
-  const ContactModel({
-    required this.userId,
-    required this.userName,
-    this.avatar,
-    this.bio,
-  });
-
-  factory ContactModel.fromJson(Map<String, dynamic> json) => ContactModel(
-        userId: json['userId']?.toString() ?? '',
-        userName: json['userName'] ?? '',
-        avatar: json['avatar'],
-        bio: json['bio'],
-      );
 }
 
 // ─── Paginated Responses ──────────────────────────────────────────────────────
@@ -157,6 +188,31 @@ class PaginatedChatsResponse {
     required this.hasNextPage,
     required this.hasPreviousPage,
   });
+//   factory PaginatedChatsResponse.fromJson(dynamic json) {
+//   if (json is List) {
+//     return PaginatedChatsResponse(
+//       items: json.map((e) => ChatModel.fromJson(e)).toList(),
+//       totalCount: json.length,
+//       pageNumber: 1,
+//       pageSize: json.length,
+//       totalPages: 1,
+//       hasNextPage: false,
+//       hasPreviousPage: false,
+//     );
+//   }
+
+//   return PaginatedChatsResponse(
+//     items: (json['items'] as List? ?? [])
+//         .map((e) => ChatModel.fromJson(e))
+//         .toList(),
+//     totalCount: json['totalCount'] ?? 0,
+//     pageNumber: json['pageNumber'] ?? 1,
+//     pageSize: json['pageSize'] ?? 10,
+//     totalPages: json['totalPages'] ?? 0,
+//     hasNextPage: json['hasNextPage'] ?? false,
+//     hasPreviousPage: json['hasPreviousPage'] ?? false,
+//   );
+// }
 
   factory PaginatedChatsResponse.fromJson(Map<String, dynamic> json) =>
       PaginatedChatsResponse(
@@ -170,6 +226,7 @@ class PaginatedChatsResponse {
         hasNextPage: json['hasNextPage'] ?? false,
         hasPreviousPage: json['hasPreviousPage'] ?? false,
       );
+
 }
 
 class PaginatedMessagesResponse {
@@ -205,8 +262,9 @@ class PaginatedMessagesResponse {
       );
 }
 
+// ✅ Now returns List<ChatMemberModel> — fixes BLoC state type mismatch
 class PaginatedContactsResponse {
-  final List<ContactModel> items;
+  final List<ChatMemberModel> items;   // ✅ was List<ContactModel>
   final int totalCount;
   final int pageNumber;
   final int pageSize;
@@ -227,7 +285,7 @@ class PaginatedContactsResponse {
   factory PaginatedContactsResponse.fromJson(Map<String, dynamic> json) =>
       PaginatedContactsResponse(
         items: (json['items'] as List? ?? [])
-            .map((e) => ContactModel.fromJson(e))
+            .map((e) => ChatMemberModel.fromJson(e))  // ✅ was ContactModel.fromJson
             .toList(),
         totalCount: json['totalCount'] ?? 0,
         pageNumber: json['pageNumber'] ?? 1,
@@ -239,14 +297,12 @@ class PaginatedContactsResponse {
 }
 
 // ─── Send Message Request Model ───────────────────────────────────────────────
-// POST /api/Chat/send — multipart/form-data
-// Fields: Content, Attachment (binary), ReceiverId, GroupId
 
 class SendMessageRequest {
   final String content;
-  final String? receiverId;     // for direct messages
-  final String? groupId;        // for group messages
-  final String? attachmentFile; // local file path → sent as binary
+  final String? receiverId;
+  final String? groupId;
+  final String? attachmentFile;
 
   const SendMessageRequest({
     required this.content,
@@ -260,14 +316,12 @@ class SendMessageRequest {
 }
 
 // ─── Create Group Request Model ───────────────────────────────────────────────
-// POST /api/Chat/group/create — multipart/form-data
-// Fields: Title* (string), Description (string), GroupPhoto (binary), MemberIds* (array<string>)
 
 class CreateGroupRequest {
   final String title;
   final List<String> memberIds;
   final String? description;
-  final String? groupPhoto; // local file path → sent as binary
+  final String? groupPhoto;
 
   const CreateGroupRequest({
     required this.title,
@@ -276,3 +330,5 @@ class CreateGroupRequest {
     this.groupPhoto,
   });
 }
+
+
