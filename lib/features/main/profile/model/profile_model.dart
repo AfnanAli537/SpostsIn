@@ -398,24 +398,51 @@ class Opportunity {
     return {'id': id, 'mediaUrl': mediaUrl, 'title': title};
   }
 }
-
 class Course {
   final String id;
   final String imageUrl;
   final String? title;
+  final String? description;
+  final double? price;
+  final bool isFree;
+  final int lessonsCount;
+  final int enrolledCount;
 
-  Course({required this.id, required this.imageUrl, this.title});
-
-  factory Course.fromJson(Map<String, dynamic> json) {
+  Course({
+    required this.id,
+    required this.imageUrl,
+    this.title,
+    this.description,
+    this.price,
+    this.isFree = false,
+    this.lessonsCount = 0,
+    this.enrolledCount = 0,
+  });
+    factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       id: json['id'] ?? '',
-      imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
+      imageUrl: json['thumbnailUrl'] ?? json['thumbnail_url'] ?? '',
       title: json['title'],
+      description: json['description'],
+      price: json['price']?.toDouble(),
+      isFree: json['isFree'] ?? false,
+      lessonsCount: json['lessonsCount'] ?? 0,
+      enrolledCount: json['enrolledUsersCount'] ?? 0,
     );
   }
 
+
   Map<String, dynamic> toJson() {
-    return {'id': id, 'imageUrl': imageUrl, 'title': title};
+    return {
+      'id': id,
+      'imageUrl': imageUrl,
+      'title': title,
+      'description': description,
+      'price': price,
+      'isFree': isFree,
+      'lessonsCount': lessonsCount,
+      'enrolledCount': enrolledCount,
+    };
   }
 }
 

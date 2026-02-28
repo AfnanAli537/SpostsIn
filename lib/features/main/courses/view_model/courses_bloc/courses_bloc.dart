@@ -147,41 +147,18 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     }
   }
 
-// Replace _onFetchCourseLessons in courses_bloc.dart with this version:
-// ✅ FIX: Replace _onFetchCourseLessons in courses_bloc.dart
-
 Future<void> _onFetchCourseLessons(
   FetchCourseLessons event,
   Emitter<CoursesState> emit,
 ) async {
   try {
-    debugPrint('📚 STEP 1: Starting to fetch lessons for course: ${event.courseId}');
-    
-    // ✅ FIX: Don't emit CoursesLoading - it interferes with CourseDetailLoaded
-    // Instead, just fetch lessons and emit LessonsLoaded
-    
-    debugPrint('📚 STEP 2: Calling repository.getCourseLessons...');
     final lessons = await _repository.getCourseLessons(event.courseId);
-    debugPrint('📚 STEP 3: ✅ Got ${lessons.length} lessons from repository');
-    
-    // Log lesson details
-    for (var i = 0; i < lessons.length; i++) {
-      debugPrint('   Lesson ${i + 1}: ${lessons[i].title} (Order: ${lessons[i].order})');
-    }
-
-    debugPrint('📚 STEP 4: Calling repository.getCourseById...');
     final course = await _repository.getCourseById(event.courseId);
-    debugPrint('📚 STEP 5: ✅ Got course, isEnrolled: ${course.isEnrolled}, isOwner: ${course.isOwner}');
-
-    debugPrint('📚 STEP 6: Emitting LessonsLoaded state...');
     emit(LessonsLoaded(
       lessons: lessons,
       isEnrolled: course.isEnrolled,
     ));
-    debugPrint('📚 STEP 7: ✅✅✅ Successfully emitted LessonsLoaded state with ${lessons.length} lessons');
-  } catch (e, stackTrace) {
-    debugPrint('📚 ❌❌❌ ERROR in _onFetchCourseLessons: $e');
-    debugPrint('📚 Stack trace: $stackTrace');
+  } catch (e) {
     emit(CoursesError(message: e.toString()));
   }
 }
@@ -347,7 +324,6 @@ Future<void> _onFetchCourseLessons(
     }
   }
 
-  // ==================== PROGRESS ====================
 
 //  ==================== PROGRESS ====================
 
@@ -366,20 +342,10 @@ Future<void> _onFetchCourseLessons(
         lessonId: event.lessonId,
         request: request,
       );
-
-      // ✅ DON'T emit state - this causes rebuilds
-      // Just silently save progress in background
-      debugPrint('✅ Progress saved silently');
       
-      // ❌ OLD CODE (causes rebuilds):
-      // emit(ProgressUpdated(
-      //   lessonId: event.lessonId,
-      //   isWatched: event.isWatched,
-      // ));
     } catch (e) {
-      debugPrint('❌ Error updating progress: $e');
-      // Don't emit error for progress updates, just log it
-    }
+      debugPrint('Error updating progress: $e');
+      emit(CoursesError(message: e.toString()));}
   }
   // ==================== ANALYTICS (PROVIDER) ====================
 

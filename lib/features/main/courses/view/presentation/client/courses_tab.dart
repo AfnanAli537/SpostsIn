@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view/widgets/course_card.dart';
+import 'package:sports_in/features/main/courses/view/widgets/courses_search_bar.dart';
 import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -20,32 +22,54 @@ class CoursesTab extends StatefulWidget {
 
 class _CoursesTabState extends State<CoursesTab> {
   late final CoursesBloc _coursesBloc;
+  final TextEditingController _searchController = TextEditingController();
 
-  // ✅ FIX: Store courses locally to prevent disappearing
   List<CourseModel> _enrolledCourses = [];
   List<CourseModel> _availableCourses = [];
   bool _isLoadingEnrolled = true;
   bool _isLoadingAvailable = true;
+  String _currentSearchTerm = '';
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     _coursesBloc = getIt<CoursesBloc>();
     _loadData();
+    _searchController.addListener(_onSearchChanged);
   }
 
   void _loadData() {
     _coursesBloc
-      ..add(const FetchEnrolledCourses(page: 1, size: 10)) // ✅ Increased to 10
-      ..add(
-        const FetchAvailableCourses(page: 1, size: 10),
-      ); // ✅ Increased to 10
+      ..add(FetchEnrolledCourses(
+        page: 1,
+        size: 10,
+        searchTerm: _currentSearchTerm.isEmpty ? null : _currentSearchTerm,
+      ))
+      ..add(FetchAvailableCourses(
+        page: 1,
+        size: 10,
+        searchTerm: _currentSearchTerm.isEmpty ? null : _currentSearchTerm,
+      ));
+  }
+
+  // ✅ Server-side search with debounce
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_currentSearchTerm != _searchController.text) {
+        setState(() {
+          _currentSearchTerm = _searchController.text;
+        });
+        _loadData();
+      }
+    });
   }
 
   @override
   void dispose() {
-    // ✅ DON'T close the bloc - let it persist
-    // _coursesBloc.close();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -55,7 +79,6 @@ class _CoursesTabState extends State<CoursesTab> {
       value: _coursesBloc,
       child: BlocListener<CoursesBloc, CoursesState>(
         listener: (context, state) {
-          // ✅ FIX: Store courses in local state to prevent overwriting
           if (state is EnrolledCoursesLoaded) {
             setState(() {
               _enrolledCourses = state.courses;
@@ -69,7 +92,22 @@ class _CoursesTabState extends State<CoursesTab> {
             });
           }
         },
-        child: _buildSliverContent(context),
+        child: GestureDetector(
+          // ✅ Unfocus keyboard on tap outside
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: RefreshIndicator(
+            // ✅ Refresh indicator
+            onRefresh: () async {
+              setState(() {
+                _isLoadingEnrolled = true;
+                _isLoadingAvailable = true;
+              });
+              _loadData();
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: _buildSliverContent(context),
+          ),
+        ),
       ),
     );
   }
@@ -78,20 +116,153 @@ class _CoursesTabState extends State<CoursesTab> {
     final theme = Theme.of(context);
     final string = S.of(context);
 
-    return SliverList(
-      delegate: SliverChildListDelegate([
-        SizedBox(height: 16.h),
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              // ✅ Search Bar
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+                child: _buildSearchBar(theme, string),
+              ),
 
-        // Continue Watching Section
-        _buildContinueWatchingSection(context, theme, string),
+              // Show search results or normal sections
+              if (_currentSearchTerm.isNotEmpty) ...[
+                _buildSearchResults(context, theme, string),
+              ] else ...[
+                // Continue Watching Section
+                _buildContinueWatchingSection(context, theme, string),
 
-        // New Courses Section (✅ Fixed with local state)
-        _buildNewCoursesSection(context, theme, string),
+                // New Courses Section
+                _buildNewCoursesSection(context, theme, string),
 
-        // Enrolled Courses Section (✅ Fixed with local state)
-        _buildEnrolledCoursesSection(context, theme, string),
-        SizedBox(height: 44.h),
-      ]),
+                // Enrolled Courses Section
+                _buildEnrolledCoursesSection(context, theme, string),
+              ],
+
+              SizedBox(height: 44.h),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar(ThemeData theme, S string) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: _currentSearchTerm.isNotEmpty
+              ? theme.colorScheme.primary
+              : Colors.grey[300]!,
+          width: _currentSearchTerm.isNotEmpty ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: CoursesSearchBar(
+        controller: _searchController,
+        hintText: 'Search courses...',
+        onChanged: (value) {
+          // Handled by listener
+        },
+        onClear: () {
+          _searchController.clear();
+          // Will trigger listener
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchResults(BuildContext context, ThemeData theme, S string) {
+    final totalResults = _enrolledCourses.length + _availableCourses.length;
+
+    if (_isLoadingEnrolled || _isLoadingAvailable) {
+      return const CoursesListShimmer();
+    }
+
+    if (totalResults == 0) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 48.h),
+        child: Column(
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64.sp,
+              color: Colors.grey[400],
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'No courses found for "${_currentSearchTerm}"',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'Try different keywords',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Text(
+            '$totalResults ${totalResults == 1 ? 'course' : 'courses'} found',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: Colors.grey[600],
+            ),
+          ),
+        ),
+
+        if (_availableCourses.isNotEmpty) ...[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Text(
+              'Available (${_availableCourses.length})',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ..._availableCourses.map((course) => CourseCard(
+                course: course,
+                onTap: () => _navigateToCourseDetail(context, course.id),
+              )),
+        ],
+
+        if (_enrolledCourses.isNotEmpty) ...[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Text(
+              'Enrolled (${_enrolledCourses.length})',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ..._enrolledCourses.map((course) => CourseCard(
+                course: course,
+                onTap: () => _navigateToCourseDetail(context, course.id),
+              )),
+        ],
+      ],
     );
   }
 
@@ -100,13 +271,11 @@ class _CoursesTabState extends State<CoursesTab> {
     ThemeData theme,
     S string,
   ) {
-    // ✅ Use local state instead of bloc state
     if (_enrolledCourses.isNotEmpty) {
-      final inProgressCourses =
-          _enrolledCourses
-              .where((c) => c.progress > 0 && c.progress < 100)
-              .toList()
-            ..sort((a, b) => b.progress.compareTo(a.progress));
+      final inProgressCourses = _enrolledCourses
+          .where((c) => c.progress > 0 && c.progress < 100)
+          .toList()
+        ..sort((a, b) => b.progress.compareTo(a.progress));
 
       if (inProgressCourses.isNotEmpty) {
         return Column(
@@ -133,7 +302,7 @@ class _CoursesTabState extends State<CoursesTab> {
             SizedBox(height: 24.h),
           ],
         );
-      }
+      };
     }
     return const SizedBox.shrink();
   }
@@ -143,8 +312,6 @@ class _CoursesTabState extends State<CoursesTab> {
     ThemeData theme,
     S string,
   ) {
-    // ✅ Use local state
-    // AFTER
     if (_isLoadingEnrolled) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,9 +320,9 @@ class _CoursesTabState extends State<CoursesTab> {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
               'Enrolled Courses',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           SizedBox(height: 8.h),
@@ -169,7 +336,6 @@ class _CoursesTabState extends State<CoursesTab> {
       return const SizedBox.shrink();
     }
 
-    // ✅ Show first 3 courses in horizontal scroll
     final displayCourses = _enrolledCourses.take(3).toList();
 
     return Column(
@@ -207,9 +373,8 @@ class _CoursesTabState extends State<CoursesTab> {
           ),
         ),
         SizedBox(height: 8.h),
-        // ✅ Horizontal scrolling with proper sizing
         SizedBox(
-          height: 250.h, // Increased height for card content
+          height: 250.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -217,7 +382,7 @@ class _CoursesTabState extends State<CoursesTab> {
             itemBuilder: (context, index) {
               final course = displayCourses[index];
               return Container(
-                width: 280.w, // ✅ Fixed width for horizontal scroll
+                width: 280.w,
                 margin: EdgeInsets.only(right: 16.w),
                 child: CourseCard(
                   course: course,
@@ -237,8 +402,6 @@ class _CoursesTabState extends State<CoursesTab> {
     ThemeData theme,
     S string,
   ) {
-    // ✅ Use local state
-    // AFTER
     if (_isLoadingAvailable) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,9 +410,9 @@ class _CoursesTabState extends State<CoursesTab> {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Text(
               'New Courses',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           SizedBox(height: 8.h),
@@ -260,15 +423,9 @@ class _CoursesTabState extends State<CoursesTab> {
     }
 
     if (_availableCourses.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(32.h),
-          child: Text('No courses available', style: theme.textTheme.bodyLarge),
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
-    // ✅ Show first 3 courses in horizontal scroll
     final displayCourses = _availableCourses.take(3).toList();
 
     return Column(
@@ -306,7 +463,6 @@ class _CoursesTabState extends State<CoursesTab> {
           ),
         ),
         SizedBox(height: 8.h),
-        // ✅ Horizontal scrolling with proper sizing
         SizedBox(
           height: 310.h,
           child: ListView.builder(
@@ -406,8 +562,6 @@ class _CoursesTabState extends State<CoursesTab> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  // SizedBox(height: 8.h),
-                  // Text(course.owner.fullName, style: theme.textTheme.bodySmall),
                   SizedBox(height: 12.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -420,7 +574,6 @@ class _CoursesTabState extends State<CoursesTab> {
                         ),
                       ),
                       Text(
-                        // course.formattedDuration,
                         '${(course.progress / 100 * course.lessonsCount).ceil()} lesson left',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onPrimary,
@@ -433,7 +586,6 @@ class _CoursesTabState extends State<CoursesTab> {
                     value: course.progress / 100,
                     backgroundColor: Colors.grey[200],
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      // theme.colorScheme.primary,
                       ColorManager.warning,
                     ),
                     minHeight: 6.h,
@@ -452,7 +604,7 @@ class _CoursesTabState extends State<CoursesTab> {
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
-          value: _coursesBloc, // ✅ Pass same bloc instance
+          value: _coursesBloc,
           child: CourseDetailScreen(courseId: courseId),
         ),
       ),

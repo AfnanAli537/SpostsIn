@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
+import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -189,7 +193,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           SizedBox(height: 24.h),
-          ElevatedButton(onPressed: _loadProfile, child: Text(string.retry, style: TextStyle(color: theme.colorScheme.secondary))),
+          ElevatedButton(
+            onPressed: _loadProfile,
+            child: Text(
+              string.retry,
+              style: TextStyle(color: theme.colorScheme.secondary),
+            ),
+          ),
         ],
       ),
     );
@@ -248,7 +258,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
-              onCoursesShowAll: () {},
+              onCoursesShowAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<CoursesBloc>(),
+                      child: const CourseListScreen(
+                        listType: CourseListType.created,
+                      ),
+                    ),
+                  ),
+                );
+              },
               onAchievementsShowAll: () {},
               onVideosShowAll: () {},
               onInterestsShowAll: () {},
@@ -272,7 +294,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
-              onCourseTap: (course) {},
+              onCourseTap: (course) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<CoursesBloc>(),
+                      child: CourseDetailScreen(courseId: course.id),
+                    ),
+                  ),
+                );
+              },
               onAchievementTap: (achievement) {},
               onVideoTap: (video) {},
 

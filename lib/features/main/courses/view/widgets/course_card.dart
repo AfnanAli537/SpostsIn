@@ -28,7 +28,7 @@ class CourseCard extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         // ✅ Add height constraint for landscape
         constraints: BoxConstraints(
-          maxHeight: isLandscape ? 90.h : double.infinity,
+          maxHeight: isLandscape ? 200.h : double.infinity,
         ),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
@@ -104,7 +104,7 @@ class CourseCard extends StatelessWidget {
         // Content
         Expanded(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal:  12.r),
+            padding: EdgeInsets.all(12.r),
             child: _buildCardContent(theme),
           ),
         ),
@@ -124,9 +124,8 @@ class CourseCard extends StatelessWidget {
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             fontSize: 16.sp,
-            
           ),
-          maxLines: 1,
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 4.h),
@@ -156,12 +155,10 @@ class CourseCard extends StatelessWidget {
             '${course.progress}% complete',
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 12.sp),
           ),
+          SizedBox(height: 8.h),
         ],
 
-        // Spacer to push price/controls to bottom
-        const Spacer(),
-
-        // Price or controls
+        // Price or controls (no Spacer)
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -171,9 +168,8 @@ class CourseCard extends StatelessWidget {
                   course.isFree ? 'FREE' : '${course.price} EGP',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: course.isFree ? Colors.green : null,fontSize: 16.sp,
+                    color: course.isFree ? Colors.green : null,
                   ),
-            maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

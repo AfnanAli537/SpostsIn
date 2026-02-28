@@ -1919,11 +1919,26 @@ class S {
     return Intl.message('Courses', name: 'courses', desc: '', args: []);
   }
 
+  /// `No Courses`
+  String get noCourses {
+    return Intl.message('No Courses', name: 'noCourses', desc: '', args: []);
+  }
+
   /// `Achievements`
   String get achievements {
     return Intl.message(
       'Achievements',
       name: 'achievements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Achievements`
+  String get noAchievements {
+    return Intl.message(
+      'No Achievements',
+      name: 'noAchievements',
       desc: '',
       args: [],
     );

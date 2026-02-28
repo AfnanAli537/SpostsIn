@@ -152,7 +152,7 @@ class ProfileSectionFactory {
         (profile.userType == UserType.club ||
         profile.userType == UserType.coach || 
         profile.userType == UserType.institute)) {
-      sections.add(const EmptySection(title: "Courses", message: "No Courses yet"));
+      sections.add(EmptySection(title: string.courses, message: string.noCourses));
     }
 
     if (profile.achievements.isNotEmpty) {
@@ -166,9 +166,9 @@ class ProfileSectionFactory {
         ),
       );
     }else{
-      sections.add(const EmptySection(
-        title: "Achievements",
-        message: "No Achievements yet",
+      sections.add( EmptySection(
+        title: string.achievements,
+        message: string.noAchievements,
       ));
     }
 

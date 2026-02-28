@@ -176,9 +176,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "createPost": MessageLookupByLibrary.simpleMessage("إنشاء منشور"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
-    "daysAgo": m0,
     "date": MessageLookupByLibrary.simpleMessage("التاريخ"),
     "date_label": MessageLookupByLibrary.simpleMessage("التاريخ"),
+    "daysAgo": m0,
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
     "delete": MessageLookupByLibrary.simpleMessage("حذف"),
     "deleteComment": MessageLookupByLibrary.simpleMessage("حذف التعليق"),
@@ -193,12 +193,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذا المنشور؟",
     ),
-    "deletingOpportunity": MessageLookupByLibrary.simpleMessage(
-      "جاري حذف الفرصة...",
-    ),
     "deleteachievement": MessageLookupByLibrary.simpleMessage("حذف الإنجاز"),
     "deleteachievementconfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد أنك تريد حذف هذا الإنجاز؟",
+    ),
+    "deletingOpportunity": MessageLookupByLibrary.simpleMessage(
+      "جاري حذف الفرصة...",
     ),
     "description": MessageLookupByLibrary.simpleMessage("الوصف"),
     "description_hint": MessageLookupByLibrary.simpleMessage("اشرح إنجازك..."),
@@ -216,8 +216,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "editProfileSuccess": MessageLookupByLibrary.simpleMessage(
       "تم تحديث الملف الشخصي بنجاح!",
     ),
-    "edit_achievement": MessageLookupByLibrary.simpleMessage("تعديل الإنجاز"),
     "editYourComment": MessageLookupByLibrary.simpleMessage("عدّل تعليقك..."),
+    "edit_achievement": MessageLookupByLibrary.simpleMessage("تعديل الإنجاز"),
     "editingComment": MessageLookupByLibrary.simpleMessage(
       "جاري تعديل التعليق",
     ),
@@ -404,13 +404,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "noAcceptedApplicants": MessageLookupByLibrary.simpleMessage(
       "لا يوجد متقدمون مقبولون",
     ),
+    "noAchievements": MessageLookupByLibrary.simpleMessage("لا توجدإنجازات"),
     "noApplicantsFound": MessageLookupByLibrary.simpleMessage(
       "لم يتم العثور على متقدمين",
     ),
+    "noBio": MessageLookupByLibrary.simpleMessage("لا وصف"),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage(
       "لا توجد تعليقات بعد",
     ),
-    "noBio": MessageLookupByLibrary.simpleMessage("لا وصف"),
+    "noCourses": MessageLookupByLibrary.simpleMessage("لا توجد دورات"),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",
     ),
@@ -423,10 +425,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "لم يتم العثور على فرص",
     ),
     "noPosts": MessageLookupByLibrary.simpleMessage("لا توجد منشورات"),
+    "noPostsYet": MessageLookupByLibrary.simpleMessage("لا توجد منشورات بعد"),
     "noProfileData": MessageLookupByLibrary.simpleMessage(
       "لا توجد بيانات ملف شخصي.",
     ),
-    "noPostsYet": MessageLookupByLibrary.simpleMessage("لا توجد منشورات بعد"),
     "noRejectedApplicants": MessageLookupByLibrary.simpleMessage(
       "لا يوجد متقدمون مرفوضون",
     ),
@@ -540,9 +542,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال كلمة مرور قوية",
     ),
-    "please_select_date": MessageLookupByLibrary.simpleMessage(
-      "يرجى اختيار تاريخ",
-    ),
     "pleaseFillAllFields": MessageLookupByLibrary.simpleMessage(
       "يرجى ملء جميع الحقول",
     ),
@@ -551,6 +550,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSelectSport": MessageLookupByLibrary.simpleMessage(
       "الرجاء اختيار رياضة",
+    ),
+    "please_select_date": MessageLookupByLibrary.simpleMessage(
+      "يرجى اختيار تاريخ",
     ),
     "pointGuard": MessageLookupByLibrary.simpleMessage(
       "صانع ألعاب (Point Guard)",
@@ -707,14 +709,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "updatingProfile": MessageLookupByLibrary.simpleMessage(
       "جارٍ تحديث الملف الشخصي",
     ),
-    "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
-      "رفع صورة الإنجاز",
-    ),
     "upload": MessageLookupByLibrary.simpleMessage("رفع"),
     "uploadAnImage": MessageLookupByLibrary.simpleMessage("ارفع صورة"),
     "uploadContent": MessageLookupByLibrary.simpleMessage("رفع محتوى"),
     "uploadImageOrVideo": MessageLookupByLibrary.simpleMessage(
       "ارفع صورة أو فيديو",
+    ),
+    "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
+      "رفع صورة الإنجاز",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف كبير واحد",

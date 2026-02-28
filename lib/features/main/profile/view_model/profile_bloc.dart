@@ -56,44 +56,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  // Future<void> _onUpdateProfile(
-  //   UpdateProfile event,
-  //   Emitter<ProfileState> emit,
-  // ) async {
-  //   try {
-  //     emit(ProfileLoading());
-  //     final updatedProfile = await _repository.updateProfile(event.updateData);
-
-  //     // ✅ FIXED: Only emit ProfileUpdated - let the screen handle navigation
-  //     // The ProfileUpdated state will trigger Navigator.pop in the edit screen
-  //     // Then the profile screen underneath will remain in its current state
-  //     emit(ProfileUpdated(profile: updatedProfile));
-
-  //     // ✅ OPTION 1: Add a small delay before emitting ProfileLoaded
-  //     // This gives time for Navigator.pop to execute
-  //     await Future.delayed(const Duration(milliseconds: 100));
-  //     final currentState = state;
-  //     if (currentState is ProfileLoaded) {
-  //     emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
-  //     }
-  //     // ✅ OPTION 2 (RECOMMENDED): Don't emit ProfileLoaded here at all
-  //     // Instead, let the profile screen reload itself when it becomes visible
-  //     // Remove the above two lines and just keep emit(ProfileUpdated(...))
-
-  //   } catch (e) {
-  //     emit(ProfileError(message: e.toString()));
-
-  //     final currentState = state;
-  //     if (currentState is ProfileLoaded) {
-  //       emit(
-  //         ProfileLoaded(
-  //           profile: currentState.profile,
-  //           isOwnProfile: currentState.isOwnProfile,
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
   Future<void> _onUpdateProfile(
     UpdateProfile event,
     Emitter<ProfileState> emit,
@@ -109,8 +71,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       final currentState = state;
       if (currentState is ProfileLoaded) {
-         emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
-
+        emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
       }
     } catch (e) {
       emit(ProfileError(message: e is ApiException ? e.message : e.toString()));

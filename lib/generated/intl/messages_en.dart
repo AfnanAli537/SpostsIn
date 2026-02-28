@@ -186,9 +186,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "currentlyInClub": MessageLookupByLibrary.simpleMessage(
       "Currently in a Club",
     ),
-    "daysAgo": m0,
     "date": MessageLookupByLibrary.simpleMessage("Date"),
     "date_label": MessageLookupByLibrary.simpleMessage("Date"),
+    "daysAgo": m0,
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deleteComment": MessageLookupByLibrary.simpleMessage("Delete Comment"),
@@ -205,21 +205,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "deletePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this post?",
     ),
-    "deletingOpportunity": MessageLookupByLibrary.simpleMessage(
-      "Deleting opportunity...",
-    ),
-    "description": MessageLookupByLibrary.simpleMessage("Description"),
-    "details": MessageLookupByLibrary.simpleMessage("Details"),
     "deleteachievement": MessageLookupByLibrary.simpleMessage(
       "Delete Achievement",
     ),
     "deleteachievementconfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this achievement?",
     ),
+    "deletingOpportunity": MessageLookupByLibrary.simpleMessage(
+      "Deleting opportunity...",
+    ),
+    "description": MessageLookupByLibrary.simpleMessage("Description"),
     "description_hint": MessageLookupByLibrary.simpleMessage(
       "Explain your achievement...",
     ),
     "description_label": MessageLookupByLibrary.simpleMessage("Description"),
+    "details": MessageLookupByLibrary.simpleMessage("Details"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "Disconnected successfully!",
     ),
@@ -232,11 +232,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "editProfileSuccess": MessageLookupByLibrary.simpleMessage(
       "Profile updated successfully!",
     ),
-    "edit_achievement": MessageLookupByLibrary.simpleMessage(
-      "Edit Achievement",
-    ),
     "editYourComment": MessageLookupByLibrary.simpleMessage(
       "Edit your comment...",
+    ),
+    "edit_achievement": MessageLookupByLibrary.simpleMessage(
+      "Edit Achievement",
     ),
     "editingComment": MessageLookupByLibrary.simpleMessage("Editing comment"),
     "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
@@ -422,14 +422,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
-    "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
     "noAcceptedApplicants": MessageLookupByLibrary.simpleMessage(
       "No accepted applicants",
     ),
+    "noAchievements": MessageLookupByLibrary.simpleMessage("No Achievements"),
     "noApplicantsFound": MessageLookupByLibrary.simpleMessage(
       "No applicants found",
     ),
+    "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage("No comments yet"),
+    "noCourses": MessageLookupByLibrary.simpleMessage("No Courses"),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No Internet Connection",
     ),
@@ -442,10 +444,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "No Opportunities found",
     ),
     "noPosts": MessageLookupByLibrary.simpleMessage("No Posts"),
+    "noPostsYet": MessageLookupByLibrary.simpleMessage("No posts yet"),
     "noProfileData": MessageLookupByLibrary.simpleMessage(
       "No profile data available.",
     ),
-    "noPostsYet": MessageLookupByLibrary.simpleMessage("No posts yet"),
     "noRejectedApplicants": MessageLookupByLibrary.simpleMessage(
       "No rejected applicants",
     ),
@@ -561,9 +563,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnteraStrongPassword": MessageLookupByLibrary.simpleMessage(
       "Please enter a strong password",
     ),
-    "please_select_date": MessageLookupByLibrary.simpleMessage(
-      "Please select a date",
-    ),
     "pleaseFillAllFields": MessageLookupByLibrary.simpleMessage(
       "Please fill all fields",
     ),
@@ -572,6 +571,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pleaseSelectSport": MessageLookupByLibrary.simpleMessage(
       "Please select a sport",
+    ),
+    "please_select_date": MessageLookupByLibrary.simpleMessage(
+      "Please select a date",
     ),
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
@@ -732,14 +734,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "update_button": MessageLookupByLibrary.simpleMessage("Update"),
     "updatingPost": MessageLookupByLibrary.simpleMessage("Updating post"),
     "updatingProfile": MessageLookupByLibrary.simpleMessage("Updating profile"),
-    "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
-      "Upload Achievement Photo",
-    ),
     "upload": MessageLookupByLibrary.simpleMessage("Upload"),
     "uploadAnImage": MessageLookupByLibrary.simpleMessage("Upload an Image"),
     "uploadContent": MessageLookupByLibrary.simpleMessage("Upload Content"),
     "uploadImageOrVideo": MessageLookupByLibrary.simpleMessage(
       "Upload an Image or video",
+    ),
+    "upload_photo_hint": MessageLookupByLibrary.simpleMessage(
+      "Upload Achievement Photo",
     ),
     "uppercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 uppercase letter",

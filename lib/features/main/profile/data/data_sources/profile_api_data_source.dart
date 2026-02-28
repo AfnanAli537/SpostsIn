@@ -340,25 +340,58 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
-  @override
-  Future<List<Course>> getCourses({
-    required String userId,
-    int page = 1,
-    int pageSize = 10,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 350));
-    return [
-      Course(
-        id: 'course_1',
-        imageUrl: 'https://picsum.photos/200/200?random=16',
-      ),
-      Course(
-        id: 'course_2',
-        imageUrl: 'https://picsum.photos/200/200?random=17',
-      ),
-    ];
-  }
+  // @override
+  // Future<List<Course>> getCourses({
+  //   required String userId,
+  //   int page = 1,
+  //   int pageSize = 10,
+  // }) async {
+  //   await Future.delayed(const Duration(milliseconds: 350));
+  //   return [
+  //     Course(
+  //       id: 'course_1',
+  //       imageUrl: 'https://picsum.photos/200/200?random=16',
+  //     ),
+  //     Course(
+  //       id: 'course_2',
+  //       imageUrl: 'https://picsum.photos/200/200?random=17',
+  //     ),
+  //   ];
+  // }
+@override
+Future<List<Course>> getCourses({
+  required String userId,
+  int page = 1,
+  int pageSize = 10,
+}) async {
+  try {
+    final response = await _apiClient.get(
+      Endpoints.createdCourses,
+      params: {'page': page, 'size': pageSize},
+    );
 
+    if (response.statusCode == 200) {
+      final data = response.data as Map<String, dynamic>;
+      final items = data['items'] as List<dynamic>? ?? [];
+      
+      return items.map((json) => Course(
+        id: json['id'] ?? '',
+        imageUrl: json['thumbnailUrl'] ?? '',
+        title: json['title'] ?? '',
+        description: json['description'],
+        price: json['price']?.toDouble(),
+        isFree: json['isFree'] ?? false,
+        lessonsCount: json['lessonsCount'] ?? 0,
+        enrolledCount: json['enrolledUsersCount'] ?? 0,
+      )).toList();
+    }
+
+    throw ApiErrorHandler.handleDioError(_badResponse(response));
+  } catch (e) {
+    debugPrint('Error loading courses: $e');
+    return [];
+  }
+}
   @override
   Future<List<Interest>> getInterests({
     required String userId,
