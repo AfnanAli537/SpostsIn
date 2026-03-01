@@ -319,7 +319,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   }) async {
     try {
       final response = await _apiClient.get(
-        Endpoints.myActiveOpportunities,
+        Endpoints.getOpportunities.replaceAll('{targetUserId}', userId),
         params: {'page': page, 'pageSize': pageSize},
       );
 
@@ -340,24 +340,6 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
-  // @override
-  // Future<List<Course>> getCourses({
-  //   required String userId,
-  //   int page = 1,
-  //   int pageSize = 10,
-  // }) async {
-  //   await Future.delayed(const Duration(milliseconds: 350));
-  //   return [
-  //     Course(
-  //       id: 'course_1',
-  //       imageUrl: 'https://picsum.photos/200/200?random=16',
-  //     ),
-  //     Course(
-  //       id: 'course_2',
-  //       imageUrl: 'https://picsum.photos/200/200?random=17',
-  //     ),
-  //   ];
-  // }
 @override
 Future<List<Course>> getCourses({
   required String userId,

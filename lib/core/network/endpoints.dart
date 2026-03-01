@@ -35,6 +35,7 @@ class Endpoints {
   static const String updateProfile = "/api/Profile/Update";//(put) update the profile take the date from the get and put it in the update body as default value the Request body is the same as the responce body from the profile get
   
   static const String myActiveOpportunities = "/api/Opportunity/my-active";//(get) takes page and pageSize parameters and get list of my active opportunities 
+  static const String getOpportunities = "/api/Opportunity/{targetUserId}/Target";
   static const String getCourses = "/api/Profile/courses";//keep for the courses the mock data for now 
   
   // Achievements Endpoints
@@ -51,7 +52,7 @@ class Endpoints {
   static const String editOpportunity = "/api/Opportunity/{id}";
   static const String deleteOpportunity = "/api/Opportunity/{id}";
   static const String opportunityToggle  = "/api/Opportunity/{id}";
-  static const String  applyOpportunity= "/api/Opportunity/{id}/apply";
+  static const String applyOpportunity= "/api/Opportunity/{id}/apply";
   static const String getApplicants = "/api/Opportunity/{id}/applicants";
   static const String getActiveOp  = "/api/Opportunity/my-active";
   static const String getInActiveOp  = "/api/Opportunity/my-inactive";

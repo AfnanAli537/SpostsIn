@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -33,6 +36,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   bool _isEditMode = false;
   bool _hasUnsavedChanges = false;
   bool _lessonsReordered = false;
+  File? _newThumbnail;
   // Temporary edit values (only used in edit mode)
   late TextEditingController _titleEditController;
   late TextEditingController _descriptionEditController;
@@ -69,6 +73,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       _descriptionEditController.text = course.description ?? '';
       _priceEditController.text = course.price.toString();
       _isFreeEdit = course.isFree;
+      _newThumbnail = null; // ✅ Reset thumbnail
       _hasUnsavedChanges = false;
     });
   }
@@ -87,7 +92,22 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       });
     }
   }
+  Future<void> _pickThumbnail() async {
+  final picker = ImagePicker();
+  final XFile? image = await picker.pickImage(
+    source: ImageSource.gallery,
+    maxWidth: 1920,
+    maxHeight: 1080,
+    imageQuality: 85,
+  );
 
+  if (image != null) {
+    setState(() {
+      _newThumbnail = File(image.path);
+      _onFieldChanged();
+    });
+  }
+}
   Future<void> _saveAllChanges(CourseModel course) async {
     // Validate
     if (_titleEditController.text.trim().isEmpty) {
@@ -121,13 +141,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         description: _descriptionEditController.text.trim(),
         price: newPrice,
         sportTypeId: course.sportTypeId,
-        thumbnail: course.thumbnailUrl ?? '',
+        thumbnail: _newThumbnail ?? course.thumbnailUrl ?? '',
       ),
     );
 
     setState(() {
       _isEditMode = false;
       _hasUnsavedChanges = false;
+      _newThumbnail = null;
     });
 
     Fluttertoast.showToast(
@@ -546,6 +567,7 @@ Widget _buildReorderableLessonsList(CourseModel course, ThemeData theme, S strin
 }
 
 // ==================== OWNER LESSON CARD (with Update menu) ====================
+// ==================== UPDATE _buildOwnerLessonCard ====================
 
 Widget _buildOwnerLessonCard(
   LessonModel lesson,
@@ -555,19 +577,18 @@ Widget _buildOwnerLessonCard(
   S string,
   int index,
 ) {
-  final canPlay = isEnrolled;
+  // ✅ Owner can always watch their own videos (no enrollment check)
+  final canPlay = true; // Provider can always watch
 
   return Container(
-    key: ValueKey(lesson.id), // ✅ REQUIRED for reordering
+    key: ValueKey(lesson.id),
     margin: EdgeInsets.only(bottom: 12.h),
     child: InkWell(
-      onTap: canPlay
-          ? () {
-              setState(() {
-                _currentPlayingLesson = lesson;
-              });
-            }
-          : null,
+      onTap: () {
+        setState(() {
+          _currentPlayingLesson = lesson;
+        });
+      },
       child: Container(
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
@@ -576,17 +597,15 @@ Widget _buildOwnerLessonCard(
               : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: lesson.isWatched
-                ? theme.colorScheme.primary.withOpacity(0.3)
-                : (isCurrentlyPlaying
-                    ? theme.colorScheme.primary
-                    : Colors.grey[300]!),
+            color: isCurrentlyPlaying
+                ? theme.colorScheme.primary
+                : Colors.grey[300]!,
             width: isCurrentlyPlaying ? 2 : 1,
           ),
         ),
         child: Row(
           children: [
-            // ✅ Drag handle
+            // Drag handle
             Icon(
               Icons.drag_handle,
               color: Colors.grey[600],
@@ -594,23 +613,17 @@ Widget _buildOwnerLessonCard(
             ),
             SizedBox(width: 12.w),
 
-            // Status icon
+            // Status icon (play button)
             Container(
               width: 56.w,
               height: 56.w,
               decoration: BoxDecoration(
-                color: lesson.isWatched
-                    ? Colors.green.withOpacity(0.2)
-                    : theme.colorScheme.primary.withOpacity(0.1),
+                color: theme.colorScheme.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                lesson.isWatched
-                    ? Icons.check_circle
-                    : Icons.play_circle_outline,
-                color: lesson.isWatched
-                    ? Colors.green
-                    : theme.colorScheme.primary,
+                Icons.play_circle_outline,
+                color: theme.colorScheme.primary,
                 size: 32.sp,
               ),
             ),
@@ -664,12 +677,14 @@ Widget _buildOwnerLessonCard(
               ),
             ),
 
-            // ✅ Update menu (ONLY Update option)
+            // ✅ Menu with Update and Delete options
             PopupMenuButton<String>(
               icon: Icon(Icons.more_vert, size: 20.sp),
               onSelected: (value) {
                 if (value == 'update') {
                   _navigateToEditLesson(lesson);
+                } else if (value == 'delete') {
+                  _deleteLesson(lesson);
                 }
               },
               itemBuilder: (context) => [
@@ -683,6 +698,19 @@ Widget _buildOwnerLessonCard(
                     ],
                   ),
                 ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, size: 18.sp, color: Colors.red[700]),
+                      SizedBox(width: 8.w),
+                      Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.red[700]),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
@@ -692,6 +720,37 @@ Widget _buildOwnerLessonCard(
   );
 }
 
+// ==================== ADD Delete Lesson Method ====================
+
+Future<void> _deleteLesson(LessonModel lesson) async {
+  final confirmed = await InlineEditDialog.showConfirmation(
+    context: context,
+    title: 'Delete Lesson',
+    message: 'Are you sure you want to delete "${lesson.title}"? This action cannot be undone.',
+    confirmText: 'Delete',
+    isDestructive: true,
+  );
+
+  if (confirmed) {
+    context.read<CoursesBloc>().add(
+      DeleteLesson(lessonId: lesson.id),
+    );
+    
+    Fluttertoast.showToast(
+      msg: 'Deleting lesson...',
+      backgroundColor: Colors.orange,
+    );
+    
+    // Refresh lessons after deletion
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        context.read<CoursesBloc>().add(
+          FetchCourseLessons(courseId: widget.courseId),
+        );
+      }
+    });
+  }
+}
 // ==================== NAVIGATE TO EDIT LESSON ====================
 
 void _navigateToEditLesson(LessonModel lesson) {
@@ -817,244 +876,244 @@ Widget _buildRegularLessonsList(CourseModel course, ThemeData theme, S string) {
   //   );
   // }
 
-  // ✅ Reorderable lesson card
-  Widget _buildReorderableLessonCard(
-    LessonModel lesson,
-    bool isEnrolled,
-    bool isCurrentlyPlaying,
-    ThemeData theme,
-    S string,
-    int index,
-  ) {
-    final canPlay = isEnrolled;
+  // // ✅ Reorderable lesson card
+  // Widget _buildReorderableLessonCard(
+  //   LessonModel lesson,
+  //   bool isEnrolled,
+  //   bool isCurrentlyPlaying,
+  //   ThemeData theme,
+  //   S string,
+  //   int index,
+  // ) {
+  //   final canPlay = isEnrolled;
 
-    return Container(
-      key: ValueKey(lesson.id), // ✅ REQUIRED for ReorderableListView
-      margin: EdgeInsets.only(bottom: 12.h),
-      child: InkWell(
-        onTap: canPlay
-            ? () {
-                setState(() {
-                  _currentPlayingLesson = lesson;
-                });
-              }
-            : null,
-        child: Container(
-          padding: EdgeInsets.all(16.r),
-          decoration: BoxDecoration(
-            color: isCurrentlyPlaying
-                ? theme.colorScheme.primary.withOpacity(0.1)
-                : theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: lesson.isWatched
-                  ? theme.colorScheme.primary.withOpacity(0.3)
-                  : (isCurrentlyPlaying
-                        ? theme.colorScheme.primary
-                        : Colors.grey[300]!),
-              width: isCurrentlyPlaying ? 2 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              // ✅ Drag handle (owner only)
-              Icon(Icons.drag_handle, color: Colors.grey[600], size: 24.sp),
-              SizedBox(width: 12.w),
+  //   return Container(
+  //     key: ValueKey(lesson.id), // ✅ REQUIRED for ReorderableListView
+  //     margin: EdgeInsets.only(bottom: 12.h),
+  //     child: InkWell(
+  //       onTap: canPlay
+  //           ? () {
+  //               setState(() {
+  //                 _currentPlayingLesson = lesson;
+  //               });
+  //             }
+  //           : null,
+  //       child: Container(
+  //         padding: EdgeInsets.all(16.r),
+  //         decoration: BoxDecoration(
+  //           color: isCurrentlyPlaying
+  //               ? theme.colorScheme.primary.withOpacity(0.1)
+  //               : theme.colorScheme.surface,
+  //           borderRadius: BorderRadius.circular(12.r),
+  //           border: Border.all(
+  //             color: lesson.isWatched
+  //                 ? theme.colorScheme.primary.withOpacity(0.3)
+  //                 : (isCurrentlyPlaying
+  //                       ? theme.colorScheme.primary
+  //                       : Colors.grey[300]!),
+  //             width: isCurrentlyPlaying ? 2 : 1,
+  //           ),
+  //         ),
+  //         child: Row(
+  //           children: [
+  //             // ✅ Drag handle (owner only)
+  //             Icon(Icons.drag_handle, color: Colors.grey[600], size: 24.sp),
+  //             SizedBox(width: 12.w),
 
-              // Status icon
-              Container(
-                width: 56.w,
-                height: 56.w,
-                decoration: BoxDecoration(
-                  color: lesson.isWatched
-                      ? Colors.green.withOpacity(0.2)
-                      : theme.colorScheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  lesson.isWatched
-                      ? Icons.check_circle
-                      : Icons.play_circle_outline,
-                  color: lesson.isWatched
-                      ? Colors.green
-                      : theme.colorScheme.primary,
-                  size: 32.sp,
-                ),
-              ),
-              SizedBox(width: 16.w),
+  //             // Status icon
+  //             Container(
+  //               width: 56.w,
+  //               height: 56.w,
+  //               decoration: BoxDecoration(
+  //                 color: lesson.isWatched
+  //                     ? Colors.green.withOpacity(0.2)
+  //                     : theme.colorScheme.primary.withOpacity(0.1),
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               child: Icon(
+  //                 lesson.isWatched
+  //                     ? Icons.check_circle
+  //                     : Icons.play_circle_outline,
+  //                 color: lesson.isWatched
+  //                     ? Colors.green
+  //                     : theme.colorScheme.primary,
+  //                 size: 32.sp,
+  //               ),
+  //             ),
+  //             SizedBox(width: 16.w),
 
-              // Lesson info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Lesson ${lesson.order}',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (lesson.isWatched) ...[
-                          SizedBox(width: 8.w),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8.w,
-                              vertical: 2.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                            child: Text(
-                              'Completed',
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                        if (isCurrentlyPlaying) ...[
-                          SizedBox(width: 8.w),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8.w,
-                              vertical: 2.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                            child: Text(
-                              'Playing',
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    SizedBox(height: 4.h),
+  //             // Lesson info
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Row(
+  //                     children: [
+  //                       Text(
+  //                         'Lesson ${lesson.order}',
+  //                         style: TextStyle(
+  //                           fontSize: 12.sp,
+  //                           color: theme.colorScheme.primary,
+  //                           fontWeight: FontWeight.w600,
+  //                         ),
+  //                       ),
+  //                       if (lesson.isWatched) ...[
+  //                         SizedBox(width: 8.w),
+  //                         Container(
+  //                           padding: EdgeInsets.symmetric(
+  //                             horizontal: 8.w,
+  //                             vertical: 2.h,
+  //                           ),
+  //                           decoration: BoxDecoration(
+  //                             color: Colors.green.withOpacity(0.1),
+  //                             borderRadius: BorderRadius.circular(4.r),
+  //                           ),
+  //                           child: Text(
+  //                             'Completed',
+  //                             style: TextStyle(
+  //                               fontSize: 10.sp,
+  //                               color: Colors.green,
+  //                               fontWeight: FontWeight.w600,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                       if (isCurrentlyPlaying) ...[
+  //                         SizedBox(width: 8.w),
+  //                         Container(
+  //                           padding: EdgeInsets.symmetric(
+  //                             horizontal: 8.w,
+  //                             vertical: 2.h,
+  //                           ),
+  //                           decoration: BoxDecoration(
+  //                             color: theme.colorScheme.primary.withOpacity(0.1),
+  //                             borderRadius: BorderRadius.circular(4.r),
+  //                           ),
+  //                           child: Text(
+  //                             'Playing',
+  //                             style: TextStyle(
+  //                               fontSize: 10.sp,
+  //                               color: theme.colorScheme.primary,
+  //                               fontWeight: FontWeight.w600,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ],
+  //                   ),
+  //                   SizedBox(height: 4.h),
 
-                    Text(
-                      lesson.title,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 8.h),
+  //                   Text(
+  //                     lesson.title,
+  //                     style: TextStyle(
+  //                       fontSize: 16.sp,
+  //                       fontWeight: FontWeight.w600,
+  //                       color: theme.colorScheme.onSurface,
+  //                     ),
+  //                     maxLines: 2,
+  //                     overflow: TextOverflow.ellipsis,
+  //                   ),
+  //                   SizedBox(height: 8.h),
 
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 14.sp,
-                          color: Colors.grey[600],
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          _formatDuration(lesson.duration),
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        if (lesson.progressPercentage > 0 &&
-                            !lesson.isWatched) ...[
-                          SizedBox(width: 16.w),
-                          Text(
-                            '${lesson.progressPercentage.toInt()}% watched',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+  //                   Row(
+  //                     children: [
+  //                       Icon(
+  //                         Icons.access_time,
+  //                         size: 14.sp,
+  //                         color: Colors.grey[600],
+  //                       ),
+  //                       SizedBox(width: 4.w),
+  //                       Text(
+  //                         _formatDuration(lesson.duration),
+  //                         style: TextStyle(
+  //                           fontSize: 12.sp,
+  //                           color: Colors.grey[600],
+  //                         ),
+  //                       ),
+  //                       if (lesson.progressPercentage > 0 &&
+  //                           !lesson.isWatched) ...[
+  //                         SizedBox(width: 16.w),
+  //                         Text(
+  //                           '${lesson.progressPercentage.toInt()}% watched',
+  //                           style: TextStyle(
+  //                             fontSize: 12.sp,
+  //                             color: theme.colorScheme.primary,
+  //                             fontWeight: FontWeight.w600,
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ],
+  //                   ),
 
-                    if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
-                      SizedBox(height: 8.h),
-                      LinearProgressIndicator(
-                        value: lesson.progressPercentage / 100,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colorScheme.primary,
-                        ),
-                        minHeight: 4.h,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+  //                   if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+  //                     SizedBox(height: 8.h),
+  //                     LinearProgressIndicator(
+  //                       value: lesson.progressPercentage / 100,
+  //                       backgroundColor: Colors.grey[200],
+  //                       valueColor: AlwaysStoppedAnimation<Color>(
+  //                         theme.colorScheme.primary,
+  //                       ),
+  //                       minHeight: 4.h,
+  //                     ),
+  //                   ],
+  //                 ],
+  //               ),
+  //             ),
 
-              // ✅ Edit menu
-              PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert, size: 20.sp),
-                onSelected: (value) {
-                  if (value == 'edit_title') {
-                    _editLessonTitle(lesson);
-                  } else if (value == 'edit_description') {
-                    _editLessonDescription(lesson);
-                  } else if (value == 'delete') {
-                    _deleteLesson(lesson);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit_title',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, size: 18.sp),
-                        SizedBox(width: 8.w),
-                        const Text('Edit Title'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'edit_description',
-                    child: Row(
-                      children: [
-                        Icon(Icons.description, size: 18.sp),
-                        SizedBox(width: 8.w),
-                        const Text('Edit Description'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, size: 18.sp, color: Colors.red[700]),
-                        SizedBox(width: 8.w),
-                        Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.red[700]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  //             // ✅ Edit menu
+  //             PopupMenuButton<String>(
+  //               icon: Icon(Icons.more_vert, size: 20.sp),
+  //               onSelected: (value) {
+  //                 if (value == 'edit_title') {
+  //                   _editLessonTitle(lesson);
+  //                 } else if (value == 'edit_description') {
+  //                   _editLessonDescription(lesson);
+  //                 } else if (value == 'delete') {
+  //                   _deleteLesson(lesson);
+  //                 }
+  //               },
+  //               itemBuilder: (context) => [
+  //                 PopupMenuItem(
+  //                   value: 'edit_title',
+  //                   child: Row(
+  //                     children: [
+  //                       Icon(Icons.edit, size: 18.sp),
+  //                       SizedBox(width: 8.w),
+  //                       const Text('Edit Title'),
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 PopupMenuItem(
+  //                   value: 'edit_description',
+  //                   child: Row(
+  //                     children: [
+  //                       Icon(Icons.description, size: 18.sp),
+  //                       SizedBox(width: 8.w),
+  //                       const Text('Edit Description'),
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 PopupMenuItem(
+  //                   value: 'delete',
+  //                   child: Row(
+  //                     children: [
+  //                       Icon(Icons.delete, size: 18.sp, color: Colors.red[700]),
+  //                       SizedBox(width: 8.w),
+  //                       Text(
+  //                         'Delete',
+  //                         style: TextStyle(color: Colors.red[700]),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // ==================== REGULAR LESSONS (NON-OWNERS) ====================
 
@@ -1198,25 +1257,25 @@ Widget _buildRegularLessonsList(CourseModel course, ThemeData theme, S string) {
   }
 
   // Delete Lesson (unchanged)
-  Future<void> _deleteLesson(LessonModel lesson) async {
-    final confirmed = await InlineEditDialog.showConfirmation(
-      context: context,
-      title: 'Delete Lesson',
-      message:
-          'Are you sure you want to delete "${lesson.title}"? This action cannot be undone.',
-      confirmText: 'Delete',
-      isDestructive: true,
-    );
+  // Future<void> _deleteLesson(LessonModel lesson) async {
+  //   final confirmed = await InlineEditDialog.showConfirmation(
+  //     context: context,
+  //     title: 'Delete Lesson',
+  //     message:
+  //         'Are you sure you want to delete "${lesson.title}"? This action cannot be undone.',
+  //     confirmText: 'Delete',
+  //     isDestructive: true,
+  //   );
 
-    if (confirmed) {
-      context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
+  //   if (confirmed) {
+  //     context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
 
-      Fluttertoast.showToast(
-        msg: 'Deleting lesson...',
-        backgroundColor: Colors.orange,
-      );
-    }
-  }
+  //     Fluttertoast.showToast(
+  //       msg: 'Deleting lesson...',
+  //       backgroundColor: Colors.orange,
+  //     );
+  //   }
+  // }
 
   // ==================== REORDERABLE LESSONS (Unchanged UI) ====================
   // The _buildReorderableLessonsList and _buildReorderableLessonCard
@@ -1562,45 +1621,164 @@ Also ensure these BLoC events exist in courses_bloc.dart:
   // ==================== SAME DESCRIPTION TAB (No changes needed) ====================
   // The _buildDescriptionTab method remains the same as before
   // ==================== ENHANCED DESCRIPTION TAB ====================
-  Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ✅ Title (editable in edit mode)
-          if (_isEditMode)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Course Title',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                TextField(
-                  controller: _titleEditController,
-                  onChanged: (_) => _onFieldChanged(),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    hintText: 'Enter course title',
-                  ),
-                  style: theme.textTheme.titleLarge,
-                ),
-              ],
-            )
-          else
-            Text(
-              course.title,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
+  return SingleChildScrollView(
+    padding: EdgeInsets.all(16.r),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ✅ Thumbnail (editable in edit mode)
+        if (_isEditMode) ...[
+          Text(
+            'Course Thumbnail',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
+          ),
+          SizedBox(height: 8.h),
+          GestureDetector(
+            onTap: _pickThumbnail,
+            child: Container(
+              height: 150.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: _newThumbnail != null 
+                      ? Colors.green 
+                      : Colors.grey[300]!,
+                  width: 2,
+                ),
+              ),
+              child: _newThumbnail != null
+                  ? Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.r),
+                          child: Image.file(
+                            _newThumbnail!,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(4.w),
+                            decoration: const BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 20.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : course.thumbnailUrl != null
+                      ? Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10.r),
+                              child: Image.network(
+                                course.thumbnailUrl!,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black26,
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.camera_alt,
+                                        size: 40.sp,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      Text(
+                                        'Tap to change',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 48.sp,
+                              color: Colors.grey[600],
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              'Tap to upload thumbnail',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+            ),
+          ),
           SizedBox(height: 16.h),
+        ],
+
+        // ✅ Title (editable in edit mode)
+        if (_isEditMode)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Course Title',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              TextField(
+                controller: _titleEditController,
+                onChanged: (_) => _onFieldChanged(),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  hintText: 'Enter course title',
+                ),
+                style: theme.textTheme.titleLarge,
+              ),
+            ],
+          )
+        else
+          Text(
+            course.title,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        SizedBox(height: 16.h),
 
           // Owner info
           Row(

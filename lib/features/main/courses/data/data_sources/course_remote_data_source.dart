@@ -216,6 +216,9 @@ class CourseRemoteDataSource implements ICourseDataSource {
       final response = await _apiClient.put(
         Endpoints.updateCourse.replaceAll('{id}', request.id),
         data: formData,
+        options: Options(
+          contentType: Headers.multipartFormDataContentType,
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -345,6 +348,9 @@ class CourseRemoteDataSource implements ICourseDataSource {
       final response = await _apiClient.put(
         Endpoints.updateLesson.replaceAll('{lessonId}', request.lessonId),
         data: formData,
+        options: Options(
+        contentType: Headers.multipartFormDataContentType,
+      ),
       );
 
       if (response.statusCode == 200) {
