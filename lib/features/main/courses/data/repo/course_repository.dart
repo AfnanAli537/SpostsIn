@@ -91,7 +91,7 @@ class CourseRepository {
   }
 
   Future<void> deleteLesson(String lessonId) async {
-    return await _dataSource.deleteLesson(lessonId);
+    return await _dataSource.deleteLesson(lessonId,);
   }
 
   // ==================== ENROLLMENT ====================

@@ -30,6 +30,9 @@ class LessonActionLoading extends CoursesState {
 
 class CourseActionLoading extends CoursesState {
   const CourseActionLoading();
+
+  @override
+  List<Object?> get props => [];
 }
 
 // Success states - Browse & List
@@ -145,7 +148,7 @@ class CourseUpdated extends CoursesState {
   const CourseUpdated({required this.course});
 
   @override
-  List<Object> get props => [course];
+  List<Object?> get props => [course];
 }
 
 class CourseDeleted extends CoursesState {
@@ -172,7 +175,7 @@ class LessonUpdated extends CoursesState {
   const LessonUpdated({required this.lesson});
 
   @override
-  List<Object> get props => [lesson];
+  List<Object?> get props => [lesson];
 }
 
 class LessonDeleted extends CoursesState {
@@ -181,12 +184,12 @@ class LessonDeleted extends CoursesState {
   const LessonDeleted({required this.lessonId});
 
   @override
-  List<Object> get props => [lessonId];
+  List<Object?> get props => [lessonId];
 }
 
 // Success states - Analytics
 class EnrolleesLoaded extends CoursesState {
-  final List<EnrolledUserModel> enrollees; // ✅ Changed from EnrolleeModel
+  final List<EnrolledUserModel> enrollees;
 
   const EnrolleesLoaded({required this.enrollees});
 
@@ -195,7 +198,7 @@ class EnrolleesLoaded extends CoursesState {
 }
 
 class RevenueReportLoaded extends CoursesState {
-  final RevenueReportModel report; // ✅ Changed from RevenueTimelineModel
+  final RevenueReportModel report; 
 
   const RevenueReportLoaded({required this.report});
 

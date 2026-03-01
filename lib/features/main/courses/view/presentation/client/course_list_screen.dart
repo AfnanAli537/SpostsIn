@@ -49,7 +49,6 @@ class _CourseListScreenState extends State<CourseListScreen> {
     super.dispose();
   }
 
-  // ✅ Handle search with debounce (500ms delay)
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -69,7 +68,6 @@ class _CourseListScreenState extends State<CourseListScreen> {
     _fetchCoursesWithSearch('');
   }
 
-  // ✅ Unified fetch method with server-side search
   void _fetchCoursesWithSearch(String searchTerm) {
     switch (widget.listType) {
       case CourseListType.available:
@@ -167,7 +165,6 @@ class _CourseListScreenState extends State<CourseListScreen> {
     final string = S.of(context);
 
     return GestureDetector(
-      // ✅ Unfocus keyboard when tapping outside
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
@@ -246,7 +243,6 @@ class _CourseListScreenState extends State<CourseListScreen> {
 
             return Column(
               children: [
-                // ✅ Search bar at top
                 Padding(
                   padding: EdgeInsets.all(16.r),
                   child: CoursesSearchBar(
@@ -262,7 +258,6 @@ class _CourseListScreenState extends State<CourseListScreen> {
                   ),
                 ),
 
-                // ✅ Courses list or empty state
                 Expanded(
                   child: _courses.isEmpty
                       ? _buildEmptyState(theme)

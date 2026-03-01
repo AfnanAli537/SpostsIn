@@ -107,7 +107,6 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
 
     return BlocProvider(
       create: (context) => getIt<CoursesBloc>(),
-      // ✅ FIX: Use Builder to get correct context with BLoC
       child: Builder(
         builder: (builderContext) => BlocListener<CoursesBloc, CoursesState>(
           listener: (context, state) {
@@ -332,7 +331,6 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
     );
   }
 void _showAddLessonDialog(BuildContext context, CourseModel course) {
-  // ✅ Save BLoC reference FIRST (while we have access to it)
   final coursesBloc = context.read<CoursesBloc>();
   
   showDialog(
@@ -356,7 +354,7 @@ void _showAddLessonDialog(BuildContext context, CourseModel course) {
               context, // Use original context
               MaterialPageRoute(
                 builder: (_) => BlocProvider.value(
-                  value: coursesBloc, // ✅ Use saved reference
+                  value: coursesBloc,
                   child: UploadVideoScreen(
                       courseId: course.id,
                       existingLessonsCount: 0, // First lesson
@@ -371,42 +369,4 @@ void _showAddLessonDialog(BuildContext context, CourseModel course) {
     ),
   );
 }
-  // void _showAddLessonDialog(BuildContext context, CourseModel course) {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (dialogContext) => AlertDialog(
-  //       title: const Text('Add Lesson'),
-  //       content: const Text(
-  //         'Would you like to add a lesson to this course now?',
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () {
-  //             Navigator.pop(dialogContext);
-  //           },
-  //           child: const Text('Add Later'),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             Navigator.pop(dialogContext);
-  //             Navigator.push(
-  //               context,
-  //               MaterialPageRoute(
-  //                 builder: (_) => BlocProvider.value(
-  //                   value: context.read<CoursesBloc>(),
-  //                   child: UploadVideoScreen(
-  //                     courseId: course.id,
-  //                     existingLessonsCount: 0, // First lesson
-  //                   ),
-  //                 ),
-  //               ),
-  //             );
-  //           },
-  //           child: const Text('Add Now'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

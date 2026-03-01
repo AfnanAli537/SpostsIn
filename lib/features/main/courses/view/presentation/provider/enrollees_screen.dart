@@ -101,7 +101,7 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
                       ),
                       _buildStat(
                         // string.avgProgress ??
-                         'Avg Progress',
+                        'Avg Progress',
                         '${_calculateAverageProgress(state.enrollees)}%',
                         Icons.trending_up,
                         theme,
@@ -194,9 +194,9 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
     );
   }
 
-  int _calculateAverageProgress(List enrollees) {
+  num _calculateAverageProgress(List enrollees) {
     if (enrollees.isEmpty) return 0;
-    final total = enrollees.fold<int>(0, (sum, e) => sum + (e.progress as int));
+    final total = enrollees.fold<num>(0, (sum, e) => sum + (e.progress as num));
     return (total / enrollees.length).round();
   }
 
@@ -209,7 +209,7 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Progress: ${enrollee.progress}%'),
+            Text('Progress: ${formatProgress(enrollee.progress)}%'),
             SizedBox(height: 8.h),
             LinearProgressIndicator(
               value: enrollee.progress / 100,
@@ -230,5 +230,12 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+  
+  String formatProgress(num value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(2);
   }
 }

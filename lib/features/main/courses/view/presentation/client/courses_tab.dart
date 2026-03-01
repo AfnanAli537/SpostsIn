@@ -53,7 +53,6 @@ class _CoursesTabState extends State<CoursesTab> {
       ));
   }
 
-  // ✅ Server-side search with debounce
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -75,6 +74,9 @@ class _CoursesTabState extends State<CoursesTab> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final string = S.of(context);
+
     return BlocProvider.value(
       value: _coursesBloc,
       child: BlocListener<CoursesBloc, CoursesState>(
@@ -92,92 +94,61 @@ class _CoursesTabState extends State<CoursesTab> {
             });
           }
         },
-        child: GestureDetector(
-          // ✅ Unfocus keyboard on tap outside
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: RefreshIndicator(
-            // ✅ Refresh indicator
-            onRefresh: () async {
-              setState(() {
-                _isLoadingEnrolled = true;
-                _isLoadingAvailable = true;
-              });
-              _loadData();
-              await Future.delayed(const Duration(milliseconds: 500));
-            },
-            child: _buildSliverContent(context),
-          ),
+        child: SliverList(
+          delegate: SliverChildListDelegate([
+            // Search Bar
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+              child: _buildSearchBar(theme, string),
+            ),
+
+            // Content
+            if (_currentSearchTerm.isNotEmpty)
+              _buildSearchResults(context, theme, string)
+            else ...[
+              _buildContinueWatchingSection(context, theme, string),
+              _buildNewCoursesSection(context, theme, string),
+              _buildEnrolledCoursesSection(context, theme, string),
+            ],
+
+            SizedBox(height: 100.h),
+          ]),
         ),
       ),
-    );
-  }
-
-  Widget _buildSliverContent(BuildContext context) {
-    final theme = Theme.of(context);
-    final string = S.of(context);
-
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              // ✅ Search Bar
-              Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                child: _buildSearchBar(theme, string),
-              ),
-
-              // Show search results or normal sections
-              if (_currentSearchTerm.isNotEmpty) ...[
-                _buildSearchResults(context, theme, string),
-              ] else ...[
-                // Continue Watching Section
-                _buildContinueWatchingSection(context, theme, string),
-
-                // New Courses Section
-                _buildNewCoursesSection(context, theme, string),
-
-                // Enrolled Courses Section
-                _buildEnrolledCoursesSection(context, theme, string),
-              ],
-
-              SizedBox(height: 44.h),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildSearchBar(ThemeData theme, S string) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: _currentSearchTerm.isNotEmpty
-              ? theme.colorScheme.primary
-              : Colors.grey[300]!,
-          width: _currentSearchTerm.isNotEmpty ? 2 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {}, // Empty tap to allow text field to work
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: _currentSearchTerm.isNotEmpty
+                ? theme.colorScheme.primary
+                : Colors.grey[300]!,
+            width: _currentSearchTerm.isNotEmpty ? 2 : 1,
           ),
-        ],
-      ),
-      child: CoursesSearchBar(
-        controller: _searchController,
-        hintText: 'Search courses...',
-        onChanged: (value) {
-          // Handled by listener
-        },
-        onClear: () {
-          _searchController.clear();
-          // Will trigger listener
-        },
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: CoursesSearchBar(
+          controller: _searchController,
+          hintText: 'Search courses...',
+          onChanged: (value) {
+            // Handled by listener
+          },
+          onClear: () {
+            _searchController.clear();
+          },
+        ),
       ),
     );
   }
@@ -302,7 +273,7 @@ class _CoursesTabState extends State<CoursesTab> {
             SizedBox(height: 24.h),
           ],
         );
-      };
+      }
     }
     return const SizedBox.shrink();
   }
@@ -567,14 +538,14 @@ class _CoursesTabState extends State<CoursesTab> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${course.progress}% Complete',
+                        '${formatProgress(course.progress)}% Complete',
                         style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.onPrimary,
                         ),
                       ),
                       Text(
-                        '${(course.progress / 100 * course.lessonsCount).ceil()} lesson left',
+                        '${course.lessonsCount-((100 - course.progress) / 100 * course.lessonsCount).ceil()} lessons left',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onPrimary,
                         ),
@@ -599,6 +570,12 @@ class _CoursesTabState extends State<CoursesTab> {
     );
   }
 
+  String formatProgress(num value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(2);
+  }
   void _navigateToCourseDetail(BuildContext context, String courseId) {
     Navigator.push(
       context,

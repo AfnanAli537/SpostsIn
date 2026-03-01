@@ -8,7 +8,7 @@ class CourseCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-  
+
   const CourseCard({
     super.key,
     required this.course,
@@ -20,13 +20,13 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        // ✅ Add height constraint for landscape
         constraints: BoxConstraints(
           maxHeight: isLandscape ? 200.h : double.infinity,
         ),
@@ -42,30 +42,31 @@ class CourseCard extends StatelessWidget {
           ],
         ),
         child: isLandscape
-            ? _buildLandscapeLayout(theme) // ✅ Horizontal layout for landscape
-            : _buildPortraitLayout(theme), // ✅ Vertical layout for portrait
+            ? _buildLandscapeLayout(theme) 
+            : _buildPortraitLayout(theme), 
       ),
     );
   }
 
-  // ✅ Portrait layout (vertical)
   Widget _buildPortraitLayout(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ✅ Smaller thumbnail (120h instead of 160h)
         ClipRRect(
           borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
           child: Image.network(
             course.thumbnailUrl ?? '',
-            height: 120.h, // ✅ Reduced from 160h
+            height: 120.h, 
             width: double.infinity,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) => Container(
               height: 120.h,
               color: Colors.grey[300],
-              child: Icon(Icons.image_not_supported, size: 40.sp), // ✅ Smaller icon too
+              child: Icon(
+                Icons.image_not_supported,
+                size: 40.sp,
+              ), 
             ),
           ),
         ),
@@ -81,22 +82,23 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  // ✅ Landscape layout (horizontal)
   Widget _buildLandscapeLayout(ThemeData theme) {
     return Row(
       children: [
-        // ✅ Smaller thumbnail (150w instead of 200w)
         ClipRRect(
           borderRadius: BorderRadius.horizontal(left: Radius.circular(12.r)),
           child: Image.network(
             course.thumbnailUrl ?? '',
-            width: 150.w, // ✅ Reduced from 200w
+            width: 150.w, 
             height: double.infinity,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) => Container(
               width: 150.w,
               color: Colors.grey[300],
-              child: Icon(Icons.image_not_supported, size: 40.sp), // ✅ Smaller icon too
+              child: Icon(
+                Icons.image_not_supported,
+                size: 40.sp,
+              ), 
             ),
           ),
         ),
@@ -112,7 +114,6 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  // ✅ Shared card content
   Widget _buildCardContent(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,13 +147,11 @@ class CourseCard extends StatelessWidget {
           LinearProgressIndicator(
             value: course.progress / 100,
             backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              ColorManager.warning,
-            ),
+            valueColor: AlwaysStoppedAnimation<Color>(ColorManager.warning),
           ),
           SizedBox(height: 4.h),
           Text(
-            '${course.progress}% complete',
+            '${formatProgress(course.progress)}% complete',
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 12.sp),
           ),
           SizedBox(height: 8.h),
@@ -190,10 +189,7 @@ class CourseCard extends StatelessWidget {
                     ),
                   if (onDelete != null)
                     IconButton(
-                      icon: Icon(
-                        Icons.delete_outline,
-                        color: Colors.red[700],
-                      ),
+                      icon: Icon(Icons.delete_outline, color: Colors.red[700]),
                       iconSize: 20.sp,
                       onPressed: onDelete,
                       padding: EdgeInsets.all(4.w),
@@ -206,5 +202,12 @@ class CourseCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String formatProgress(num value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(2);
   }
 }

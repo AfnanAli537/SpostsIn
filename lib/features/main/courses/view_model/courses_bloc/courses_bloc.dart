@@ -189,29 +189,31 @@ Future<void> _onFetchCourseLessons(
   }
 
   Future<void> _onUpdateCourse(
-    UpdateCourse event,
-    Emitter<CoursesState> emit,
-  ) async {
-    try {
-      emit(const CourseActionLoading());
-
-      final request = UpdateCourseRequest(
+  UpdateCourse event,
+  Emitter<CoursesState> emit,
+) async {
+  try {
+    emit(const CourseActionLoading());
+    
+    final course = await _repository.updateCourse(
+      UpdateCourseRequest(
         id: event.courseId,
         title: event.title,
         description: event.description,
         price: event.price,
         sportTypeId: event.sportTypeId,
-        thumbnailFile: event.thumbnailFile,
-      );
-
-      final course = await _repository.updateCourse(request);
-
-      emit(CourseUpdated(course: course));
-    } catch (e) {
-      debugPrint('Error updating course: $e');
-      emit(CoursesError(message: e.toString()));
-    }
+        thumbnail: event.thumbnail,
+      ),
+    );
+    
+    emit(CourseUpdated(course: course));
+    
+    // Refresh course details
+    add(FetchCourseDetail(courseId: event.courseId));
+  } catch (e) {
+    emit(CoursesError(message: e.toString()));
   }
+}
 
   Future<void> _onDeleteCourse(
     DeleteCourse event,
@@ -266,39 +268,41 @@ Future<void> _onFetchCourseLessons(
   }
 
   Future<void> _onUpdateLesson(
-    UpdateLesson event,
-    Emitter<CoursesState> emit,
-  ) async {
-    try {
-      emit(const LessonActionLoading());
-
-      final request = UpdateLessonRequest(
-        lessonId: event.lessonId,
-        title: event.title,
-        description: event.description,
-        duration: event.duration,
-        order: event.order,
-        videoFile: event.videoFile,
-      );
-
-      final lesson = await _repository.updateLesson(request);
-
-      emit(LessonUpdated(lesson: lesson));
-    } catch (e) {
-      debugPrint('Error updating lesson: $e');
-      emit(CoursesError(message: e.toString()));
-    }
+  UpdateLesson event,
+  Emitter<CoursesState> emit,
+) async {
+  try {
+    emit(const CourseActionLoading());
+    
+    final lesson = await _repository.updateLesson(
+      UpdateLessonRequest(lessonId: event.lessonId,
+      title: event.title,
+      description: event.description,
+      duration: event.duration,
+      order: event.order,
+      video: event.video,
+      )
+    );
+    
+    emit(LessonUpdated(lesson: lesson));
+    
+    // Note: You may want to refresh lessons here
+    // add(FetchCourseLessons(courseId: ...));
+  } catch (e) {
+    emit(CoursesError(message: e.toString()));
   }
+}
+
 
   Future<void> _onDeleteLesson(
     DeleteLesson event,
     Emitter<CoursesState> emit,
   ) async {
     try {
-      emit(const LessonActionLoading());
-
+      emit(const CourseActionLoading());
+      
       await _repository.deleteLesson(event.lessonId);
-
+      
       emit(LessonDeleted(lessonId: event.lessonId));
     } catch (e) {
       debugPrint('Error deleting lesson: $e');

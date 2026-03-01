@@ -66,8 +66,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
 
                   // Weekly breakdown chart
                   Text(
-                    // string.weeklyBreakdown ??
-                     'Weekly Breakdown',
+                    'Weekly Breakdown',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -120,11 +119,8 @@ class _RevenueScreenState extends State<RevenueScreen> {
       children: [
         Expanded(
           child: _buildRevenueCard(
-            // string.allTimeRevenue ??
-             'All-Time Revenue',
-            '${report.totalAllTimeRevenue.toStringAsFixed(0)} ${
-              // string.egp ??
-               "EGP"}',
+            'All-Time Revenue',
+            '${report.totalAllTimeRevenue.toStringAsFixed(0)} EGP',
             Icons.account_balance_wallet,
             theme.colorScheme.primary,
             theme,
@@ -133,11 +129,8 @@ class _RevenueScreenState extends State<RevenueScreen> {
         SizedBox(width: 16.w),
         Expanded(
           child: _buildRevenueCard(
-            // string.thisMonth ?? 
             'This Month',
-            '${report.totalMonthRevenue.toStringAsFixed(0)} ${
-              // string.egp ??
-               "EGP"}',
+            '${report.totalMonthRevenue.toStringAsFixed(0)} EGP',
             Icons.calendar_today,
             Colors.green,
             theme,
@@ -196,6 +189,10 @@ class _RevenueScreenState extends State<RevenueScreen> {
       );
     }
 
+    final maxRevenue = _getMaxRevenue(report);
+    
+    final horizontalInterval = maxRevenue > 0 ? (maxRevenue / 5) : 20.0;
+
     return Container(
       height: 250.h,
       padding: EdgeInsets.all(16.r),
@@ -206,7 +203,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
       child: BarChart(
         BarChartData(
           alignment: BarChartAlignment.spaceAround,
-          maxY: _getMaxRevenue(report) * 1.2,
+          maxY: maxRevenue > 0 ? maxRevenue * 1.2 : 100, 
           barTouchData: BarTouchData(
             enabled: true,
             touchTooltipData: BarTouchTooltipData(
@@ -252,7 +249,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: _getMaxRevenue(report) / 5,
+            horizontalInterval: horizontalInterval, 
           ),
           borderData: FlBorderData(show: false),
           barGroups: report.weeklyBreakdown.asMap().entries.map((entry) {
@@ -278,7 +275,6 @@ class _RevenueScreenState extends State<RevenueScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          // string.weeklyDetails ?? 
           'Weekly Details',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
@@ -303,9 +299,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
                   ),
                 ),
                 Text(
-                  '${week.revenue.toStringAsFixed(0)} ${
-                    // string.egp ??
-                     "EGP"}',
+                  '${week.revenue.toStringAsFixed(0)} EGP',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -320,7 +314,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
   }
 
   double _getMaxRevenue(RevenueReportModel report) {
-    if (report.weeklyBreakdown.isEmpty) return 100;
+    if (report.weeklyBreakdown.isEmpty) return 0;
     return report.weeklyBreakdown
         .map((w) => w.revenue)
         .reduce((a, b) => a > b ? a : b);

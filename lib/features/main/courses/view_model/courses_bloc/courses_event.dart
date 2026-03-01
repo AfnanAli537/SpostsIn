@@ -113,7 +113,7 @@ class UpdateCourse extends CoursesEvent {
   final String description;
   final double price;
   final int sportTypeId;
-  final File? thumbnailFile;
+  final dynamic thumbnail; // Can be File or String (URL)
 
   const UpdateCourse({
     required this.courseId,
@@ -121,11 +121,11 @@ class UpdateCourse extends CoursesEvent {
     required this.description,
     required this.price,
     required this.sportTypeId,
-    this.thumbnailFile,
+    required this.thumbnail,
   });
 
   @override
-  List<Object?> get props => [courseId, title, description, price, sportTypeId, thumbnailFile];
+  List<Object?> get props => [courseId, title, description, price, sportTypeId, thumbnail];
 }
 
 class DeleteCourse extends CoursesEvent {
@@ -166,7 +166,7 @@ class UpdateLesson extends CoursesEvent {
   final String description;
   final double duration;
   final int order;
-  final File? videoFile;
+  final dynamic video; // Can be File or String (URL)
 
   const UpdateLesson({
     required this.lessonId,
@@ -174,11 +174,11 @@ class UpdateLesson extends CoursesEvent {
     required this.description,
     required this.duration,
     required this.order,
-    this.videoFile,
+    required this.video,
   });
 
   @override
-  List<Object?> get props => [lessonId, title, description, duration, order, videoFile];
+  List<Object?> get props => [lessonId, title, description, duration, order, video];
 }
 
 class DeleteLesson extends CoursesEvent {
@@ -189,7 +189,6 @@ class DeleteLesson extends CoursesEvent {
   @override
   List<Object?> get props => [lessonId];
 }
-
 // ==================== ENROLLMENT ====================
 
 class EnrollInCourse extends CoursesEvent {

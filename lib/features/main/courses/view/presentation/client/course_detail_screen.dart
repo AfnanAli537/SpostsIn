@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/inline_lesson_video_player.dart';
+import 'package:sports_in/features/main/courses/view/presentation/provider/edit_lesson_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/enrollees_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/revenue_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/upload_video_screen.dart';
 import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/features/main/courses/view/widgets/inline_edit_dialog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;
 
-  const CourseDetailScreen({
-    super.key,
-    required this.courseId,
-  });
+  const CourseDetailScreen({super.key, required this.courseId});
 
   @override
   State<CourseDetailScreen> createState() => _CourseDetailScreenState();
@@ -30,39 +30,132 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   late TabController _tabController;
   CourseModel? _course;
   LessonModel? _currentPlayingLesson;
+  bool _isEditMode = false;
+  bool _hasUnsavedChanges = false;
+  bool _lessonsReordered = false;
+  // Temporary edit values (only used in edit mode)
+  late TextEditingController _titleEditController;
+  late TextEditingController _descriptionEditController;
+  late TextEditingController _priceEditController;
+  bool _isFreeEdit = false;
   List<LessonModel> _allLessons = [];
 
   @override
   void initState() {
     super.initState();
-    context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
+    context.read<CoursesBloc>().add(
+      FetchCourseDetail(courseId: widget.courseId),
+    );
     _tabController = TabController(length: 2, vsync: this);
+    _titleEditController = TextEditingController();
+    _descriptionEditController = TextEditingController();
+    _priceEditController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _titleEditController.dispose();
+    _descriptionEditController.dispose();
+    _priceEditController.dispose();
     _tabController.dispose();
     super.dispose();
   }
+  // ==================== EDIT MODE METHODS ====================
+
+  void _enterEditMode(CourseModel course) {
+    setState(() {
+      _isEditMode = true;
+      _titleEditController.text = course.title;
+      _descriptionEditController.text = course.description ?? '';
+      _priceEditController.text = course.price.toString();
+      _isFreeEdit = course.isFree;
+      _hasUnsavedChanges = false;
+    });
+  }
+
+  void _cancelEditMode() {
+    setState(() {
+      _isEditMode = false;
+      _hasUnsavedChanges = false;
+    });
+  }
+
+  void _onFieldChanged() {
+    if (!_hasUnsavedChanges) {
+      setState(() {
+        _hasUnsavedChanges = true;
+      });
+    }
+  }
+
+  Future<void> _saveAllChanges(CourseModel course) async {
+    // Validate
+    if (_titleEditController.text.trim().isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Title cannot be empty',
+        backgroundColor: Colors.orange,
+      );
+      return;
+    }
+
+    if (!_isFreeEdit) {
+      final price = double.tryParse(_priceEditController.text);
+      if (price == null || price < 0) {
+        Fluttertoast.showToast(
+          msg: 'Invalid price',
+          backgroundColor: Colors.orange,
+        );
+        return;
+      }
+    }
+
+    // Save all changes
+    final newPrice = _isFreeEdit
+        ? 0.0
+        : double.parse(_priceEditController.text);
+
+    context.read<CoursesBloc>().add(
+      UpdateCourse(
+        courseId: course.id,
+        title: _titleEditController.text.trim(),
+        description: _descriptionEditController.text.trim(),
+        price: newPrice,
+        sportTypeId: course.sportTypeId,
+        thumbnail: course.thumbnailUrl ?? '',
+      ),
+    );
+
+    setState(() {
+      _isEditMode = false;
+      _hasUnsavedChanges = false;
+    });
+
+    Fluttertoast.showToast(
+      msg: 'Saving changes...',
+      backgroundColor: Colors.blue,
+    );
+  }
 
   void _updateTabController(CourseModel course) {
-    if (_course == null || 
-        _course!.isOwner != course.isOwner || 
+    if (_course == null ||
+        _course!.isOwner != course.isOwner ||
         _course!.isEnrolled != course.isEnrolled) {
       _tabController.dispose();
-      
+
       int tabLength = 2; // Default: Lessons, Description
       if (course.isOwner) {
         tabLength = 4; // Lessons, Description, Enrolled, Revenue
       } else if (course.isEnrolled) {
         tabLength = 3; // Lessons, Description, Progress
       }
-      
+
       _tabController = TabController(length: tabLength, vsync: this);
       _course = course;
-      
+
       // Fetch lessons
-      context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
+      context.read<CoursesBloc>().add(
+        FetchCourseLessons(courseId: widget.courseId),
+      );
     }
   }
 
@@ -78,7 +171,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             msg: 'Enrolled successfully',
             backgroundColor: Colors.green,
           );
-          context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
+          context.read<CoursesBloc>().add(
+            FetchCourseDetail(courseId: widget.courseId),
+          );
         } else if (state is CourseDeleted) {
           Fluttertoast.showToast(
             msg: 'Course deleted',
@@ -98,15 +193,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             (current is CoursesError && previous is! CourseDetailLoaded);
       },
       builder: (context, state) {
-        if (_course != null && (state is CoursesLoading || state is LessonsLoaded)) {
+        if (_course != null &&
+            (state is CoursesLoading || state is LessonsLoaded)) {
           return _buildDetailScreen(_course!, theme, string);
         }
 
         if (state is CourseDetailLoading) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: const CourseDetailShimmer(), 
-          );
+          return Scaffold(appBar: AppBar(), body: const CourseDetailShimmer());
         }
 
         if (state is CourseDetailLoaded) {
@@ -121,15 +214,19 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: theme.colorScheme.error),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64.sp,
+                    color: theme.colorScheme.error,
+                  ),
                   SizedBox(height: 16.h),
                   Text(state.message, textAlign: TextAlign.center),
                   SizedBox(height: 16.h),
                   ElevatedButton(
                     onPressed: () {
                       context.read<CoursesBloc>().add(
-                            FetchCourseDetail(courseId: widget.courseId),
-                          );
+                        FetchCourseDetail(courseId: widget.courseId),
+                      );
                     },
                     child: Text(string.retry),
                   ),
@@ -139,24 +236,25 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           );
         }
 
-        return Scaffold(
-          appBar: AppBar(),
-          body: const CourseDetailShimmer(), 
-        );
+        return Scaffold(appBar: AppBar(), body: const CourseDetailShimmer());
       },
     );
   }
-  
+
   Widget _buildDetailScreen(CourseModel course, ThemeData theme, S string) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(course.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      actions: [
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(course.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        actions: [
           if (course.isOwner)
             PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'edit') {
-                  // Navigate to edit screen
+                  if (_isEditMode) {
+                    _cancelEditMode();
+                  } else {
+                    _enterEditMode(course);
+                  }
                 } else if (value == 'delete') {
                   _showDeleteConfirmation(course.id);
                 } else if (value == 'add_lesson') {
@@ -189,9 +287,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   value: 'edit',
                   child: Row(
                     children: [
-                      const Icon(Icons.edit),
-                      SizedBox(width: 8),
-                      Text(string.edit),
+                      Icon(_isEditMode ? Icons.close : Icons.edit),
+                      const SizedBox(width: 8),
+                      Text(_isEditMode ? 'Cancel Edit' : 'Edit Course'),
                     ],
                   ),
                 ),
@@ -200,8 +298,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   child: Row(
                     children: [
                       Icon(Icons.delete, color: Colors.red[700]),
-                      SizedBox(width: 8),
-                      Text(string.delete, style: TextStyle(color: Colors.red[700])),
+                      const SizedBox(width: 8),
+                      Text('Delete', style: TextStyle(color: Colors.red[700])),
                     ],
                   ),
                 ),
@@ -209,86 +307,82 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             ),
         ],
       ),
-    body: NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverToBoxAdapter(
-            child: _buildVideoOrThumbnail(course),
-          ),
-          SliverPersistentHeader(
-            pinned: true, // This keeps the tabs visible at the top
-            delegate: _SliverAppBarDelegate(
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                labelColor: theme.colorScheme.primary,
-                unselectedLabelColor: Colors.grey,
-                indicatorSize: TabBarIndicatorSize.label,
-                tabs: _buildTabs(course, string),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(child: _buildVideoOrThumbnail(course)),
+            SliverPersistentHeader(
+              pinned: true, // This keeps the tabs visible at the top
+              delegate: _SliverAppBarDelegate(
+                TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  labelColor: theme.colorScheme.primary,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  tabs: _buildTabs(course, string),
+                ),
               ),
             ),
-          ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: _buildTabViews(course, theme, string),
+          ];
+        },
+        body: TabBarView(
+          controller: _tabController,
+          children: _buildTabViews(course, theme, string),
+        ),
       ),
-    ),
-    bottomNavigationBar: !course.isOwner && !course.isEnrolled
-        ? _buildEnrollButton(course, theme, string)
-        : null,
-  );
-}
+      bottomNavigationBar: !course.isOwner && !course.isEnrolled
+          ? _buildEnrollButton(course, theme, string)
+          : null,
+    );
+  }
 
-Widget _buildVideoOrThumbnail(CourseModel course) {
-  return Container(
-    // Ensure the background is black for videos
-    color: Colors.black, 
-    constraints: BoxConstraints(
-      // Limits height on large screens but allows it to be responsive
-      maxHeight: 0.4.sh, 
-    ),
-    width: double.infinity,
-    child: _currentPlayingLesson != null
-        ? AspectRatio(
-            aspectRatio: 16 / 9, // Force standard video ratio
-            child: InlineLessonVideoPlayer(
-              lesson: _currentPlayingLesson!,
-              courseId: widget.courseId,
-              allLessons: _allLessons,
-              onBack: () => setState(() => _currentPlayingLesson = null),
-              onNextLesson: (next) => setState(() => _currentPlayingLesson = next),
-              onPreviousLesson: (prev) => setState(() => _currentPlayingLesson = prev),
-            ),
-          )
-        : course.thumbnailUrl != null
-            ? Image.network(
-                course.thumbnailUrl!,
-                fit: BoxFit.cover,
+  Widget _buildVideoOrThumbnail(CourseModel course) {
+    return Container(
+      // Ensure the background is black for videos
+      color: Colors.black,
+      constraints: BoxConstraints(
+        // Limits height on large screens but allows it to be responsive
+        maxHeight: 0.4.sh,
+      ),
+      width: double.infinity,
+      child: _currentPlayingLesson != null
+          ? AspectRatio(
+              aspectRatio: 16 / 9, // Force standard video ratio
+              child: InlineLessonVideoPlayer(
+                lesson: _currentPlayingLesson!,
+                courseId: widget.courseId,
+                allLessons: _allLessons,
+                onBack: () => setState(() => _currentPlayingLesson = null),
+                onNextLesson: (next) =>
+                    setState(() => _currentPlayingLesson = next),
+                onPreviousLesson: (prev) =>
+                    setState(() => _currentPlayingLesson = prev),
+              ),
+            )
+          : course.thumbnailUrl != null
+          ? Image.network(
+              course.thumbnailUrl!,
+              fit: BoxFit.cover,
+              height: 200.h,
+              errorBuilder: (context, _, __) => Container(
                 height: 200.h,
-                errorBuilder: (context, _, __) => Container(
-                  height: 200.h,
-                  color: Colors.grey[300],
-                  child: Icon(Icons.image_not_supported, size: 48.sp),
-                ),
-              )
-            : SizedBox(height: 100.h), // Placeholder if no thumbnail
-  );
-}
+                color: Colors.grey[300],
+                child: Icon(Icons.image_not_supported, size: 48.sp),
+              ),
+            )
+          : SizedBox(height: 100.h), // Placeholder if no thumbnail
+    );
+  }
 
   List<Widget> _buildTabs(CourseModel course, S string) {
     final tabs = <Widget>[
-      const Tab(text: 'Lessons'),      
-      Tab(text: string.description), 
+      const Tab(text: 'Lessons'),
+      Tab(text: string.description),
     ];
 
     if (course.isOwner) {
-      tabs.addAll([
-        const Tab(text: 'Enrolled'), 
-        const Tab(text: 'Revenue'),  
-
-      ]);
+      tabs.addAll([const Tab(text: 'Enrolled'), const Tab(text: 'Revenue')]);
     } else if (course.isEnrolled) {
       tabs.add(const Tab(text: 'Progress'));
     }
@@ -298,69 +392,883 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
 
   List<Widget> _buildTabViews(CourseModel course, ThemeData theme, S string) {
     final views = <Widget>[
-      _buildLessonsTab(course, theme, string),  
+      _buildLessonsTab(course, theme, string),
       _buildDescriptionTab(course, theme, string),
     ];
 
     if (course.isOwner) {
       views.addAll([
-        EnrolleesScreen(courseId: course.id),    
-        RevenueScreen(courseId: course.id),      
-
+        EnrolleesScreen(courseId: course.id),
+        RevenueScreen(courseId: course.id),
       ]);
     } else if (course.isEnrolled) {
-      views.add(_buildProgressTab(course, theme, string)); 
+      views.add(_buildProgressTab(course, theme, string));
     }
 
     return views;
   }
 
-  Widget _buildLessonsTab(CourseModel course, ThemeData theme, S string) {
-    return BlocBuilder<CoursesBloc, CoursesState>(
-      builder: (context, state) {
-        if (state is LessonsLoaded) {
-          _allLessons = state.lessons;
-          
-          if (state.lessons.isEmpty) {
-            return _buildEmptyLessonsState(theme, string);
-          }
+// ==================== LESSONS TAB WITH REORDER & UPDATE ====================
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<CoursesBloc>().add(
-                    FetchCourseLessons(courseId: widget.courseId),
-                  );
-              await Future.delayed(const Duration(milliseconds: 500));
-            },
-            child: ListView.separated(
-              padding: EdgeInsets.all(16.r),
-              itemCount: state.lessons.length,
-              separatorBuilder: (_, __) => SizedBox(height: 12.h),
-              itemBuilder: (context, index) {
-                final lesson = state.lessons[index];
-                final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
-                
-                return _buildLessonCard(
-                  lesson,
-                  state.isEnrolled,
-                  isCurrentlyPlaying,
-                  theme,
-                  string,
-                );
-              },
+Widget _buildLessonsTab(CourseModel course, ThemeData theme, S string) {
+  return BlocBuilder<CoursesBloc, CoursesState>(
+    builder: (context, state) {
+      if (state is LessonsLoaded) {
+        if (state.lessons != _allLessons) {
+          _allLessons = List.from(state.lessons);
+          _lessonsReordered = false; // Reset when fresh data loads
+        }
+        
+        if (_allLessons.isEmpty) {
+          return _buildEmptyLessonsState(course, theme, string);
+        }
+
+        return Column(
+          children: [
+            // ✅ Save Changes button (appears when reordered)
+            if (_lessonsReordered && course.isOwner)
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(16.r),
+                color: Colors.blue.withOpacity(0.1),
+                child: ElevatedButton.icon(
+                  onPressed: () => _saveReorderedLessons(),
+                  icon: const Icon(Icons.save),
+                  label: const Text('Save Changes'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                  ),
+                ),
+              ),
+
+            // Lessons list
+            Expanded(
+              child: course.isOwner
+                  ? _buildReorderableLessonsList(course, theme, string)
+                  : _buildRegularLessonsList(course, theme, string),
             ),
+          ],
+        );
+      }
+
+      if (state is CoursesError) {
+        return _buildLessonsErrorState(state.message, theme, string);
+      }
+
+      return const LessonsListShimmer();
+    },
+  );
+}
+
+// ==================== SAVE REORDERED LESSONS ====================
+
+void _saveReorderedLessons() {
+  // Update all lessons with new order
+  for (int i = 0; i < _allLessons.length; i++) {
+    final lesson = _allLessons[i];
+    final newOrder = i + 1;
+    
+    if (lesson.order != newOrder) {
+      context.read<CoursesBloc>().add(
+        UpdateLesson(
+          lessonId: lesson.id,
+          title: lesson.title,
+          description: lesson.description ?? '',
+          duration: lesson.duration,
+          order: newOrder,
+          video: lesson.videoUrl ?? '',
+        ),
+      );
+    }
+  }
+
+  setState(() {
+    _lessonsReordered = false;
+  });
+
+  Fluttertoast.showToast(
+    msg: 'Saving lesson order...',
+    backgroundColor: Colors.green,
+  );
+
+  // Refresh lessons
+  Future.delayed(const Duration(seconds: 1), () {
+    if (mounted) {
+      context.read<CoursesBloc>().add(
+        FetchCourseLessons(courseId: widget.courseId),
+      );
+    }
+  });
+}
+
+// ==================== REORDERABLE LESSONS (OWNERS) ====================
+
+Widget _buildReorderableLessonsList(CourseModel course, ThemeData theme, S string) {
+  return RefreshIndicator(
+    onRefresh: () async {
+      context.read<CoursesBloc>().add(
+            FetchCourseLessons(courseId: widget.courseId),
           );
-        }
-
-        if (state is CoursesError) {
-          return _buildLessonsErrorState(state.message, theme, string);
-        }
-
-        return const LessonsListShimmer();
+      await Future.delayed(const Duration(milliseconds: 500));
+    },
+    child: ReorderableListView.builder(
+      padding: EdgeInsets.all(16.r),
+      itemCount: _allLessons.length,
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+          
+          // Reorder locally
+          final lesson = _allLessons.removeAt(oldIndex);
+          _allLessons.insert(newIndex, lesson);
+          
+          // Mark as reordered
+          _lessonsReordered = true;
+        });
       },
+      itemBuilder: (context, index) {
+        final lesson = _allLessons[index];
+        final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
+        
+        return _buildOwnerLessonCard(
+          lesson,
+          course.isEnrolled,
+          isCurrentlyPlaying,
+          theme,
+          string,
+          index,
+        );
+      },
+    ),
+  );
+}
+
+// ==================== OWNER LESSON CARD (with Update menu) ====================
+
+Widget _buildOwnerLessonCard(
+  LessonModel lesson,
+  bool isEnrolled,
+  bool isCurrentlyPlaying,
+  ThemeData theme,
+  S string,
+  int index,
+) {
+  final canPlay = isEnrolled;
+
+  return Container(
+    key: ValueKey(lesson.id), // ✅ REQUIRED for reordering
+    margin: EdgeInsets.only(bottom: 12.h),
+    child: InkWell(
+      onTap: canPlay
+          ? () {
+              setState(() {
+                _currentPlayingLesson = lesson;
+              });
+            }
+          : null,
+      child: Container(
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: isCurrentlyPlaying
+              ? theme.colorScheme.primary.withOpacity(0.1)
+              : theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: lesson.isWatched
+                ? theme.colorScheme.primary.withOpacity(0.3)
+                : (isCurrentlyPlaying
+                    ? theme.colorScheme.primary
+                    : Colors.grey[300]!),
+            width: isCurrentlyPlaying ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // ✅ Drag handle
+            Icon(
+              Icons.drag_handle,
+              color: Colors.grey[600],
+              size: 24.sp,
+            ),
+            SizedBox(width: 12.w),
+
+            // Status icon
+            Container(
+              width: 56.w,
+              height: 56.w,
+              decoration: BoxDecoration(
+                color: lesson.isWatched
+                    ? Colors.green.withOpacity(0.2)
+                    : theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                lesson.isWatched
+                    ? Icons.check_circle
+                    : Icons.play_circle_outline,
+                color: lesson.isWatched
+                    ? Colors.green
+                    : theme.colorScheme.primary,
+                size: 32.sp,
+              ),
+            ),
+            SizedBox(width: 16.w),
+
+            // Lesson info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lesson ${lesson.order}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  
+                  Text(
+                    lesson.title,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 8.h),
+                  
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14.sp,
+                        color: Colors.grey[600],
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        _formatDuration(lesson.duration),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // ✅ Update menu (ONLY Update option)
+            PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert, size: 20.sp),
+              onSelected: (value) {
+                if (value == 'update') {
+                  _navigateToEditLesson(lesson);
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'update',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit, size: 18.sp),
+                      SizedBox(width: 8.w),
+                      const Text('Update'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+// ==================== NAVIGATE TO EDIT LESSON ====================
+
+void _navigateToEditLesson(LessonModel lesson) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => BlocProvider.value(
+        value: context.read<CoursesBloc>(),
+        child: EditLessonScreen(
+          lesson: lesson,
+          courseId: widget.courseId,
+        ),
+      ),
+    ),
+  ).then((updated) {
+    // Refresh lessons if updated
+    if (updated == true) {
+      context.read<CoursesBloc>().add(
+        FetchCourseLessons(courseId: widget.courseId),
+      );
+    }
+  });
+}
+
+// ==================== REGULAR LESSONS (NON-OWNERS) ====================
+
+Widget _buildRegularLessonsList(CourseModel course, ThemeData theme, S string) {
+  return RefreshIndicator(
+    onRefresh: () async {
+      context.read<CoursesBloc>().add(
+            FetchCourseLessons(courseId: widget.courseId),
+          );
+      await Future.delayed(const Duration(milliseconds: 500));
+    },
+    child: ListView.separated(
+      padding: EdgeInsets.all(16.r),
+      itemCount: _allLessons.length,
+      separatorBuilder: (_, __) => SizedBox(height: 12.h),
+      itemBuilder: (context, index) {
+        final lesson = _allLessons[index];
+        final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
+        
+        return _buildLessonCard(
+          lesson,
+          course.isEnrolled,
+          isCurrentlyPlaying,
+          theme,
+          string,
+        );
+      },
+    ),
+  );
+}
+
+  // Enhanced Lessons Tab with Reordering and Inline Editing
+  // Replace the _buildLessonsTab method in CourseDetailScreen with this
+
+  // Widget _buildLessonsTab(CourseModel course, ThemeData theme, S string) {
+  //   return BlocBuilder<CoursesBloc, CoursesState>(
+  //     builder: (context, state) {
+  //       if (state is LessonsLoaded) {
+  //         // Update local lessons list
+  //         if (state.lessons != _allLessons) {
+  //           _allLessons = List.from(state.lessons);
+  //         }
+
+  //         if (_allLessons.isEmpty) {
+  //           return _buildEmptyLessonsState(course, theme, string);
+  //         }
+
+  //         // ✅ Use ReorderableListView for drag-to-reorder (owners only)
+  //         if (course.isOwner) {
+  //           return _buildReorderableLessonsList(course, theme, string);
+  //         } else {
+  //           // Regular list for non-owners
+  //           return _buildRegularLessonsList(course, theme, string);
+  //         }
+  //       }
+
+  //       if (state is CoursesError) {
+  //         return _buildLessonsErrorState(state.message, theme, string);
+  //       }
+
+  //       return const LessonsListShimmer();
+  //     },
+  //   );
+  // }
+
+  // ==================== REORDERABLE LESSONS (OWNERS) ====================
+
+  // Widget _buildReorderableLessonsList(
+  //   CourseModel course,
+  //   ThemeData theme,
+  //   S string,
+  // ) {
+  //   return RefreshIndicator(
+  //     onRefresh: () async {
+  //       context.read<CoursesBloc>().add(
+  //         FetchCourseLessons(courseId: widget.courseId),
+  //       );
+  //       await Future.delayed(const Duration(milliseconds: 500));
+  //     },
+  //     child: ReorderableListView.builder(
+  //       padding: EdgeInsets.all(16.r),
+  //       itemCount: _allLessons.length,
+  //       onReorder: (oldIndex, newIndex) {
+  //         _onReorderLessons(oldIndex, newIndex);
+  //       },
+  //       itemBuilder: (context, index) {
+  //         final lesson = _allLessons[index];
+  //         final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
+
+  //         return _buildReorderableLessonCard(
+  //           lesson,
+  //           course.isEnrolled,
+  //           isCurrentlyPlaying,
+  //           theme,
+  //           string,
+  //           index,
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // ✅ Reorderable lesson card
+  Widget _buildReorderableLessonCard(
+    LessonModel lesson,
+    bool isEnrolled,
+    bool isCurrentlyPlaying,
+    ThemeData theme,
+    S string,
+    int index,
+  ) {
+    final canPlay = isEnrolled;
+
+    return Container(
+      key: ValueKey(lesson.id), // ✅ REQUIRED for ReorderableListView
+      margin: EdgeInsets.only(bottom: 12.h),
+      child: InkWell(
+        onTap: canPlay
+            ? () {
+                setState(() {
+                  _currentPlayingLesson = lesson;
+                });
+              }
+            : null,
+        child: Container(
+          padding: EdgeInsets.all(16.r),
+          decoration: BoxDecoration(
+            color: isCurrentlyPlaying
+                ? theme.colorScheme.primary.withOpacity(0.1)
+                : theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: lesson.isWatched
+                  ? theme.colorScheme.primary.withOpacity(0.3)
+                  : (isCurrentlyPlaying
+                        ? theme.colorScheme.primary
+                        : Colors.grey[300]!),
+              width: isCurrentlyPlaying ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              // ✅ Drag handle (owner only)
+              Icon(Icons.drag_handle, color: Colors.grey[600], size: 24.sp),
+              SizedBox(width: 12.w),
+
+              // Status icon
+              Container(
+                width: 56.w,
+                height: 56.w,
+                decoration: BoxDecoration(
+                  color: lesson.isWatched
+                      ? Colors.green.withOpacity(0.2)
+                      : theme.colorScheme.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  lesson.isWatched
+                      ? Icons.check_circle
+                      : Icons.play_circle_outline,
+                  color: lesson.isWatched
+                      ? Colors.green
+                      : theme.colorScheme.primary,
+                  size: 32.sp,
+                ),
+              ),
+              SizedBox(width: 16.w),
+
+              // Lesson info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Lesson ${lesson.order}',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (lesson.isWatched) ...[
+                          SizedBox(width: 8.w),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 2.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                            child: Text(
+                              'Completed',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: Colors.green,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (isCurrentlyPlaying) ...[
+                          SizedBox(width: 8.w),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 2.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                            child: Text(
+                              'Playing',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+
+                    Text(
+                      lesson.title,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8.h),
+
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 14.sp,
+                          color: Colors.grey[600],
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          _formatDuration(lesson.duration),
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        if (lesson.progressPercentage > 0 &&
+                            !lesson.isWatched) ...[
+                          SizedBox(width: 16.w),
+                          Text(
+                            '${lesson.progressPercentage.toInt()}% watched',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+                      SizedBox(height: 8.h),
+                      LinearProgressIndicator(
+                        value: lesson.progressPercentage / 100,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          theme.colorScheme.primary,
+                        ),
+                        minHeight: 4.h,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+              // ✅ Edit menu
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, size: 20.sp),
+                onSelected: (value) {
+                  if (value == 'edit_title') {
+                    _editLessonTitle(lesson);
+                  } else if (value == 'edit_description') {
+                    _editLessonDescription(lesson);
+                  } else if (value == 'delete') {
+                    _deleteLesson(lesson);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'edit_title',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, size: 18.sp),
+                        SizedBox(width: 8.w),
+                        const Text('Edit Title'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'edit_description',
+                    child: Row(
+                      children: [
+                        Icon(Icons.description, size: 18.sp),
+                        SizedBox(width: 8.w),
+                        const Text('Edit Description'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, size: 18.sp, color: Colors.red[700]),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.red[700]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
+  // ==================== REGULAR LESSONS (NON-OWNERS) ====================
+
+  // Widget _buildRegularLessonsList(
+  //   CourseModel course,
+  //   ThemeData theme,
+  //   S string,
+  // ) {
+  //   return RefreshIndicator(
+  //     onRefresh: () async {
+  //       context.read<CoursesBloc>().add(
+  //         FetchCourseLessons(courseId: widget.courseId),
+  //       );
+  //       await Future.delayed(const Duration(milliseconds: 500));
+  //     },
+  //     child: ListView.separated(
+  //       padding: EdgeInsets.all(16.r),
+  //       itemCount: _allLessons.length,
+  //       separatorBuilder: (_, __) => SizedBox(height: 12.h),
+  //       itemBuilder: (context, index) {
+  //         final lesson = _allLessons[index];
+  //         final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
+
+  //         return _buildLessonCard(
+  //           lesson,
+  //           course.isEnrolled,
+  //           isCurrentlyPlaying,
+  //           theme,
+  //           string,
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // ==================== LESSON EDIT METHODS ====================
+
+  // ==================== CORRECTED LESSON EDIT METHODS ====================
+
+  // ✅ Edit Lesson Title - passes ALL fields with defaults
+  Future<void> _editLessonTitle(LessonModel lesson) async {
+    final newTitle = await InlineEditDialog.editTextField(
+      context: context,
+      title: 'Edit Lesson Title',
+      currentValue: lesson.title,
+      hintText: 'Enter lesson title',
+      maxLength: 100,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Title is required';
+        }
+        return null;
+      },
+    );
+
+    if (newTitle != null && newTitle != lesson.title) {
+      context.read<CoursesBloc>().add(
+        UpdateLesson(
+          lessonId: lesson.id,
+          title: newTitle, // ✅ New value
+          description: lesson.description ?? '', // ✅ Keep existing
+          duration: lesson.duration, // ✅ Keep existing
+          order: lesson.order, // ✅ Keep existing
+          video: lesson.videoUrl ?? '', // ✅ Keep existing URL
+        ),
+      );
+
+      Fluttertoast.showToast(
+        msg: 'Updating lesson title...',
+        backgroundColor: Colors.blue,
+      );
+    }
+  }
+
+  // ✅ Edit Lesson Description - passes ALL fields with defaults
+  Future<void> _editLessonDescription(LessonModel lesson) async {
+    final newDescription = await InlineEditDialog.editTextField(
+      context: context,
+      title: 'Edit Lesson Description',
+      currentValue: lesson.description ?? '',
+      hintText: 'Enter lesson description',
+      maxLines: 5,
+      maxLength: 500,
+    );
+
+    if (newDescription != null && newDescription != lesson.description) {
+      context.read<CoursesBloc>().add(
+        UpdateLesson(
+          lessonId: lesson.id,
+          title: lesson.title, // ✅ Keep existing
+          description: newDescription, // ✅ New value
+          duration: lesson.duration, // ✅ Keep existing
+          order: lesson.order, // ✅ Keep existing
+          video: lesson.videoUrl ?? '', // ✅ Keep existing URL
+        ),
+      );
+
+      Fluttertoast.showToast(
+        msg: 'Updating description...',
+        backgroundColor: Colors.blue,
+      );
+    }
+  }
+
+  // ✅ CORRECTED: Reorder Lessons - uses UpdateLesson (not UpdateLessonOrder)
+  void _onReorderLessons(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+
+      // Reorder locally for immediate UI update
+      final lesson = _allLessons.removeAt(oldIndex);
+      _allLessons.insert(newIndex, lesson);
+    });
+
+    // ✅ Update order using UpdateLesson for all affected lessons
+    for (int i = 0; i < _allLessons.length; i++) {
+      final lesson = _allLessons[i];
+      final newOrder = i + 1;
+
+      // Only update if order changed
+      if (lesson.order != newOrder) {
+        context.read<CoursesBloc>().add(
+          UpdateLesson(
+            lessonId: lesson.id,
+            title: lesson.title, // ✅ Keep existing
+            description: lesson.description ?? '', // ✅ Keep existing
+            duration: lesson.duration, // ✅ Keep existing
+            order: newOrder, // ✅ New order value
+            video: lesson.videoUrl ?? '', // ✅ Keep existing URL
+          ),
+        );
+      }
+    }
+
+    Fluttertoast.showToast(
+      msg: 'Lessons reordered',
+      backgroundColor: Colors.green,
+    );
+  }
+
+  // Delete Lesson (unchanged)
+  Future<void> _deleteLesson(LessonModel lesson) async {
+    final confirmed = await InlineEditDialog.showConfirmation(
+      context: context,
+      title: 'Delete Lesson',
+      message:
+          'Are you sure you want to delete "${lesson.title}"? This action cannot be undone.',
+      confirmText: 'Delete',
+      isDestructive: true,
+    );
+
+    if (confirmed) {
+      context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
+
+      Fluttertoast.showToast(
+        msg: 'Deleting lesson...',
+        backgroundColor: Colors.orange,
+      );
+    }
+  }
+
+  // ==================== REORDERABLE LESSONS (Unchanged UI) ====================
+  // The _buildReorderableLessonsList and _buildReorderableLessonCard
+  // methods remain the same - only the _onReorderLessons logic changed above
+  // ==================== EMPTY STATE (WITH FAB HINT) ====================
+
+  Widget _buildEmptyLessonsState(
+    CourseModel course,
+    ThemeData theme,
+    S string,
+  ) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.video_library_outlined,
+            size: 64.sp,
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            'No lessons available',
+            style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+          ),
+          if (course.isOwner) ...[
+            SizedBox(height: 8.h),
+            Text(
+              'Tap the + button to add your first lesson',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ==================== REQUIRED IMPORTS ====================
+  /*
+Add to top of course_detail_screen.dart:
+
+import 'package:sports_in/features/main/courses/view/widgets/inline_edit_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+Also ensure these BLoC events exist in courses_bloc.dart:
+- UpdateCourse
+- UpdateLesson
+- UpdateLessonOrder
+- DeleteLesson
+*/
   Widget _buildLessonCard(
     LessonModel lesson,
     bool isEnrolled,
@@ -389,8 +1297,8 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
             color: lesson.isWatched
                 ? theme.colorScheme.primary.withOpacity(0.3)
                 : (isCurrentlyPlaying
-                    ? theme.colorScheme.primary
-                    : Colors.grey[300]!),
+                      ? theme.colorScheme.primary
+                      : Colors.grey[300]!),
             width: isCurrentlyPlaying ? 2 : 1,
           ),
         ),
@@ -476,7 +1384,7 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
                     ],
                   ),
                   SizedBox(height: 4.h),
-                  
+
                   Text(
                     lesson.title,
                     style: TextStyle(
@@ -488,7 +1396,7 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8.h),
-                  
+
                   Row(
                     children: [
                       Icon(
@@ -504,7 +1412,8 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
                           color: Colors.grey[600],
                         ),
                       ),
-                      if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+                      if (lesson.progressPercentage > 0 &&
+                          !lesson.isWatched) ...[
                         SizedBox(width: 16.w),
                         Text(
                           '${lesson.progressPercentage.toInt()}% watched',
@@ -517,7 +1426,7 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
                       ],
                     ],
                   ),
-                  
+
                   if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
                     SizedBox(height: 8.h),
                     LinearProgressIndicator(
@@ -546,20 +1455,154 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
     );
   }
 
+  // ==================== CORRECTED EDIT METHODS ====================
+  // Add these to CourseDetailScreen
+
+  // ✅ Edit Course Title - passes ALL fields with defaults
+  Future<void> _editCourseTitle(CourseModel course) async {
+    final newTitle = await InlineEditDialog.editTextField(
+      context: context,
+      title: 'Edit Course Title',
+      currentValue: course.title,
+      hintText: 'Enter course title',
+      maxLength: 100,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Title is required';
+        }
+        if (value.length < 3) {
+          return 'Title must be at least 3 characters';
+        }
+        return null;
+      },
+    );
+
+    if (newTitle != null && newTitle != course.title) {
+      context.read<CoursesBloc>().add(
+        UpdateCourse(
+          courseId: course.id,
+          title: newTitle, // ✅ New value
+          description: course.description ?? '', // ✅ Keep existing
+          price: course.price, // ✅ Keep existing
+          sportTypeId: course.sportTypeId, // ✅ Keep existing
+          thumbnail: course.thumbnailUrl ?? '', // ✅ Keep existing URL
+        ),
+      );
+
+      Fluttertoast.showToast(
+        msg: 'Updating course title...',
+        backgroundColor: Colors.blue,
+      );
+    }
+  }
+
+  // ✅ Edit Course Description - passes ALL fields with defaults
+  Future<void> _editCourseDescription(CourseModel course) async {
+    final newDescription = await InlineEditDialog.editTextField(
+      context: context,
+      title: 'Edit Course Description',
+      currentValue: course.description ?? '',
+      hintText: 'Enter course description',
+      maxLines: 5,
+      maxLength: 500,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Description is required';
+        }
+        return null;
+      },
+    );
+
+    if (newDescription != null && newDescription != course.description) {
+      context.read<CoursesBloc>().add(
+        UpdateCourse(
+          courseId: course.id,
+          title: course.title, // ✅ Keep existing
+          description: newDescription, // ✅ New value
+          price: course.price, // ✅ Keep existing
+          sportTypeId: course.sportTypeId, // ✅ Keep existing
+          thumbnail: course.thumbnailUrl ?? '', // ✅ Keep existing URL
+        ),
+      );
+
+      Fluttertoast.showToast(
+        msg: 'Updating description...',
+        backgroundColor: Colors.blue,
+      );
+    }
+  }
+
+  // ✅ Edit Course Price - passes ALL fields with defaults
+  Future<void> _editCoursePrice(CourseModel course) async {
+    final newPrice = await InlineEditDialog.editPriceField(
+      context: context,
+      currentPrice: course.price,
+      isFree: course.isFree,
+    );
+
+    if (newPrice != null && newPrice != course.price) {
+      context.read<CoursesBloc>().add(
+        UpdateCourse(
+          courseId: course.id,
+          title: course.title, // ✅ Keep existing
+          description: course.description ?? '', // ✅ Keep existing
+          price: newPrice, // ✅ New value
+          sportTypeId: course.sportTypeId, // ✅ Keep existing
+          thumbnail: course.thumbnailUrl ?? '', // ✅ Keep existing URL
+        ),
+      );
+
+      Fluttertoast.showToast(
+        msg: 'Updating price...',
+        backgroundColor: Colors.blue,
+      );
+    }
+  }
+
+  // ==================== SAME DESCRIPTION TAB (No changes needed) ====================
+  // The _buildDescriptionTab method remains the same as before
+  // ==================== ENHANCED DESCRIPTION TAB ====================
   Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            course.title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+          // ✅ Title (editable in edit mode)
+          if (_isEditMode)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Course Title',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: _titleEditController,
+                  onChanged: (_) => _onFieldChanged(),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    hintText: 'Enter course title',
+                  ),
+                  style: theme.textTheme.titleLarge,
+                ),
+              ],
+            )
+          else
+            Text(
+              course.title,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 16.h),
 
+          // Owner info
           Row(
             children: [
               CircleAvatar(
@@ -595,79 +1638,348 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
           ),
           SizedBox(height: 16.h),
 
+          // Course stats
           Row(
             children: [
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.play_circle_outline, size: 16.sp, color: theme.colorScheme.primary),
-                    SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        '${course.lessonsCount} lessons',
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
+              Icon(
+                Icons.play_circle_outline,
+                size: 16.sp,
+                color: theme.colorScheme.primary,
+              ),
+              SizedBox(width: 4.w),
+              Text(
+                '${course.lessonsCount} lessons',
+                style: theme.textTheme.bodyMedium,
               ),
               SizedBox(width: 16.w),
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
-                    SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        course.formattedDuration,
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
+              Icon(
+                Icons.access_time,
+                size: 16.sp,
+                color: theme.colorScheme.primary,
               ),
+              SizedBox(width: 4.w),
+              Text(course.formattedDuration, style: theme.textTheme.bodyMedium),
             ],
           ),
           SizedBox(height: 16.h),
 
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: course.isFree ? Colors.green.withOpacity(0.1) : theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Text(
-              course.isFree ? 'FREE' : '${course.price} EGP',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: course.isFree ? Colors.green : theme.colorScheme.onPrimaryContainer,
+          // ✅ Price (editable in edit mode)
+          if (_isEditMode)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Price',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isFreeEdit,
+                      onChanged: (value) {
+                        setState(() {
+                          _isFreeEdit = value ?? false;
+                          if (_isFreeEdit) {
+                            _priceEditController.text = '0';
+                          }
+                          _onFieldChanged();
+                        });
+                      },
+                    ),
+                    Text('Free Course'),
+                    SizedBox(width: 16.w),
+                    if (!_isFreeEdit)
+                      Expanded(
+                        child: TextField(
+                          controller: _priceEditController,
+                          onChanged: (_) => _onFieldChanged(),
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            hintText: 'Price',
+                            suffixText: 'EGP',
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            )
+          else
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                color: course.isFree
+                    ? Colors.green.withOpacity(0.1)
+                    : theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Text(
+                course.isFree ? 'FREE' : '${course.price} EGP',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: course.isFree
+                      ? Colors.green
+                      : theme.colorScheme.onPrimaryContainer,
+                ),
               ),
             ),
-          ),
           SizedBox(height: 24.h),
 
-          if (course.description != null && course.description!.isNotEmpty) ...[
+          // ✅ Description (editable in edit mode)
+          Text(
+            string.description,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8.h),
+
+          if (_isEditMode)
+            TextField(
+              controller: _descriptionEditController,
+              onChanged: (_) => _onFieldChanged(),
+              maxLines: 5,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                hintText: 'Enter course description',
+              ),
+            )
+          else if (course.description != null && course.description!.isNotEmpty)
+            Text(course.description!, style: theme.textTheme.bodyMedium)
+          else
             Text(
-              string.description,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              'No description available.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 8.h),
-            Text(
-              course.description!,
-              style: theme.textTheme.bodyMedium,
+
+          // ✅ Save/Cancel buttons in edit mode
+          if (_isEditMode) ...[
+            SizedBox(height: 24.h),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _cancelEditMode,
+                    child: const Text('Cancel'),
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _hasUnsavedChanges
+                        ? () => _saveAllChanges(course)
+                        : null,
+                    child: const Text('Save Changes'),
+                  ),
+                ),
+              ],
             ),
           ],
         ],
       ),
     );
   }
+  // Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
+  //   return SingleChildScrollView(
+  //     padding: EdgeInsets.all(16.r),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // ✅ Editable Title
+  //         Row(
+  //           children: [
+  //             Expanded(
+  //               child: Text(
+  //                 course.title,
+  //                 style: theme.textTheme.headlineSmall?.copyWith(
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //             if (course.isOwner)
+  //               IconButton(
+  //                 icon: Icon(Icons.edit, size: 20.sp),
+  //                 tooltip: 'Edit title',
+  //                 onPressed: () => _editCourseTitle(course),
+  //               ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 8.h),
 
+  //         // Owner info
+  //         Row(
+  //           children: [
+  //             CircleAvatar(
+  //               radius: 20.r,
+  //               backgroundImage: course.owner.profilePictureUrl != null
+  //                   ? NetworkImage(course.owner.profilePictureUrl!)
+  //                   : null,
+  //               child: course.owner.profilePictureUrl == null
+  //                   ? const Icon(Icons.person)
+  //                   : null,
+  //             ),
+  //             SizedBox(width: 12.w),
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text(
+  //                     course.owner.fullName,
+  //                     style: theme.textTheme.titleMedium?.copyWith(
+  //                       fontWeight: FontWeight.w600,
+  //                     ),
+  //                     maxLines: 1,
+  //                     overflow: TextOverflow.ellipsis,
+  //                   ),
+  //                   Text(
+  //                     '${course.enrolledUsersCount} students',
+  //                     style: theme.textTheme.bodySmall,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 16.h),
+
+  //         // Course stats
+  //         Row(
+  //           children: [
+  //             Flexible(
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Icon(
+  //                     Icons.play_circle_outline,
+  //                     size: 16.sp,
+  //                     color: theme.colorScheme.primary,
+  //                   ),
+  //                   SizedBox(width: 4.w),
+  //                   Flexible(
+  //                     child: Text(
+  //                       '${course.lessonsCount} lessons',
+  //                       style: theme.textTheme.bodyMedium,
+  //                       overflow: TextOverflow.ellipsis,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             SizedBox(width: 16.w),
+  //             Flexible(
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Icon(
+  //                     Icons.access_time,
+  //                     size: 16.sp,
+  //                     color: theme.colorScheme.primary,
+  //                   ),
+  //                   SizedBox(width: 4.w),
+  //                   Flexible(
+  //                     child: Text(
+  //                       course.formattedDuration,
+  //                       style: theme.textTheme.bodyMedium,
+  //                       overflow: TextOverflow.ellipsis,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 16.h),
+
+  //         // ✅ Editable Price
+  //         Row(
+  //           children: [
+  //             Container(
+  //               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+  //               decoration: BoxDecoration(
+  //                 color: course.isFree
+  //                     ? Colors.green.withOpacity(0.1)
+  //                     : theme.colorScheme.primaryContainer,
+  //                 borderRadius: BorderRadius.circular(8.r),
+  //               ),
+  //               child: Text(
+  //                 course.isFree ? 'FREE' : '${course.price} EGP',
+  //                 style: theme.textTheme.titleLarge?.copyWith(
+  //                   fontWeight: FontWeight.bold,
+  //                   color: course.isFree
+  //                       ? Colors.green
+  //                       : theme.colorScheme.onPrimaryContainer,
+  //                 ),
+  //               ),
+  //             ),
+  //             if (course.isOwner) ...[
+  //               SizedBox(width: 8.w),
+  //               IconButton(
+  //                 icon: Icon(Icons.edit, size: 20.sp),
+  //                 tooltip: 'Edit price',
+  //                 onPressed: () => _editCoursePrice(course),
+  //               ),
+  //             ],
+  //           ],
+  //         ),
+  //         SizedBox(height: 24.h),
+
+  //         // ✅ Editable Description
+  //         Row(
+  //           children: [
+  //             Text(
+  //               string.description,
+  //               style: theme.textTheme.titleMedium?.copyWith(
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //             if (course.isOwner) ...[
+  //               SizedBox(width: 8.w),
+  //               IconButton(
+  //                 icon: Icon(Icons.edit, size: 18.sp),
+  //                 tooltip: 'Edit description',
+  //                 onPressed: () => _editCourseDescription(course),
+  //               ),
+  //             ],
+  //           ],
+  //         ),
+  //         SizedBox(height: 8.h),
+
+  //         if (course.description != null && course.description!.isNotEmpty)
+  //           Text(course.description!, style: theme.textTheme.bodyMedium)
+  //         else if (course.isOwner)
+  //           Text(
+  //             'No description yet. Tap edit to add one.',
+  //             style: theme.textTheme.bodyMedium?.copyWith(
+  //               color: Colors.grey[600],
+  //               fontStyle: FontStyle.italic,
+  //             ),
+  //           )
+  //         else
+  //           Text(
+  //             'No description available.',
+  //             style: theme.textTheme.bodyMedium?.copyWith(
+  //               color: Colors.grey[600],
+  //             ),
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // ==================== IMPORTS NEEDED ====================
+  // Add these to the top of your file:
+  // import 'package:sports_in/features/main/courses/view/widgets/inline_edit_dialog.dart';
+  // import 'package:fluttertoast/fluttertoast.dart';
   Widget _buildProgressTab(CourseModel course, ThemeData theme, S string) {
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.r),
@@ -683,7 +1995,7 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
             child: Column(
               children: [
                 Text(
-                  '${course.progress}%',
+                  '${formatProgress(course.progress)}%',
                   style: theme.textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onPrimaryContainer,
@@ -702,7 +2014,7 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
                   minHeight: 8.h,
                   backgroundColor: theme.colorScheme.surface,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.colorScheme.primary,
+                    ColorManager.warning,
                   ),
                 ),
               ],
@@ -790,27 +2102,27 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
         : '${hours}h';
   }
 
-  Widget _buildEmptyLessonsState(ThemeData theme, S string) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.video_library_outlined,
-            size: 64.sp,
-            color: Colors.grey[400],
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            'No lessons available',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildEmptyLessonsState(ThemeData theme, S string) {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Icon(
+  //           Icons.video_library_outlined,
+  //           size: 64.sp,
+  //           color: Colors.grey[400],
+  //         ),
+  //         SizedBox(height: 16.h),
+  //         Text(
+  //           'No lessons available',
+  //           style: theme.textTheme.bodyLarge?.copyWith(
+  //             color: Colors.grey[600],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildLessonsErrorState(String message, ThemeData theme, S string) {
     return Center(
@@ -832,8 +2144,8 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
           ElevatedButton(
             onPressed: () {
               context.read<CoursesBloc>().add(
-                    FetchCourseLessons(courseId: widget.courseId),
-                  );
+                FetchCourseLessons(courseId: widget.courseId),
+              );
             },
             child: Text(string.retry),
           ),
@@ -865,11 +2177,11 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
                   : 'Enroll for ${course.price} EGP',
               isLoading: isLoading,
               onPressed: isLoading
-                  ? ()=>{}
+                  ? () => {}
                   : () {
                       context.read<CoursesBloc>().add(
-                            EnrollInCourse(courseId: course.id),
-                          );
+                        EnrollInCourse(courseId: course.id),
+                      );
                     },
             );
           },
@@ -882,7 +2194,8 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
     ConfirmationDialog.show(
       context: context,
       title: 'Delete Course',
-      message: 'Are you sure you want to delete this course? This action cannot be undone.',
+      message:
+          'Are you sure you want to delete this course? This action cannot be undone.',
       onConfirm: () {
         context.read<CoursesBloc>().add(DeleteCourse(courseId: courseId));
       },
@@ -891,6 +2204,13 @@ Widget _buildVideoOrThumbnail(CourseModel course) {
       icon: Icons.delete_outline,
       isDestructive: true,
     );
+  }
+
+  String formatProgress(num value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(2);
   }
 }
 
@@ -905,7 +2225,11 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor, // Matches screen bg
       child: _tabBar,

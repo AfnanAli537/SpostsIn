@@ -17,7 +17,7 @@ class CourseModel {
   final CourseOwner owner;
   final bool isEnrolled;
   final bool isOwner;
-  final int progress; // 0-100
+  final num progress; // 0-100
   final int lessonsCount;
   final double totalDurationHours; // ✅ HOURS (only this field!)
   final int enrolledUsersCount;
@@ -55,7 +55,7 @@ class CourseModel {
       ),
       isEnrolled: json['isEnrolled'] as bool? ?? false,
       isOwner: json['isOwner'] as bool? ?? false,
-      progress: json['progress'] as int? ?? 0,
+      progress: json['progress'] as num? ?? 0,
       lessonsCount: json['lessonsCount'] as int? ?? 0,
       totalDurationHours: (json['totalDurationHours'] as num?)?.toDouble() ?? 0.0,
       enrolledUsersCount: json['enrolledUsersCount'] as int? ?? 0,
@@ -212,7 +212,7 @@ class LessonModel {
 
 class EnrolledUserModel {
   final DateTime enrolledAt;
-  final int progress;
+  final num progress;
   final String userId;
   final String fullName;
   final String? profilePictureUrl;
@@ -228,7 +228,7 @@ class EnrolledUserModel {
   factory EnrolledUserModel.fromJson(Map<String, dynamic> json) {
     return EnrolledUserModel(
       enrolledAt: DateTime.parse(json['enrolledAt'] as String),
-      progress: json['progress'] as int? ?? 0,
+      progress: json['progress'] as num? ?? 0,
       userId: json['userId'] as String? ?? '',
       fullName: json['fullName'] as String? ?? '',
       profilePictureUrl: json['profilePictureUrl'] as String?,
@@ -381,7 +381,7 @@ class UpdateCourseRequest {
   final String description;
   final double price;
   final int sportTypeId;
-  final File? thumbnailFile;
+  final dynamic thumbnail;
 
   UpdateCourseRequest({
     required this.id,
@@ -389,7 +389,7 @@ class UpdateCourseRequest {
     required this.description,
     required this.price,
     required this.sportTypeId,
-    this.thumbnailFile,
+    this.thumbnail,
   });
 }
 
@@ -415,7 +415,7 @@ class UpdateLessonRequest {
   final String description;
   final double duration; // ✅ IN SECONDS
   final int order;
-  final File? videoFile;
+  final dynamic video;
 
   UpdateLessonRequest({
     required this.lessonId,
@@ -423,7 +423,7 @@ class UpdateLessonRequest {
     required this.description,
     required this.duration,
     required this.order,
-    this.videoFile,
+    this.video,
   });
 }
 

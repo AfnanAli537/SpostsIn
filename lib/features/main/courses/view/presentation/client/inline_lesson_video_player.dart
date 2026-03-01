@@ -33,9 +33,8 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   bool _isInitialized = false;
   String? _errorMessage;
   Timer? _progressSaveTimer;
-  bool _isFullscreen = false; // ✅ Track fullscreen state locally
+  bool _isFullscreen = false; 
   
-  // ✅ Progress tracking
   double _lastSavedPosition = 0.0;
   double _currentPosition = 0.0;
 
@@ -46,7 +45,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     _startProgressSaveTimer();
   }
 
-  // ✅ Handle lesson changes
   @override
   void didUpdateWidget(InlineLessonVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -64,19 +62,16 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     }
   }
 
-  // ✅ Check if there's a next lesson
   bool get hasNextLesson {
     final currentIndex = widget.allLessons.indexWhere((l) => l.id == widget.lesson.id);
     return currentIndex >= 0 && currentIndex < widget.allLessons.length - 1;
   }
 
-  // ✅ Check if there's a previous lesson
   bool get hasPreviousLesson {
     final currentIndex = widget.allLessons.indexWhere((l) => l.id == widget.lesson.id);
     return currentIndex > 0;
   }
 
-  // ✅ Play next lesson
   void _playNextLesson() {
     if (hasNextLesson) {
       final currentIndex = widget.allLessons.indexWhere((l) => l.id == widget.lesson.id);
@@ -86,7 +81,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     }
   }
 
-  // ✅ Play previous lesson
   void _playPreviousLesson() {
     if (hasPreviousLesson) {
       final currentIndex = widget.allLessons.indexWhere((l) => l.id == widget.lesson.id);
@@ -105,7 +99,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   }
 
 
-  // ✅ Initialize better player
   Future<void> _initializePlayer() async {
     try {
       debugPrint('🎬 Initializing video player for: ${widget.lesson.videoUrl}');
@@ -150,7 +143,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
         betterPlayerDataSource: betterPlayerDataSource,
       );
 
-      // ✅ Seek to last watched position
       if (widget.lesson.watchedTime > 0) {
         debugPrint('⏩ Seeking to ${widget.lesson.watchedTime} seconds');
         await _controller?.setupDataSource(betterPlayerDataSource);
@@ -160,7 +152,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
         _currentPosition = widget.lesson.watchedTime;
       }
 
-      // ✅ Listen to player events
       _controller?.addEventsListener((event) {
         if (event.betterPlayerEventType == BetterPlayerEventType.progress) {
           final position = event.parameters?['progress'] as Duration?;
@@ -191,7 +182,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
             });
           }
         } else if (event.betterPlayerEventType == BetterPlayerEventType.openFullscreen) {
-          // ✅ Fullscreen opened - update state after current frame
           debugPrint('📺 Entering fullscreen');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -201,7 +191,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
             }
           });
         } else if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen) {
-          // ✅ Fullscreen closed - update state after current frame
           debugPrint('📱 Exiting fullscreen');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -229,7 +218,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     }
   }
 
-  // ✅ Start auto-save timer (every 10 seconds)
   void _startProgressSaveTimer() {
     _progressSaveTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (_controller?.isPlaying() == true) {
@@ -238,9 +226,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     });
   }
 
-  // ✅ Save progress if position increased
   void _saveProgressIfNeeded() {
-    // ✅ Check if widget is still mounted
     if (!mounted || _controller == null) return;
     
     final currentPos = _currentPosition;
@@ -251,7 +237,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
       
       final isWatched = currentPos >= widget.lesson.duration * 0.9;
       
-      // ✅ Wrap in try-catch to handle context issues
       try {
         context.read<CoursesBloc>().add(
           UpdateLessonProgress(
@@ -269,14 +254,11 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     }
   }
 
-  // ✅ Mark lesson as watched (≥90% completion)
   void _markAsWatched() {
-    // ✅ Check if widget is still mounted
     if (!mounted || widget.lesson.isWatched) return;
     
     debugPrint('✅ Marking lesson as watched');
     
-    // ✅ Wrap in try-catch to handle context issues
     try {
       context.read<CoursesBloc>().add(
         UpdateLessonProgress(
@@ -295,7 +277,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    // ✅ Use local state instead of checking controller during build
     final isFullscreen = _isFullscreen;
 
     return Container(
@@ -304,7 +285,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ✅ Video Player with edge buttons
             if (_errorMessage != null)
               _buildErrorView()
             else if (_isInitialized && _controller != null)
@@ -317,12 +297,10 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                         : constraints.maxWidth * 9 / 16,
                     child: Stack(
                       children: [
-                        // ✅ Video player (native controls)
                         Positioned.fill(
                           child: BetterPlayer(controller: _controller!),
                         ),
                         
-                        // ✅ Back button (top left, only when NOT fullscreen)
                         if (!isFullscreen)
                           Positioned(
                             top: 8,
@@ -343,7 +321,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                             ),
                           ),
                         
-                        // ✅ Previous button (left edge)
                         Positioned(
                           left: 8,
                           top: 0,
@@ -373,7 +350,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                           ),
                         ),
                         
-                        // ✅ Next button (right edge)
                         Positioned(
                           right: 8,
                           top: 0,
@@ -418,7 +394,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                 ),
               ),
             
-            // ✅ Lesson Description (only in portrait, not in fullscreen)
             if (!isLandscape && 
                 !isFullscreen &&
                 widget.lesson.description != null && 
@@ -454,7 +429,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
   }
 
 
-  // ✅ Error view
   Widget _buildErrorView() {
     final theme = Theme.of(context);
     
