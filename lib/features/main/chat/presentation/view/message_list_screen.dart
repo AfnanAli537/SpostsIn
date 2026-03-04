@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
 import 'package:sports_in/features/main/chat/presentation/view/chat_screen.dart';
 import 'package:sports_in/features/main/chat/presentation/view/create_group_screen.dart';
@@ -21,6 +23,9 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
   @override
   void initState() {
     super.initState();
+
+    context.read<ChatBloc>().add(HubConnectEvent());
+
     context.read<ChatBloc>().add(LoadChatsEvent());
     context.read<ChatBloc>().add(LoadContactsEvent());
 

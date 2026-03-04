@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signalr_netcore/signalr_client.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
 
 @lazySingleton
 class ChatHubService {
-  static const String _hubUrl = 'https://sportsin.runasp.net/chatHub';
+  static const String _hubUrl = 'https://sportsin.runasp.net/ChatHub';
 
   HubConnection? _hubConnection;
 
@@ -20,13 +22,16 @@ class ChatHubService {
   void Function(String userId, bool isTyping)? onUserTyping;
 
   // ─── Connection ───────────────────────────────────────────────────────────
-  Future<void> connect({required String accessToken}) async {
+  Future<void> connect() async {
     if (_hubConnection != null &&
         _hubConnection!.state == HubConnectionState.Connected) {
       log('🔌 ChatHub already connected');
       return;
     }
-
+    late SharedPref sharedPref;
+    var sharedPreferences = await SharedPreferences.getInstance();
+    sharedPref = SharedPref(sharedPreferences);
+    String? accessToken = sharedPref.getToken() ?? '';
     _hubConnection = HubConnectionBuilder()
         .withUrl(
           _hubUrl,

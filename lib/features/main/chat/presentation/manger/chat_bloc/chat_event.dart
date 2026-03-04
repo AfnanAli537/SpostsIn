@@ -62,8 +62,7 @@ class DeleteMessageEvent extends ChatEvent {
 // ─── Hub / Real-time Events ────────────────────────────────────────────────
 
 class HubConnectEvent extends ChatEvent {
-  final String accessToken;
-  HubConnectEvent(this.accessToken);
+  HubConnectEvent();
 }
 
 class HubDisconnectEvent extends ChatEvent {}

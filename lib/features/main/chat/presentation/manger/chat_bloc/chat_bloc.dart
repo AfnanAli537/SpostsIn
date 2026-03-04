@@ -287,7 +287,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     HubConnectEvent event,
     Emitter<ChatState> emit,
   ) async {
-    await _hub.connect(accessToken: event.accessToken);
+    await _hub.connect();
 
     // Register hub callbacks to dispatch Bloc events
     _hub.onReceiveMessage = (message) =>
