@@ -466,5 +466,10 @@
   "save_achievement_button": "Save Achievement",
   "please_select_date": "Please select a date",
   "achievement_added_success": "Achievement added successfully",
-  "achievement_updated_success": "Achievement updated successfully"
+  "achievement_updated_success": "Achievement updated successfully",
+
+  "messageSent": "Message sent successfully",
+  "failedToSendMessage": "Failed to send message. Please try again."
+
+  
 }

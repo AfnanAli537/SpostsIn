@@ -82,3 +82,23 @@ class DeletePost extends PostsEvent {
   @override
   List<Object?> get props => [postId];
 }
+
+// Add to posts_event.dart
+class TogglePostVisibility extends PostsEvent {
+  final String postId;
+  const TogglePostVisibility({required this.postId});
+}
+
+class FetchAllPosts extends PostsEvent {
+  final String? targetUserId;
+  final bool onlyInactive;
+  final int page;
+  final int size;
+  
+  const FetchAllPosts({
+    this.targetUserId,
+    this.onlyInactive = false,
+    required this.page,
+    required this.size,
+  });
+}

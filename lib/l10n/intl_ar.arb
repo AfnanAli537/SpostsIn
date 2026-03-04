@@ -406,5 +406,10 @@
   "save_achievement_button": "حفظ الإنجاز",
   "please_select_date": "يرجى اختيار تاريخ",
   "achievement_added_success": "تم إضافة الإنجاز بنجاح",
-  "achievement_updated_success": "تم تحديث الإنجاز بنجاح"
+  "achievement_updated_success": "تم تحديث الإنجاز بنجاح",
+
+
+  "messageSent": "تم إرسال الرسالة بنجاح",
+  "failedToSendMessage": "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى."
+
 }

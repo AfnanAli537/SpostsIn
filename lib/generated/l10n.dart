@@ -3252,6 +3252,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Message sent successfully`
+  String get messageSent {
+    return Intl.message(
+      'Message sent successfully',
+      name: 'messageSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to send message. Please try again.`
+  String get failedToSendMessage {
+    return Intl.message(
+      'Failed to send message. Please try again.',
+      name: 'failedToSendMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

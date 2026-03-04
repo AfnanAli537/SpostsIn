@@ -42,7 +42,10 @@ class AppDrawer extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.settings_outlined,
                   title: string.settings,
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, AppRoutes.settings);
+                  },
                   theme: theme,
                 ),
                 SizedBox(height: 12.h),
@@ -51,14 +54,20 @@ class AppDrawer extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.info_outline_rounded,
                   title: string.aboutUs,
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, AppRoutes.about);
+                  },
                   theme: theme,
                 ),
                 SizedBox(height: 12.h),
                 _buildMenuItem(
                   icon: Icons.call_outlined,
                   title: string.contactUs,
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, AppRoutes.contactUs);
+                  },
                   theme: theme,
                 ),
               ],
@@ -76,27 +85,27 @@ class AppDrawer extends StatelessWidget {
     return FutureBuilder<LoginResponse?>(
       future: getIt<SharedPref>().getUserFromPrefs(),
       builder: (context, snapshot) {
-        final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+        final bool isLoading =
+            snapshot.connectionState == ConnectionState.waiting;
         final user = snapshot.data;
 
         // Extract data or use defaults
-        String name = user?.name != null 
+        String name = user?.name != null
             ? user!.name!.firstName
             : (isLoading ? "Loading Name..." : "Guest User");
-            
-        String role = user?.userType ?? (isLoading ? "Loading Role..." : "No Role");
-        
-        // Note: Your SharedPref model doesn't currently save image URL. 
+
+        String role =
+            user?.userType ?? (isLoading ? "Loading Role..." : "No Role");
+
+        // Note: Your SharedPref model doesn't currently save image URL.
         // If you add it to SharedPref, you can retrieve it here.
-        String? imageUrl; 
+        String? imageUrl;
 
         return Container(
           width: double.infinity,
           decoration: BoxDecoration(
             color: theme.colorScheme.primary,
-            borderRadius: BorderRadius.only(
-              bottomRight: Radius.circular(80.r),
-            ),
+            borderRadius: BorderRadius.only(bottomRight: Radius.circular(80.r)),
           ),
           child: SafeArea(
             bottom: false,
@@ -114,9 +123,15 @@ class AppDrawer extends StatelessWidget {
                       backgroundImage: imageUrl != null && imageUrl.isNotEmpty
                           ? NetworkImage(imageUrl)
                           : null,
-                      backgroundColor: theme.colorScheme.onPrimary.withOpacity(0.1),
-                      child: (imageUrl == null || imageUrl.isEmpty) && !isLoading
-                          ? Icon(Icons.person, color: theme.colorScheme.onPrimary)
+                      backgroundColor: theme.colorScheme.onPrimary.withOpacity(
+                        0.1,
+                      ),
+                      child:
+                          (imageUrl == null || imageUrl.isEmpty) && !isLoading
+                          ? Icon(
+                              Icons.person,
+                              color: theme.colorScheme.onPrimary,
+                            )
                           : null,
                     ),
                     SizedBox(height: 16.h),
@@ -140,7 +155,9 @@ class AppDrawer extends StatelessWidget {
                           child: Text(
                             role,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimary.withOpacity(0.6),
+                              color: theme.colorScheme.onPrimary.withOpacity(
+                                0.6,
+                              ),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -159,7 +176,7 @@ class AppDrawer extends StatelessWidget {
   }
 
   // ... rest of the helper methods (_buildMenuItem, _buildThemeToggle, etc. remain the same)
-  
+
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
@@ -229,9 +246,9 @@ class AppDrawer extends StatelessWidget {
                 if (themeMode == ThemeMode.system) {
                   activeMode =
                       MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark
-                          ? ThemeMode.dark
-                          : ThemeMode.light;
+                          Brightness.dark
+                      ? ThemeMode.dark
+                      : ThemeMode.light;
                 }
 
                 return CustomAnimatedToggle<ThemeMode>(
@@ -261,7 +278,7 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context, ThemeData theme, S string) { 
+  Widget _buildLogoutButton(BuildContext context, ThemeData theme, S string) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: InkWell(
@@ -314,7 +331,8 @@ class AppDrawer extends StatelessWidget {
       isDestructive: true,
       onConfirm: () async {
         // await getIt<SharedPref>().clear(); // Use clear() to wipe all user data
-        await getIt<SharedPref>().clearToken(); // Use clear() to wipe all user data
+        await getIt<SharedPref>()
+            .clearToken(); // Use clear() to wipe all user data
         rootNavigator.pushNamedAndRemoveUntil(
           AppRoutes.login,
           (route) => false,

@@ -295,6 +295,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadVideo": MessageLookupByLibrary.simpleMessage(
       "Failed to load video",
     ),
+    "failedToSendMessage": MessageLookupByLibrary.simpleMessage(
+      "Failed to send message. Please try again.",
+    ),
     "failedToTranslate": MessageLookupByLibrary.simpleMessage(
       "Failed to translate",
     ),
@@ -407,6 +410,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "male": MessageLookupByLibrary.simpleMessage("Male"),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
       "Maximum file size is 200 MB",
+    ),
+    "messageSent": MessageLookupByLibrary.simpleMessage(
+      "Message sent successfully",
     ),
     "middleBlocker": MessageLookupByLibrary.simpleMessage("Middle Blocker"),
     "midfielder": MessageLookupByLibrary.simpleMessage("Midfielder"),

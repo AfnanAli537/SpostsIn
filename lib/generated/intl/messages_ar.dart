@@ -275,6 +275,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToLoadVideo": MessageLookupByLibrary.simpleMessage(
       "فشل تحميل الفيديو",
     ),
+    "failedToSendMessage": MessageLookupByLibrary.simpleMessage(
+      "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    ),
     "failedToTranslate": MessageLookupByLibrary.simpleMessage("فشلت الترجمة"),
     "female": MessageLookupByLibrary.simpleMessage("أنثى"),
     "field": MessageLookupByLibrary.simpleMessage("الحقل"),
@@ -384,6 +387,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "male": MessageLookupByLibrary.simpleMessage("ذكر"),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
       "الحد الأقصى لحجم الملف 200 ميجابايت",
+    ),
+    "messageSent": MessageLookupByLibrary.simpleMessage(
+      "تم إرسال الرسالة بنجاح",
     ),
     "middleBlocker": MessageLookupByLibrary.simpleMessage(
       "حائط صد وسطي (Middle Blocker)",

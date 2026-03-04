@@ -36,7 +36,6 @@ class Endpoints {
   
   static const String myActiveOpportunities = "/api/Opportunity/my-active";//(get) takes page and pageSize parameters and get list of my active opportunities 
   static const String getOpportunities = "/api/Opportunity/{targetUserId}/Target";
-  static const String getCourses = "/api/Profile/courses";//keep for the courses the mock data for now 
   
   // Achievements Endpoints
   static const String getAchievements = "/api/Achievements/user/{userId}";//(get) Achievements, have parameter for userId and also uses pagination, takes page and size

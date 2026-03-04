@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/features/auth_session/view/about_screen.dart';
+import 'package:sports_in/features/auth_session/view/account_switcher_screen.dart';
+import 'package:sports_in/features/auth_session/view/contact_us_screen.dart';
+import 'package:sports_in/features/auth_session/view/setting_screen.dart';
 import 'package:sports_in/features/login/data/repo/login_repo.dart';
 import 'package:sports_in/features/login/view/presentation/login_screen.dart';
 import 'package:sports_in/features/login/view_model/login_bloc/login_bloc.dart';
@@ -18,6 +22,7 @@ import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.d
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view/presentation/edit_profile_router_screen.dart';
+import 'package:sports_in/features/main/profile/view/presentation/posts/manage_posts_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
@@ -142,23 +147,21 @@ abstract class RoutesManager {
             child: ScoutRegisterScreen(),
           ),
         );
-      // case AppRoutes.mainLayout:
-      //   return CupertinoPageRoute(builder: (_) => CustomBottomNav());
+
       case AppRoutes.mainLayout:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
             create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
-            child: CustomBottomNav(), // your main layout
+            child: CustomBottomNav(),
           ),
         );
 
-      // User Profile Route
       case AppRoutes.userProfile:
         final userId = settings.arguments as String;
         return CupertinoPageRoute(
           builder: (_) => UserProfileScreen(userId: userId),
         );
-
+        
       case AppRoutes.editProfile:
         return CupertinoPageRoute(builder: (_) => EditProfileRouterScreen());
       case AppRoutes.profilePostsListScreen:
@@ -172,21 +175,40 @@ abstract class RoutesManager {
       case AppRoutes.profilePostsEditScreen:
         final args = settings.arguments as PostModel;
         return CupertinoPageRoute(
-          builder: (_) =>BlocProvider(
+          builder: (_) => BlocProvider(
             create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: UpdatePostScreen(post: args),
-          )
+          ),
         );
       case AppRoutes.opportunityEditScreen:
         final opportunityId = settings.arguments as String;
         return CupertinoPageRoute(
-          builder: (_) =>BlocProvider(
-            create: (_) => OpportunityBloc(opportunityRepo: getIt<OpportunityReposatory>()),
+          builder: (_) => BlocProvider(
+            create: (_) => OpportunityBloc(
+              opportunityRepo: getIt<OpportunityReposatory>(),
+            ),
             child: UpdateOpportunityScreen(opportunityId: opportunityId),
-          )
+          ),
         );
+      case AppRoutes.settings:
+        return CupertinoPageRoute(builder: (_) => const SettingsScreen());
+      case AppRoutes.contactUs:
+        return CupertinoPageRoute(builder: (_) => const ContactUsScreen());
+      case AppRoutes.about:
+        return CupertinoPageRoute(builder: (_) => const AboutScreen());
+      case AppRoutes.accountSwitcher:
+        return CupertinoPageRoute(
+          builder: (_) => const AccountSwitcherScreen(),
+        );
+      case AppRoutes.managePosts:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+            child: const ManagePostsScreen(),
+          ),
+        );
+      default:
+        return null;
     }
-
-    return null;
   }
 }
