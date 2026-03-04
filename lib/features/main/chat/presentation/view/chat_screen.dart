@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
-import 'package:sports_in/features/main/chat/view/widgets/chat_widget.dart';
-import 'package:sports_in/features/main/chat/view/widgets/theme.dart';
-import 'package:sports_in/features/main/chat/view_model/bloc/chat_bloc.dart';
+import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_widget.dart';
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 
 class ChatWindowScreen extends StatefulWidget {
   final ChatModel chat;
@@ -24,25 +23,24 @@ class _ChatWindowScreenState extends State<ChatWindowScreen> {
   String? _editingId;
   Timer? _typingTimer;
   bool _isTyping = false;
-String _currentUserName = 'Me';
-late final SharedPref _sharedPref;
-late String _currentUserId;
+  String _currentUserName = 'Me';
+  late final SharedPref _sharedPref;
+  late String _currentUserId;
   // For direct chat: other user's id
-  String? get _otherUserId =>
-    widget.chat.isGroup ? null : widget.chat.id;
+  String? get _otherUserId => widget.chat.isGroup ? null : widget.chat.id;
   // String? get _otherUserId =>
   //     widget.chat.isGroup ? null : widget.chat.members.firstOrNull?.userId;
-Future<void> _initSharedPref() async {
-  final prefs = await SharedPreferences.getInstance();
-  _sharedPref = SharedPref(prefs); // ✅ proper instance
-  await _loadCurrentUser();
-}
+  Future<void> _initSharedPref() async {
+    final prefs = await SharedPreferences.getInstance();
+    _sharedPref = SharedPref(prefs); // ✅ proper instance
+    await _loadCurrentUser();
+  }
+
   @override
   void initState() {
     super.initState();
     _initSharedPref();
     _loadMessages();
- _loadCurrentUser();
     // Pagination: load older messages on scroll to top
     _scrollController.addListener(() {
       if (_scrollController.position.pixels <= 100) {
@@ -50,30 +48,30 @@ Future<void> _initSharedPref() async {
       }
     });
   }
-Future<void> _loadCurrentUser() async {
-  final user = await _sharedPref.getUserFromPrefs();
-  if (user?.name != null) {
-    setState(() {
-      _currentUserName = '${user!.name!.firstName} ${user.name!.secondName}'.trim();
-    });
 
+  Future<void> _loadCurrentUser() async {
+    final user = await _sharedPref.getUserFromPrefs();
+    if (user?.name != null) {
+      setState(() {
+        _currentUserName = '${user!.name!.firstName} ${user.name!.secondName}'
+            .trim();
+      });
+    }
+    if (user?.userId != null) {
+      setState(() {
+        _currentUserId = user!.userId!;
+      });
+    }
   }
-   if (user?.userId != null) {
-    setState(() {
-      _currentUserId = user!.userId!;
-    });
 
+  void _loadMessages() {
+    context.read<ChatBloc>().add(
+      LoadMessagesEvent(
+        targetUserId: widget.chat.isGroup ? null : widget.chat.id,
+        groupId: widget.chat.isGroup ? widget.chat.id : null,
+      ),
+    );
   }
-}
-void _loadMessages() {
-  context.read<ChatBloc>().add(
-    LoadMessagesEvent(
-      targetUserId: widget.chat.isGroup ? null : widget.chat.id,
-      groupId: widget.chat.isGroup ? widget.chat.id : null,
-    ),
-  );
-}
-
 
   @override
   void dispose() {
@@ -81,7 +79,6 @@ void _loadMessages() {
     _editController.dispose();
     _scrollController.dispose();
     _typingTimer?.cancel();
-    _sendTypingIndicator(false);
     super.dispose();
   }
 
@@ -100,16 +97,18 @@ void _loadMessages() {
   void _sendMessage() {
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
-  final receiverId = widget.chat.isGroup ? null : widget.chat.id;
-  final groupId = widget.chat.isGroup ? widget.chat.id : null;
+    final receiverId = widget.chat.isGroup ? null : widget.chat.id;
+    final groupId = widget.chat.isGroup ? widget.chat.id : null;
 
-    context.read<ChatBloc>().add(SendMessageEvent(
-          content: text,
-          receiverId: receiverId,
-          groupId: groupId,
-          senderName:_currentUserName,
-          senderId: _currentUserId,
-        ));
+    context.read<ChatBloc>().add(
+      SendMessageEvent(
+        content: text,
+        receiverId: receiverId,
+        groupId: groupId,
+        senderName: _currentUserName,
+        senderId: _currentUserId,
+      ),
+    );
 
     _inputController.clear();
     _sendTypingIndicator(false);
@@ -131,9 +130,13 @@ void _loadMessages() {
 
   void _sendTypingIndicator(bool isTyping) {
     final targetId = _otherUserId ?? widget.chat.id;
-    context.read<ChatBloc>().add(
-          SendTypingEvent(targetId: targetId, isTyping: isTyping),
-        );
+    try {
+      context.read<ChatBloc>().add(
+            SendTypingEvent(targetId: targetId, isTyping: isTyping),
+          );
+    } catch (_) {
+      // If Bloc instance doesn't have handler (stale instance), ignore safely.
+    }
   }
 
   void _notifySeen() {
@@ -141,8 +144,8 @@ void _loadMessages() {
       context.read<ChatBloc>().add(NotifySeenEvent(senderId: _otherUserId!));
     } else if (widget.chat.isGroup) {
       context.read<ChatBloc>().add(
-            NotifySeenEvent(senderId: '', groupId: widget.chat.id),
-          );
+        NotifySeenEvent(senderId: '', groupId: widget.chat.id),
+      );
     }
   }
 
@@ -155,10 +158,12 @@ void _loadMessages() {
 
   void _saveEdit() {
     if (_editingId == null || _editController.text.trim().isEmpty) return;
-    context.read<ChatBloc>().add(EditMessageEvent(
-          messageId: _editingId!,
-          newContent: _editController.text.trim(),
-        ));
+    context.read<ChatBloc>().add(
+      EditMessageEvent(
+        messageId: _editingId!,
+        newContent: _editController.text.trim(),
+      ),
+    );
     setState(() => _editingId = null);
   }
 
@@ -173,19 +178,23 @@ void _loadMessages() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ChatColors.background,
+      backgroundColor: const Color(0xFFF7F8FC),
       appBar: _buildAppBar(),
       body: BlocConsumer<ChatBloc, ChatState>(
         listenWhen: (p, c) =>
-            p.messages.length != c.messages.length || p.sendError != c.sendError,
+            p.messages.length != c.messages.length ||
+            p.sendError != c.sendError,
         listener: (_, state) {
           if (state.sendError != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.sendError!), backgroundColor: ChatColors.danger),
+              SnackBar(
+                content: Text(state.sendError!),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
             );
           }
           // Scroll to bottom on new message
-          if (state.messages.length > 0) _scrollToBottom();
+          if (state.messages.isNotEmpty) _scrollToBottom();
         },
         builder: (_, state) => Column(
           children: [
@@ -202,34 +211,36 @@ void _loadMessages() {
 
   String _getTypingUserName(ChatState state) {
     final userId = state.typingInfo?.userId ?? '';
-    return widget.chat.members
-            .firstWhere((m) => m.userId == userId,
-                orElse: () => ChatMemberModel(userId: '', userName: 'Someone', isAdmin: true))
-            .userName
-            .split(' ')
-            .first;
+    final member = widget.chat.members.firstWhere(
+      (m) => m.userId == userId,
+      orElse: () =>
+          const ChatMemberModel(userId: '', userName: 'Someone', isAdmin: true),
+    );
+    return member.userName.split(' ').first;
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: ChatColors.surface,
+      backgroundColor: Colors.white,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       leadingWidth: 40,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_rounded, size: 18, color: ChatColors.primary),
+        icon: const Icon(
+          Icons.arrow_back_ios_rounded,
+          size: 18,
+          color: Colors.blue,
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       title: BlocBuilder<ChatBloc, ChatState>(
-        buildWhen: (p, c) => p.onlineStatuses != c.onlineStatuses,
         builder: (_, state) {
-          final isOnline = !widget.chat.isGroup &&
-              state.isUserOnline(_otherUserId ?? '');
+          final isOnline = !widget.chat.isGroup && widget.chat.isOnline;
           return Row(
             children: [
               ChatAvatar(
                 imageUrl: widget.chat.groupPhoto,
-                name: widget.chat.title!,
+                name: widget.chat.title ?? 'Chat',
                 size: 38,
                 showOnline: isOnline,
               ),
@@ -238,24 +249,35 @@ void _loadMessages() {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.chat.title!,
+                    widget.chat.title ?? 'Chat',
                     style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w800, color: ChatColors.textPrimary),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
+                    ),
                   ),
-                  // Show "typing..." or online status
                   BlocBuilder<ChatBloc, ChatState>(
                     buildWhen: (p, c) => p.typingInfo != c.typingInfo,
                     builder: (_, state) {
                       if (state.typingInfo?.isTyping == true) {
-                        return const Text('typing...',
-                            style: TextStyle(
-                                fontSize: 11,
-                                color: ChatColors.primary,
-                                fontStyle: FontStyle.italic));
+                        return const Text(
+                          'typing...',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.blue,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        );
                       }
                       if (!widget.chat.isGroup && isOnline) {
-                        return const Text('Online',
-                            style: TextStyle(fontSize: 11, color: ChatColors.online, fontWeight: FontWeight.w600));
+                        return const Text(
+                          'Online',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
                       }
                       return const SizedBox.shrink();
                     },
@@ -268,13 +290,13 @@ void _loadMessages() {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.more_vert_rounded, color: ChatColors.textMuted),
+          icon: const Icon(Icons.more_vert_rounded, color: Colors.grey),
           onPressed: () {},
         ),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: ChatColors.border),
+        child: Container(height: 1, color: Color(0xFFEEF0F5)),
       ),
     );
   }
@@ -289,13 +311,20 @@ void _loadMessages() {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 40, color: ChatColors.danger),
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: Colors.redAccent,
+            ),
             const SizedBox(height: 8),
-            Text(state.messagesError!, style: const TextStyle(color: ChatColors.textSecondary)),
+            Text(
+              state.messagesError!,
+              style: const TextStyle(color: Colors.grey),
+            ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _loadMessages,
-              style: ElevatedButton.styleFrom(backgroundColor: ChatColors.primary),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               child: const Text('Retry'),
             ),
           ],
@@ -311,8 +340,7 @@ void _loadMessages() {
       child: ListView.builder(
         controller: _scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-        itemCount: state.messages.length +
-            (state.messagesLoadingMore ? 1 : 0),
+        itemCount: state.messages.length + (state.messagesLoadingMore ? 1 : 0),
         itemBuilder: (_, i) {
           // Loading more indicator at top
           if (state.messagesLoadingMore && i == 0) {
@@ -334,22 +362,25 @@ void _loadMessages() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
-ChatAvatar(
-  imageUrl: msg.senderAvatar,
-  name: msg.senderName.isNotEmpty ? msg.senderName : 'User',
-  size: 28,
-),
+            ChatAvatar(
+              imageUrl: msg.senderAvatar,
+              name: msg.senderName.isNotEmpty ? msg.senderName : 'User',
+              size: 28,
+            ),
             // ChatAvatar(imageUrl: msg.senderAvatar, name: msg.senderName, size: 28),
             const SizedBox(width: 8),
           ],
           Flexible(
             child: ConstrainedBox(
-              constraints:
-                  BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.72),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.72,
+              ),
               child: _editingId == msg.id
                   ? _buildEditBubble()
                   : _buildNormalBubble(msg, isMe),
@@ -369,12 +400,12 @@ ChatAvatar(
         decoration: BoxDecoration(
           gradient: isMe
               ? const LinearGradient(
-                  colors: [ChatColors.myBubbleStart, ChatColors.myBubbleEnd],
+                  colors: [Colors.blue, Colors.indigo],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
               : null,
-          color: isMe ? null : ChatColors.surface,
+          color: isMe ? null : Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
@@ -384,7 +415,7 @@ ChatAvatar(
           boxShadow: [
             BoxShadow(
               color: isMe
-                  ? ChatColors.primary.withOpacity(0.25)
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.25)
                   : Colors.black.withOpacity(0.06),
               blurRadius: 8,
               offset: const Offset(0, 3),
@@ -401,27 +432,46 @@ ChatAvatar(
                 child: Text(
                   msg.senderName,
                   style: TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.w700, color: ChatColors.primary),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blue,
+                  ),
                 ),
               ),
-            Text(msg.content,
-                style: isMe ? ChatTextStyles.myBubbleText : ChatTextStyles.theirBubbleText),
+            Text(
+              msg.content,
+              style: TextStyle(
+                fontSize: 14,
+                color: isMe ? Colors.white : Colors.black87,
+                height: 1.45,
+              ),
+            ),
             const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (msg.isEdited)
-                  Text('edited ',
-                      style: TextStyle(
-                          fontSize: 10,
-                          color: isMe ? Colors.white60 : ChatColors.textMuted)),
-                Text(_formatTime(msg.sentAt),
+                  Text(
+                    'edited ',
                     style: TextStyle(
-                        fontSize: 10,
-                        color: isMe ? Colors.white70 : ChatColors.textMuted)),
+                      fontSize: 10,
+                      color: isMe ? Colors.white60 : Colors.grey,
+                    ),
+                  ),
+                Text(
+                  _formatTime(msg.sentAt),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isMe ? Colors.white70 : Colors.grey,
+                  ),
+                ),
                 if (isMe) ...[
                   const SizedBox(width: 3),
-                  Icon(Icons.done_all_rounded, size: 14, color: Colors.white.withOpacity(0.8)),
+                  Icon(
+                    Icons.done_all_rounded,
+                    size: 14,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
                 ],
               ],
             ),
@@ -438,17 +488,22 @@ ChatAvatar(
           child: TextField(
             controller: _editController,
             autofocus: true,
-            style: const TextStyle(fontSize: 14, color: ChatColors.textPrimary),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
             decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
               filled: true,
               fillColor: Colors.white,
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: ChatColors.primary, width: 1.5)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: ChatColors.primary, width: 2)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: Colors.blue, width: 2),
+              ),
             ),
           ),
         ),
@@ -457,10 +512,18 @@ ChatAvatar(
           onTap: _saveEdit,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration:
-                BoxDecoration(color: ChatColors.primary, borderRadius: BorderRadius.circular(12)),
-            child: const Text('Save',
-                style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700)),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 6),
@@ -469,8 +532,14 @@ ChatAvatar(
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-                color: ChatColors.border, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.close_rounded, size: 14, color: ChatColors.textSecondary),
+              color: const Color(0xFFEEF0F5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 14,
+              color: Colors.grey,
+            ),
           ),
         ),
       ],
@@ -480,15 +549,18 @@ ChatAvatar(
   Widget _buildInputBar(ChatState state) {
     return Container(
       decoration: const BoxDecoration(
-        color: ChatColors.surface,
-        border: Border(top: BorderSide(color: ChatColors.border)),
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xFFEEF0F5))),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.emoji_emotions_outlined,
-                color: ChatColors.textMuted, size: 22),
+            icon: const Icon(
+              Icons.emoji_emotions_outlined,
+              color: Colors.grey,
+              size: 22,
+            ),
             onPressed: () {},
           ),
           Expanded(
@@ -496,24 +568,33 @@ ChatAvatar(
               controller: _inputController,
               onChanged: _onTextChanged,
               onSubmitted: (_) => _sendMessage(),
-              style: const TextStyle(fontSize: 14, color: ChatColors.textPrimary),
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
               decoration: InputDecoration(
                 hintText: 'Type a message...',
-                hintStyle: ChatTextStyles.inputHint,
+                hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
                 filled: true,
-                fillColor: ChatColors.background,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                fillColor: Color(0xFFF7F8FC),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 11,
+                ),
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: ChatColors.border)),
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: const BorderSide(color: Color(0xFFEEF0F5)),
+                ),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: ChatColors.primary, width: 1.5)),
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+                ),
               ),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.attach_file_rounded, color: ChatColors.textMuted, size: 22),
+            icon: const Icon(
+              Icons.attach_file_rounded,
+              color: Colors.grey,
+              size: 22,
+            ),
             onPressed: () {},
           ),
           const SizedBox(width: 4),
@@ -532,26 +613,35 @@ ChatAvatar(
                     shape: BoxShape.circle,
                     gradient: hasText
                         ? const LinearGradient(
-                            colors: [ChatColors.myBubbleStart, ChatColors.myBubbleEnd],
+                            colors: [Colors.blue, Colors.indigo],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           )
                         : null,
-                    color: hasText ? null : ChatColors.border,
+                    color: hasText ? null : Color(0xFFEEF0F5),
                     boxShadow: hasText
-                        ? [BoxShadow(
-                            color: ChatColors.primary.withOpacity(0.35),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4))]
+                        ? [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.35),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
                         : null,
                   ),
                   child: isSending
                       ? const Padding(
                           padding: EdgeInsets.all(12),
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
-                      : Icon(Icons.send_rounded,
-                          size: 18, color: hasText ? Colors.white : ChatColors.textMuted),
+                      : Icon(
+                          Icons.send_rounded,
+                          size: 18,
+                          color: hasText ? Colors.white : Colors.grey,
+                        ),
                 ),
               );
             },
@@ -568,7 +658,9 @@ ChatAvatar(
       builder: (_) => Container(
         margin: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color: ChatColors.surface, borderRadius: BorderRadius.circular(20)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -577,22 +669,24 @@ ChatAvatar(
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                  color: ChatColors.border, borderRadius: BorderRadius.circular(2)),
+                color: Color(0xFFEEF0F5),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
             _OptionTile(
               icon: Icons.edit_rounded,
               label: 'Edit',
-              color: ChatColors.textPrimary,
+              color: Colors.black87,
               onTap: () {
                 Navigator.pop(context);
                 _startEdit(msg);
               },
             ),
-            Divider(height: 1, color: ChatColors.border),
+            const Divider(height: 1, color: Color(0xFFEEF0F5)),
             _OptionTile(
               icon: Icons.delete_outline_rounded,
               label: 'Delete',
-              color: ChatColors.danger,
+              color: Colors.redAccent,
               onTap: () {
                 Navigator.pop(context);
                 _deleteMessage(msg.id);
@@ -619,7 +713,10 @@ class _TypingIndicator extends StatelessWidget {
       child: Text(
         '$userName is typing...',
         style: const TextStyle(
-            fontSize: 12, color: ChatColors.primary, fontStyle: FontStyle.italic),
+          fontSize: 12,
+          color: Colors.blue,
+          fontStyle: FontStyle.italic,
+        ),
       ),
     );
   }
@@ -631,8 +728,12 @@ class _OptionTile extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _OptionTile(
-      {required this.icon, required this.label, required this.color, required this.onTap});
+  const _OptionTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -644,8 +745,14 @@ class _OptionTile extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 14),
-            Text(label,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: color)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
           ],
         ),
       ),

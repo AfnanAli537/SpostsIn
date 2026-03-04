@@ -2,21 +2,21 @@ part of 'chat_bloc.dart';
 
 sealed class ChatEvent {}
 
-// ─── Chats List Events ────────────────────────────────────────────────────────
+// ─── Chats ────────────────────────────────────────────────────────────────
 
 class LoadChatsEvent extends ChatEvent {
   final bool isRefresh;
   LoadChatsEvent({this.isRefresh = false});
 }
 
+class LoadMoreChatsEvent extends ChatEvent {}
+
 class SearchChatsEvent extends ChatEvent {
   final String query;
   SearchChatsEvent(this.query);
 }
 
-class LoadMoreChatsEvent extends ChatEvent {}
-
-// ─── Messages Events ──────────────────────────────────────────────────────────
+// ─── Messages ──────────────────────────────────────────────────────────────
 
 class LoadMessagesEvent extends ChatEvent {
   final String? targetUserId;
@@ -24,7 +24,11 @@ class LoadMessagesEvent extends ChatEvent {
   LoadMessagesEvent({this.targetUserId, this.groupId});
 }
 
-class LoadMoreMessagesEvent extends ChatEvent {}
+class LoadMoreMessagesEvent extends ChatEvent {
+  final String? targetUserId;
+  final String? groupId;
+  LoadMoreMessagesEvent({this.targetUserId, this.groupId});
+}
 
 class SendMessageEvent extends ChatEvent {
   final String content;
@@ -55,7 +59,7 @@ class DeleteMessageEvent extends ChatEvent {
   DeleteMessageEvent(this.messageId);
 }
 
-// ─── Real-time (SignalR) Events ───────────────────────────────────────────────
+// ─── Hub / Real-time Events ────────────────────────────────────────────────
 
 class HubConnectEvent extends ChatEvent {
   final String accessToken;
@@ -66,7 +70,7 @@ class HubDisconnectEvent extends ChatEvent {}
 
 class HubMessageReceivedEvent extends ChatEvent {
   final MessageModel message;
-  HubMessageReceivedEvent(this.message);
+  HubMessageReceivedEvent({required this.message});
 }
 
 class HubMessageEditedEvent extends ChatEvent {
@@ -77,7 +81,7 @@ class HubMessageEditedEvent extends ChatEvent {
 
 class HubMessageDeletedEvent extends ChatEvent {
   final String messageId;
-  HubMessageDeletedEvent(this.messageId);
+  HubMessageDeletedEvent({required this.messageId});
 }
 
 class HubMessageStatusChangedEvent extends ChatEvent {
@@ -109,7 +113,7 @@ class HubUserTypingEvent extends ChatEvent {
   HubUserTypingEvent({required this.userId, required this.isTyping});
 }
 
-// ─── Hub Actions (outgoing) ───────────────────────────────────────────────────
+// ─── Hub Outgoing Actions ─────────────────────────────────────────────────
 
 class NotifySeenEvent extends ChatEvent {
   final String senderId;
@@ -123,17 +127,16 @@ class SendTypingEvent extends ChatEvent {
   SendTypingEvent({required this.targetId, required this.isTyping});
 }
 
-// ─── Contacts Events ──────────────────────────────────────────────────────────
+// ─── Contacts & Groups ───────────────────────────────────────────────────
 
 class LoadContactsEvent extends ChatEvent {}
-
-// ─── Create Group Events ──────────────────────────────────────────────────────
 
 class CreateGroupEvent extends ChatEvent {
   final String title;
   final List<String> memberIds;
   final String? description;
   final String? groupPhoto;
+
   CreateGroupEvent({
     required this.title,
     required this.memberIds,

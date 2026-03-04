@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sports_in/features/main/chat/view/widgets/theme.dart';
-
 
 // ─── Chat Avatar ──────────────────────────────────────────────────────────────
 
@@ -20,9 +18,12 @@ class ChatAvatar extends StatelessWidget {
 
   Color _colorFromName(String name) {
     final colors = [
-      const Color(0xFF2ECC71), const Color(0xFF3498DB),
-      const Color(0xFF9B59B6), const Color(0xFFE67E22),
-      const Color(0xFF1ABC9C), const Color(0xFFE74C3C),
+      Colors.green,
+      Colors.blue,
+      Colors.deepPurple,
+      Colors.orange,
+      Colors.teal,
+      Colors.red,
     ];
     return colors[(name.codeUnitAt(0)) % colors.length];
   }
@@ -62,7 +63,7 @@ class ChatAvatar extends StatelessWidget {
               width: size * 0.24,
               height: size * 0.24,
               decoration: BoxDecoration(
-                color: ChatColors.online,
+                color: Colors.green,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 1.5),
               ),
@@ -73,15 +74,15 @@ class ChatAvatar extends StatelessWidget {
   }
 
   Widget _buildInitials() => Center(
-        child: Text(
-          _initials(name),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: size * 0.35,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      );
+    child: Text(
+      _initials(name),
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: size * 0.35,
+        fontWeight: FontWeight.w800,
+      ),
+    ),
+  );
 }
 
 // ─── Chat Search Bar ──────────────────────────────────────────────────────────
@@ -100,21 +101,32 @@ class ChatSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: ChatColors.background,
+        color: theme.inputDecorationTheme.fillColor ??
+            theme.colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: ChatColors.border),
+        border: Border.all(
+          color: theme.dividerColor.withOpacity(0.4),
+        ),
       ),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: const TextStyle(fontSize: 14, color: ChatColors.textPrimary),
+        style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: ChatTextStyles.inputHint,
-          prefixIcon: const Icon(Icons.search_rounded, color: ChatColors.textMuted, size: 20),
-          border: InputBorder.none,
+          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 14,
+            color: theme.hintColor,
+          ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: Colors.grey,
+            size: 20,
+          ),
+            border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 13),
         ),
       ),
@@ -133,12 +145,16 @@ class UnreadBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: ChatColors.unreadBadge,
+        color: Colors.redAccent,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         count > 99 ? '99+' : '$count',
-        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+        ),
       ),
     );
   }
@@ -153,7 +169,15 @@ class SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
-        child: Text(text.toUpperCase(), style: ChatTextStyles.sectionLabel),
+        child: Text(
+          text.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: Colors.grey,
+            letterSpacing: 0.6,
+          ),
+        ),
       );
 }
 
@@ -183,14 +207,20 @@ class PrimaryGradientButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           gradient: enabled
               ? const LinearGradient(
-                  colors: [ChatColors.myBubbleStart, ChatColors.myBubbleEnd],
+                  colors: [Colors.blue, Colors.indigo],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 )
               : null,
           color: enabled ? null : const Color(0xFFD0D3E0),
           boxShadow: enabled
-              ? [BoxShadow(color: ChatColors.primary.withOpacity(0.35), blurRadius: 16, offset: const Offset(0, 6))]
+              ? [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.35),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
               : null,
         ),
         child: Center(
@@ -229,34 +259,62 @@ class LabeledTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text(label.toUpperCase(), style: ChatTextStyles.sectionLabel),
+            Text(
+              label.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: theme.hintColor,
+                letterSpacing: 0.6,
+              ),
+            ),
             if (required)
-              const Text(' *', style: TextStyle(color: ChatColors.danger, fontSize: 12, fontWeight: FontWeight.w700)),
+              const Text(
+                ' *',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           maxLines: maxLines,
-          style: const TextStyle(fontSize: 14, color: ChatColors.textPrimary),
+          style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: ChatTextStyles.inputHint,
+            hintStyle: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: 14,
+              color: theme.hintColor,
+            ),
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 13,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: ChatColors.border, width: 1.5),
+              borderSide: BorderSide(
+                color: theme.dividerColor.withOpacity(0.4),
+                width: 1.5,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: ChatColors.primary, width: 1.5),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+                width: 1.5,
+              ),
             ),
           ),
         ),

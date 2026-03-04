@@ -1,19 +1,16 @@
-
-
-
-// ─── Message Model ────────────────────────────────────────────────────────────
-
+// ─── Message Model ───────────────────────────────────────────────
 class MessageModel {
   final String id;
   final String senderId;
   final String senderName;
   final String? senderAvatar;
-  String content;         // ✅ non-final → mutable for optimistic edit
+  String content;
   final String? attachmentUrl;
   final DateTime sentAt;
-  bool isEdited;          // ✅ non-final → mutable for optimistic edit
-  final bool isDeleted;
+  bool isEdited;
+  bool isDeleted;
   final bool isMe;
+  final int? status;
 
   MessageModel({
     required this.id,
@@ -22,45 +19,109 @@ class MessageModel {
     this.senderAvatar,
     required this.content,
     this.attachmentUrl,
-   required this.isMe,
     required this.sentAt,
-    required this.isEdited,
-    required this.isDeleted,
+    this.isEdited = false,
+    this.isDeleted = false,
+    this.isMe = false,
+    this.status,
   });
 
-  factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
-        id: json['id']?.toString() ?? '',
-        senderId: json['senderId']?.toString() ?? '',
-        senderName: json['senderName'] ?? '',
-        senderAvatar: json['senderAvatar'],
-        content: json['content'] ?? '',
-        attachmentUrl: json['attachmentUrl'],
-        sentAt: DateTime.tryParse(json['sentAt'] ?? '') ?? DateTime.now(),
-        isEdited: json['isEdited'] ?? false,
-        isDeleted: json['isDeleted'] ?? false,
-        isMe: json['isMe']??false
-      );
+  factory MessageModel.fromJson(Map<String, dynamic> json) {
+    return MessageModel(
+      id: json['id']?.toString() ?? '',
+      senderId: json['senderId']?.toString() ?? '',
+      senderName: json['senderName'] ?? '',
+      senderAvatar: json['senderAvatar'],
+      content: json['content'] ?? '',
+      attachmentUrl: json['attachmentUrl'],
+      sentAt: DateTime.tryParse(json['sentAt'] ?? '') ?? DateTime.now(),
+      isEdited: json['isEdited'] ?? false,
+      isDeleted: json['isDeleted'] ?? false,
+      isMe: json['isMe'] ?? false,
+      status: json['status'],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'senderId': senderId,
-        'senderName': senderName,
-        'senderAvatar': senderAvatar,
-        'content': content,
-        'attachmentUrl': attachmentUrl,
-        'sentAt': sentAt.toIso8601String(),
-        'isEdited': isEdited,
-        'isDeleted': isDeleted,
-      };
+    'id': id,
+    'senderId': senderId,
+    'senderName': senderName,
+    'senderAvatar': senderAvatar,
+    'content': content,
+    'attachmentUrl': attachmentUrl,
+    'sentAt': sentAt.toIso8601String(),
+    'isEdited': isEdited,
+    'isDeleted': isDeleted,
+    'isMe': isMe,
+    'status': status,
+  };
+
+  MessageModel copyWith({String? content, bool? isEdited, bool? isDeleted}) {
+    return MessageModel(
+      id: id,
+      senderId: senderId,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: content ?? this.content,
+      attachmentUrl: attachmentUrl,
+      sentAt: sentAt,
+      isEdited: isEdited ?? this.isEdited,
+      isDeleted: isDeleted ?? this.isDeleted,
+      isMe: isMe,
+      status: status,
+    );
+  }
 }
 
-// ─── Chat Member Model ────────────────────────────────────────────────────────
+// ─── Chat Model ───────────────────────────────────────────────
+class ChatModel {
+  final String id;
+  final String? title;
+  final String? groupPhoto;
+  final bool isGroup;
+  final List<ChatMemberModel> members;
+  final String? lastMessage;
+  final DateTime? lastMessageTime;
+  final int unreadCount;
+  final bool isOnline;
+  final int? lastMessageStatus;
 
+  ChatModel({
+    required this.id,
+    this.title,
+    this.groupPhoto,
+    required this.isGroup,
+    required this.members,
+    this.lastMessage,
+    this.lastMessageTime,
+    required this.unreadCount,
+    this.isOnline = false,
+    this.lastMessageStatus,
+  });
+
+  factory ChatModel.fromJson(Map<String, dynamic> json) {
+    return ChatModel(
+      id: json['targetId']?.toString() ?? '',
+      title: json['name'] ?? '',
+      groupPhoto: json['imageUrl'],
+      isGroup: json['isGroup'] ?? false,
+      members: [], // API does not return members here
+      lastMessage: json['lastMessage']?.toString(),
+      lastMessageTime:
+          DateTime.tryParse(json['lastMessageTime'] ?? '') ?? DateTime.now(),
+      unreadCount: json['unreadCount'] ?? 0,
+      isOnline: json['isOnline'] ?? false,
+      lastMessageStatus: json['lastMessageStatus'],
+    );
+  }
+}
+
+// ─── Chat Member Model ─────────────────────────────────────────
 class ChatMemberModel {
   final String userId;
   final String userName;
   final String? avatar;
-  final String? bio;      // ✅ added — used in contacts list & create group
+  final String? bio;
   final bool isAdmin;
 
   const ChatMemberModel({
@@ -68,108 +129,91 @@ class ChatMemberModel {
     required this.userName,
     this.avatar,
     this.bio,
-    this.isAdmin = false, // ✅ default false — no need to pass it every time
+    this.isAdmin = false,
   });
 
-  factory ChatMemberModel.fromJson(Map<String, dynamic> json) => ChatMemberModel(
-        userId: json['userId']?.toString() ?? '',
-        userName: json['userName'] ?? '',
-        avatar: json['avatar'],
-        bio: json['bio'],
-        isAdmin: json['isAdmin'] ?? false,
-      );
+  factory ChatMemberModel.fromJson(Map<String, dynamic> json) {
+    return ChatMemberModel(
+      userId: json['userId']?.toString() ?? '',
+      userName: json['userName'] ?? '',
+      avatar: json['avatar'],
+      bio: json['bio'],
+      isAdmin: json['isAdmin'] ?? false,
+    );
+  }
 }
 
-// ✅ ContactModel is now a typedef alias for ChatMemberModel
-// This fixes: "The element type 'ContactModel' can't be assigned to 'ChatMemberModel'"
-// All existing ContactModel usage keeps working without any changes
-typedef ContactModel = ChatMemberModel;
-
-// ─── Chat / Conversation Model ────────────────────────────────────────────────
-
-class ChatModel {
+// ─── Contacts Model ─────────────────────────────────────────────
+class ContactModel {
   final String id;
-  final String? title;
-  final String? description;
-  final bool isGroup;
-  final String? groupPhoto;
-  final List<ChatMemberModel> members;
-  final MessageModel? lastMessage;
-  final int unreadCount;
-  final DateTime? updatedAt;
+  final String name;
+  final String? avatar;
+  final String? bio;
+  final bool isOnline;
 
-  ChatModel({                   // ✅ removed const — List can't always be const
+  ContactModel({
     required this.id,
-    this.title,
-    this.description,
-    required this.isGroup,
-    this.groupPhoto,
-    required this.members,
-    this.lastMessage,
-    required this.unreadCount,
-    this.updatedAt,
+    required this.name,
+    this.avatar,
+    this.bio,
+    this.isOnline = false,
   });
 
-  // ✅ Safe display name — no more widget.chat.title! crashes
-  String get displayName =>
-      isGroup ? (title ?? 'Group') : (members.firstOrNull?.userName ?? '');
-
-  // ✅ Safe display avatar
-  String? get displayAvatar =>
-      isGroup ? groupPhoto : members.firstOrNull?.avatar;
-factory ChatModel.fromJson(Map<String, dynamic> json) {
-  final lastMsg = json['lastMessage'];
-
-  MessageModel? parsedLastMessage;
-
-  if (lastMsg is Map<String, dynamic>) {
-    parsedLastMessage = MessageModel.fromJson(lastMsg);
-  } else if (lastMsg is String) {
-    parsedLastMessage = MessageModel(
-      id: '',
-      senderId: json['targetId'] ?? '',
-    senderName: json['senderName'] ?? 'User',
-      content: lastMsg,
-      sentAt: DateTime.tryParse(json['lastMessageTime'] ?? '') ?? DateTime.now(),
-      isEdited: false,
-      isDeleted: false,
-      isMe: json['isMe']??false
+  factory ContactModel.fromJson(Map<String, dynamic> json) {
+    return ContactModel(
+      id: json['userId']?.toString() ?? json['targetId']?.toString() ?? '',
+      name: json['userName'] ?? json['name'] ?? '',
+      avatar: json['avatar'] ?? json['imageUrl'],
+      bio: json['bio'] ?? json['description'] ?? '',
+      isOnline: json['isOnline'] ?? false,
     );
   }
 
-  return ChatModel(
-    id: json['targetId'] ?? '',
-    title: json['name'] ?? 'Chat',
-    // title: json['name'],
-    description: null,
-    isGroup: json['isGroup'] ?? false,
-    groupPhoto: json['imageUrl'],
-    members: [],
-    lastMessage: parsedLastMessage,
-    unreadCount: json['unreadCount'] ?? 0,
-    updatedAt: DateTime.tryParse(json['lastMessageTime'] ?? ''),
-  );
-}
-  // factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
-  //       id: json['id']?.toString() ?? '',
-  //       title: json['title'],
-  //       description: json['description'],
-  //       isGroup: json['isGroup'] ?? false,
-  //       groupPhoto: json['groupPhoto'],
-  //       members: (json['members'] as List? ?? [])
-  //           .map((e) => ChatMemberModel.fromJson(e))
-  //           .toList(),
-  //       lastMessage: json['lastMessage'] != null
-  //           ? MessageModel.fromJson(json['lastMessage'])
-  //           : null,
-  //       unreadCount: json['unreadCount'] ?? 0,
-  //       updatedAt: DateTime.tryParse(json['updatedAt'] ?? ''),
-  //     );
-
+  Map<String, dynamic> toJson() => {
+    'userId': id,
+    'userName': name,
+    'avatar': avatar,
+    'bio': bio,
+    'isOnline': isOnline,
+  };
 }
 
-// ─── Paginated Responses ──────────────────────────────────────────────────────
+//  ─── Search Result Model ───────────────────────────────────────
+class SearchResultModel {
+  final String id;
+  final String title;
+  final String? imageUrl;
+  final String type;
+  final bool isOnline;
 
+  SearchResultModel({
+    required this.id,
+    required this.title,
+    this.imageUrl,
+    required this.type,
+    this.isOnline = false,
+  });
+
+  factory SearchResultModel.fromJson(Map<String, dynamic> json) {
+    return SearchResultModel(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      imageUrl: json['imageUrl'],
+      type: json['type'] ?? 'User',
+      isOnline: json['isOnline'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'imageUrl': imageUrl,
+    'type': type,
+    'isOnline': isOnline,
+  };
+}
+
+// ─── Paginated Response ───────────────────────────────────────
 class PaginatedChatsResponse {
   final List<ChatModel> items;
   final int totalCount;
@@ -179,7 +223,7 @@ class PaginatedChatsResponse {
   final bool hasNextPage;
   final bool hasPreviousPage;
 
-  const PaginatedChatsResponse({
+  PaginatedChatsResponse({
     required this.items,
     required this.totalCount,
     required this.pageNumber,
@@ -188,45 +232,20 @@ class PaginatedChatsResponse {
     required this.hasNextPage,
     required this.hasPreviousPage,
   });
-//   factory PaginatedChatsResponse.fromJson(dynamic json) {
-//   if (json is List) {
-//     return PaginatedChatsResponse(
-//       items: json.map((e) => ChatModel.fromJson(e)).toList(),
-//       totalCount: json.length,
-//       pageNumber: 1,
-//       pageSize: json.length,
-//       totalPages: 1,
-//       hasNextPage: false,
-//       hasPreviousPage: false,
-//     );
-//   }
 
-//   return PaginatedChatsResponse(
-//     items: (json['items'] as List? ?? [])
-//         .map((e) => ChatModel.fromJson(e))
-//         .toList(),
-//     totalCount: json['totalCount'] ?? 0,
-//     pageNumber: json['pageNumber'] ?? 1,
-//     pageSize: json['pageSize'] ?? 10,
-//     totalPages: json['totalPages'] ?? 0,
-//     hasNextPage: json['hasNextPage'] ?? false,
-//     hasPreviousPage: json['hasPreviousPage'] ?? false,
-//   );
-// }
-
-  factory PaginatedChatsResponse.fromJson(Map<String, dynamic> json) =>
-      PaginatedChatsResponse(
-        items: (json['items'] as List? ?? [])
-            .map((e) => ChatModel.fromJson(e))
-            .toList(),
-        totalCount: json['totalCount'] ?? 0,
-        pageNumber: json['pageNumber'] ?? 1,
-        pageSize: json['pageSize'] ?? 10,
-        totalPages: json['totalPages'] ?? 0,
-        hasNextPage: json['hasNextPage'] ?? false,
-        hasPreviousPage: json['hasPreviousPage'] ?? false,
-      );
-
+  factory PaginatedChatsResponse.fromJson(Map<String, dynamic> json) {
+    return PaginatedChatsResponse(
+      items: (json['items'] as List? ?? [])
+          .map((e) => ChatModel.fromJson(e))
+          .toList(),
+      totalCount: json['totalCount'] ?? 0,
+      pageNumber: json['pageNumber'] ?? 1,
+      pageSize: json['pageSize'] ?? 10,
+      totalPages: json['totalPages'] ?? 1,
+      hasNextPage: json['hasNextPage'] ?? false,
+      hasPreviousPage: json['hasPreviousPage'] ?? false,
+    );
+  }
 }
 
 class PaginatedMessagesResponse {
@@ -248,23 +267,26 @@ class PaginatedMessagesResponse {
     required this.hasPreviousPage,
   });
 
-  factory PaginatedMessagesResponse.fromJson(Map<String, dynamic> json) =>
-      PaginatedMessagesResponse(
-        items: (json['items'] as List? ?? [])
-            .map((e) => MessageModel.fromJson(e))
-            .toList(),
-        totalCount: json['totalCount'] ?? 0,
-        pageNumber: json['pageNumber'] ?? 1,
-        pageSize: json['pageSize'] ?? 10,
-        totalPages: json['totalPages'] ?? 0,
-        hasNextPage: json['hasNextPage'] ?? false,
-        hasPreviousPage: json['hasPreviousPage'] ?? false,
-      );
+  factory PaginatedMessagesResponse.fromJson(Map<String, dynamic> json) {
+    final itemsJson = json['items'] ?? [];
+    final itemsList = (itemsJson as List)
+        .map((e) => MessageModel.fromJson(e))
+        .toList();
+
+    return PaginatedMessagesResponse(
+      items: itemsList,
+      totalCount: json['totalCount'] ?? 0,
+      pageNumber: json['pageNumber'] ?? 1,
+      pageSize: json['pageSize'] ?? 10,
+      totalPages: json['totalPages'] ?? 0,
+      hasNextPage: json['hasNextPage'] ?? false,
+      hasPreviousPage: json['hasPreviousPage'] ?? false,
+    );
+  }
 }
 
-// ✅ Now returns List<ChatMemberModel> — fixes BLoC state type mismatch
 class PaginatedContactsResponse {
-  final List<ChatMemberModel> items;   // ✅ was List<ContactModel>
+  final List<ContactModel> items;
   final int totalCount;
   final int pageNumber;
   final int pageSize;
@@ -272,7 +294,7 @@ class PaginatedContactsResponse {
   final bool hasNextPage;
   final bool hasPreviousPage;
 
-  const PaginatedContactsResponse({
+  PaginatedContactsResponse({
     required this.items,
     required this.totalCount,
     required this.pageNumber,
@@ -282,53 +304,57 @@ class PaginatedContactsResponse {
     required this.hasPreviousPage,
   });
 
-  factory PaginatedContactsResponse.fromJson(Map<String, dynamic> json) =>
-      PaginatedContactsResponse(
-        items: (json['items'] as List? ?? [])
-            .map((e) => ChatMemberModel.fromJson(e))  // ✅ was ContactModel.fromJson
-            .toList(),
-        totalCount: json['totalCount'] ?? 0,
-        pageNumber: json['pageNumber'] ?? 1,
-        pageSize: json['pageSize'] ?? 10,
-        totalPages: json['totalPages'] ?? 0,
-        hasNextPage: json['hasNextPage'] ?? false,
-        hasPreviousPage: json['hasPreviousPage'] ?? false,
-      );
+  factory PaginatedContactsResponse.fromJson(Map<String, dynamic> json) {
+    final itemsJson = json['items'] ?? [];
+    final itemsList = (itemsJson as List)
+        .map((e) => ContactModel.fromJson(e))
+        .toList();
+
+    return PaginatedContactsResponse(
+      items: itemsList,
+      totalCount: json['totalCount'] ?? 0,
+      pageNumber: json['pageNumber'] ?? 1,
+      pageSize: json['pageSize'] ?? 10,
+      totalPages: json['totalPages'] ?? 0,
+      hasNextPage: json['hasNextPage'] ?? false,
+      hasPreviousPage: json['hasPreviousPage'] ?? false,
+    );
+  }
 }
 
-// ─── Send Message Request Model ───────────────────────────────────────────────
+class PaginatedSearchResponse {
+  final List<SearchResultModel> items;
+  final int totalCount;
+  final int pageNumber;
+  final int pageSize;
+  final int totalPages;
+  final bool hasNextPage;
+  final bool hasPreviousPage;
 
-class SendMessageRequest {
-  final String content;
-  final String? receiverId;
-  final String? groupId;
-  final String? attachmentFile;
-
-  const SendMessageRequest({
-    required this.content,
-    this.receiverId,
-    this.groupId,
-    this.attachmentFile,
-  }) : assert(
-          receiverId != null || groupId != null,
-          'Either receiverId or groupId must be provided',
-        );
-}
-
-// ─── Create Group Request Model ───────────────────────────────────────────────
-
-class CreateGroupRequest {
-  final String title;
-  final List<String> memberIds;
-  final String? description;
-  final String? groupPhoto;
-
-  const CreateGroupRequest({
-    required this.title,
-    required this.memberIds,
-    this.description,
-    this.groupPhoto,
+  PaginatedSearchResponse({
+    required this.items,
+    required this.totalCount,
+    required this.pageNumber,
+    required this.pageSize,
+    required this.totalPages,
+    required this.hasNextPage,
+    required this.hasPreviousPage,
   });
+
+  factory PaginatedSearchResponse.fromJson(Map<String, dynamic> json) {
+    final itemsJson = json['items'] ?? [];
+    final itemsList = (itemsJson as List)
+        .map((e) => SearchResultModel.fromJson(e))
+        .toList();
+
+    return PaginatedSearchResponse(
+      items: itemsList,
+      totalCount: json['totalCount'] ?? 0,
+      pageNumber: json['pageNumber'] ?? 1,
+      pageSize: json['pageSize'] ?? 10,
+      totalPages: json['totalPages'] ?? 0,
+      hasNextPage: json['hasNextPage'] ?? false,
+      hasPreviousPage: json['hasPreviousPage'] ?? false,
+    );
+  }
 }
-
-
