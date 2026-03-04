@@ -143,7 +143,7 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
   }) async {
     final url = Endpoints.editMessage.replaceFirst('{id}', messageId);
 
-    final response = await apiClient.put(url, data: {'content': newContent});
+    final response = await apiClient.put(url, data: {'newContent': newContent});
 
     return MessageModel.fromJson(response.data);
   }
