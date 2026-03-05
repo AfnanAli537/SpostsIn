@@ -7,9 +7,10 @@ import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart'
 
 @LazySingleton(as: ChatRemoteDataSource)
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final ApiClient apiClient;
+  final ApiClient _apiClient;
 
-  ChatRemoteDataSourceImpl({required this.apiClient});
+  ChatRemoteDataSourceImpl({required ApiClient apiClient})
+    : _apiClient = apiClient;
 
   ///✅ ─── Get All Chats ───────────────────────────────────────────────────────────
 
@@ -18,7 +19,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     int pageNumber = 1,
     int pageSize = 10,
   }) async {
-    final response = await apiClient.get(
+    final response = await _apiClient.get(
       Endpoints.getAllChats,
       params: {'pageNumber': pageNumber, 'pageSize': pageSize},
     );
@@ -34,7 +35,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   Future<PaginatedContactsResponse> getContacts() async {
-    final response = await apiClient.get(Endpoints.getContacts);
+    final response = await _apiClient.get(Endpoints.getContacts);
 
     return PaginatedContactsResponse.fromJson(response.data);
   }
@@ -47,7 +48,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     int pageNumber = 1,
     int pageSize = 10,
   }) async {
-    final response = await apiClient.get(
+    final response = await _apiClient.get(
       Endpoints.chatSearch,
       params: {
         'query': searchTerm,
@@ -76,7 +77,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         'Attachment': await MultipartFile.fromFile(attachmentFile),
     });
 
-    final response = await apiClient.post(
+    final response = await _apiClient.post(
       Endpoints.sendMessage,
       data: formData,
     );
@@ -92,7 +93,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     String? groupId,
     int page = 1,
   }) async {
-    final response = await apiClient.get(
+    final response = await _apiClient.get(
       Endpoints.getAllMessages,
       params: {
         if (targetUserId != null) 'targetUserId': targetUserId,
@@ -126,7 +127,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         'GroupPhoto': await MultipartFile.fromFile(groupPhoto),
     });
 
-    final response = await apiClient.post(
+    final response = await _apiClient.post(
       Endpoints.createGroup,
       data: formData,
     );
@@ -143,7 +144,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }) async {
     final url = Endpoints.editMessage.replaceFirst('{id}', messageId);
 
-    final response = await apiClient.put(url, data: {'newContent': newContent});
+    final response = await _apiClient.put(
+      url,
+      data: {'newContent': newContent},
+    );
 
     return MessageModel.fromJson(response.data);
   }
@@ -153,6 +157,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<void> deleteMessage({required String messageId}) async {
     final url = Endpoints.deleteMessage.replaceFirst('{id}', messageId);
-    await apiClient.delete(url);
+    await _apiClient.delete(url);
   }
 }

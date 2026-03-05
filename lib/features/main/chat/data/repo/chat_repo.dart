@@ -7,9 +7,10 @@ import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart'
 
 @lazySingleton
 class ChatRepository {
-  final ChatRemoteDataSource remoteDataSource;
+  final ChatRemoteDataSource _remoteDataSource;
 
-  ChatRepository(this.remoteDataSource);
+  ChatRepository({required ChatRemoteDataSource remoteDataSource})
+    : _remoteDataSource = remoteDataSource;
 
   ///✅ ─── Get All Chats ──────────────────────────────────────────────
   Future<Either<ApiException, PaginatedChatsResponse>> getAllChats({
@@ -17,7 +18,7 @@ class ChatRepository {
     int pageSize = 10,
   }) async {
     try {
-      final response = await remoteDataSource.getAllChats(
+      final response = await _remoteDataSource.getAllChats(
         pageNumber: pageNumber,
         pageSize: pageSize,
       );
@@ -32,7 +33,7 @@ class ChatRepository {
   ///✅ ─── Get Contacts ───────────────────────────────────────────────
   Future<Either<ApiException, PaginatedContactsResponse>> getContacts() async {
     try {
-      final response = await remoteDataSource.getContacts();
+      final response = await _remoteDataSource.getContacts();
       return Right(response);
     } on DioException catch (e) {
       return Left(ApiErrorHandler.handleDioError(e));
@@ -48,7 +49,7 @@ class ChatRepository {
     int pageSize = 10,
   }) async {
     try {
-      final response = await remoteDataSource.chatSearch(
+      final response = await _remoteDataSource.chatSearch(
         searchTerm: searchTerm,
         pageNumber: pageNumber,
         pageSize: pageSize,
@@ -69,7 +70,7 @@ class ChatRepository {
     String? attachmentFile,
   }) async {
     try {
-      final response = await remoteDataSource.sendMessage(
+      final response = await _remoteDataSource.sendMessage(
         content: content,
         receiverId: receiverId,
         groupId: groupId,
@@ -90,7 +91,7 @@ class ChatRepository {
     int page = 1,
   }) async {
     try {
-      final response = await remoteDataSource.getChatHistory(
+      final response = await _remoteDataSource.getChatHistory(
         targetUserId: targetUserId,
         groupId: groupId,
         page: page,
@@ -111,7 +112,7 @@ class ChatRepository {
     String? groupPhoto,
   }) async {
     try {
-      final response = await remoteDataSource.createGroup(
+      final response = await _remoteDataSource.createGroup(
         title: title,
         memberIds: memberIds,
         description: description,
@@ -131,7 +132,7 @@ class ChatRepository {
     required String newContent,
   }) async {
     try {
-      final response = await remoteDataSource.editMessage(
+      final response = await _remoteDataSource.editMessage(
         messageId: messageId,
         newContent: newContent,
       );
@@ -148,7 +149,7 @@ class ChatRepository {
     required String messageId,
   }) async {
     try {
-      await remoteDataSource.deleteMessage(messageId: messageId);
+      await _remoteDataSource.deleteMessage(messageId: messageId);
       return const Right(unit);
     } on DioException catch (e) {
       return Left(ApiErrorHandler.handleDioError(e));

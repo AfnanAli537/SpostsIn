@@ -10,6 +10,7 @@ class ChatHubService {
   static const String _hubUrl = 'https://sportsin.runasp.net/ChatHub';
 
   HubConnection? _hubConnection;
+  late SharedPref _sharedPref;
 
   // ─── Callbacks ──────────────────────────────────────────────────────────────
   void Function(String userId, bool isOnline, DateTime timestamp)?
@@ -28,10 +29,9 @@ class ChatHubService {
       log('🔌 ChatHub already connected');
       return;
     }
-    late SharedPref sharedPref;
-    var sharedPreferences = await SharedPreferences.getInstance();
-    sharedPref = SharedPref(sharedPreferences);
-    String? accessToken = sharedPref.getToken() ?? '';
+    final sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPref = SharedPref(sharedPreferences);
+    final accessToken = _sharedPref.getToken() ?? '';
     _hubConnection = HubConnectionBuilder()
         .withUrl(
           _hubUrl,

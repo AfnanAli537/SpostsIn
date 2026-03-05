@@ -153,7 +153,9 @@ extension GetItInjectableX on _i174.GetIt {
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
     gh.lazySingleton<_i503.ChatRepository>(
-      () => _i503.ChatRepository(gh<_i860.ChatRemoteDataSource>()),
+      () => _i503.ChatRepository(
+        remoteDataSource: gh<_i860.ChatRemoteDataSource>(),
+      ),
     );
     gh.factory<_i1047.OpportunityBloc>(
       () => _i1047.OpportunityBloc(
