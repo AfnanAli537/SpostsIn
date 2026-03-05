@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
@@ -156,7 +157,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         // Ensure messages are sorted by time (oldest → newest)
         final sorted = [...data.items]
           ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
-
+        log('sorted messages: ${sorted.map((e) => e.toJson()).toList()}');
         emit(
           state.copyWith(
             messages: sorted,

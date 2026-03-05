@@ -78,10 +78,7 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       bottom: const PreferredSize(
         preferredSize: Size.fromHeight(1),
-        child: ColoredBox(
-          color: Color(0xFFE0E4EE),
-          child: SizedBox(height: 1),
-        ),
+        child: ColoredBox(color: Color(0xFFE0E4EE), child: SizedBox(height: 1)),
       ),
     );
   }
@@ -111,6 +108,7 @@ class _TypingIndicator extends StatelessWidget {
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
     required this.message,
+    required this.currentUserId,
     required this.isGroupChat,
     required this.isEditing,
     required this.editController,
@@ -121,6 +119,7 @@ class _MessageBubble extends StatelessWidget {
   });
 
   final MessageModel message;
+  final String currentUserId;
   final bool isGroupChat;
   final bool isEditing;
   final TextEditingController editController;
@@ -131,13 +130,14 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMe = message.isMe == true;
+    final isMe = message.senderId == currentUserId;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
@@ -281,17 +281,9 @@ class _NormalMessageBubble extends StatelessWidget {
 
     switch (status) {
       case 0:
-        return Icon(
-          Icons.check_rounded,
-          size: 14,
-          color: Colors.white70,
-        );
+        return Icon(Icons.check_rounded, size: 14, color: Colors.white70);
       case 1:
-        return Icon(
-          Icons.done_all_rounded,
-          size: 14,
-          color: Colors.white70,
-        );
+        return Icon(Icons.done_all_rounded, size: 14, color: Colors.white70);
       case 2:
         return const Icon(
           Icons.done_all_rounded,
@@ -299,11 +291,7 @@ class _NormalMessageBubble extends StatelessWidget {
           color: Colors.lightBlueAccent,
         );
       default:
-        return Icon(
-          Icons.check_rounded,
-          size: 14,
-          color: Colors.white70,
-        );
+        return Icon(Icons.check_rounded, size: 14, color: Colors.white70);
     }
   }
 }
@@ -527,4 +515,3 @@ class _OptionTile extends StatelessWidget {
     );
   }
 }
-

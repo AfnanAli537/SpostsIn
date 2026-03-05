@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sports_in/core/utils/helper/date_time_helper.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_list_section.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
@@ -102,7 +101,6 @@ class _MessagesViewState extends State<MessagesView> {
                 chats: chats,
                 loading: state.chatsLoading,
                 loadingMore: state.chatsLoadingMore,
-                formatTime: DateTimeHelper.formatShortRelative,
               ),
             ],
           );

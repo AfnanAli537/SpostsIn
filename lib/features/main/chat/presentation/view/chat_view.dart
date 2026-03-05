@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/core/utils/helper/date_time_helper.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_avatar.dart';
@@ -197,12 +198,6 @@ class _ChatViewState extends State<ChatView> {
     context.read<ChatBloc>().add(DeleteMessageEvent(id));
   }
 
-  String _formatTime(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '$h:$m';
-  }
-
   String _getTypingUserName(ChatState state) {
     final userId = state.typingInfo?.userId ?? '';
     final member = widget.chat.members.firstWhere(
@@ -267,6 +262,7 @@ class _ChatViewState extends State<ChatView> {
 
           return _MessageBubble(
             message: msg,
+            currentUserId: _currentUserId,
             isGroupChat: widget.chat.isGroup,
             isEditing: isEditing,
             editController: _editController,
@@ -275,7 +271,7 @@ class _ChatViewState extends State<ChatView> {
                 : null,
             onSaveEdit: _saveEdit,
             onCancelEdit: () => setState(() => _editingId = null),
-            timeText: _formatTime(msg.sentAt),
+            timeText: ChatTimeHelper.messageTime(msg.sentAt),
           );
         },
       ),

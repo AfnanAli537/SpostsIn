@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/utils/helper/date_time_helper.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/presentation/view/chat_view.dart';
@@ -10,14 +11,12 @@ class ChatListSection extends StatelessWidget {
   final List<ChatModel> chats;
   final bool loading;
   final bool loadingMore;
-  final String Function(DateTime?) formatTime;
 
   const ChatListSection({
     super.key,
     required this.chats,
     required this.loading,
     required this.loadingMore,
-    required this.formatTime,
   });
 
   @override
@@ -48,6 +47,7 @@ class ChatListSection extends StatelessWidget {
           }
 
           final chat = chats[index];
+
           return GestureDetector(
             onTap: () {
               context.read<ChatBloc>().add(MarkChatAsReadEvent(chat.id));
@@ -64,7 +64,7 @@ class ChatListSection extends StatelessWidget {
             },
             child: ChatListTile(
               chat: chat,
-              timeLabel: formatTime(chat.lastMessageTime),
+              timeLabel: ChatTimeHelper.chatList(chat.lastMessageTime),
             ),
           );
         },
