@@ -19,6 +19,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<LoadChatsEvent>(_onLoadChats);
     on<LoadMoreChatsEvent>(_onLoadMoreChats);
     on<SearchChatsEvent>(_onSearchChats);
+    on<MarkChatAsReadEvent>(_onMarkChatAsRead);
 
     // Message events
     on<LoadMessagesEvent>(_onLoadMessages);
@@ -38,6 +39,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<HubMessageEditedEvent>(_onHubMessageEdited);
     on<HubMessageDeletedEvent>(_onHubMessageDeleted);
     on<HubUserTypingEvent>(_onHubUserTyping);
+    on<HubMessageStatusChangedEvent>(_onHubMessageStatusChanged);
+    on<HubConversationSeenEvent>(_onHubConversationSeen);
+    on<HubUserStatusChangedEvent>(_onHubUserStatusChanged);
 
     // Hub actions (outgoing)
     on<SendTypingEvent>(_onSendTyping);
@@ -63,6 +67,34 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ),
       ),
     );
+  }
+
+  Future<void> _onMarkChatAsRead(
+    MarkChatAsReadEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final updatedChats = state.chats
+        .map(
+          (c) => c.id == event.chatId
+              ? ChatModel(
+                  id: c.id,
+                  title: c.title,
+                  groupPhoto: c.groupPhoto,
+                  isGroup: c.isGroup,
+                  members: c.members,
+                  lastMessage: c.lastMessage,
+                  lastMessageTime: c.lastMessageTime,
+                  unreadCount: 0,
+                  isOnline: c.isOnline,
+                  lastMessageStatus: c.lastMessageStatus,
+                )
+              : c,
+        )
+        .toList();
+
+    // update the unread count for the chat in the database for hub
+
+    emit(state.copyWith(chats: updatedChats));
   }
 
   Future<void> _onLoadMoreChats(
@@ -120,14 +152,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (e) => emit(
         state.copyWith(messagesLoading: false, messagesError: e.message),
       ),
-      (data) => emit(
-        state.copyWith(
-          messages: data.items,
-          messagesLoading: false,
-          messagesHasMore: data.hasNextPage,
-          messagesPage: 1,
-        ),
-      ),
+      (data) {
+        // Ensure messages are sorted by time (oldest → newest)
+        final sorted = [...data.items]
+          ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+
+        emit(
+          state.copyWith(
+            messages: sorted,
+            messagesLoading: false,
+            messagesHasMore: data.hasNextPage,
+            messagesPage: 1,
+          ),
+        );
+      },
     );
   }
 
@@ -148,14 +186,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (e) => emit(
         state.copyWith(messagesLoadingMore: false, messagesError: e.message),
       ),
-      (data) => emit(
-        state.copyWith(
-          messages: [...state.messages, ...data.items],
-          messagesLoadingMore: false,
-          messagesHasMore: data.hasNextPage,
-          messagesPage: state.messagesPage + 1,
-        ),
-      ),
+      (data) {
+        // Merge and keep chronological order
+        final combined = [...state.messages, ...data.items]
+          ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+
+        emit(
+          state.copyWith(
+            messages: combined,
+            messagesLoadingMore: false,
+            messagesHasMore: data.hasNextPage,
+            messagesPage: state.messagesPage + 1,
+          ),
+        );
+      },
     );
   }
 
@@ -193,14 +237,41 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           sendError: e.message,
         ),
       ),
-      (sent) => emit(
-        state.copyWith(
-          messages: state.messages
-              .map((m) => m.id == tempId ? sent : m)
-              .toList(),
-          isSending: false,
-        ),
-      ),
+      (sent) {
+        final updatedMessages = state.messages
+            .map((m) => m.id == tempId ? sent : m)
+            .toList();
+
+        final chatId = event.groupId ?? event.receiverId;
+        final updatedChats = chatId == null
+            ? state.chats
+            : state.chats
+                  .map(
+                    (c) => c.id == chatId
+                        ? ChatModel(
+                            id: c.id,
+                            title: c.title,
+                            groupPhoto: c.groupPhoto,
+                            isGroup: c.isGroup,
+                            members: c.members,
+                            lastMessage: sent.content,
+                            lastMessageTime: sent.sentAt,
+                            unreadCount: c.unreadCount,
+                            isOnline: c.isOnline,
+                            lastMessageStatus: sent.status,
+                          )
+                        : c,
+                  )
+                  .toList();
+
+        emit(
+          state.copyWith(
+            messages: updatedMessages,
+            isSending: false,
+            chats: updatedChats,
+          ),
+        );
+      },
     );
   }
 
@@ -255,8 +326,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     result.fold(
       (_) => emit(state.copyWith(contactsLoading: false)),
-      (data) =>
-          emit(state.copyWith(contacts: data.items, contactsLoading: false)),
+      (data) => emit(state.copyWith(contacts: data, contactsLoading: false)),
     );
   }
 
@@ -297,6 +367,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _hub.onMessageDeleted = (id) => add(HubMessageDeletedEvent(messageId: id));
     _hub.onUserTyping = (userId, isTyping) =>
         add(HubUserTypingEvent(userId: userId, isTyping: isTyping));
+    _hub.onMessageStatusChanged = (id, status) =>
+        add(HubMessageStatusChangedEvent(messageId: id, status: status));
+    _hub.onConversationSeen = (userId, groupId) =>
+        add(HubConversationSeenEvent(userId: userId, groupId: groupId));
+    _hub.onUserStatusChanged = (userId, isOnline, timestamp) => add(
+      HubUserStatusChangedEvent(
+        userId: userId,
+        isOnline: isOnline,
+        timestamp: timestamp,
+      ),
+    );
 
     emit(state.copyWith(hubConnected: true));
   }
@@ -313,7 +394,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     HubMessageReceivedEvent event,
     Emitter<ChatState> emit,
   ) {
-    emit(state.copyWith(messages: [...state.messages, event.message]));
+    // Append and keep messages sorted by time
+    final updated = [...state.messages, event.message]
+      ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+
+    emit(state.copyWith(messages: updated));
+
+    // Refresh chats so unread counters & last message stay in sync
+    add(LoadChatsEvent(isRefresh: true));
   }
 
   void _onHubMessageEdited(
@@ -342,6 +430,54 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         messages: state.messages.where((m) => m.id != event.messageId).toList(),
       ),
     );
+  }
+
+  void _onHubMessageStatusChanged(
+    HubMessageStatusChangedEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final updatedMessages = state.messages
+        .map(
+          (m) => m.id == event.messageId ? m.copyWith(status: event.status) : m,
+        )
+        .toList();
+
+    emit(state.copyWith(messages: updatedMessages));
+  }
+
+  void _onHubConversationSeen(
+    HubConversationSeenEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    // When the remote user opens the conversation, backend will update
+    // statuses; we just refresh chats so unread numbers stay in sync.
+    add(LoadChatsEvent(isRefresh: true));
+  }
+
+  void _onHubUserStatusChanged(
+    HubUserStatusChangedEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final updatedChats = state.chats
+        .map(
+          (c) => !c.isGroup && c.id == event.userId
+              ? ChatModel(
+                  id: c.id,
+                  title: c.title,
+                  groupPhoto: c.groupPhoto,
+                  isGroup: c.isGroup,
+                  members: c.members,
+                  lastMessage: c.lastMessage,
+                  lastMessageTime: c.lastMessageTime,
+                  unreadCount: c.unreadCount,
+                  isOnline: event.isOnline,
+                  lastMessageStatus: c.lastMessageStatus,
+                )
+              : c,
+        )
+        .toList();
+
+    emit(state.copyWith(chats: updatedChats));
   }
 
   void _onHubUserTyping(HubUserTypingEvent event, Emitter<ChatState> emit) {

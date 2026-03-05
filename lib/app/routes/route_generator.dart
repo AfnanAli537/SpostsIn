@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
 import 'package:sports_in/features/login/data/repo/login_repo.dart';
 import 'package:sports_in/features/login/view/presentation/login_screen.dart';
 import 'package:sports_in/features/login/view_model/login_bloc/login_bloc.dart';
@@ -10,6 +11,10 @@ import 'package:sports_in/features/forget_password/view/presentation/verify_emai
 import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
 import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart';
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
+import 'package:sports_in/features/main/chat/presentation/view/chat_view.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
@@ -172,18 +177,31 @@ abstract class RoutesManager {
       case AppRoutes.profilePostsEditScreen:
         final args = settings.arguments as PostModel;
         return CupertinoPageRoute(
-          builder: (_) =>BlocProvider(
+          builder: (_) => BlocProvider(
             create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: UpdatePostScreen(post: args),
-          )
+          ),
         );
       case AppRoutes.opportunityEditScreen:
         final opportunityId = settings.arguments as String;
         return CupertinoPageRoute(
-          builder: (_) =>BlocProvider(
-            create: (_) => OpportunityBloc(opportunityRepo: getIt<OpportunityReposatory>()),
+          builder: (_) => BlocProvider(
+            create: (_) => OpportunityBloc(
+              opportunityRepo: getIt<OpportunityReposatory>(),
+            ),
             child: UpdateOpportunityScreen(opportunityId: opportunityId),
-          )
+          ),
+        );
+      case AppRoutes.chatView:
+        final chat = settings.arguments as ChatModel;
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => ChatBloc(
+              repo: getIt<ChatRepository>(),
+              hub: getIt<ChatHubService>(),
+            ),
+            child: ChatView(chat: chat),
+          ),
         );
     }
 

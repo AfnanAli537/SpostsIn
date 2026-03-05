@@ -16,10 +16,16 @@ class ContactModel {
 
   factory ContactModel.fromJson(Map<String, dynamic> json) {
     return ContactModel(
-      id: json['userId']?.toString() ?? json['targetId']?.toString() ?? '',
-      name: json['userName'] ?? json['name'] ?? '',
-      avatar: json['avatar'] ?? json['imageUrl'],
-      bio: json['bio'] ?? json['description'] ?? '',
+      id:
+          json['id']?.toString() ??
+          json['userId']?.toString() ??
+          json['targetId']?.toString() ??
+          '',
+      name: (json['title'] ?? json['userName'] ?? json['name'] ?? '')
+          .toString()
+          .trim(),
+      avatar: (json['imageUrl'] ?? json['avatar'])?.toString(),
+      bio: (json['bio'] ?? json['description'])?.toString(),
       isOnline: json['isOnline'] ?? false,
     );
   }
@@ -31,42 +37,4 @@ class ContactModel {
     'bio': bio,
     'isOnline': isOnline,
   };
-}
-
-///✅ ─── Paginated Response ───────────────────────────────────────
-class PaginatedContactsResponse {
-  final List<ContactModel> items;
-  final int totalCount;
-  final int pageNumber;
-  final int pageSize;
-  final int totalPages;
-  final bool hasNextPage;
-  final bool hasPreviousPage;
-
-  PaginatedContactsResponse({
-    required this.items,
-    required this.totalCount,
-    required this.pageNumber,
-    required this.pageSize,
-    required this.totalPages,
-    required this.hasNextPage,
-    required this.hasPreviousPage,
-  });
-
-  factory PaginatedContactsResponse.fromJson(Map<String, dynamic> json) {
-    final itemsJson = json['items'] ?? [];
-    final itemsList = (itemsJson as List)
-        .map((e) => ContactModel.fromJson(e))
-        .toList();
-
-    return PaginatedContactsResponse(
-      items: itemsList,
-      totalCount: json['totalCount'] ?? 0,
-      pageNumber: json['pageNumber'] ?? 1,
-      pageSize: json['pageSize'] ?? 10,
-      totalPages: json['totalPages'] ?? 0,
-      hasNextPage: json['hasNextPage'] ?? false,
-      hasPreviousPage: json['hasPreviousPage'] ?? false,
-    );
-  }
 }

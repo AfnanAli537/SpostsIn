@@ -8,7 +8,7 @@ abstract class ChatRemoteDataSource {
   });
 
   /// ✅ GET /api/Chat/contacts
-  Future<PaginatedContactsResponse> getContacts();
+  Future<List<ContactModel>> getContacts();
 
   /// ✅ GET /api/Chat/search
   /// Note: Query parameters should include searchTerm for filtering chats by name or participants, along with pagination parameters.

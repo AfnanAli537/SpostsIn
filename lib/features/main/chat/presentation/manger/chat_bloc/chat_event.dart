@@ -16,6 +16,14 @@ class SearchChatsEvent extends ChatEvent {
   SearchChatsEvent(this.query);
 }
 
+/// Fired when the current user opens a conversation and all
+/// messages in that chat should be considered read locally.
+class MarkChatAsReadEvent extends ChatEvent {
+  final String chatId;
+
+  MarkChatAsReadEvent(this.chatId);
+}
+
 // ─── Messages ──────────────────────────────────────────────────────────────
 
 class LoadMessagesEvent extends ChatEvent {

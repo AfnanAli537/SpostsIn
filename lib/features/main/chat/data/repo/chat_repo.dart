@@ -31,7 +31,7 @@ class ChatRepository {
   }
 
   ///✅ ─── Get Contacts ───────────────────────────────────────────────
-  Future<Either<ApiException, PaginatedContactsResponse>> getContacts() async {
+  Future<Either<ApiException, List<ContactModel>>> getContacts() async {
     try {
       final response = await _remoteDataSource.getContacts();
       return Right(response);

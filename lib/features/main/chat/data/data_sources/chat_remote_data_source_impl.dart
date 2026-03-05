@@ -34,10 +34,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   ///✅ ─── Get Contacts ─────────────────────────────────────────────────────────────
 
   @override
-  Future<PaginatedContactsResponse> getContacts() async {
+  Future<List<ContactModel>> getContacts() async {
     final response = await _apiClient.get(Endpoints.getContacts);
 
-    return PaginatedContactsResponse.fromJson(response.data);
+    return (response.data as List)
+        .map((e) => ContactModel.fromJson(e))
+        .toList();
   }
 
   ///✅ ─── Search Chats ─────────────────────────────────────────────────────────────

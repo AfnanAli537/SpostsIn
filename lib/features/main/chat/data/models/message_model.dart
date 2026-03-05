@@ -56,7 +56,12 @@ class MessageModel {
     'status': status,
   };
 
-  MessageModel copyWith({String? content, bool? isEdited, bool? isDeleted}) {
+  MessageModel copyWith({
+    String? content,
+    bool? isEdited,
+    bool? isDeleted,
+    int? status,
+  }) {
     return MessageModel(
       id: id,
       senderId: senderId,
@@ -68,7 +73,7 @@ class MessageModel {
       isEdited: isEdited ?? this.isEdited,
       isDeleted: isDeleted ?? this.isDeleted,
       isMe: isMe,
-      status: status,
+      status: status ?? this.status,
     );
   }
 }

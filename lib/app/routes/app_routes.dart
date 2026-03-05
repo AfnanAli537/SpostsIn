@@ -16,10 +16,11 @@ abstract class AppRoutes {
   static const String registrationOtp = '/registration-otp';
   static const String mainLayout = '/mainLayout';
 
-  static const String userProfile = '/user-profile'; 
-  static const String editProfile = '/edit-profile'; 
-  static const String profilePostsListScreen = '/profile-posts-list'; 
-  static const String profilePostsEditScreen = '/profile-posts-edit'; 
+  static const String userProfile = '/user-profile';
+  static const String editProfile = '/edit-profile';
+  static const String profilePostsListScreen = '/profile-posts-list';
+  static const String profilePostsEditScreen = '/profile-posts-edit';
 
-  static const String opportunityEditScreen = '/opportunity-edit'; 
+  static const String opportunityEditScreen = '/opportunity-edit';
+  static const String chatView = '/chat-view';
 }
