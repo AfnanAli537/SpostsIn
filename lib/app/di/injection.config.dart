@@ -32,10 +32,11 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
-import 'package:sports_in/features/main/chat/data/data_sources/remote_data_source.dart'
-    as _i183;
-import 'package:sports_in/features/main/chat/data/interfaces/chat_interface.dart'
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart'
     as _i860;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source_impl.dart'
+    as _i183;
+
 import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
 import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
     as _i679;
@@ -115,7 +116,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i803.SearchBloc>(
       () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
-    gh.lazySingleton<_i860.ChatInterface>(
+    gh.lazySingleton<_i860.ChatRemoteDataSource>(
       () => _i183.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i712.ILoginDataSource>(
@@ -152,7 +153,7 @@ extension GetItInjectableX on _i174.GetIt {
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
     gh.lazySingleton<_i503.ChatRepository>(
-      () => _i503.ChatRepository(gh<_i860.ChatInterface>()),
+      () => _i503.ChatRepository(gh<_i860.ChatRemoteDataSource>()),
     );
     gh.factory<_i1047.OpportunityBloc>(
       () => _i1047.OpportunityBloc(

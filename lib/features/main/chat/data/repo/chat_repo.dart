@@ -2,22 +2,22 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
-import 'package:sports_in/features/main/chat/data/interfaces/chat_interface.dart';
-import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 
 @lazySingleton
 class ChatRepository {
-  final ChatInterface repo;
+  final ChatRemoteDataSource remoteDataSource;
 
-  ChatRepository(this.repo);
+  ChatRepository(this.remoteDataSource);
 
-  /// ─── Get All Chats ──────────────────────────────────────────────
+  ///✅ ─── Get All Chats ──────────────────────────────────────────────
   Future<Either<ApiException, PaginatedChatsResponse>> getAllChats({
     int pageNumber = 1,
     int pageSize = 10,
   }) async {
     try {
-      final response = await repo.getAllChats(
+      final response = await remoteDataSource.getAllChats(
         pageNumber: pageNumber,
         pageSize: pageSize,
       );
@@ -29,10 +29,10 @@ class ChatRepository {
     }
   }
 
-  /// ─── Get Contacts ───────────────────────────────────────────────
+  ///✅ ─── Get Contacts ───────────────────────────────────────────────
   Future<Either<ApiException, PaginatedContactsResponse>> getContacts() async {
     try {
-      final response = await repo.getContacts();
+      final response = await remoteDataSource.getContacts();
       return Right(response);
     } on DioException catch (e) {
       return Left(ApiErrorHandler.handleDioError(e));
@@ -41,14 +41,14 @@ class ChatRepository {
     }
   }
 
-  /// ─── Search Chats ──────────────────────────────────────────────
+  ///✅ ─── Search Chats ──────────────────────────────────────────────
   Future<Either<ApiException, PaginatedSearchResponse>> chatSearch({
     required String searchTerm,
     int pageNumber = 1,
     int pageSize = 10,
   }) async {
     try {
-      final response = await repo.chatSearch(
+      final response = await remoteDataSource.chatSearch(
         searchTerm: searchTerm,
         pageNumber: pageNumber,
         pageSize: pageSize,
@@ -61,7 +61,7 @@ class ChatRepository {
     }
   }
 
-  /// ─── Send Message ──────────────────────────────────────────────
+  ///✅ ─── Send Message ──────────────────────────────────────────────
   Future<Either<ApiException, MessageModel>> sendMessage({
     required String content,
     String? receiverId,
@@ -69,7 +69,7 @@ class ChatRepository {
     String? attachmentFile,
   }) async {
     try {
-      final response = await repo.sendMessage(
+      final response = await remoteDataSource.sendMessage(
         content: content,
         receiverId: receiverId,
         groupId: groupId,
@@ -83,14 +83,14 @@ class ChatRepository {
     }
   }
 
-  /// ─── Get Message History ───────────────────────────────────────
+  ///✅ ─── Get Message History ───────────────────────────────────────
   Future<Either<ApiException, PaginatedMessagesResponse>> getAllMessages({
     String? targetUserId,
     String? groupId,
     int page = 1,
   }) async {
     try {
-      final response = await repo.getChatHistory(
+      final response = await remoteDataSource.getChatHistory(
         targetUserId: targetUserId,
         groupId: groupId,
         page: page,
@@ -103,7 +103,7 @@ class ChatRepository {
     }
   }
 
-  /// ─── Create Group ──────────────────────────────────────────────
+  ///✅ ─── Create Group ──────────────────────────────────────────────
   Future<Either<ApiException, ChatModel>> createGroup({
     required String title,
     required List<String> memberIds,
@@ -111,7 +111,7 @@ class ChatRepository {
     String? groupPhoto,
   }) async {
     try {
-      final response = await repo.createGroup(
+      final response = await remoteDataSource.createGroup(
         title: title,
         memberIds: memberIds,
         description: description,
@@ -125,13 +125,13 @@ class ChatRepository {
     }
   }
 
-  /// ─── Edit Message ──────────────────────────────────────────────
+  ///✅ ─── Edit Message ──────────────────────────────────────────────
   Future<Either<ApiException, MessageModel>> editMessage({
     required String messageId,
     required String newContent,
   }) async {
     try {
-      final response = await repo.editMessage(
+      final response = await remoteDataSource.editMessage(
         messageId: messageId,
         newContent: newContent,
       );
@@ -143,12 +143,12 @@ class ChatRepository {
     }
   }
 
-  /// ─── Delete Message ────────────────────────────────────────────
+  ///✅ ─── Delete Message ────────────────────────────────────────────
   Future<Either<ApiException, Unit>> deleteMessage({
     required String messageId,
   }) async {
     try {
-      await repo.deleteMessage(messageId: messageId);
+      await remoteDataSource.deleteMessage(messageId: messageId);
       return const Right(unit);
     } on DioException catch (e) {
       return Left(ApiErrorHandler.handleDioError(e));

@@ -2,11 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
-import 'package:sports_in/features/main/chat/data/interfaces/chat_interface.dart';
-import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 
-@LazySingleton(as: ChatInterface)
-class ChatRemoteDataSourceImpl implements ChatInterface {
+@LazySingleton(as: ChatRemoteDataSource)
+class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final ApiClient apiClient;
 
   ChatRemoteDataSourceImpl({required this.apiClient});
@@ -109,7 +109,7 @@ class ChatRemoteDataSourceImpl implements ChatInterface {
   }
 
   ///✅ ─── Create Group ─────────────────────────────────────────────────────────────
-  //✅ API body: Title* (string), Description (string), GroupPhoto (binary), MemberIds* (array<string>)
+  // API body: Title* (string), Description (string), GroupPhoto (binary), MemberIds* (array<string>)
 
   @override
   Future<ChatModel> createGroup({

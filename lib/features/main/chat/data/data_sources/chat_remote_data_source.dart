@@ -1,6 +1,6 @@
-import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 
-abstract class ChatInterface {
+abstract class ChatRemoteDataSource {
   /// ✅ GET /api/Chat/list
   Future<PaginatedChatsResponse> getAllChats({
     int pageNumber = 1,

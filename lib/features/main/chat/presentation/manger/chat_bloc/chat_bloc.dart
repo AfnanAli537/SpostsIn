@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
 import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart';
 

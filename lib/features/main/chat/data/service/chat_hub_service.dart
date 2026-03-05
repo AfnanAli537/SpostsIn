@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
-import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 
 @lazySingleton
 class ChatHubService {

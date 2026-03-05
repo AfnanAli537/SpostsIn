@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
-import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_widget.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 
@@ -132,8 +132,8 @@ class _ChatWindowScreenState extends State<ChatWindowScreen> {
     final targetId = _otherUserId ?? widget.chat.id;
     try {
       context.read<ChatBloc>().add(
-            SendTypingEvent(targetId: targetId, isTyping: isTyping),
-          );
+        SendTypingEvent(targetId: targetId, isTyping: isTyping),
+      );
     } catch (_) {
       // If Bloc instance doesn't have handler (stale instance), ignore safely.
     }
