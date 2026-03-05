@@ -271,7 +271,7 @@ class _ChatViewState extends State<ChatView> {
                 : null,
             onSaveEdit: _saveEdit,
             onCancelEdit: () => setState(() => _editingId = null),
-            timeText: ChatTimeHelper.messageTime(msg.sentAt),
+            timeText: ChatTimeHelper.chatList(msg.sentAt),
           );
         },
       ),

@@ -18,7 +18,7 @@ class ChatTimeHelper {
     if (dt == null) return '';
 
     final now = DateTime.now().toUtc();
-    final date = dt.toUtc();
+    final date = dt.toUtc().add(const Duration(hours: 2));
 
     log('now: $now');
     log('date: $date');
@@ -47,12 +47,6 @@ class ChatTimeHelper {
 
     log('different year');
     return DateFormat('dd/MM/yyyy').format(date);
-  }
-
-  /// Message bubble time
-  static String messageTime(DateTime? dt) {
-    if (dt == null) return '';
-    return DateFormat('hh:mm a').format(dt.toLocal());
   }
 
   /// Date separator between messages
