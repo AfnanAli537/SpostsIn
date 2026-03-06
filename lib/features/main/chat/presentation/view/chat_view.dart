@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
@@ -165,14 +164,9 @@ class _ChatViewState extends State<ChatView> {
     final bloc = context.read<ChatBloc>();
 
     // Update local unread counter for this chat
-    bloc.add(MarkChatAsReadEvent(widget.chat.id));
-
-    // Inform the hub so the other side can update statuses
-    if (_otherUserId != null) {
-      bloc.add(NotifySeenEvent(senderId: _otherUserId!));
-    } else if (widget.chat.isGroup) {
-      bloc.add(NotifySeenEvent(senderId: '', groupId: widget.chat.id));
-    }
+    bloc.add(
+      MarkChatAsReadEvent(chatId: widget.chat.id, isGroup: widget.chat.isGroup),
+    );
   }
 
   void _startEdit(MessageModel msg) {

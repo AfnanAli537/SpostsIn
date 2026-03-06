@@ -93,10 +93,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         )
         .toList();
 
-    // update the unread count for the chat in the database for hub
+    // await _loadCurrentUser();
 
+    // // update the unread count for the chat in the database for hub
+    // add(
+    //   NotifySeenEvent(
+    //     senderId: _currentUserId,
+    //     groupId: event.isGroup ? event.chatId : null,
+    //   ),
+    // );
     emit(state.copyWith(chats: updatedChats));
   }
+
+  // Future<void> _loadCurrentUser() async {
+  //   _sharedPref = SharedPref(await SharedPreferences.getInstance());
+  //   final user = await _sharedPref.getUserFromPrefs();
+  //   if (user?.userId != null) {
+  //     _currentUserId = user!.userId!;
+  //   }
+  // }
 
   Future<void> _onLoadMoreChats(
     LoadMoreChatsEvent event,
@@ -157,7 +172,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         // Ensure messages are sorted by time (oldest → newest)
         final sorted = [...data.items]
           ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
-        log('sorted messages: ${sorted.map((e) => e.toJson()).toList()}');
         emit(
           state.copyWith(
             messages: sorted,
@@ -218,7 +232,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       sentAt: DateTime.now(),
       isMe: true,
     );
-
     emit(
       state.copyWith(messages: [...state.messages, tempMsg], isSending: true),
     );
@@ -370,8 +383,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         add(HubUserTypingEvent(userId: userId, isTyping: isTyping));
     _hub.onMessageStatusChanged = (id, status) =>
         add(HubMessageStatusChangedEvent(messageId: id, status: status));
-    _hub.onConversationSeen = (userId, groupId) =>
-        add(HubConversationSeenEvent(userId: userId, groupId: groupId));
+    _hub.onConversationSeen = (senderId, groupId) =>
+        add(HubConversationSeenEvent(senderId: senderId, groupId: groupId));
     _hub.onUserStatusChanged = (userId, isOnline, timestamp) => add(
       HubUserStatusChangedEvent(
         userId: userId,
@@ -437,11 +450,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     HubMessageStatusChangedEvent event,
     Emitter<ChatState> emit,
   ) {
-    final updatedMessages = state.messages
-        .map(
-          (m) => m.id == event.messageId ? m.copyWith(status: event.status) : m,
-        )
-        .toList();
+    final updatedMessages = state.messages.map((m) {
+      if (m.id == event.messageId) {
+        return m.copyWith(status: event.status);
+      }
+      return m;
+    }).toList();
 
     emit(state.copyWith(messages: updatedMessages));
   }
@@ -450,8 +464,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     HubConversationSeenEvent event,
     Emitter<ChatState> emit,
   ) {
-    // When the remote user opens the conversation, backend will update
-    // statuses; we just refresh chats so unread numbers stay in sync.
+    // Someone opened the conversation on the other side.
+    // Mark all of *my* messages currently loaded in this view as seen (status = 3).
+    final updatedMessages = state.messages
+        .map(
+          (m) => m.isMe ? m.copyWith(status: 3) : m,
+        )
+        .toList();
+    emit(state.copyWith(messages: updatedMessages));
+
+    // Refresh chats so unread counters & last message status stay in sync.
     add(LoadChatsEvent(isRefresh: true));
   }
 
@@ -507,14 +529,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     NotifySeenEvent event,
     Emitter<ChatState> emit,
   ) async {
-    try {
-      await _hub.notifySeen(
-        senderId: event.senderId,
-        groupId: event.groupId ?? '',
-      );
-    } catch (_) {
-      // Ignore hub errors for seen; no state change needed
-    }
+    log('👁️ notifySeen to: ${event.senderId} (groupId: ${event.groupId})');
+    await _hub.notifySeen(
+      senderId: event.senderId,
+      groupId: event.groupId ?? '',
+    );
   }
 
   @override

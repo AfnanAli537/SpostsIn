@@ -20,8 +20,8 @@ class SearchChatsEvent extends ChatEvent {
 /// messages in that chat should be considered read locally.
 class MarkChatAsReadEvent extends ChatEvent {
   final String chatId;
-
-  MarkChatAsReadEvent(this.chatId);
+  final bool isGroup;
+  MarkChatAsReadEvent({required this.chatId, required this.isGroup});
 }
 
 // ─── Messages ──────────────────────────────────────────────────────────────
@@ -93,7 +93,8 @@ class HubMessageDeletedEvent extends ChatEvent {
 
 class HubMessageStatusChangedEvent extends ChatEvent {
   final String messageId;
-  final int status; // 0: Sent, 1: Delivered, 2: Seen
+  // Backend enum: 1 = sent, 2 = delivered, 3 = seen
+  final int status;
   HubMessageStatusChangedEvent({required this.messageId, required this.status});
 }
 
@@ -109,9 +110,9 @@ class HubUserStatusChangedEvent extends ChatEvent {
 }
 
 class HubConversationSeenEvent extends ChatEvent {
-  final String userId;
+  final String senderId;
   final String? groupId;
-  HubConversationSeenEvent({required this.userId, this.groupId});
+  HubConversationSeenEvent({required this.senderId, this.groupId});
 }
 
 class HubUserTypingEvent extends ChatEvent {

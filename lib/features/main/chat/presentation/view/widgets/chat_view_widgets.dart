@@ -276,15 +276,15 @@ class _NormalMessageBubble extends StatelessWidget {
   }
 
   Widget _buildStatusIcon(MessageModel message) {
-    // 0: Sent, 1: Delivered, 2: Seen (from hub)
-    final status = message.status ?? 0;
+    // Backend enum: 1 = sent, 2 = delivered, 3 = seen
+    final status = message.status ?? 1;
 
     switch (status) {
-      case 0:
-        return Icon(Icons.check_rounded, size: 14, color: Colors.white70);
       case 1:
-        return Icon(Icons.done_all_rounded, size: 14, color: Colors.white70);
+        return Icon(Icons.check_rounded, size: 14, color: Colors.white70);
       case 2:
+        return Icon(Icons.done_all_rounded, size: 14, color: Colors.white70);
+      case 3:
         return const Icon(
           Icons.done_all_rounded,
           size: 14,

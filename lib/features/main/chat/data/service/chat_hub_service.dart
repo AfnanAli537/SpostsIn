@@ -155,7 +155,7 @@ class ChatHubService {
   }) async {
     _ensureConnected();
     await _hubConnection!.invoke('NotifySeen', args: [senderId, groupId]);
-    log('👁️ notifySeen to: $senderId');
+    log('👁️ notifySeen to: $senderId (groupId: $groupId)');
   }
 
   ///✅ ─── Send Typing Notification ─────────────────────────────────────────────

@@ -50,7 +50,9 @@ class ChatListSection extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              context.read<ChatBloc>().add(MarkChatAsReadEvent(chat.id));
+              context.read<ChatBloc>().add(
+                MarkChatAsReadEvent(chatId: chat.id, isGroup: chat.isGroup),
+              );
 
               Navigator.push(
                 context,
