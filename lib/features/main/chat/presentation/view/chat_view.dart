@@ -66,7 +66,7 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> _loadCurrentUser() async {
     final user = await _sharedPref.getUserFromPrefs();
-    if (!mounted) return;
+    // if (!mounted) return;
 
     if (user?.name != null) {
       setState(() {
@@ -330,6 +330,16 @@ class _ChatViewState extends State<ChatView> {
         listenWhen: (p, c) =>
             p.messages.length != c.messages.length ||
             p.sendError != c.sendError,
+        // Rebuild message list (and _buildStatusIcon) when bloc emits updated messages (e.g. after HubMessageStatusChanged or HubConversationSeen).
+        buildWhen: (p, c) =>
+            p.messages != c.messages ||
+            p.messagesLoading != c.messagesLoading ||
+            p.messagesLoadingMore != c.messagesLoadingMore ||
+            p.messagesError != c.messagesError ||
+            p.isSending != c.isSending ||
+            p.typingInfo != c.typingInfo ||
+            p.hubConnected != c.hubConnected ||
+            p.hubReconnecting != c.hubReconnecting,
         listener: (_, state) {
           if (state.sendError != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -345,10 +355,20 @@ class _ChatViewState extends State<ChatView> {
           }
         },
         builder: (_, state) {
+          final isTypingInThisChat = state.typingInfo?.isTyping == true &&
+              (widget.chat.isGroup
+                  ? widget.chat.members.any((m) => m.userId == state.typingInfo?.userId)
+                  : widget.chat.id == state.typingInfo?.userId);
+          final showHubBanner = !state.hubConnected || state.hubReconnecting;
           return Column(
             children: [
+              if (showHubBanner)
+                _ChatSignalRBanner(
+                  hubReconnecting: state.hubReconnecting,
+                  hubError: state.hubError,
+                ),
               Expanded(child: _buildMessageList(state)),
-              if (state.typingInfo?.isTyping == true)
+              if (isTypingInThisChat)
                 _TypingIndicator(userName: _getTypingUserName(state)),
               _MessageInputBar(
                 controller: _inputController,

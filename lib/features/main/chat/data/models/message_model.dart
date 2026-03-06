@@ -30,7 +30,8 @@ class MessageModel {
   static DateTime? _parseDateTimeUtc(dynamic value) {
     final str = value?.toString().trim() ?? '';
     if (str.isEmpty) return null;
-    final hasTz = str.endsWith('Z') || RegExp(r'[+-]\d{2}:?\d{2}$').hasMatch(str);
+    final hasTz =
+        str.endsWith('Z') || RegExp(r'[+-]\d{2}:?\d{2}$').hasMatch(str);
     return DateTime.tryParse(hasTz ? str : '${str}Z');
   }
 

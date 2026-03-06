@@ -49,8 +49,13 @@ class _MessagesViewState extends State<MessagesView> {
             p.chatsLoading != c.chatsLoading ||
             p.chatsLoadingMore != c.chatsLoadingMore ||
             p.searchQuery != c.searchQuery ||
-            p.searchResult != c.searchResult,
+            p.searchResult != c.searchResult ||
+            p.hubConnected != c.hubConnected ||
+            p.hubReconnecting != c.hubReconnecting ||
+            p.hubError != c.hubError,
         builder: (context, state) {
+          final showHubBanner = !state.hubConnected || state.hubReconnecting;
+
           // Decide which chats to show (normal vs search)
           final isSearching = (state.searchQuery ?? '').isNotEmpty;
           final chats = isSearching
@@ -74,6 +79,7 @@ class _MessagesViewState extends State<MessagesView> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (showHubBanner) _SignalRStatusBanner(state: state),
               MessagesHeader(
                 controller: _searchController,
                 onChanged: (v) =>
@@ -105,6 +111,77 @@ class _MessagesViewState extends State<MessagesView> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _SignalRStatusBanner extends StatelessWidget {
+  const _SignalRStatusBanner({required this.state});
+
+  final ChatState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final isReconnecting = state.hubReconnecting;
+    final hasError = (state.hubError ?? '').isNotEmpty;
+
+    return Material(
+      color: isReconnecting
+          ? Colors.orange.shade100
+          : (hasError ? Colors.red.shade100 : Colors.orange.shade100),
+      child: SafeArea(
+        bottom: false,
+        child: InkWell(
+          onTap: () {
+            if (!isReconnecting) {
+              context.read<ChatBloc>().add(HubConnectEvent());
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            child: Row(
+              children: [
+                if (isReconnecting)
+                  SizedBox(
+                    width: 18.w,
+                    height: 18.h,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  Icon(
+                    hasError ? Icons.cloud_off_rounded : Icons.wifi_off_rounded,
+                    size: 20.sp,
+                    color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                  ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Text(
+                    isReconnecting
+                        ? 'Reconnecting…'
+                        : (hasError
+                            ? 'Connection failed. Tap to retry'
+                            : 'Disconnected. Tap to reconnect'),
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: hasError ? Colors.red.shade900 : Colors.orange.shade900,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                if (!isReconnecting)
+                  Text(
+                    'Retry',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

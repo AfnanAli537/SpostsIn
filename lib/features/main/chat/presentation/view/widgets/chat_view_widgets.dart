@@ -5,81 +5,102 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final ChatModel chat;
 
+  /// True if [typingInfo] applies to this chat (1:1 = other user; group = member).
+  bool _isTypingInThisChat(ChatModel c, TypingInfo? typing) {
+    if (typing == null || !typing.isTyping) return false;
+    if (c.isGroup) {
+      return c.members.any((m) => m.userId == typing.userId);
+    }
+    return c.id == typing.userId;
+  }
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 1);
 
   @override
   Widget build(BuildContext context) {
-    final isOnline = !chat.isGroup && chat.isOnline;
+    return BlocBuilder<ChatBloc, ChatState>(
+      buildWhen: (p, c) =>
+          p.typingInfo != c.typingInfo ||
+          p.chats != c.chats,
+      builder: (context, state) {
+        // Use live chat from state for isOnline (updates when hub sends UserStatusChanged)
+        ChatModel? liveChat;
+        try {
+          liveChat = state.chats.firstWhere((c) => c.id == chat.id);
+        } catch (_) {}
+        final isOnline = !chat.isGroup && (liveChat?.isOnline ?? chat.isOnline);
 
-    return AppBar(
-      backgroundColor: const Color(0xFFF4F6FA),
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      leadingWidth: 40,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios_rounded,
-          size: 18,
-          color: Colors.black87,
-        ),
-        onPressed: () => Navigator.pop(context),
-      ),
-      titleSpacing: 0,
-      title: Row(
-        children: [
-          ChatAvatar(
-            imageUrl: chat.groupPhoto,
-            name: chat.title ?? 'Chat',
-            size: 38,
-            showOnline: isOnline,
+        return AppBar(
+          backgroundColor: const Color(0xFFF4F6FA),
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          leadingWidth: 40,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_rounded,
+              size: 18,
+              color: Colors.black87,
+            ),
+            onPressed: () => Navigator.pop(context),
           ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          titleSpacing: 0,
+          title: Row(
             children: [
-              Text(
-                chat.title ?? 'Chat',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black87,
-                ),
+              ChatAvatar(
+                imageUrl: chat.groupPhoto,
+                name: chat.title ?? 'Chat',
+                size: 38,
+                showOnline: isOnline,
               ),
-              BlocBuilder<ChatBloc, ChatState>(
-                buildWhen: (p, c) => p.typingInfo != c.typingInfo,
-                builder: (_, state) {
-                  if (state.typingInfo?.isTyping == true) {
-                    return const Text(
-                      'typing...',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.blue,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    );
-                  }
-                  if (!chat.isGroup && isOnline) {
-                    return const Text(
-                      'Online',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.green,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    chat.title ?? 'Chat',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  BlocBuilder<ChatBloc, ChatState>(
+                    buildWhen: (p, c) => p.typingInfo != c.typingInfo,
+                    builder: (_, s) {
+                      if (_isTypingInThisChat(chat, s.typingInfo)) {
+                        return const Text(
+                          'typing...',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.blue,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        );
+                      }
+                      if (!chat.isGroup && isOnline) {
+                        return const Text(
+                          'Online',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-      bottom: const PreferredSize(
-        preferredSize: Size.fromHeight(1),
-        child: ColoredBox(color: Color(0xFFE0E4EE), child: SizedBox(height: 1)),
-      ),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(1),
+            child: ColoredBox(color: Color(0xFFE0E4EE), child: SizedBox(height: 1)),
+          ),
+        );
+      },
     );
   }
 }
@@ -275,23 +296,26 @@ class _NormalMessageBubble extends StatelessWidget {
     );
   }
 
+  /// Message status from bloc/hub; updated by [ChatBloc._onHubMessageStatusChanged] (single message)
+  /// and [ChatBloc._onHubConversationSeen] (all my messages seen). Status: 1 → one check (white),
+  /// 2 → two checks (white), 3 → two checks (blue/seen), default → one check. Icon size centralized below.
   Widget _buildStatusIcon(MessageModel message) {
-    // Backend enum: 1 = sent, 2 = delivered, 3 = seen
+    const double kStatusIconSize = 14.0;
     final status = message.status ?? 1;
 
     switch (status) {
-      case 1:
-        return Icon(Icons.check_rounded, size: 14, color: Colors.white70);
-      case 2:
-        return Icon(Icons.done_all_rounded, size: 14, color: Colors.white70);
-      case 3:
+      case 1: // sent
+        return Icon(Icons.check_rounded, size: kStatusIconSize, color: Colors.white70);
+      case 2: // delivered
+        return Icon(Icons.done_all_rounded, size: kStatusIconSize, color: Colors.white70);
+      case 3: // seen
         return const Icon(
           Icons.done_all_rounded,
-          size: 14,
+          size: kStatusIconSize,
           color: Colors.lightBlueAccent,
         );
       default:
-        return Icon(Icons.check_rounded, size: 14, color: Colors.white70);
+        return Icon(Icons.check_rounded, size: kStatusIconSize, color: Colors.white70);
     }
   }
 }
@@ -510,6 +534,78 @@ class _OptionTile extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// SignalR connection banner shown at top of chat when disconnected or reconnecting.
+class _ChatSignalRBanner extends StatelessWidget {
+  const _ChatSignalRBanner({
+    required this.hubReconnecting,
+    this.hubError,
+  });
+
+  final bool hubReconnecting;
+  final String? hubError;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasError = (hubError ?? '').isNotEmpty;
+
+    return Material(
+      color: hubReconnecting
+          ? Colors.orange.shade100
+          : (hasError ? Colors.red.shade100 : Colors.orange.shade100),
+      child: InkWell(
+        onTap: () {
+          if (!hubReconnecting) {
+            context.read<ChatBloc>().add(HubConnectEvent());
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            children: [
+              if (hubReconnecting)
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                Icon(
+                  hasError ? Icons.cloud_off_rounded : Icons.wifi_off_rounded,
+                  size: 20,
+                  color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  hubReconnecting
+                      ? 'Reconnecting…'
+                      : (hasError
+                          ? 'Connection failed. Tap to retry'
+                          : 'Disconnected. Tap to reconnect'),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: hasError ? Colors.red.shade900 : Colors.orange.shade900,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (!hubReconnecting)
+                Text(
+                  'Retry',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

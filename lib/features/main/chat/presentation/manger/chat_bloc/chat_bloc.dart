@@ -36,6 +36,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // Hub events (incoming)
     on<HubConnectEvent>(_onHubConnect);
     on<HubDisconnectEvent>(_onHubDisconnect);
+    on<HubConnectionStateChangedEvent>(_onHubConnectionStateChanged);
     on<HubMessageReceivedEvent>(_onHubMessageReceived);
     on<HubMessageEditedEvent>(_onHubMessageEdited);
     on<HubMessageDeletedEvent>(_onHubMessageDeleted);
@@ -93,15 +94,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         )
         .toList();
 
-    // await _loadCurrentUser();
-
-    // // update the unread count for the chat in the database for hub
-    // add(
-    //   NotifySeenEvent(
-    //     senderId: _currentUserId,
-    //     groupId: event.isGroup ? event.chatId : null,
-    //   ),
-    // );
     emit(state.copyWith(chats: updatedChats));
   }
 
@@ -366,14 +358,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  // ─── Hub Integration ─────────────────
+  // ─── Hub (SignalR) Integration ─────────────────
   Future<void> _onHubConnect(
     HubConnectEvent event,
     Emitter<ChatState> emit,
   ) async {
-    await _hub.connect();
-
-    // Register hub callbacks to dispatch Bloc events
+    // Register hub callbacks first so we get connection state and messages
+    _hub.onConnectionStateChanged = (connectionState) =>
+        add(HubConnectionStateChangedEvent(connectionState: connectionState));
     _hub.onReceiveMessage = (message) =>
         add(HubMessageReceivedEvent(message: message));
     _hub.onMessageEdited = (id, content) =>
@@ -393,7 +385,44 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ),
     );
 
-    emit(state.copyWith(hubConnected: true));
+    try {
+      await _hub.connect();
+      emit(state.copyWith(
+        hubConnected: true,
+        hubReconnecting: false,
+        hubError: '',
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        hubConnected: false,
+        hubReconnecting: false,
+        hubError: e.toString(),
+      ));
+    }
+  }
+
+  void _onHubConnectionStateChanged(
+    HubConnectionStateChangedEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    switch (event.connectionState) {
+      case 'connected':
+        emit(state.copyWith(
+          hubConnected: true,
+          hubReconnecting: false,
+          hubError: '',
+        ));
+        break;
+      case 'reconnecting':
+        emit(state.copyWith(hubReconnecting: true));
+        break;
+      case 'disconnected':
+        emit(state.copyWith(
+          hubConnected: false,
+          hubReconnecting: false,
+        ));
+        break;
+    }
   }
 
   Future<void> _onHubDisconnect(
@@ -401,7 +430,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     await _hub.disconnect();
-    emit(state.copyWith(hubConnected: false));
+    emit(state.copyWith(
+      hubConnected: false,
+      hubReconnecting: false,
+      hubError: '',
+    ));
   }
 
   void _onHubMessageReceived(
@@ -412,7 +445,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final updated = [...state.messages, event.message]
       ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
 
-    emit(state.copyWith(messages: updated));
+    // Clear typing when the sender posts (so we don't show "typing..." after their message)
+    final typingInfo = state.typingInfo?.userId == event.message.senderId
+        ? TypingInfo(userId: event.message.senderId, isTyping: false)
+        : state.typingInfo;
+
+    emit(state.copyWith(messages: updated, typingInfo: typingInfo));
 
     // Refresh chats so unread counters & last message stay in sync
     add(LoadChatsEvent(isRefresh: true));
@@ -446,6 +484,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
+  /// Hub sends one-message status (1=sent, 2=delivered, 3=seen); UI uses [chat_view_widgets._buildStatusIcon].
+  /// Logic: the message with [event].messageId is updated to [event].status, others unchanged; new list is emitted.
   void _onHubMessageStatusChanged(
     HubMessageStatusChangedEvent event,
     Emitter<ChatState> emit,
@@ -456,24 +496,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
       return m;
     }).toList();
-
     emit(state.copyWith(messages: updatedMessages));
   }
 
+  /// Hub says "other side opened conversation"; we mark all my messages in the current view as seen (status 3);
+  /// UI shows blue checks via [chat_view_widgets._buildStatusIcon]. We refresh chats and do not send NotifySeen back.
   void _onHubConversationSeen(
     HubConversationSeenEvent event,
     Emitter<ChatState> emit,
   ) {
-    // Someone opened the conversation on the other side.
-    // Mark all of *my* messages currently loaded in this view as seen (status = 3).
     final updatedMessages = state.messages
-        .map(
-          (m) => m.isMe ? m.copyWith(status: 3) : m,
-        )
+        .map((m) => m.isMe ? m.copyWith(status: 3) : m)
         .toList();
     emit(state.copyWith(messages: updatedMessages));
-
-    // Refresh chats so unread counters & last message status stay in sync.
     add(LoadChatsEvent(isRefresh: true));
   }
 

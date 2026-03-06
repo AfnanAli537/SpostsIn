@@ -13,6 +13,8 @@ class ChatHubService {
   late SharedPref _sharedPref;
 
   // ─── Callbacks ──────────────────────────────────────────────────────────────
+  /// Connection lifecycle: 'connected' | 'disconnected' | 'reconnecting'
+  void Function(String connectionState)? onConnectionStateChanged;
   void Function(String userId, bool isOnline, DateTime timestamp)?
   onUserStatusChanged;
   void Function(MessageModel message)? onReceiveMessage;
@@ -46,19 +48,26 @@ class ChatHubService {
 
     _registerListeners();
 
-    _hubConnection!.onclose(({error}) => log('❌ ChatHub disconnected: $error'));
-    _hubConnection!.onreconnecting(
-      ({error}) => log('🔄 ChatHub reconnecting: $error'),
-    );
-    _hubConnection!.onreconnected(
-      ({connectionId}) => log('✅ ChatHub reconnected: $connectionId'),
-    );
+    _hubConnection!.onclose(({error}) {
+      log('❌ ChatHub disconnected: $error');
+      onConnectionStateChanged?.call('disconnected');
+    });
+    _hubConnection!.onreconnecting(({error}) {
+      log('🔄 ChatHub reconnecting: $error');
+      onConnectionStateChanged?.call('reconnecting');
+    });
+    _hubConnection!.onreconnected(({connectionId}) {
+      log('✅ ChatHub reconnected: $connectionId');
+      onConnectionStateChanged?.call('connected');
+    });
 
     try {
       await _hubConnection!.start();
       log('✅ ChatHub connected');
+      onConnectionStateChanged?.call('connected');
     } catch (e) {
       log('❌ ChatHub connection failed: $e');
+      onConnectionStateChanged?.call('disconnected');
       rethrow;
     }
   }
@@ -66,6 +75,7 @@ class ChatHubService {
   Future<void> disconnect() async {
     await _hubConnection?.stop();
     _hubConnection = null;
+    onConnectionStateChanged?.call('disconnected');
     log('🔌 ChatHub disconnected manually');
   }
 
@@ -86,7 +96,7 @@ class ChatHubService {
       if (args == null || args.isEmpty) return;
       final data = args[0] as Map<String, dynamic>;
       final message = MessageModel.fromJson(data);
-      log('💬 ReceiveMessage: ${message.id}');
+      log('💬 ReceiveMessage: ${message.toJson()}');
       onReceiveMessage?.call(message);
     });
 
@@ -115,10 +125,10 @@ class ChatHubService {
 
     _hubConnection!.on('ConversationSeen', (args) {
       if (args == null || args.isEmpty) return;
-      final userId = args[0] as String;
+      final senderId = args[0] as String;
       final groupId = args.length > 1 ? args[1]?.toString() : null;
-      log('👁️ ConversationSeen by: $userId');
-      onConversationSeen?.call(userId, groupId);
+      log('👁️ ConversationSeen by: $senderId');
+      onConversationSeen?.call(senderId, groupId);
     });
 
     _hubConnection!.on('UserTyping', (args) {

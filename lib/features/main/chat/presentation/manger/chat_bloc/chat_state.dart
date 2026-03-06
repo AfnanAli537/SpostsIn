@@ -27,8 +27,10 @@ class ChatState {
   final bool isCreatingGroup;
   final String? createGroupError;
 
-  // ─── Hub / Real-time ─────────────────
+  // ─── Hub / Real-time (SignalR) ─────────────────
   final bool hubConnected;
+  final bool hubReconnecting;
+  final String? hubError;
   final TypingInfo? typingInfo;
 
   const ChatState({
@@ -53,6 +55,8 @@ class ChatState {
     this.isCreatingGroup = false,
     this.createGroupError,
     this.hubConnected = false,
+    this.hubReconnecting = false,
+    this.hubError,
     this.typingInfo,
   });
 
@@ -78,6 +82,8 @@ class ChatState {
     bool? isCreatingGroup,
     String? createGroupError,
     bool? hubConnected,
+    bool? hubReconnecting,
+    String? hubError,
     TypingInfo? typingInfo,
   }) {
     return ChatState(
@@ -102,6 +108,8 @@ class ChatState {
       isCreatingGroup: isCreatingGroup ?? this.isCreatingGroup,
       createGroupError: createGroupError ?? this.createGroupError,
       hubConnected: hubConnected ?? this.hubConnected,
+      hubReconnecting: hubReconnecting ?? this.hubReconnecting,
+      hubError: hubError ?? this.hubError,
       typingInfo: typingInfo ?? this.typingInfo,
     );
   }

@@ -75,6 +75,13 @@ class HubConnectEvent extends ChatEvent {
 
 class HubDisconnectEvent extends ChatEvent {}
 
+/// Fired when SignalR connection state changes (from hub service callbacks).
+class HubConnectionStateChangedEvent extends ChatEvent {
+  /// 'connected' | 'disconnected' | 'reconnecting'
+  final String connectionState;
+  HubConnectionStateChangedEvent({required this.connectionState});
+}
+
 class HubMessageReceivedEvent extends ChatEvent {
   final MessageModel message;
   HubMessageReceivedEvent({required this.message});
