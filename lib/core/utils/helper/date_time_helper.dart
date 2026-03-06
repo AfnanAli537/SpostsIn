@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:intl/intl.dart';
 
 class ChatTimeHelper {
@@ -13,62 +12,48 @@ class ChatTimeHelper {
     return _isSameDay(date, yesterday);
   }
 
-  /// 10:45 PM | Yesterday | Mon | 12/03/2026
+  /// Returns a formatted time string for chat list display
+  /// Format: "10:45 PM" (today) | "Yesterday" | "Mon" | "12/03" | "12/03/2026"
   static String chatList(DateTime? dt) {
     if (dt == null) return '';
 
-    final now = DateTime.now().toUtc();
-    final date = dt.toUtc().add(const Duration(hours: 2));
+    final now = DateTime.now();
+    // If server sent UTC, convert once to local to avoid 2h diff
+    final date = dt.isUtc ? dt.toLocal() : dt;
 
-    log('now: $now');
-    log('date: $date');
+    // Remove time component for accurate day comparisons
+    final today = DateTime(now.year, now.month, now.day);
+    final compareDate = DateTime(date.year, date.month, date.day);
 
-    if (_isSameDay(date, now)) {
-      log('isToday: true');
-      return DateFormat('hh:mm a').format(date.add(const Duration(hours: 2)));
+    if (_isSameDay(compareDate, today)) {
+      return DateFormat('hh:mm a').format(date);
     }
 
-    if (_isYesterday(date, now)) {
-      log('isYesterday: true');
+    if (_isYesterday(compareDate, today)) {
       return 'Yesterday';
     }
 
-    final diffDays = now.difference(date).inDays;
+    final diffDays = today.difference(compareDate).inDays;
 
     if (diffDays < 7) {
-      log('within 7 days: $diffDays');
-      return DateFormat('EEE').format(date); // Mon Tue Wed
+      return DateFormat('EEE').format(date); // Mon, Tue, Wed, etc.
     }
 
     if (now.year == date.year) {
-      log('same year');
-      return DateFormat('dd/MM').format(date);
+      return DateFormat('dd/MM').format(date); // Same year: show day/month
     }
 
-    log('different year');
-    return DateFormat('dd/MM/yyyy').format(date);
+    return DateFormat(
+      'dd/MM/yyyy',
+    ).format(date); // Different year: show full date
   }
 
-  /// Date separator between messages
-  static String messageDate(DateTime? dt) {
+  static String messageTime(DateTime? dt) {
     if (dt == null) return '';
 
-    final now = DateTime.now();
-    final date = dt.toLocal();
+    // If server sent UTC, convert once to local to avoid 2h diff; otherwise use as-is
+    final date = dt.isUtc ? dt.toLocal() : dt;
 
-    if (_isSameDay(date, now)) return 'Today';
-    if (_isYesterday(date, now)) return 'Yesterday';
-
-    final diffDays = now.difference(date).inDays;
-
-    if (diffDays < 7) {
-      return DateFormat('EEEE').format(date);
-    }
-
-    if (now.year == date.year) {
-      return DateFormat('MMMM d').format(date);
-    }
-
-    return DateFormat('MMMM d, yyyy').format(date);
+    return DateFormat('hh:mm a').format(date);
   }
 }

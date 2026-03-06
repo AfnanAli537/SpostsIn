@@ -26,6 +26,14 @@ class MessageModel {
     this.status,
   });
 
+  /// Parses API datetime; if no timezone (Z or +00:00), treats as UTC to fix 2h diff.
+  static DateTime? _parseDateTimeUtc(dynamic value) {
+    final str = value?.toString().trim() ?? '';
+    if (str.isEmpty) return null;
+    final hasTz = str.endsWith('Z') || RegExp(r'[+-]\d{2}:?\d{2}$').hasMatch(str);
+    return DateTime.tryParse(hasTz ? str : '${str}Z');
+  }
+
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['id']?.toString() ?? '',
@@ -34,7 +42,7 @@ class MessageModel {
       senderAvatar: json['senderAvatar'],
       content: json['content'] ?? '',
       attachmentUrl: json['attachmentUrl'],
-      sentAt: DateTime.tryParse(json['sentAt'] ?? '') ?? DateTime.now(),
+      sentAt: _parseDateTimeUtc(json['sentAt']) ?? DateTime.now(),
       isEdited: json['isEdited'] ?? false,
       isDeleted: json['isDeleted'] ?? false,
       isMe: json['isMe'] ?? false,

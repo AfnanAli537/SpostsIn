@@ -24,6 +24,14 @@ class ChatModel {
     this.lastMessageStatus,
   });
 
+  /// Parses API datetime; if no timezone (Z or +00:00), treats as UTC to fix 2h diff.
+  static DateTime? _parseDateTimeUtc(dynamic value) {
+    final str = value?.toString().trim() ?? '';
+    if (str.isEmpty) return null;
+    final hasTz = str.endsWith('Z') || RegExp(r'[+-]\d{2}:?\d{2}$').hasMatch(str);
+    return DateTime.tryParse(hasTz ? str : '${str}Z');
+  }
+
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
       id: json['targetId']?.toString() ?? '',
@@ -33,7 +41,7 @@ class ChatModel {
       members: [], // API does not return members here
       lastMessage: json['lastMessage']?.toString(),
       lastMessageTime:
-          DateTime.tryParse(json['lastMessageTime'] ?? '') ?? DateTime.now(),
+          _parseDateTimeUtc(json['lastMessageTime']) ?? DateTime.now(),
       unreadCount: json['unreadCount'] ?? 0,
       isOnline: json['isOnline'] ?? false,
       lastMessageStatus: json['lastMessageStatus'],

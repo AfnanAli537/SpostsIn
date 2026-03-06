@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
@@ -271,7 +272,7 @@ class _ChatViewState extends State<ChatView> {
                 : null,
             onSaveEdit: _saveEdit,
             onCancelEdit: () => setState(() => _editingId = null),
-            timeText: ChatTimeHelper.chatList(msg.sentAt),
+            timeText: ChatTimeHelper.messageTime(msg.sentAt),
           );
         },
       ),
