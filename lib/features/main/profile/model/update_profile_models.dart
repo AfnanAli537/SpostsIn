@@ -5,13 +5,12 @@ abstract class UpdateProfileData {
 }
 
 class UpdatePlayerProfile extends UpdateProfileData {
+  final String? userId;
   final String? firstName;
   final String? lastName;
   final int? height;
   final int? weight;
   final int? age;
-  // final String? gender;
-  // final String? location;
   final String? sportName;
   final String? position;
   final bool? hasClub;
@@ -19,13 +18,12 @@ class UpdatePlayerProfile extends UpdateProfileData {
   final String? imageUrl;
 
   UpdatePlayerProfile({
+    this.userId,
     this.firstName,
     this.lastName,
     this.height,
     this.weight,
     this.age,
-    // this.gender,
-    // this.location,
     this.sportName,
     this.position,
     this.hasClub,
@@ -36,26 +34,24 @@ class UpdatePlayerProfile extends UpdateProfileData {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (firstName != null) 'firstName': firstName,
-      if (lastName != null) 'lastName': lastName,
-      if (height != null) 'height': height,
-      if (weight != null) 'weight': weight,
-      if (age != null) 'age': age,
-      // if (gender != null) 'gender': gender,
-      // if (location != null) 'location': location,
-      if (sportName != null) 'sportName': sportName,
-      if (position != null) 'position': position,
-      if (hasClub != null) 'hasClub': hasClub,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (userId != null) 'UserId': userId,
+      if (firstName != null) 'FirstName': firstName,
+      if (lastName != null) 'LastName': lastName,
+      if (height != null) 'Height': height,
+      if (weight != null) 'Weight': weight,
+      if (age != null) 'Age': age,
+      if (sportName != null) 'SportName': sportName,
+      if (position != null) 'Position': position,
+      if (hasClub != null) 'HasClub': hasClub,
+      if (imageUrl != null) 'profilePictureUrl': imageUrl,
     };
   }
 }
 
 class UpdateCoachProfile extends UpdateProfileData {
+  final String? userId;
   final String? firstName;
   final String? lastName;
-  // final String? gender;
-  // final String? location;
   final String? sportName;
   final int? yearsOfExperience;
   final bool? hasClub;
@@ -63,10 +59,9 @@ class UpdateCoachProfile extends UpdateProfileData {
   final String? imageUrl;
 
   UpdateCoachProfile({
+    this.userId,
     this.firstName,
     this.lastName,
-    // this.gender,
-    // this.location,
     this.sportName,
     this.yearsOfExperience,
     this.hasClub,
@@ -77,33 +72,30 @@ class UpdateCoachProfile extends UpdateProfileData {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (firstName != null) 'firstName': firstName,
-      if (lastName != null) 'lastName': lastName,
-      // if (gender != null) 'gender': gender,
-      // if (location != null) 'location': location,
-      if (sportName != null) 'sportName': sportName,
-      if (yearsOfExperience != null) 'yearsOfExperience': yearsOfExperience,
-      if (hasClub != null) 'hasClub': hasClub,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (userId != null) 'UserId': userId,
+      if (firstName != null) 'FirstName': firstName,
+      if (lastName != null) 'LastName': lastName,
+      if (sportName != null) 'SportName': sportName,
+      if (yearsOfExperience != null) 'YearsOfExperience': yearsOfExperience,
+      if (hasClub != null) 'HasClub': hasClub,
+      if (imageUrl != null) 'profilePictureUrl': imageUrl,
     };
   }
 }
 
 class UpdateScoutProfile extends UpdateProfileData {
+  final String? userId;
   final String? firstName;
   final String? lastName;
-  // final String? gender;
-  // final String? location;
   final String? sportName;
   final int? yearsOfExperience;
   final File? image;
   final String? imageUrl;
 
   UpdateScoutProfile({
+    this.userId,
     this.firstName,
     this.lastName,
-    // this.gender,
-    // this.location,
     this.sportName,
     this.yearsOfExperience,
     this.image,
@@ -113,18 +105,20 @@ class UpdateScoutProfile extends UpdateProfileData {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (firstName != null) 'firstName': firstName,
-      if (lastName != null) 'lastName': lastName,
+      if (userId != null) 'UserId': userId,
+      if (firstName != null) 'FirstName': firstName,
+      if (lastName != null) 'LastName': lastName,
       // if (gender != null) 'gender': gender,
       // if (location != null) 'location': location,
-      if (sportName != null) 'sportName': sportName,
-      if (yearsOfExperience != null) 'yearsOfExperience': yearsOfExperience,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (sportName != null) 'SportName': sportName,
+      if (yearsOfExperience != null) 'YearsOfExperience': yearsOfExperience,
+      if (imageUrl != null) 'profilePictureUrl': imageUrl,
     };
   }
 }
 
 class UpdateClubProfile extends UpdateProfileData {
+  final String? userId;
   final String? clubName;
   // final String? location;
   final String? foundationDate;
@@ -133,6 +127,8 @@ class UpdateClubProfile extends UpdateProfileData {
   final String? imageUrl;
 
   UpdateClubProfile({
+        this.userId,
+
     this.clubName,
     // this.location,
     this.foundationDate,
@@ -144,16 +140,20 @@ class UpdateClubProfile extends UpdateProfileData {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (clubName != null) 'clubName': clubName,
+            if (userId != null) 'UserId': userId,
+
+      if (clubName != null) 'ClubName': clubName,
       // if (location != null) 'location': location,
-      if (foundationDate != null) 'foundationDate': foundationDate,
-      if (sportTypes != null) 'sportTypes': sportTypes,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (foundationDate != null) 'FoundationDate': foundationDate,
+      if (sportTypes != null) 'SportTypes': sportTypes,
+      if (imageUrl != null) 'profilePictureUrl': imageUrl,
     };
   }
 }
 
 class UpdateInstituteProfile extends UpdateProfileData {
+    final String? userId;
+
   final String? instituteName;
   // final String? location;
   final String? industry;
@@ -161,6 +161,8 @@ class UpdateInstituteProfile extends UpdateProfileData {
   final String? imageUrl;
 
   UpdateInstituteProfile({
+        this.userId,
+
     this.instituteName,
     // this.location,
     this.industry,
@@ -171,15 +173,19 @@ class UpdateInstituteProfile extends UpdateProfileData {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (instituteName != null) 'instituteName': instituteName,
+            if (userId != null) 'UserId': userId,
+
+      if (instituteName != null) 'InstituteName': instituteName,
       // if (location != null) 'location': location,
-      if (industry != null) 'industry': industry,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (industry != null) 'Industry': industry,
+      if (imageUrl != null) 'profilePictureUrl': imageUrl,
     };
   }
 }
 
 class UpdateOtherProfile extends UpdateProfileData {
+    final String? userId;
+
   final String? firstName;
   final String? lastName;
   final int? gender;
@@ -188,6 +194,8 @@ class UpdateOtherProfile extends UpdateProfileData {
   final String? imageUrl;
 
   UpdateOtherProfile({
+        this.userId,
+
     this.firstName,
     this.lastName,
     this.gender,
@@ -199,11 +207,12 @@ class UpdateOtherProfile extends UpdateProfileData {
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (firstName != null) 'firstName': firstName,
-      if (lastName != null) 'lastName': lastName,
-      if (gender != null) 'gender': gender,
-      if (location != null) 'location': location,
-      if (imageUrl != null) 'imageUrl': imageUrl,
+            if (userId != null) 'UserId': userId,
+      if (firstName != null) 'FirstName': firstName,
+      if (lastName != null) 'LastName': lastName,
+      if (gender != null) 'Gender': gender,
+      if (location != null) 'Location': location,
+      if (imageUrl != null) 'profilePictureUrl': imageUrl,
     };
   }
 }

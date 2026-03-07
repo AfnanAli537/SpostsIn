@@ -64,8 +64,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileLoading());
       final updatedProfile = await _repository.updateProfile(event.updateData);
 
-      // ✅ Only emit ProfileUpdated - the screen will pop
-      // The profile screen that's underneath will reload itself
       emit(ProfileUpdated(profile: updatedProfile));
       await Future.delayed(const Duration(milliseconds: 100));
 

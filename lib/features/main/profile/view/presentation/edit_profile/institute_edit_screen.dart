@@ -52,6 +52,7 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
     instituteNameController.dispose();
     industryController.dispose();
     bioController.dispose();
+    imageNotifier.dispose();
     super.dispose();
   }
 
@@ -65,6 +66,7 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       instituteName: instituteNameController.text.trim(),
       bio: bioController.text.trim(),
       // location: locationNotifier.value,

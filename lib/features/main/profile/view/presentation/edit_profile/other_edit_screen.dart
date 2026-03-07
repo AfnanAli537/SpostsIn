@@ -46,7 +46,6 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
   void initState() {
  super.initState();
   
-  // ✅ Split name properly
   final nameParts = widget.profile.name.split(' ');
   final firstName = nameParts.isNotEmpty ? nameParts.first : '';
   final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
@@ -55,7 +54,6 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
   lastNameController = TextEditingController(text: lastName);
   bioController = TextEditingController(text: widget.profile.description);
   
-    // ✅ Convert gender ID to label
   String? initialGender;
   if (widget.profile.otherData?.gender != null) {
     initialGender = GenderHelper.genderIdToLabel(
@@ -71,6 +69,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     firstNameController.dispose();
     lastNameController.dispose();
     bioController.dispose();
+    genderNotifier.dispose();
     super.dispose();
   }
 
@@ -84,6 +83,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       gender: genderNotifier.value,

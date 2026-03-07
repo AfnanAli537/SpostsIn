@@ -1,9 +1,3 @@
-// ✅ CORRECTED: ALL durations in SECONDS (not minutes or hours!)
-// API specification:
-// - lesson.duration: SECONDS
-// - lesson.watchedTime: SECONDS  
-// - course.totalDurationHours: HOURS (only this one!)
-
 import 'dart:io';
 
 class CourseModel {
@@ -19,7 +13,7 @@ class CourseModel {
   final bool isOwner;
   final num progress; // 0-100
   final int lessonsCount;
-  final double totalDurationHours; // ✅ HOURS (only this field!)
+  final double totalDurationHours;
   final int enrolledUsersCount;
 
   CourseModel({
@@ -83,7 +77,6 @@ class CourseModel {
 
   bool get isFree => price == 0;
 
-  // ✅ Format course total duration (input: hours)
   String get formattedDuration {
     if (totalDurationHours < 1) {
       final minutes = (totalDurationHours * 60).round();
@@ -131,10 +124,10 @@ class LessonModel {
   final String title;
   final String? description;
   final String? videoUrl;
-  final double duration; // ✅ SECONDS (not minutes!)
+  final double duration; 
   final int order;
   final bool isWatched;
-  final double watchedTime; // ✅ SECONDS (not minutes!)
+  final double watchedTime; 
   final double videoZoomScale;
 
   LessonModel({
@@ -205,7 +198,6 @@ class LessonModel {
     return (watchedTime / duration * 100).clamp(0.0, 100.0);
   }
 
-  // ✅ For video player: already in seconds!
   int get durationInSeconds => duration.round();
   int get watchedTimeInSeconds => watchedTime.round();
 }
@@ -396,7 +388,7 @@ class UpdateCourseRequest {
 class CreateLessonRequest {
   final String title;
   final String description;
-  final double duration; // ✅ IN SECONDS
+  final double duration; 
   final int? order;
   final File videoFile;
 
@@ -413,7 +405,7 @@ class UpdateLessonRequest {
   final String lessonId;
   final String title;
   final String description;
-  final double duration; // ✅ IN SECONDS
+  final double duration; 
   final int order;
   final dynamic video;
 
@@ -428,7 +420,7 @@ class UpdateLessonRequest {
 }
 
 class UpdateProgressRequest {
-  final double watchedTime; // ✅ IN SECONDS
+  final double watchedTime; 
   final bool isWatched;
   final double zoomScale;
 

@@ -90,14 +90,14 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
     final price = double.tryParse(_priceController.text) ?? 0;
 
     context.read<CoursesBloc>().add(
-          CreateCourse(
-            title: _titleController.text.trim(),
-            description: _descriptionController.text.trim(),
-            price: price,
-            sportTypeId: sportId,
-            thumbnailFile: _selectedThumbnail,
-          ),
-        );
+      CreateCourse(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        price: price,
+        sportTypeId: sportId,
+        thumbnailFile: _selectedThumbnail,
+      ),
+    );
   }
 
   @override
@@ -116,7 +116,12 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                 backgroundColor: Colors.green,
               );
               Navigator.pop(context);
-              _showAddLessonDialog(context, state.course);
+              context.read<CoursesBloc>().add(
+                const FetchCreatedCourses(page: 1, size: 1, isRefresh: true),
+              );
+            } else if (state is MyCoursesLoaded && state.courses.isNotEmpty) {
+              final newCourse = state.courses.first; // Has the ID!
+              _showAddLessonDialog(context, newCourse);
             } else if (state is CoursesError) {
               Fluttertoast.showToast(
                 msg: state.message,
@@ -198,7 +203,8 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                       ],
                                     )
                                   : Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.add_photo_alternate_outlined,
@@ -316,7 +322,9 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                             text: 'Create Course',
                             isLoading: isLoading,
                             enabled: !isLoading,
-                            onPressed: isLoading ? ()=>{} : () => _createCourse(builderContext),
+                            onPressed: isLoading
+                                ? () => {}
+                                : () => _createCourse(builderContext),
                           );
                         },
                       ),
@@ -330,13 +338,14 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
       ),
     );
   }
-void _showAddLessonDialog(BuildContext context, CourseModel course) {
-  final coursesBloc = context.read<CoursesBloc>();
-  
-  showDialog(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: const Text('Add Lesson'),
+
+  void _showAddLessonDialog(BuildContext context, CourseModel course) {
+    final coursesBloc = context.read<CoursesBloc>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Add Lesson'),
         content: const Text(
           'Would you like to add a lesson to this course now?',
         ),
@@ -347,26 +356,26 @@ void _showAddLessonDialog(BuildContext context, CourseModel course) {
             },
             child: const Text('Add Later'),
           ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(dialogContext);
-            Navigator.push(
-              context, // Use original context
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: coursesBloc,
-                  child: UploadVideoScreen(
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.push(
+                context, // Use original context
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: coursesBloc,
+                    child: UploadVideoScreen(
                       courseId: course.id,
                       existingLessonsCount: 0, // First lesson
                     ),
+                  ),
                 ),
-              ),
-            );
-          },
-          child: const Text('Add Now'),
-        ),
-      ],
-    ),
-  );
-}
+              );
+            },
+            child: const Text('Add Now'),
+          ),
+        ],
+      ),
+    );
+  }
 }

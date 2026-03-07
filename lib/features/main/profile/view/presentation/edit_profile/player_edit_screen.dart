@@ -72,6 +72,8 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     weightController.dispose();
     ageController.dispose();
     bioController.dispose();
+    sportNameNotifier.dispose();
+    positionNotifier.dispose();
     super.dispose();
   }
 
@@ -96,6 +98,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       height: parsedHeight,

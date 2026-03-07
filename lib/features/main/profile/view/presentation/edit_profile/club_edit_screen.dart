@@ -32,7 +32,7 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
   late final TextEditingController clubNameController;
   late final TextEditingController foundDateController;
   late final TextEditingController bioController;
-  late final ValueNotifier<String?> locationNotifier;
+  // late final ValueNotifier<String?> locationNotifier;
   late final ValueNotifier<List<String>> selectedSportsNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
 
@@ -49,7 +49,7 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
     foundDateController = TextEditingController(text: clubData.foundedYear);
     bioController = TextEditingController(text: widget.profile.description);
     // locationNotifier = ValueNotifier<String?>(null);
-    selectedSportsNotifier = ValueNotifier<List<String>>([]);
+    selectedSportsNotifier = ValueNotifier<List<String>>((widget.profile.clubData?.sport ?? []).whereType<String>().toList());
   }
 
   @override
@@ -57,6 +57,8 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
     clubNameController.dispose();
     foundDateController.dispose();
     bioController.dispose();
+    imageNotifier.dispose();
+    selectedSportsNotifier.dispose();
     super.dispose();
   }
 
@@ -70,6 +72,7 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       clubName: clubNameController.text.trim(),
       bio: bioController.text.trim(),
       // location: locationNotifier.value,

@@ -142,42 +142,30 @@ class SharedPref {
     );
   }
 
-  // ==================== ADD TO shared_pref.dart ====================
-
-  // Multi-Account Management
   static const String _accountsListKey = 'saved_accounts';
   static const String _activeAccountKey = 'active_account_id';
 
-  /// Save multiple accounts
   Future<void> saveAccount(LoginResponse response) async {
-    // Save current user data
     await saveUserToPrefs(response);
 
-    // Get existing accounts list
     final accountsList = await getSavedAccounts();
 
-    // Check if account already exists
     final existingIndex = accountsList.indexWhere(
       (acc) => acc.userId == response.userId,
     );
 
     if (existingIndex != -1) {
-      // Update existing account
       accountsList[existingIndex] = response;
     } else {
-      // Add new account
       accountsList.add(response);
     }
 
-    // Save updated accounts list
     final accountsJson = accountsList.map((acc) => acc.toJson()).toList();
     await _prefs.setString(_accountsListKey, jsonEncode(accountsJson));
 
-    // Set as active account
     await _prefs.setString(_activeAccountKey, response.userId!);
   }
 
-  /// Get all saved accounts
   Future<List<LoginResponse>> getSavedAccounts() async {
     final accountsStr = _prefs.getString(_accountsListKey);
     if (accountsStr == null) return [];
@@ -190,7 +178,6 @@ class SharedPref {
     }
   }
 
-  /// Switch to another account
   Future<void> switchAccount(String userId) async {
     final accounts = await getSavedAccounts();
     final account = accounts.firstWhere(
@@ -198,12 +185,10 @@ class SharedPref {
       orElse: () => throw Exception('Account not found'),
     );
 
-    // Save as current user
     await saveUserToPrefs(account);
     await _prefs.setString(_activeAccountKey, userId);
   }
 
-  /// Remove account from saved accounts
   Future<void> removeAccount(String userId) async {
     final accounts = await getSavedAccounts();
     accounts.removeWhere((acc) => acc.userId == userId);
@@ -211,7 +196,6 @@ class SharedPref {
     final accountsJson = accounts.map((acc) => acc.toJson()).toList();
     await _prefs.setString(_accountsListKey, jsonEncode(accountsJson));
 
-    // If removing active account, clear current session
     final activeAccount = _prefs.getString(_activeAccountKey);
     if (activeAccount == userId) {
       await clearToken();
@@ -219,7 +203,6 @@ class SharedPref {
     }
   }
 
-  /// Get active account ID
   String? getActiveAccountId() {
     return _prefs.getString(_activeAccountKey);
   }

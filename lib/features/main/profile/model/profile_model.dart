@@ -1,3 +1,5 @@
+import 'package:sports_in/core/mappers/enum_mapper.dart';
+
 class ProfileModel {
   final String id;
   final String name;
@@ -20,7 +22,7 @@ class ProfileModel {
   final OtherSpecificData? otherData;
   final bool isConnected;
   final bool isFollowing;
-  final bool isOwner; // ✅ Added isOwner field
+  final bool isOwner; 
 
   ProfileModel({
     required this.id,
@@ -44,7 +46,7 @@ class ProfileModel {
     this.otherData,
     this.isConnected = false,
     this.isFollowing = false,
-    this.isOwner = false, // ✅ Default value
+    this.isOwner = false, 
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -104,7 +106,7 @@ class ProfileModel {
           : null,
       isConnected: json['isConnected'] as bool? ?? false,
       isFollowing: json['isFollowing'] as bool? ?? false,
-      isOwner: json['isOwner'] as bool? ?? false, // ✅ Parse from JSON
+      isOwner: json['isOwner'] as bool? ?? false, 
     );
   }
 
@@ -148,7 +150,7 @@ class ProfileModel {
       'otherData': otherData?.toJson(),
       'isConnected': isConnected,
       'isFollowing': isFollowing,
-      'isOwner': isOwner, // ✅ Include in JSON
+      'isOwner': isOwner,
     };
   }
 
@@ -174,7 +176,7 @@ class ProfileModel {
     OtherSpecificData? otherData,
     bool? isConnected,
     bool? isFollowing,
-    bool? isOwner, // ✅ Add to copyWith
+    bool? isOwner, 
   }) {
     return ProfileModel(
       id: id ?? this.id,
@@ -198,12 +200,11 @@ class ProfileModel {
       otherData: otherData ?? this.otherData,
       isConnected: isConnected ?? this.isConnected,
       isFollowing: isFollowing ?? this.isFollowing,
-      isOwner: isOwner ?? this.isOwner, // ✅ Include in copyWith
+      isOwner: isOwner ?? this.isOwner, 
     );
   }
 }
 
-// Rest of the classes remain the same...
 enum UserType { player, coach, scout, club, institute, other }
 
 class ProfileStats {
@@ -474,7 +475,7 @@ class PlayerSpecificData {
       weight: json['weight']?.toString(),
       preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
-      specializedSport: json['specializedSport'] ?? json['specialized_sport'],
+      specializedSport: EnumMapper.sportIdToLabel( json['sports']) ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       gender: json['gender'],
@@ -512,7 +513,7 @@ class CoachSpecificData {
 
   factory CoachSpecificData.fromJson(Map<String, dynamic> json) {
     return CoachSpecificData(
-      specializedSport: json['specializedSport'] ?? json['specialized_sport'],
+      specializedSport: EnumMapper.sportIdToLabel( json['sports']) ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       certifications: json['certifications'],
@@ -547,7 +548,7 @@ class ScoutSpecificData {
 
   factory ScoutSpecificData.fromJson(Map<String, dynamic> json) {
     return ScoutSpecificData(
-      specializedSport: json['specializedSport'] ?? json['specialized_sport'],
+      specializedSport: EnumMapper.sportIdToLabel( json['sports']) ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       organization: json['organization'],
@@ -568,7 +569,7 @@ class ScoutSpecificData {
 class ClubSpecificData {
   final String? location;
   final String? foundedYear;
-  final String? sport;
+  final List<String?>? sport;
 
   ClubSpecificData({this.location, this.foundedYear, this.sport});
 
@@ -581,7 +582,9 @@ class ClubSpecificData {
   }
 
   Map<String, dynamic> toJson() {
-    return {'location': location, 'foundedYear': foundedYear, 'sport': sport};
+    return {'location': location,
+      'foundedYear': foundedYear,
+      'sport': sport};
   }
 }
 

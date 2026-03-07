@@ -46,15 +46,9 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     super.initState();
     final scoutData = widget.profile.scoutData!;
 
-    firstNameController = TextEditingController(
-      text: widget.profile.name.split(' ').first,
-    );
-    lastNameController = TextEditingController(
-      text: widget.profile.name.split(' ').last,
-    );
-    yearsOfExperienceController = TextEditingController(
-      text: scoutData.yearsOfExperience?.toString() ?? '',
-    );
+    firstNameController = TextEditingController(text: widget.profile.name.split(' ').first,);
+    lastNameController = TextEditingController(text: widget.profile.name.split(' ').last,);
+    yearsOfExperienceController = TextEditingController(text: scoutData.yearsOfExperience?.toString() ?? '',);
     bioController = TextEditingController(text: widget.profile.description);
     sportNameNotifier = ValueNotifier<String?>(scoutData.specializedSport);
     // locationNotifier = ValueNotifier<String?>(null);
@@ -67,6 +61,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     lastNameController.dispose();
     yearsOfExperienceController.dispose();
     bioController.dispose();
+    sportNameNotifier.dispose();
     super.dispose();
   }
 
@@ -84,6 +79,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       bio: bioController.text.trim(),

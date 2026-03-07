@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
@@ -17,6 +19,7 @@ class ClubDataSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+log( 'Building ClubDataSection with data: ${data.toJson()}');
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 12.0.h),
       child: Column(
@@ -25,7 +28,7 @@ class ClubDataSection extends StatelessWidget {
           if (data.foundedYear != null)
             _buildInfoRow(string.foundDate, data.foundedYear!),
           if (data.sport != null)
-            _buildInfoRow(string.sport, data.sport!),
+            _buildInfoRow(string.sport, data.sport!.join(', ')),
         ],
       ),
     );

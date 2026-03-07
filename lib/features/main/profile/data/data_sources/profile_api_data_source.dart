@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
+import 'package:sports_in/core/mappers/enum_mapper.dart';
 // import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
@@ -89,9 +90,10 @@ class ApiProfileDataSource implements IProfileDataSource {
   @override
   Future<ProfileModel> updateProfile(Map<String, dynamic> updateData) async {
     try {
+      print(  'Updating profile with data: $updateData'); // Debug print
       final response = await _apiClient.put(
         Endpoints.updateProfile,
-        data: updateData,
+        data: FormData.fromMap(updateData),
       );
 
       if (response.statusCode == 200) {
@@ -412,7 +414,7 @@ Future<List<Course>> getCourses({
                 role: _getRoleText(
                   userType,
                   json['specialization'],
-                  sportsList,
+                  sportsList!.first,
                 ),
                 profileImage: json['profilePictureUrl'] ?? '',
                 isConnected: json['connectionStatus'] == 'Connected',
@@ -485,14 +487,14 @@ Future<List<Course>> getCourses({
     final connectionStatus = json['connectionStatus']?.toString();
     final sportsList = json['sports'] as List?;
     final sportsText = sportsList != null && sportsList.isNotEmpty
-        ? sportsList.first.toString()
+        ? EnumMapper.sportIdToLabel((sportsList.first as int))
         : null;
 
     return ProfileModel(
       id: json['userId'] ?? '',
       name: json['fullName'] ?? 'Unknown User',
       profileImage: json['profilePictureUrl'],
-      role: _getRoleText(userType, json['specialization'], sportsList),
+      role: _getRoleText(userType, json['specialization'], sportsText),
       description: json['bio'] ?? '',
       userType: userType,
       stats: ProfileStats(
@@ -546,17 +548,17 @@ Future<List<Course>> getCourses({
     }
   }
 
-  String _getRoleText(UserType type, String? specialization, List? sports) {
+  String _getRoleText(UserType type, String? specialization, String? sport) {
     final sportText =
         specialization ??
-        (sports != null && sports.isNotEmpty ? sports.first.toString() : '');
+        sport;
     switch (type) {
       case UserType.player:
-        return sportText.isNotEmpty ? 'Athlete - $sportText' : 'Athlete';
+        return sportText!.isNotEmpty ? 'Athlete - $sportText' : 'Athlete';
       case UserType.coach:
-        return sportText.isNotEmpty ? 'Coach - $sportText' : 'Coach';
+        return sportText!.isNotEmpty ? 'Coach - $sportText' : 'Coach';
       case UserType.scout:
-        return sportText.isNotEmpty ? 'Scout - $sportText' : 'Scout';
+        return sportText!.isNotEmpty ? 'Scout - $sportText' : 'Scout';
       case UserType.club:
         return 'Club';
       case UserType.institute:
@@ -603,7 +605,12 @@ Future<List<Course>> getCourses({
 
   ClubSpecificData _buildClubData(Map<String, dynamic> json, List? sportsList) {
     final sports =
-        sportsList?.take(6).map((s) => s.toString()).join(', ') ?? '';
+        // sportsList?.take(6).map((s) => s.toString()).join(', ') ?? '';
+      EnumMapper.sportIdsToLabels(
+        (json['sports'] as List<dynamic>?)
+            ?.map((id) => id as int)
+            .toList() ?? [],
+      );
     return ClubSpecificData(
       location: null,
       foundedYear: json['foundationDate'],
