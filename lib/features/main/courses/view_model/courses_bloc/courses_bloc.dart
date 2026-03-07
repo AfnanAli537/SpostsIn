@@ -156,6 +156,7 @@ Future<void> _onFetchCourseLessons(
     final course = await _repository.getCourseById(event.courseId);
     emit(LessonsLoaded(
       lessons: lessons,
+      courseId: event.courseId,
       isEnrolled: course.isEnrolled,
     ));
   } catch (e) {

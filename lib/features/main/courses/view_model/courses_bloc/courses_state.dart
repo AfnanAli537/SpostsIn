@@ -94,10 +94,12 @@ class CourseDetailLoaded extends CoursesState {
 class LessonsLoaded extends CoursesState {
   final List<LessonModel> lessons;
   final bool isEnrolled;
+  final String courseId;
 
   const LessonsLoaded({
     required this.lessons,
     required this.isEnrolled,
+    required this.courseId
   });
 
   @override

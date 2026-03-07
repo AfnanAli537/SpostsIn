@@ -66,7 +66,7 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
     lastNameController.dispose();
     bioController.dispose();
     yearsOfExperienceController.dispose();
-    bioController.dispose();
+    // bioController.dispose();
     imageNotifier.dispose();
     sportNameNotifier.dispose();
     super.dispose();

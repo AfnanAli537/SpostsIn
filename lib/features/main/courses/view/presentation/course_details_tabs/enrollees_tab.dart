@@ -5,19 +5,19 @@ import 'package:sports_in/features/main/courses/view/widgets/enrollee_card.dart'
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-class EnrolleesScreen extends StatefulWidget {
+class EnrolleesTab extends StatefulWidget {
   final String courseId;
 
-  const EnrolleesScreen({
+  const EnrolleesTab({
     super.key,
     required this.courseId,
   });
 
   @override
-  State<EnrolleesScreen> createState() => _EnrolleesScreenState();
+  State<EnrolleesTab> createState() => _EnrolleesTabState();
 }
 
-class _EnrolleesScreenState extends State<EnrolleesScreen> {
+class _EnrolleesTabState extends State<EnrolleesTab> {
   @override
   void initState() {
     super.initState();

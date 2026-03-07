@@ -6,19 +6,19 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-class RevenueScreen extends StatefulWidget {
+class RevenueTab extends StatefulWidget {
   final String courseId;
 
-  const RevenueScreen({
+  const RevenueTab({
     super.key,
     required this.courseId,
   });
 
   @override
-  State<RevenueScreen> createState() => _RevenueScreenState();
+  State<RevenueTab> createState() => _RevenueTabState();
 }
 
-class _RevenueScreenState extends State<RevenueScreen> {
+class _RevenueTabState extends State<RevenueTab> {
   final DateTime _now = DateTime.now();
   late int _selectedMonth;
   late int _selectedYear;

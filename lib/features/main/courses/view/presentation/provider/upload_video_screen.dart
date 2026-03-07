@@ -12,21 +12,21 @@ import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-class UploadVideoScreen extends StatefulWidget {
+class UploadLessonScreen extends StatefulWidget {
   final String courseId;
   final int existingLessonsCount;
 
-  const UploadVideoScreen({
+  const UploadLessonScreen({
     super.key,
     required this.courseId,
     required this.existingLessonsCount,
   });
 
   @override
-  State<UploadVideoScreen> createState() => _UploadVideoScreenState();
+  State<UploadLessonScreen> createState() => _UploadLessonScreenState();
 }
 
-class _UploadVideoScreenState extends State<UploadVideoScreen> {
+class _UploadLessonScreenState extends State<UploadLessonScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -162,6 +162,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     );
 
     if (mounted) {
+      Navigator.pop(context, true);
       Navigator.pop(context, true);
     }
   }

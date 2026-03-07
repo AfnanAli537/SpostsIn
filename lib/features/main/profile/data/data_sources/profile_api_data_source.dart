@@ -488,7 +488,7 @@ Future<List<Course>> getCourses({
     final sportsList = json['sports'] as List?;
     final sportsText = sportsList != null && sportsList.isNotEmpty
         ? EnumMapper.sportIdToLabel((sportsList.first as int))
-        : null;
+        : json['specialization'];
 
     return ProfileModel(
       id: json['userId'] ?? '',
@@ -586,7 +586,7 @@ Future<List<Course>> getCourses({
     Map<String, dynamic> json,
     String? sportsText,
   ) => CoachSpecificData(
-    specializedSport: sportsText ?? json['specialization'],
+    specializedSport:  json['specialization'] ?? sportsText,
     yearsOfExperience: json['yearsOfExperience'],
     certifications: null,
     age: json['age']?.toString(),
@@ -597,7 +597,7 @@ Future<List<Course>> getCourses({
     Map<String, dynamic> json,
     String? sportsText,
   ) => ScoutSpecificData(
-    specializedSport: sportsText ?? json['specialization'],
+    specializedSport:  json['specialization'] ?? sportsText,
     yearsOfExperience: json['yearsOfExperience'],
     gender: json['gender'],
     organization: null,

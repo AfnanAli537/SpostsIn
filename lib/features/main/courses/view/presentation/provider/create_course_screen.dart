@@ -115,7 +115,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                 msg: 'Course created successfully',
                 backgroundColor: Colors.green,
               );
-              Navigator.pop(context);
+              // Navigator.pop(context);
               context.read<CoursesBloc>().add(
                 const FetchCreatedCourses(page: 1, size: 1, isRefresh: true),
               );
@@ -364,7 +364,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                 MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
                     value: coursesBloc,
-                    child: UploadVideoScreen(
+                    child: UploadLessonScreen(
                       courseId: course.id,
                       existingLessonsCount: 0, // First lesson
                     ),

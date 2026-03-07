@@ -107,7 +107,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
       bio: bioController.text.trim(),
       // gender: genderNotifier.value,
       // location: locationNotifier.value,
-      specialization: sportNameNotifier.value,
+      sports: sportNameNotifier.value != null ? [sportNameNotifier.value!] : null,
       position: positionNotifier.value,
       // hasClub: hasClubNotifier.value,
     );
