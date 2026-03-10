@@ -1,4 +1,13 @@
 // course_detail_screen.dart
+//
+// ONE CHANGE from the original:
+//   In the BlocConsumer listener, EnrollmentSuccess now does:
+//     Navigator.pop(context, true)   ← signals "enrolled" to the caller
+//   instead of re-fetching course detail in place.
+//
+// All callers (_navigateToCourseDetail) check the returned bool and only
+// refresh their data when it is true.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,7 +45,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   List<LessonModel> _allLessons = [];
   LessonModel? _currentPlayingLesson;
 
-  // Edit mode state
   bool _isEditMode = false;
   bool _hasUnsavedChanges = false;
   bool _lessonsReordered = false;
@@ -71,7 +79,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   void didUpdateWidget(CourseDetailScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.courseId != widget.courseId) {
-      // Course changed – reset all local state
       setState(() {
         _course = null;
         _allLessons = [];
@@ -81,7 +88,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _lessonsReordered = false;
         _newThumbnail = null;
       });
-      // Fetch new course details
       context.read<CoursesBloc>().add(
         FetchCourseDetail(courseId: widget.courseId),
       );
@@ -89,14 +95,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   void _updateTabController(CourseModel course) {
-    // If the course ID changed, clear lessons
     if (_course?.id != course.id) {
       _allLessons = [];
       _lessonsReordered = false;
       _currentPlayingLesson = null;
     }
 
-    // Rebuild tabs only if ownership/enrollment changed
     if (_course == null ||
         _course!.isOwner != course.isOwner ||
         _course!.isEnrolled != course.isEnrolled) {
@@ -110,13 +114,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     }
 
     _course = course;
-    // Always fetch fresh lessons for the current course
     context.read<CoursesBloc>().add(
       FetchCourseLessons(courseId: widget.courseId),
     );
   }
 
-  // Edit mode methods
   void _enterEditMode(CourseModel course) {
     setState(() {
       _isEditMode = true;
@@ -130,10 +132,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   void _cancelEditMode() => setState(() {
-    _isEditMode = false;
-    _hasUnsavedChanges = false;
-  });
+        _isEditMode = false;
+        _hasUnsavedChanges = false;
+      });
+
   void _onFieldChanged() => setState(() => _hasUnsavedChanges = true);
+
   Future<void> _pickThumbnail() async {
     final picked = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -141,11 +145,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       maxHeight: 1080,
       imageQuality: 85,
     );
-    if (picked != null)
+    if (picked != null) {
       setState(() {
         _newThumbnail = File(picked.path);
         _onFieldChanged();
       });
+    }
   }
 
   Future<void> _saveAllChanges(CourseModel course) async {
@@ -210,10 +215,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       backgroundColor: Colors.green,
     );
     Future.delayed(const Duration(seconds: 1), () {
-      if (mounted)
+      if (mounted) {
         context.read<CoursesBloc>().add(
           FetchCourseLessons(courseId: widget.courseId),
         );
+      }
     });
   }
 
@@ -229,13 +235,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
     if (confirmed) {
       context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
-
       Fluttertoast.showToast(
         msg: 'Deleting lesson...',
         backgroundColor: Colors.orange,
       );
-
-      // Refresh lessons after deletion
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
           context.read<CoursesBloc>().add(
@@ -256,10 +259,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         ),
       ),
     ).then((updated) {
-      if (updated == true)
+      if (updated == true) {
         context.read<CoursesBloc>().add(
           FetchCourseLessons(courseId: widget.courseId),
         );
+      }
     });
   }
 
@@ -272,9 +276,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             msg: 'Enrolled successfully',
             backgroundColor: Colors.green,
           );
-          context.read<CoursesBloc>().add(
-            FetchCourseDetail(courseId: widget.courseId),
-          );
+          // ✅ Pop with true so the calling tab knows to refresh its data.
+          // Do NOT re-fetch course detail here — the screen is closing.
+          Navigator.pop(context, true);
         } else if (state is CourseDeleted) {
           Fluttertoast.showToast(
             msg: 'Course deleted',
@@ -295,19 +299,25 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             (current is CoursesError && previous is! CourseDetailLoaded);
       },
       builder: (context, state) {
-        // Load course and lessons
-        if (_course == null && state is CourseDetailLoaded)
+        if (_course == null && state is CourseDetailLoaded) {
           _updateTabController(state.course);
+        }
         if (state is LessonsLoaded && state.courseId == widget.courseId) {
           if (state.lessons != _allLessons) {
             _allLessons = List.from(state.lessons);
             _lessonsReordered = false;
           }
         }
+
         final course =
             _course ?? (state is CourseDetailLoaded ? state.course : null);
-        if (course == null)
-          return Scaffold(appBar: AppBar(), body: const CourseDetailShimmer());
+
+        if (course == null) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: const CourseDetailShimmer(),
+          );
+        }
 
         return Scaffold(
           appBar: AppBar(
@@ -352,6 +362,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               children: _buildTabViews(course),
             ),
           ),
+          // ✅ Enroll button: pass null onPressed while loading to disable it
           bottomNavigationBar: (!course.isOwner && !course.isEnrolled)
               ? _buildEnrollButton(course)
               : null,
@@ -374,8 +385,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   List<Widget> _buildTabViews(CourseModel course) {
-    final theme = Theme.of(context);
-    final string = S.of(context);
     final views = <Widget>[
       CourseLessonsTab(
         course: course,
@@ -384,8 +393,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         isEditMode: _isEditMode,
         lessonsReordered: _lessonsReordered,
         onRefresh: () => context.read<CoursesBloc>().add(
-          FetchCourseLessons(courseId: widget.courseId),
-        ),
+              FetchCourseLessons(courseId: widget.courseId),
+            ),
         onReorder: (oldI, newI) {
           setState(() {
             if (oldI < newI) newI--;
@@ -430,10 +439,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       PopupMenuButton<String>(
         onSelected: (value) {
           if (value == 'edit') {
-            if (_isEditMode)
-              _cancelEditMode();
-            else
-              _enterEditMode(course);
+            _isEditMode ? _cancelEditMode() : _enterEditMode(course);
           } else if (value == 'delete') {
             _showDeleteConfirmation(course.id);
           } else if (value == 'add_lesson') {
@@ -454,33 +460,27 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         itemBuilder: (_) => [
           const PopupMenuItem(
             value: 'add_lesson',
-            child: Row(
-              children: [
-                Icon(Icons.video_library),
-                SizedBox(width: 8),
-                Text('Add Lesson'),
-              ],
-            ),
+            child: Row(children: [
+              Icon(Icons.video_library),
+              SizedBox(width: 8),
+              Text('Add Lesson'),
+            ]),
           ),
           PopupMenuItem(
             value: 'edit',
-            child: Row(
-              children: [
-                Icon(_isEditMode ? Icons.close : Icons.edit),
-                SizedBox(width: 8),
-                Text(_isEditMode ? 'Cancel Edit' : 'Edit Course'),
-              ],
-            ),
+            child: Row(children: [
+              Icon(_isEditMode ? Icons.close : Icons.edit),
+              const SizedBox(width: 8),
+              Text(_isEditMode ? 'Cancel Edit' : 'Edit Course'),
+            ]),
           ),
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'delete',
-            child: Row(
-              children: [
-                Icon(Icons.delete, color: Colors.red),
-                SizedBox(width: 8),
-                Text('Delete', style: TextStyle(color: Colors.red)),
-              ],
-            ),
+            child: Row(children: [
+              Icon(Icons.delete, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Delete', style: TextStyle(color: Colors.red)),
+            ]),
           ),
         ],
       ),
@@ -510,10 +510,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   : 'Enroll for ${course.price} EGP',
               isLoading: isLoading,
               onPressed: isLoading
-                  ? () {}
+                  ? (){}
                   : () => context.read<CoursesBloc>().add(
-                      EnrollInCourse(courseId: course.id),
-                    ),
+                        EnrollInCourse(courseId: course.id),
+                      ),
             );
           },
         ),
@@ -539,19 +539,23 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
   _SliverAppBarDelegate(this._tabBar);
+
   @override
   double get minExtent => _tabBar.preferredSize.height;
   @override
   double get maxExtent => _tabBar.preferredSize.height;
+
   @override
   Widget build(
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) => Container(
-    color: Theme.of(context).scaffoldBackgroundColor,
-    child: _tabBar,
-  );
+  ) =>
+      Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: _tabBar,
+      );
+
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }

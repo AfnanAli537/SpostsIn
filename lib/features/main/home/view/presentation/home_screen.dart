@@ -9,7 +9,6 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/network/api_client.dart';
-import 'package:sports_in/core/utils/extensions/extensions.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart';
@@ -43,7 +42,6 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeData() {
     _prefsFuture = SharedPreferences.getInstance();
-
     _userFuture = _prefsFuture
         .then((prefsInstance) {
           sharedPref = SharedPref(prefsInstance);
@@ -67,30 +65,18 @@ class _HomePageState extends State<HomePage> {
     return FutureBuilder<LoginResponse?>(
       future: _userFuture,
       builder: (context, snapshot) {
-        log('📊 FutureBuilder state: ${snapshot.connectionState}');
-        log('📊 Has data: ${snapshot.hasData}');
-        log('📊 Has error: ${snapshot.hasError}');
-
         if (snapshot.hasError) {
           return Scaffold(
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64.sp,
-                    color: Colors.red[300],
-                  ),
+                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
                   SizedBox(height: 16.h),
                   Text('${strings.error}: ${snapshot.error}'),
                   SizedBox(height: 16.h),
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _initializeData();
-                      });
-                    },
+                    onPressed: () => setState(() => _initializeData()),
                     child: Text(strings.retry),
                   ),
                 ],
@@ -125,11 +111,7 @@ class _HomePageState extends State<HomePage> {
                   Text(strings.noUserDataFound),
                   SizedBox(height: 16.h),
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _initializeData();
-                      });
-                    },
+                    onPressed: () => setState(() => _initializeData()),
                     child: Text(strings.retry),
                   ),
                 ],
@@ -151,7 +133,7 @@ class _HomePageState extends State<HomePage> {
               )..add(const FetchPosts()),
             ),
             BlocProvider(
-              create: (context) => OpportunityBloc(
+              create: (_) => OpportunityBloc(
                 opportunityRepo: OpportunityReposatory(
                   OpportunityRemoteDataSourceImpl(apiClient: apiClient),
                 ),
@@ -160,122 +142,95 @@ class _HomePageState extends State<HomePage> {
             BlocProvider(create: (_) => getIt<CoursesBloc>()),
           ],
           child: Scaffold(
-            body: BlocBuilder<PostsBloc, PostsState>(
-              builder: (context, state) {
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<PostsBloc>().add(const FetchPosts(page: 1));
-                    context.read<OpportunityBloc>().add(
-                      const FetchOpportunities(isRefresh: true),
-                    );
-                    context.read<CoursesBloc>().add(
-                      FetchEnrolledCourses(page: 1, size: 10, isRefresh: true),
-                    );
-                    context.read<CoursesBloc>().add(
-                      FetchAvailableCourses(page: 1, size: 10, isRefresh: true),
-                    );
-                  },
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.w),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 25.r,
-                                backgroundColor: Colors.grey[300],
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                  size: 30.sp,
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "${strings.hi}, ${user.name?.firstName ?? strings.guest}",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: ColorManager.yellow,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    strings.happyToSeeYouToday,
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ],
+            // No RefreshIndicator here — each tab handles its own refresh
+            body: CustomScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              slivers: [
+                // ── Header: avatar + greeting ──────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 25.r,
+                          backgroundColor: Colors.grey[300],
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 30.sp,
                           ),
                         ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: HomeTab.values.map((tab) {
-                                final isSelected = _currentTab == tab;
-                                return Padding(
-                                  padding: EdgeInsets.only(right: 6.w),
-                                  child: ChoiceChip(
-                                    label: Text(tab.getName(strings)),
-                                    selected: isSelected,
-                                    onSelected: (_) {
-                                      setState(() {
-                                        _currentTab = tab;
-                                      });
-                                    },
-                                    selectedColor: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    checkmarkColor: Theme.of(
-                                      context,
-                                    ).colorScheme.secondary,
-                                    labelStyle: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14.sp,
-                                      color: isSelected
-                                          ? Theme.of(
-                                              context,
-                                            ).colorScheme.secondary
-                                          : Theme.of(
-                                              context,
-                                            ).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
+                        SizedBox(width: 12.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${strings.hi}, ${user.name?.firstName ?? strings.guest}",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                                color: ColorManager.yellow,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
+                            Text(
+                              strings.happyToSeeYouToday,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                      ),
-                      BuildContent(
-                        currentTab: _currentTab,
-                        onTabChange: (tab) {
-                          setState(() {
-                            _currentTab = tab;
-                          });
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                );
-              },
+                ),
+
+                // ── Tab chips ─────────────────────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: HomeTab.values.map((tab) {
+                          final isSelected = _currentTab == tab;
+                          return Padding(
+                            padding: EdgeInsets.only(right: 6.w),
+                            child: ChoiceChip(
+                              label: Text(tab.getName(strings)),
+                              selected: isSelected,
+                              onSelected: (_) =>
+                                  setState(() => _currentTab = tab),
+                              selectedColor:
+                                  Theme.of(context).colorScheme.primary,
+                              checkmarkColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              labelStyle: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14.sp,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ── Tab content — each child owns its scroll + refresh ─────
+                BuildContent(
+                  currentTab: _currentTab,
+                  onTabChange: (tab) => setState(() => _currentTab = tab),
+                ),
+              ],
             ),
           ),
         );

@@ -156,8 +156,6 @@ class OpportunityToggeled extends OpportunityState {
   List<Object?> get props => [opportunityId];
 }
 
-// Add these new states
-
 class MyOpportunitiesLoading extends OpportunityState {}
 
 class MyOpportunitiesLoadingMore extends OpportunityState {

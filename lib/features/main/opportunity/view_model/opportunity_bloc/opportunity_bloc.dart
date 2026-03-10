@@ -288,8 +288,8 @@ Future<void> _onFetchMyOpportunities(
   Emitter<OpportunityState> emit,
 ) async {
   try {
-    // Determine loading state
-    if (event.isRefresh || event.page == 1) {
+    // Emit loading states
+    if (event.page == 1) {
       emit(MyOpportunitiesLoading());
     } else {
       final currentState = state;
@@ -307,7 +307,7 @@ Future<void> _onFetchMyOpportunities(
     );
 
     List<OpportunityModel> allOpps;
-    if (event.isRefresh || event.page == 1) {
+    if (event.page == 1) {
       allOpps = response.items;
     } else {
       final currentState = state;

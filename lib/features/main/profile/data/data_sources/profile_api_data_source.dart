@@ -403,7 +403,7 @@ Future<List<Interest>> getInterests({
         if (response.statusCode == 200) {
           final json = response.data as Map<String, dynamic>;
 
-          if (json['isOwner'] == true || json['userId'] == _currentUserId) {
+          if (json['isOwner'] == true || json['userId'] == userId) {
             continue;
           }
 

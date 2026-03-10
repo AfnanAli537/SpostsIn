@@ -9,6 +9,7 @@ import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
+import 'package:sports_in/features/main/opportunity/view/widgets/opportunity_card_shimmer.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view/widgets/text_switch.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -164,11 +165,11 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
         },
         builder: (context, state) {
           // Show initial loading
-          if (state is OpportunityLoading) {
-           return ListView.builder(
+          if (state is MyOpportunitiesLoading || state is OpportunityInitial) {
+            return ListView.builder(
               padding: EdgeInsets.all(16.r),
               itemCount: 3,
-              itemBuilder: (context, index) => const CourseCardShimmer(),
+              itemBuilder: (context, index) => const OpportunityCardShimmer(),
             );
           }
 

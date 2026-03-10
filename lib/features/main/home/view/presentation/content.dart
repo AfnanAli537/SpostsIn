@@ -17,18 +17,19 @@ class BuildContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (currentTab) {
-      case HomeTab.forYou:
-        return ForYouTab(onTabChange: onTabChange);
-      
-      case HomeTab.posts:
-        return PostsTab();
-      
-      case HomeTab.courses:
-        return CoursesTab();
-      
-      case HomeTab.opportunities:
-        return const OpportunitiesContent();
-    }
+    // IndexedStack keeps every tab widget alive in the tree so state is
+    // preserved across tab switches — only the visible index is rendered
+    // on screen, but none of the others are disposed.
+    return SliverToBoxAdapter(
+      child: IndexedStack(
+        index: HomeTab.values.indexOf(currentTab),
+        children: [
+          ForYouTab(onTabChange: onTabChange),
+          const PostsTab(),
+          const CoursesTab(),
+          const OpportunitiesContent(),
+        ],
+      ),
+    );
   }
 }

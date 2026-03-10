@@ -9,6 +9,8 @@ import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
 import 'package:sports_in/features/auth_session/view/account_switcher_screen.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
+import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
@@ -354,6 +356,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.school_outlined,
           onTap: () {
             // Navigator.pushNamed(context, AppRoutes.manageCourses);
+            Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<CoursesBloc>(),
+                      child: const CourseListScreen(
+                        listType: CourseListType.created,
+                      ),
+                    ),
+                  ),
+                );
           },
           theme: theme,
         ),

@@ -19,7 +19,10 @@ class OpportunitiesContent extends StatefulWidget {
 }
 
 class _OpportunitiesContentState extends State<OpportunitiesContent>
-    with SingleTickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
@@ -53,11 +56,27 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     )..repeat();
 
     _scrollController.addListener(_onScroll);
+
+    // Initial load
+    context.read<OpportunityBloc>().add(
+      const FetchOpportunities(isRefresh: true),
+    );
   }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _shimmerController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  // ── Data helpers ──────────────────────────────────────────────────────────
 
   void _onScroll() {
     if (!mounted) return;
-
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
       final state = context.read<OpportunityBloc>().state;
@@ -69,16 +88,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
         });
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    _shimmerController.dispose();
-    _debounce?.cancel();
-    super.dispose();
   }
 
   void _onSearchChanged(String value) {
@@ -93,74 +102,100 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     context.read<OpportunityBloc>().add(const ClearFilters());
   }
 
+  Future<void> _onRefresh() async {
+    context.read<OpportunityBloc>().add(
+      const FetchOpportunities(isRefresh: true),
+    );
+    await Future.delayed(const Duration(milliseconds: 600));
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final strings = S.of(context);
 
-    return BlocConsumer<OpportunityBloc, OpportunityState>(
-      listener: (context, state) {
-        if (state is OpportunityError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-
-        if (state is OpportunityCreated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(strings.opportunityCreatedSuccessfully),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-          context.read<OpportunityBloc>().add(
-            const FetchOpportunities(isRefresh: true),
-          );
-        }
-
-        if (state is OpportunityApplied) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(strings.applicationSubmittedSuccessfully),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        return SliverList(
-          delegate: SliverChildListDelegate([
-            _buildSearchBar(strings),
-            _buildFilterSection(state, strings),
-            SizedBox(height: 16.h),
-            if (state is OpportunityLoaded)
-              ..._buildOpportunitiesList(state, strings)
-            else if (state is OpportunityLoading)
-              ..._buildShimmerList()
-            else if (state is OpportunityError)
-              _buildErrorState(state.message, strings)
-            else if (state is OpportunityInitial)
-              ..._buildShimmerList()
-            else
-              const SizedBox.shrink(),
-            SizedBox(height: 100.h),
-          ]),
-        );
-      },
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: BlocConsumer<OpportunityBloc, OpportunityState>(
+          listener: (context, state) {
+            if (state is OpportunityError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
+            if (state is OpportunityCreated) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(strings.opportunityCreatedSuccessfully),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+              context.read<OpportunityBloc>().add(
+                const FetchOpportunities(isRefresh: true),
+              );
+            }
+            if (state is OpportunityApplied) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(strings.applicationSubmittedSuccessfully),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(child: _buildSearchBar(strings)),
+                SliverToBoxAdapter(
+                  child: _buildFilterSection(state, strings),
+                ),
+                SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+                if (state is OpportunityLoaded)
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      _buildOpportunitiesList(state, strings),
+                    ),
+                  )
+                else if (state is OpportunityLoading ||
+                    state is OpportunityInitial)
+                  SliverList(
+                    delegate: SliverChildListDelegate(_buildShimmerList()),
+                  )
+                else if (state is OpportunityError)
+                  SliverToBoxAdapter(
+                    child: _buildErrorState(state.message, strings),
+                  )
+                else
+                  const SliverToBoxAdapter(child: SizedBox.shrink()),
+                SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
+
+  // ── Search bar ────────────────────────────────────────────────────────────
 
   Widget _buildSearchBar(S strings) {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Container(
         decoration: BoxDecoration(
-          // color: Colors.white,
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
@@ -198,9 +233,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  bool _hasValidImage(String? url) {
-    return url != null && url.isNotEmpty && url.trim().isNotEmpty;
-  }
+  // ── Filter chips ──────────────────────────────────────────────────────────
 
   Widget _buildFilterSection(OpportunityState state, S strings) {
     String sportChipLabel = strings.sport;
@@ -211,11 +244,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             orElse: () => const MapEntry('', 0),
           )
           .key;
-      if (selectedKey.isNotEmpty) {
-        sportChipLabel = _getLocalizedSportName(selectedKey, strings);
-      } else {
-        sportChipLabel = state.sportName ?? strings.sport;
-      }
+      sportChipLabel = selectedKey.isNotEmpty
+          ? _getLocalizedSportName(selectedKey, strings)
+          : (state.sportName ?? strings.sport);
     }
 
     return Padding(
@@ -228,9 +259,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
               label: sportChipLabel,
               isSelected:
                   state is OpportunityLoaded && state.sportTypeId != null,
-              onTap: () {
-                _showFilterDialog(strings);
-              },
+              onTap: () => _showFilterDialog(strings),
             ),
             SizedBox(width: 8.w),
             if (state is OpportunityLoaded &&
@@ -247,9 +276,10 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  List<Widget> _buildShimmerList() {
-    return List.generate(5, (index) => _buildShimmerCard());
-  }
+  // ── Shimmer ───────────────────────────────────────────────────────────────
+
+  List<Widget> _buildShimmerList() =>
+      List.generate(5, (_) => _buildShimmerCard());
 
   Widget _buildShimmerCard() {
     return Card(
@@ -284,53 +314,18 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height: 18.h,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                        ),
+                        _shimmerBox(double.infinity, 18.h),
                         SizedBox(height: 8.h),
-                        Container(
-                          width: 150.w,
-                          height: 18.h,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                        ),
+                        _shimmerBox(150.w, 18.h),
                         SizedBox(height: 12.h),
-                        Container(
-                          width: 120.w,
-                          height: 14.h,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                        ),
+                        _shimmerBox(120.w, 14.h),
                         SizedBox(height: 8.h),
-                        Container(
-                          width: 100.w,
-                          height: 12.h,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                        ),
+                        _shimmerBox(100.w, 12.h),
                       ],
                     ),
                   ),
                   SizedBox(width: 12.w),
-                  Container(
-                    width: 80.w,
-                    height: 80.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
+                  _shimmerBox(80.w, 80.h, radius: 12.r),
                 ],
               ),
             );
@@ -340,19 +335,28 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  List<Widget> _buildOpportunitiesList(OpportunityLoaded state, S strings) {
-    if (state.opportunities.isEmpty) {
-      return [_buildEmptyState(strings)];
-    }
+  Widget _shimmerBox(double width, double height, {double? radius}) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(radius ?? 4.r),
+      ),
+    );
+  }
 
-    final widgets = <Widget>[];
+  // ── Opportunities list ────────────────────────────────────────────────────
 
-    for (var opportunity in state.opportunities) {
-      widgets.add(_buildJobCard(opportunity, strings));
-    }
+  List<Widget> _buildOpportunitiesList(
+    OpportunityLoaded state,
+    S strings,
+  ) {
+    if (state.opportunities.isEmpty) return [_buildEmptyState(strings)];
 
-    if (state.hasNextPage) {
-      widgets.add(
+    final widgets = <Widget>[
+      for (final opp in state.opportunities) _buildJobCard(opp, strings),
+      if (state.hasNextPage)
         Padding(
           padding: EdgeInsets.all(16.h),
           child: Center(
@@ -361,11 +365,12 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             ),
           ),
         ),
-      );
-    }
+    ];
 
     return widgets;
   }
+
+  // ── Empty / error states ──────────────────────────────────────────────────
 
   Widget _buildEmptyState(S strings) {
     return Padding(
@@ -417,23 +422,20 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             SizedBox(height: 8.h),
             Text(
               message,
-              style: GoogleFonts.poppins(
-                fontSize: 14.sp,
-                color: Colors.grey[500],
-              ),
+              style:
+                  GoogleFonts.poppins(fontSize: 14.sp, color: Colors.grey[500]),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 16.h),
             TextButton.icon(
-              onPressed: () {
-                context.read<OpportunityBloc>().add(
-                  const FetchOpportunities(isRefresh: true),
-                );
-              },
+              onPressed: () => context.read<OpportunityBloc>().add(
+                    const FetchOpportunities(isRefresh: true),
+                  ),
               icon: const Icon(Icons.refresh),
               label: Text(
                 strings.retry,
-                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.surface),
               ),
             ),
           ],
@@ -441,6 +443,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       ),
     );
   }
+
+  // ── Filter chip ───────────────────────────────────────────────────────────
 
   Widget _buildFilterChip({
     required String label,
@@ -461,7 +465,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
                 : Colors.grey.shade300,
-            width: 1,
           ),
         ),
         child: Row(
@@ -496,26 +499,17 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
-  Widget _buildJobCard(OpportunityModel opportunity, S strings) {
-    // final defaultColor = ColorManager.lightPrimary;
+  // ── Job card ──────────────────────────────────────────────────────────────
 
+  bool _hasValidImage(String? url) =>
+      url != null && url.isNotEmpty && url.trim().isNotEmpty;
+
+  Widget _buildJobCard(OpportunityModel opportunity, S strings) {
     return Card(
       margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
       shadowColor: Theme.of(context).colorScheme.surface,
       shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 4,
-      // : BorderRadius.circular(16.r),
-      // boxShadow: [
-      //   BoxShadow(
-      //     color: Colors.black.withOpacity(0.05),
-      //     blurRadius: 10,
-      //     offset: const Offset(0, 2),
-      //   ),
-      // ],
-      // decoration: BoxDecoration(
-      //   // color: Colors.white,
-
-      // ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -525,7 +519,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
               context,
               MaterialPageRoute(
                 builder: (_) => BlocProvider(
-                  create: (BuildContext context) => OpportunityBloc(
+                  create: (_) => OpportunityBloc(
                     opportunityRepo: getIt<OpportunityReposatory>(),
                   ),
                   child: OpportunityDetailsPage(
@@ -567,11 +561,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                       SizedBox(height: 8.h),
                       Row(
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 14.sp,
-                            color: Colors.grey[500],
-                          ),
+                          Icon(Icons.access_time,
+                              size: 14.sp, color: Colors.grey[500]),
                           SizedBox(width: 4.w),
                           Flexible(
                             child: Text(
@@ -607,34 +598,31 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                             width: 80.w,
                             height: 80.h,
                             fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
+                            loadingBuilder: (context, child, progress) {
+                              if (progress == null) return child;
                               return Center(
                                 child: CircularProgressIndicator(
-                                  value:
-                                      loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
+                                  value: progress.expectedTotalBytes != null
+                                      ? progress.cumulativeBytesLoaded /
+                                          progress.expectedTotalBytes!
                                       : null,
                                   strokeWidth: 2,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color:
+                                      Theme.of(context).colorScheme.primary,
                                 ),
                               );
                             },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Theme.of(context).colorScheme.primary,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.event_available_outlined,
-                                    size: 40.sp,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.surface,
-                                  ),
+                            errorBuilder: (_, __, ___) => Container(
+                              color: Theme.of(context).colorScheme.primary,
+                              child: Center(
+                                child: Icon(
+                                  Icons.event_available_outlined,
+                                  size: 40.sp,
+                                  color:
+                                      Theme.of(context).colorScheme.surface,
                                 ),
-                              );
-                            },
+                              ),
+                            ),
                           )
                         : Center(
                             child: Icon(
@@ -653,10 +641,12 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     );
   }
 
+  // ── Filter dialog ─────────────────────────────────────────────────────────
+
   void _showFilterDialog(S strings) {
     showDialog(
       context: context,
-      builder: (BuildContext dialogContext) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(
             strings.selectSport,
@@ -670,37 +660,16 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: _sportTypes.entries.map((entry) {
-                final localizedName = _getLocalizedSportName(
-                  entry.key,
-                  strings,
-                );
                 return ListTile(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 8.w,
-                    vertical: 4.h,
-                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   title: Card(
                     elevation: 6,
-
-                    // shadowColor: Theme.of(context).colorScheme.surface,
-                    // decoration: BoxDecoration(
-                    //   // color: Colors.grey[200],
-                    //   borderRadius: BorderRadius.circular(12.r),
-                    //   boxShadow: [
-                    //     BoxShadow(
-                    //       color: Colors.black.withOpacity(0.05),
-                    //       blurRadius: 6,
-                    //       offset: const Offset(0, 2),
-                    //     ),
-                    //   ],
-                    // ),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 14.w,
-                        vertical: 10.h,
-                      ),
+                          horizontal: 14.w, vertical: 10.h),
                       child: Text(
-                        localizedName,
+                        _getLocalizedSportName(entry.key, strings),
                         style: GoogleFonts.poppins(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
@@ -711,11 +680,11 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                   ),
                   onTap: () {
                     context.read<OpportunityBloc>().add(
-                      UpdateSportFilter(
-                        sportTypeId: entry.value,
-                        sportName: entry.key,
-                      ),
-                    );
+                          UpdateSportFilter(
+                            sportTypeId: entry.value,
+                            sportName: entry.key,
+                          ),
+                        );
                     Navigator.pop(dialogContext);
                   },
                 );
@@ -737,13 +706,13 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
   }
 }
 
+// ── Shimmer gradient transform ────────────────────────────────────────────────
+
 class _SlidingGradientTransform extends GradientTransform {
   final double slidePercent;
-
   const _SlidingGradientTransform({required this.slidePercent});
 
   @override
-  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    return Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
-  }
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) =>
+      Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
 }
