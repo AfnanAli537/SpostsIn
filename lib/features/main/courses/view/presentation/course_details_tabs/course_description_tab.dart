@@ -163,13 +163,7 @@ class CourseDescriptionTab extends StatelessWidget {
         ),
         SizedBox(width: 12.w),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(course.owner.fullName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text('${course.enrolledUsersCount} students', style: theme.textTheme.bodySmall),
-            ],
-          ),
+          child: Text(course.owner.fullName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
       ],
     );
@@ -185,6 +179,10 @@ class CourseDescriptionTab extends StatelessWidget {
         Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
         SizedBox(width: 4.w),
         Text(course.formattedDuration, style: theme.textTheme.bodyMedium),
+        SizedBox(width: 16.w),
+        Icon(Icons.person, size: 16.sp, color: theme.colorScheme.primary),
+        SizedBox(width: 4.w),
+        Text('${course.enrolledUsersCount} enrolled', style: theme.textTheme.bodyMedium),
       ],
     );
   }

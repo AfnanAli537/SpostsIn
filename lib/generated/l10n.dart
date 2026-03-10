@@ -1904,6 +1904,36 @@ class S {
     );
   }
 
+  /// `Opportunities`
+  String get myOpportunities {
+    return Intl.message(
+      'Opportunities',
+      name: 'myOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Archive Opportunities`
+  String get archiveOpportunities {
+    return Intl.message(
+      'Archive Opportunities',
+      name: 'archiveOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public Opportunities`
+  String get publicOpportunities {
+    return Intl.message(
+      'Public Opportunities',
+      name: 'publicOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No Opportunities`
   String get noOpportunities {
     return Intl.message(
@@ -2269,6 +2299,86 @@ class S {
     );
   }
 
+  /// `Archive Post`
+  String get archivePost {
+    return Intl.message(
+      'Archive Post',
+      name: 'archivePost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Archive Posts`
+  String get archivePosts {
+    return Intl.message(
+      'Archive Posts',
+      name: 'archivePosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public Posts`
+  String get publicPosts {
+    return Intl.message(
+      'Public Posts',
+      name: 'publicPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post archived successfully!`
+  String get postArchived {
+    return Intl.message(
+      'Post archived successfully!',
+      name: 'postArchived',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?`
+  String get archivePostConfirmation {
+    return Intl.message(
+      'this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?',
+      name: 'archivePostConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Post`
+  String get restorePost {
+    return Intl.message(
+      'Restore Post',
+      name: 'restorePost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post restored successfully!`
+  String get postRestored {
+    return Intl.message(
+      'Post restored successfully!',
+      name: 'postRestored',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?`
+  String get restorePostConfirmation {
+    return Intl.message(
+      'this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?',
+      name: 'restorePostConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Failed to delete post. Please try again.`
   String get postDeleteFailed {
     return Intl.message(
@@ -2474,6 +2584,26 @@ class S {
     return Intl.message('No posts yet', name: 'noPostsYet', desc: '', args: []);
   }
 
+  /// `No archived posts`
+  String get noArchivedPosts {
+    return Intl.message(
+      'No archived posts',
+      name: 'noArchivedPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No posts available`
+  String get noPostsAvailable {
+    return Intl.message(
+      'No posts available',
+      name: 'noPostsAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Likes`
   String get likes {
     return Intl.message('Likes', name: 'likes', desc: '', args: []);
@@ -2677,6 +2807,16 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Archive`
+  String get archive {
+    return Intl.message('Archive', name: 'archive', desc: '', args: []);
+  }
+
+  /// `Restore`
+  String get restore {
+    return Intl.message('Restore', name: 'restore', desc: '', args: []);
   }
 
   /// `See Original`

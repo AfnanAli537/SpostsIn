@@ -111,17 +111,23 @@ class OpportunityDeleteSuccess extends OpportunityState {
   const OpportunityDeleteSuccess();
 }
 
+class OpportunityArchivedSuccess extends OpportunityState {
+  const OpportunityArchivedSuccess();
+}
+
 class MyOpportunitiesLoaded extends OpportunityState {
   final List<OpportunityModel> opportunities;
   final bool hasMore;
+  final int currentPage;  // added
 
   const MyOpportunitiesLoaded({
     required this.opportunities,
-    this.hasMore = true,
+    required this.hasMore,
+    required this.currentPage,
   });
 
   @override
-  List<Object?> get props => [opportunities, hasMore];
+  List<Object?> get props => [opportunities, hasMore, currentPage];
 }
 
 class OpportunityUpdated extends OpportunityState {
@@ -140,4 +146,23 @@ class OpportunityDeleted extends OpportunityState {
 
   @override
   List<Object?> get props => [opportunityId];
+}
+class OpportunityToggeled extends OpportunityState {
+  final String opportunityId;
+
+  const OpportunityToggeled({required this.opportunityId});
+
+  @override
+  List<Object?> get props => [opportunityId];
+}
+
+// Add these new states
+
+class MyOpportunitiesLoading extends OpportunityState {}
+
+class MyOpportunitiesLoadingMore extends OpportunityState {
+  final List<OpportunityModel> currentOpportunities;
+  const MyOpportunitiesLoadingMore(this.currentOpportunities);
+  @override
+  List<Object?> get props => [currentOpportunities];
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
@@ -29,7 +28,7 @@ class InlineLessonVideoPlayer extends StatefulWidget {
 }
 
 class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
-  BetterPlayerController? _controller;
+  late BetterPlayerController? _controller;
   bool _isInitialized = false;
   String? _errorMessage;
   Timer? _progressSaveTimer;
@@ -43,6 +42,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     super.initState();
     _initializePlayer();
     _startProgressSaveTimer();
+    
   }
 
   @override
@@ -108,6 +108,8 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
         widget.lesson.videoUrl!,
         cacheConfiguration: const BetterPlayerCacheConfiguration(
           useCache: true,
+          maxCacheSize: 100 * 1024 * 1024, // 100 MB
+          maxCacheFileSize: 50 * 1024 * 1024, // 50 MB
         ),
       );
 
@@ -128,10 +130,13 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
             enableProgressBar: true,
             showControlsOnInitialize: true,
             controlBarHeight: 40,
-            controlBarColor: Colors.black.withOpacity(0.5),
+            controlsHideTime: Duration(milliseconds: 300),
+            controlBarColor: Colors.black87,
             iconsColor: Colors.white,
             progressBarPlayedColor: Colors.red,
             progressBarHandleColor: Colors.red,
+            progressBarBufferedColor: Colors.white54,
+            progressBarBackgroundColor: Colors.white24,
             loadingWidget: const Center(
               child: CircularProgressIndicator(color: Colors.white),
             ),
@@ -243,7 +248,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
             lessonId: widget.lesson.id,
             watchedTime: currentPos,
             isWatched: isWatched,
-            zoomScale: 1.0,
+            zoomScale: _isFullscreen? 2.0 : 1.0, //save the scall to 2x if in fullscreen, otherwise 1x
           ),
         );
         
@@ -275,7 +280,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     final isFullscreen = _isFullscreen;
 
@@ -391,35 +396,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                   child: const Center(
                     child: CircularProgressIndicator(color: Colors.white),
                   ),
-                ),
-              ),
-            
-            if (!isLandscape && 
-                !isFullscreen &&
-                widget.lesson.description != null && 
-                widget.lesson.description!.isNotEmpty)
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16.r),
-                color: theme.colorScheme.surface,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Lesson Description',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      widget.lesson.description!,
-                      style: theme.textTheme.bodyMedium,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
                 ),
               ),
           ],

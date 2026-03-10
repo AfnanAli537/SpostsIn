@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
@@ -20,8 +21,11 @@ class CoursesTab extends StatefulWidget {
   State<CoursesTab> createState() => _CoursesTabState();
 }
 
-class _CoursesTabState extends State<CoursesTab> {
-  late final CoursesBloc _coursesBloc;
+class _CoursesTabState extends State<CoursesTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   final TextEditingController _searchController = TextEditingController();
 
   List<CourseModel> _enrolledCourses = [];
@@ -34,13 +38,16 @@ class _CoursesTabState extends State<CoursesTab> {
   @override
   void initState() {
     super.initState();
-    _coursesBloc = getIt<CoursesBloc>();
     _loadData();
     _searchController.addListener(_onSearchChanged);
   }
 
   void _loadData() {
-    _coursesBloc
+    setState(() {
+      _isLoadingEnrolled = true;
+      _isLoadingAvailable = true;
+    });
+    context.read<CoursesBloc>()
       ..add(FetchEnrolledCourses(
         page: 1,
         size: 10,
@@ -74,27 +81,33 @@ class _CoursesTabState extends State<CoursesTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final theme = Theme.of(context);
     final string = S.of(context);
 
-    return BlocProvider.value(
-      value: _coursesBloc,
-      child: BlocListener<CoursesBloc, CoursesState>(
-        listener: (context, state) {
-          if (state is EnrolledCoursesLoaded) {
-            setState(() {
-              _enrolledCourses = state.courses;
-              _isLoadingEnrolled = false;
-            });
-          }
-          if (state is CoursesLoaded) {
-            setState(() {
-              _availableCourses = state.courses;
-              _isLoadingAvailable = false;
-            });
-          }
-        },
-        child: SliverList(
+    return BlocConsumer<CoursesBloc, CoursesState>(
+      listener: (context, state) {
+        if (state is EnrolledCoursesLoaded) {
+          setState(() {
+            _enrolledCourses = state.courses;
+            _isLoadingEnrolled = false;
+          });
+        }
+        if (state is CoursesLoaded) {
+          setState(() {
+            _availableCourses = state.courses;
+            _isLoadingAvailable = false;
+          });
+        }
+        
+        // ✅ FIX: Reload when enrolled
+        if (state is EnrollmentSuccess) {
+          _loadData(); // Refresh both lists
+        }
+      },
+      builder: (context, state) {
+        // ✅ FIX: Return SliverList, not SliverToBoxAdapter
+        return SliverList(
           delegate: SliverChildListDelegate([
             // Search Bar
             Padding(
@@ -102,8 +115,11 @@ class _CoursesTabState extends State<CoursesTab> {
               child: _buildSearchBar(theme, string),
             ),
 
-            // Content
-            if (_currentSearchTerm.isNotEmpty)
+            // Loading shimmer
+            if ((_isLoadingEnrolled && _enrolledCourses.isEmpty) ||
+                (_isLoadingAvailable && _availableCourses.isEmpty))
+              const CoursesListShimmer()
+            else if (_currentSearchTerm.isNotEmpty)
               _buildSearchResults(context, theme, string)
             else ...[
               _buildContinueWatchingSection(context, theme, string),
@@ -113,14 +129,14 @@ class _CoursesTabState extends State<CoursesTab> {
 
             SizedBox(height: 100.h),
           ]),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildSearchBar(ThemeData theme, S string) {
     return GestureDetector(
-      onTap: () {}, // Empty tap to allow text field to work
+      onTap: () {},
       child: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
@@ -142,9 +158,7 @@ class _CoursesTabState extends State<CoursesTab> {
         child: CoursesSearchBar(
           controller: _searchController,
           hintText: 'Search courses...',
-          onChanged: (value) {
-            // Handled by listener
-          },
+          onChanged: (value) {},
           onClear: () {
             _searchController.clear();
           },
@@ -165,11 +179,7 @@ class _CoursesTabState extends State<CoursesTab> {
         padding: EdgeInsets.symmetric(vertical: 48.h),
         child: Column(
           children: [
-            Icon(
-              Icons.search_off,
-              size: 64.sp,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.search_off, size: 64.sp, color: Colors.grey[400]),
             SizedBox(height: 16.h),
             Text(
               'No courses found for "${_currentSearchTerm}"',
@@ -212,10 +222,12 @@ class _CoursesTabState extends State<CoursesTab> {
               ),
             ),
           ),
-          ..._availableCourses.map((course) => CourseCard(
-                course: course,
-                onTap: () => _navigateToCourseDetail(context, course.id),
-              )),
+          ..._availableCourses.map(
+            (course) => CourseCard(
+              course: course,
+              onTap: () => _navigateToCourseDetail(context, course.id),
+            ),
+          ),
         ],
 
         if (_enrolledCourses.isNotEmpty) ...[
@@ -228,10 +240,12 @@ class _CoursesTabState extends State<CoursesTab> {
               ),
             ),
           ),
-          ..._enrolledCourses.map((course) => CourseCard(
-                course: course,
-                onTap: () => _navigateToCourseDetail(context, course.id),
-              )),
+          ..._enrolledCourses.map(
+            (course) => CourseCard(
+              course: course,
+              onTap: () => _navigateToCourseDetail(context, course.id),
+            ),
+          ),
         ],
       ],
     );
@@ -326,16 +340,14 @@ class _CoursesTabState extends State<CoursesTab> {
               if (_enrolledCourses.length > 3)
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    final coursesBloc = context.read<CoursesBloc>();
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: _coursesBloc,
-                          child: const CourseListScreen(
-                            listType: CourseListType.enrolled,
-                          ),
-                        ),
-                      ),
+                      AppRoutes.courseList,
+                      arguments: {
+                        'listType': CourseListType.enrolled,
+                        'coursesBloc': coursesBloc,
+                      },
                     );
                   },
                   child: const Text('Show More'),
@@ -345,7 +357,7 @@ class _CoursesTabState extends State<CoursesTab> {
         ),
         SizedBox(height: 8.h),
         SizedBox(
-          height: 250.h,
+          height: 290.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -353,7 +365,7 @@ class _CoursesTabState extends State<CoursesTab> {
             itemBuilder: (context, index) {
               final course = displayCourses[index];
               return Container(
-                width: 280.w,
+                width: 300.w,
                 margin: EdgeInsets.only(right: 16.w),
                 child: CourseCard(
                   course: course,
@@ -416,16 +428,14 @@ class _CoursesTabState extends State<CoursesTab> {
               if (_availableCourses.length > 3)
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    final coursesBloc = context.read<CoursesBloc>();
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: _coursesBloc,
-                          child: const CourseListScreen(
-                            listType: CourseListType.available,
-                          ),
-                        ),
-                      ),
+                      AppRoutes.courseList,
+                      arguments: {
+                        'listType': CourseListType.available,
+                        'coursesBloc': coursesBloc,
+                      },
                     );
                   },
                   child: const Text('Show More'),
@@ -435,7 +445,7 @@ class _CoursesTabState extends State<CoursesTab> {
         ),
         SizedBox(height: 8.h),
         SizedBox(
-          height: 310.h,
+          height: 330.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -443,7 +453,7 @@ class _CoursesTabState extends State<CoursesTab> {
             itemBuilder: (context, index) {
               final course = displayCourses[index];
               return Container(
-                width: 280.w,
+                width: 300.w,
                 margin: EdgeInsets.only(right: 16.w),
                 child: CourseCard(
                   course: course,
@@ -545,7 +555,7 @@ class _CoursesTabState extends State<CoursesTab> {
                         ),
                       ),
                       Text(
-                        '${course.lessonsCount-((100 - course.progress) / 100 * course.lessonsCount).ceil()} lessons left',
+                        '${((course.progress) / 100 * course.lessonsCount).ceil()} / ${course.lessonsCount} Lessons',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onPrimary,
                         ),
@@ -576,15 +586,22 @@ class _CoursesTabState extends State<CoursesTab> {
     }
     return value.toStringAsFixed(2);
   }
-  void _navigateToCourseDetail(BuildContext context, String courseId) {
-    Navigator.push(
+
+  void _navigateToCourseDetail(BuildContext context, String courseId) async {
+    final coursesBloc = context.read<CoursesBloc>();
+    
+    // ✅ FIX: Await navigation and reload on return
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
-          value: _coursesBloc,
+          value: coursesBloc,
           child: CourseDetailScreen(courseId: courseId),
         ),
       ),
     );
+    
+    // ✅ Reload when coming back (in case user enrolled)
+    _loadData();
   }
 }

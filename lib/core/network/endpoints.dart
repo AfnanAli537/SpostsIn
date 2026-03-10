@@ -15,6 +15,7 @@ class Endpoints {
   static const String  postPost= "/api/Posts";
   static const String putPost = '/api/Posts/{id}'; 
   static const String deletePost = '/api/Posts/{id}';
+  static const String postToggleVisibility = '/api/Posts/{id}/toggle-visibility';
 
   static const String putLike = "/api/Posts/{id}/like";
   static const String putComment= "/api/Posts/{id}/comment";
@@ -34,7 +35,6 @@ class Endpoints {
   static const String getProfile = "/api/Profile/{userId}";//(get) profile by userId as a parameter
   static const String updateProfile = "/api/Profile/Update";//(put) update the profile take the date from the get and put it in the update body as default value the Request body is the same as the responce body from the profile get
   
-  static const String myActiveOpportunities = "/api/Opportunity/my-active";//(get) takes page and pageSize parameters and get list of my active opportunities 
   static const String getOpportunities = "/api/Opportunity/{targetUserId}/Target";
   
   // Achievements Endpoints
@@ -50,7 +50,7 @@ class Endpoints {
   static const String opportunityDetails = "/api/Opportunity/{id}";
   static const String editOpportunity = "/api/Opportunity/{id}";
   static const String deleteOpportunity = "/api/Opportunity/{id}";
-  static const String opportunityToggle  = "/api/Opportunity/{id}";
+  static const String opportunityToggle  = "/api/Opportunity/{id}/toggle";
   static const String applyOpportunity= "/api/Opportunity/{id}/apply";
   static const String getApplicants = "/api/Opportunity/{id}/applicants";
   static const String getActiveOp  = "/api/Opportunity/my-active";

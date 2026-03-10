@@ -117,9 +117,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
               duration: const Duration(seconds: 2),
             ),
           );
-          context
-              .read<OpportunityBloc>()
-              .add(const FetchOpportunities(isRefresh: true));
+          context.read<OpportunityBloc>().add(
+            const FetchOpportunities(isRefresh: true),
+          );
         }
 
         if (state is OpportunityApplied) {
@@ -176,29 +176,17 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
           onChanged: _onSearchChanged,
           decoration: InputDecoration(
             hintText: strings.search,
-            hintStyle: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 16.sp,
-            ),
-            prefixIcon: Icon(
-              Icons.search,
-              color: Colors.grey[400],
-            ),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16.sp),
+            prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon: Icon(
-                      Icons.clear,
-                      color: Colors.grey[600],
-                    ),
+                    icon: Icon(Icons.clear, color: Colors.grey[600]),
                     onPressed: () {
                       _searchController.clear();
                       _onSearchChanged('');
                     },
                   )
-                : Icon(
-                    Icons.tune,
-                    color: Colors.grey[600],
-                  ),
+                : Icon(Icons.tune, color: Colors.grey[600]),
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
@@ -238,7 +226,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
           children: [
             _buildFilterChip(
               label: sportChipLabel,
-              isSelected: state is OpportunityLoaded && state.sportTypeId != null,
+              isSelected:
+                  state is OpportunityLoaded && state.sportTypeId != null,
               onTap: () {
                 _showFilterDialog(strings);
               },
@@ -265,19 +254,8 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
   Widget _buildShimmerCard() {
     return Card(
       margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
- shape:BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
- elevation: 3,
-      // decoration: BoxDecoration(
-      //   // color: Colors.grey[500],
-       
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.black.withOpacity(0.05),
-      //       blurRadius: 10,
-      //       offset: const Offset(0, 2),
-      //     ),
-      //   ],
-      // ),
+      shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 3,
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: AnimatedBuilder(
@@ -396,11 +374,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off,
-              size: 64.sp,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.search_off, size: 64.sp, color: Colors.grey[400]),
             SizedBox(height: 16.h),
             Text(
               strings.noOpportunitiesFound,
@@ -409,7 +383,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
-              textAlign: TextAlign.center, 
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 8.h),
             TextButton(
@@ -429,11 +403,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64.sp,
-              color: Colors.red[400],
-            ),
+            Icon(Icons.error_outline, size: 64.sp, color: Colors.red[400]),
             SizedBox(height: 16.h),
             Text(
               strings.somethingWentWrong,
@@ -442,7 +412,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
-              textAlign: TextAlign.center, 
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 8.h),
             Text(
@@ -451,17 +421,20 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                 fontSize: 14.sp,
                 color: Colors.grey[500],
               ),
-              textAlign: TextAlign.center, 
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 16.h),
             TextButton.icon(
               onPressed: () {
                 context.read<OpportunityBloc>().add(
-                      const FetchOpportunities(isRefresh: true),
-                    );
+                  const FetchOpportunities(isRefresh: true),
+                );
               },
               icon: const Icon(Icons.refresh),
-              label: Text(strings.retry,style: TextStyle(color: Theme.of(context).colorScheme.surface),),
+              label: Text(
+                strings.retry,
+                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+              ),
             ),
           ],
         ),
@@ -480,8 +453,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
-          color:
-              isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: isSelected
@@ -496,7 +470,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             Icon(
               icon ?? Icons.tune,
               size: 18.sp,
-              color: isSelected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.surface
+                  : Theme.of(context).colorScheme.onSurface,
             ),
             SizedBox(width: 6.w),
             ConstrainedBox(
@@ -506,7 +482,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                 style: GoogleFonts.poppins(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
-                  color: isSelected ? Theme.of(context).colorScheme.surface :Theme.of(context).colorScheme.onSurface,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.surface
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
@@ -524,20 +502,19 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     return Card(
       margin: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
       shadowColor: Theme.of(context).colorScheme.surface,
-      shape:BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 4,
-          // : BorderRadius.circular(16.r),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black.withOpacity(0.05),
-        //     blurRadius: 10,
-        //     offset: const Offset(0, 2),
-        //   ),
-        // ],
+      // : BorderRadius.circular(16.r),
+      // boxShadow: [
+      //   BoxShadow(
+      //     color: Colors.black.withOpacity(0.05),
+      //     blurRadius: 10,
+      //     offset: const Offset(0, 2),
+      //   ),
+      // ],
       // decoration: BoxDecoration(
       //   // color: Colors.white,
-       
-    
+
       // ),
       child: Material(
         color: Colors.transparent,
@@ -575,7 +552,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis, 
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 4.h),
                       Text(
@@ -585,7 +562,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                           color: Colors.grey[600],
                         ),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis, 
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 8.h),
                       Row(
@@ -596,9 +573,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                             color: Colors.grey[500],
                           ),
                           SizedBox(width: 4.w),
-                          Flexible( 
+                          Flexible(
                             child: Text(
-                              formatTimeAgo(context,opportunity.createdAt),
+                              formatTimeAgo(context, opportunity.createdAt),
                               style: GoogleFonts.poppins(
                                 fontSize: 12.sp,
                                 color: Colors.grey[500],
@@ -634,10 +611,10 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                               if (loadingProgress == null) return child;
                               return Center(
                                 child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
+                                  value:
+                                      loadingProgress.expectedTotalBytes != null
                                       ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
+                                            loadingProgress.expectedTotalBytes!
                                       : null,
                                   strokeWidth: 2,
                                   color: Theme.of(context).colorScheme.primary,
@@ -651,8 +628,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                                   child: Icon(
                                     Icons.event_available_outlined,
                                     size: 40.sp,
-                                    color:
-                                        Theme.of(context).colorScheme.surface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
                                   ),
                                 ),
                               );
@@ -674,6 +652,7 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       ),
     );
   }
+
   void _showFilterDialog(S strings) {
     showDialog(
       context: context,
@@ -691,13 +670,19 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: _sportTypes.entries.map((entry) {
-                final localizedName = _getLocalizedSportName(entry.key, strings);
+                final localizedName = _getLocalizedSportName(
+                  entry.key,
+                  strings,
+                );
                 return ListTile(
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 4.h,
+                  ),
                   title: Card(
-                        elevation: 6,
-                        // shadowColor: Theme.of(context).colorScheme.surface,
+                    elevation: 6,
+
+                    // shadowColor: Theme.of(context).colorScheme.surface,
                     // decoration: BoxDecoration(
                     //   // color: Colors.grey[200],
                     //   borderRadius: BorderRadius.circular(12.r),
@@ -709,26 +694,28 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
                     //     ),
                     //   ],
                     // ),
-                
-                    child: Padding(padding:  EdgeInsets.symmetric(
-                        horizontal: 14.w, vertical: 10.h),
-                   child:  Text(
-                      localizedName, 
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurface
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 10.h,
                       ),
-                    ),
+                      child: Text(
+                        localizedName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                     ),
                   ),
                   onTap: () {
                     context.read<OpportunityBloc>().add(
-                          UpdateSportFilter(
-                            sportTypeId: entry.value,
-                            sportName: entry.key, 
-                          ),
-                        );
+                      UpdateSportFilter(
+                        sportTypeId: entry.value,
+                        sportName: entry.key,
+                      ),
+                    );
                     Navigator.pop(dialogContext);
                   },
                 );

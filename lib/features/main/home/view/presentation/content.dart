@@ -25,7 +25,7 @@ class BuildContent extends StatelessWidget {
         return PostsTab();
       
       case HomeTab.courses:
-        return const CoursesTab();
+        return CoursesTab();
       
       case HomeTab.opportunities:
         return const OpportunitiesContent();

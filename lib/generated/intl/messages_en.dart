@@ -108,6 +108,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Apply opportunity",
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("Arabic"),
+    "archive": MessageLookupByLibrary.simpleMessage("Archive"),
+    "archiveOpportunities": MessageLookupByLibrary.simpleMessage(
+      "Archive Opportunities",
+    ),
+    "archivePost": MessageLookupByLibrary.simpleMessage("Archive Post"),
+    "archivePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?",
+    ),
+    "archivePosts": MessageLookupByLibrary.simpleMessage("Archive Posts"),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
     "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
     "basketball": MessageLookupByLibrary.simpleMessage("Basketball"),
@@ -423,6 +432,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "monthsAgo": m6,
     "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
+    "myOpportunities": MessageLookupByLibrary.simpleMessage("Opportunities"),
     "myPosts": MessageLookupByLibrary.simpleMessage("My Posts"),
     "name": MessageLookupByLibrary.simpleMessage("name"),
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
@@ -434,6 +444,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noAchievements": MessageLookupByLibrary.simpleMessage("No Achievements"),
     "noApplicantsFound": MessageLookupByLibrary.simpleMessage(
       "No applicants found",
+    ),
+    "noArchivedPosts": MessageLookupByLibrary.simpleMessage(
+      "No archived posts",
     ),
     "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage("No comments yet"),
@@ -450,6 +463,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "No Opportunities found",
     ),
     "noPosts": MessageLookupByLibrary.simpleMessage("No Posts"),
+    "noPostsAvailable": MessageLookupByLibrary.simpleMessage(
+      "No posts available",
+    ),
     "noPostsYet": MessageLookupByLibrary.simpleMessage("No posts yet"),
     "noProfileData": MessageLookupByLibrary.simpleMessage(
       "No profile data available.",
@@ -584,6 +600,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
     "post": MessageLookupByLibrary.simpleMessage("Post"),
+    "postArchived": MessageLookupByLibrary.simpleMessage(
+      "Post archived successfully!",
+    ),
     "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to delete post. Please try again.",
     ),
@@ -595,6 +614,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postLoadFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to load post. Please try again.",
+    ),
+    "postRestored": MessageLookupByLibrary.simpleMessage(
+      "Post restored successfully!",
     ),
     "postTitle": MessageLookupByLibrary.simpleMessage("Post Title"),
     "postUpdateFailed": MessageLookupByLibrary.simpleMessage(
@@ -615,6 +637,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileLoadFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to load profile. Please try again.",
     ),
+    "publicOpportunities": MessageLookupByLibrary.simpleMessage(
+      "Public Opportunities",
+    ),
+    "publicPosts": MessageLookupByLibrary.simpleMessage("Public Posts"),
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Registered successfully!",
@@ -640,6 +666,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resourceNotFound": MessageLookupByLibrary.simpleMessage(
       "Resource not found.",
+    ),
+    "restore": MessageLookupByLibrary.simpleMessage("Restore"),
+    "restorePost": MessageLookupByLibrary.simpleMessage("Restore Post"),
+    "restorePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?",
     ),
     "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),

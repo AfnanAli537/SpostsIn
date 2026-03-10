@@ -8,6 +8,8 @@ import 'package:sports_in/core/config/language_cubit/language_cubit.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
+import 'package:sports_in/features/auth_session/view/account_switcher_screen.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
 
@@ -20,7 +22,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   LoginResponse? _currentUser;
+    final sharedPref = getIt<SharedPref>();
   bool _pushNotifications = false;
+  String? get _currentUserId => sharedPref.getUserId();
 
   @override
   void initState() {
@@ -39,7 +43,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(string.settings),
@@ -52,37 +55,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSectionTitle('Language', theme),
           SizedBox(height: 8.h),
           _buildLanguageCard(theme, string),
-          SizedBox(height: 24.h),
+          SizedBox(height: 48.h),
 
           // // Notifications Section
           // _buildSectionTitle(string.notifications, theme),
           // SizedBox(height: 8.h),
           // _buildNotificationCard(theme, string),
-          SizedBox(height: 24.h),
+          // SizedBox(height: 24.h),
 
           // Personal Info Section
           _buildSectionTitle('Personal Info', theme),
           SizedBox(height: 8.h),
           _buildPersonalInfoCards(theme, string),
-          SizedBox(height: 24.h),
+          SizedBox(height: 48.h),
 
           // Account Section
           _buildSectionTitle('Account', theme),
           SizedBox(height: 8.h),
           _buildAccountCard(theme, string),
-          SizedBox(height: 24.h),
+          SizedBox(height: 48.h),
 
           // Subscription Section
           _buildSectionTitle('Subscription', theme),
           SizedBox(height: 8.h),
           _buildSubscriptionCard(theme, string),
-          SizedBox(height: 24.h),
+          SizedBox(height: 48.h),
 
           // Activities Section
           _buildSectionTitle('Activities', theme),
           SizedBox(height: 8.h),
           _buildActivitiesCards(theme, string),
-          SizedBox(height: 32.h),
+          SizedBox(height: 48.h),
 
           // Switch Account Button
           _buildSwitchAccountButton(theme, string),
@@ -128,8 +131,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (lang) {
                   context.read<LocaleCubit>().setLocale(Locale(lang));
                 },
-                height: 36,
-                indicatorWidth: 45,
+                height: 36.h,
+                indicatorWidth: 45.w,
                 iconBuilder: (value, isSelected) {
                   final borderColor = isSelected
                       ? ColorManager.borderCircular
@@ -223,8 +226,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 12.h),
         _buildInfoCard(
-          label: 'Gender',
-          value: 'Female',
+          label: 'User Type',
+          value: _currentUser?.userType ?? 'Other',
           icon: Icons.person_outline,
           theme: theme,
         ),
@@ -288,7 +291,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       subtitle: 'Update your current password for enhanced\nsecurity',
       icon: Icons.key_outlined,
       onTap: () {
-        Navigator.pushNamed(context, AppRoutes.forgetPassword);
+        Navigator.pushNamed(context, AppRoutes.otp, arguments: _currentUser?.email);
       },
       theme: theme,
     );
@@ -315,6 +318,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.article_outlined,
           onTap: () {
             // Navigator.pushNamed(context, AppRoutes.managePosts);
+            Navigator.pushNamed(
+                  context,
+                  AppRoutes.profilePostsListScreen,
+                  arguments: {
+                    'userId':_currentUserId,
+                    'isCurrentUser': true,
+                  },
+                );
           },
           theme: theme,
         ),
@@ -325,6 +336,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.work_outline,
           onTap: () {
             // Navigator.pushNamed(context, AppRoutes.manageOpportunities);
+            Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyOpportunitiesListScreen(
+                      showActiveOnly: true, // or false for inactive
+                    ),
+                  ),
+                );
           },
           theme: theme,
         ),
@@ -415,9 +434,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSwitchAccountButton(ThemeData theme, S string) {
-    return OutlinedButton.icon(
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.w),
+    child: OutlinedButton.icon(
       onPressed: () {
-        Navigator.pushNamed(context, AppRoutes.accountSwitcher);
+        AccountSwitcherBottomSheet.show(context);
       },
       icon: Icon(Icons.swap_horiz, size: 20.sp),
       label: const Text('Switch account'),
@@ -428,6 +449,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           borderRadius: BorderRadius.circular(12.r),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -55,6 +55,8 @@ class PostUpdateSuccess extends PostsState {}
 
 class PostDeleteSuccess extends PostsState {}
 
+class PostArchivedSuccess extends PostsState {}
+
 class PostsLoadingMore extends PostsState {
   final List<PostModel> currentPosts;
 

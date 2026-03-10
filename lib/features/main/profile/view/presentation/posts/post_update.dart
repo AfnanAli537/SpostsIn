@@ -127,7 +127,6 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
       return;
     }
 
-    // ✅ Set loading state
     setState(() => _isUpdating = true);
 
     context.read<PostsBloc>().add(

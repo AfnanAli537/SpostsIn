@@ -14,6 +14,8 @@ import 'package:sports_in/features/forget_password/view/presentation/verify_emai
 import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
 import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
+import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
@@ -22,7 +24,6 @@ import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.d
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view/presentation/edit_profile_router_screen.dart';
-import 'package:sports_in/features/main/profile/view/presentation/posts/manage_posts_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
@@ -161,9 +162,10 @@ abstract class RoutesManager {
         return CupertinoPageRoute(
           builder: (_) => UserProfileScreen(userId: userId),
         );
-        
+
       case AppRoutes.editProfile:
         return CupertinoPageRoute(builder: (_) => EditProfileRouterScreen());
+
       case AppRoutes.profilePostsListScreen:
         final args = settings.arguments as Map<String, dynamic>;
         return CupertinoPageRoute(
@@ -172,6 +174,7 @@ abstract class RoutesManager {
             isCurrentUser: args['isCurrentUser'],
           ),
         );
+
       case AppRoutes.profilePostsEditScreen:
         final args = settings.arguments as PostModel;
         return CupertinoPageRoute(
@@ -180,6 +183,7 @@ abstract class RoutesManager {
             child: UpdatePostScreen(post: args),
           ),
         );
+
       case AppRoutes.opportunityEditScreen:
         final opportunityId = settings.arguments as String;
         return CupertinoPageRoute(
@@ -190,6 +194,19 @@ abstract class RoutesManager {
             child: UpdateOpportunityScreen(opportunityId: opportunityId),
           ),
         );
+
+      case AppRoutes.courseList:
+        final args = settings.arguments as Map<String, dynamic>;
+        final coursesBloc = args['coursesBloc'] as CoursesBloc;
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: coursesBloc,
+            child: CourseListScreen(
+              listType: args['listType'] as CourseListType,
+            ),
+          ),
+        );
+
       case AppRoutes.settings:
         return CupertinoPageRoute(builder: (_) => const SettingsScreen());
       case AppRoutes.contactUs:
@@ -198,14 +215,7 @@ abstract class RoutesManager {
         return CupertinoPageRoute(builder: (_) => const AboutScreen());
       case AppRoutes.accountSwitcher:
         return CupertinoPageRoute(
-          builder: (_) => const AccountSwitcherScreen(),
-        );
-      case AppRoutes.managePosts:
-        return CupertinoPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
-            child: const ManagePostsScreen(),
-          ),
+          builder: (_) => const AccountSwitcherBottomSheet(),
         );
       default:
         return null;

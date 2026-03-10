@@ -21,7 +21,12 @@ class CourseDetailLoading extends CoursesState {
 }
 
 class EnrollmentLoading extends CoursesState {
-  const EnrollmentLoading();
+  final String courseId;
+
+  const EnrollmentLoading({required this.courseId});
+
+  @override
+  List<Object?> get props => [courseId];
 }
 
 class LessonActionLoading extends CoursesState {

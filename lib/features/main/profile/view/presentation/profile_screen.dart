@@ -8,7 +8,6 @@ import 'package:sports_in/features/main/courses/view/presentation/client/course_
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
-import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile_bloc.dart';
 import '../../view_model/profile_event.dart';
@@ -238,14 +237,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               isConnected: profile.isConnected,
               isFollowing: profile.isFollowing,
               onPostsShowAll: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => ProfilePostsListScreen(
-                      userId: profile.id,
-                      isCurrentUser: profile.isOwner,
-                    ),
-                  ),
+                  AppRoutes.profilePostsListScreen,
+                  arguments: {
+                    'userId': profile.id,
+                    'isCurrentUser': profile.isOwner,
+                  },
                 );
               },
               onOpportunitiesShowAll: () {
@@ -254,6 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   MaterialPageRoute(
                     builder: (_) => MyOpportunitiesListScreen(
                       showActiveOnly: true, // or false for inactive
+                      isCurrentUser: profile.isOwner,
                     ),
                   ),
                 );

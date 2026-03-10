@@ -25,6 +25,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     on<LoadMorePosts>(_onLoadMorePosts);
     on<UpdatePost>(_onUpdatePost);
     on<DeletePost>(_onDeletePost);
+    on<TogglePostVisibility>(_onTogglePostVisibility);
   }
 
   final List<PostModel> _posts = [];
@@ -102,6 +103,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         userId: event.userId,
         page: event.page,
         pageSize: event.pageSize,
+        onlyInactive: event.onlyInactive,
       );
 
       emit(
@@ -345,6 +347,63 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       }
     } catch (e) {
       emit(PostsError('Failed to delete post: ${e is ApiException ? e.message : e.toString()}'));
+
+      if (currentState is PostsLoaded) {
+        emit(
+          PostsLoaded(
+            posts: currentState.posts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
+    }
+  }
+
+    Future<void> _onTogglePostVisibility(TogglePostVisibility event, Emitter<PostsState> emit) async {
+    final currentState = state;
+
+    try {
+      await postRepo.togglePostVisibility(postId: event.postId);
+
+      if (currentState is PostsLoaded) {
+        final updatedPosts = currentState.posts
+            .where((post) => post.id != event.postId)
+            .toList();
+
+        emit(
+          PostsLoaded(
+            posts: updatedPosts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      } else if (currentState is UserPostsLoaded) {
+        final updatedPosts = currentState.posts
+            .where((post) => post.id != event.postId)
+            .toList();
+
+        emit(
+          UserPostsLoaded(
+            posts: updatedPosts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
+
+      emit(PostArchivedSuccess());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      if (currentState is PostsLoaded) {
+        emit(
+          PostsLoaded(
+            posts: currentState.posts
+                .where((p) => p.id != event.postId)
+                .toList(),
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(PostsError('Failed to archive post: ${e is ApiException ? e.message : e.toString()}'));
 
       if (currentState is PostsLoaded) {
         emit(

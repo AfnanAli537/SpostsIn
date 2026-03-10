@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 
-class OwnerLessonCard extends StatelessWidget {
+class OwnerLessonCard extends StatefulWidget {
   final LessonModel lesson;
   final bool isCurrentlyPlaying;
   final VoidCallback? onTap;
   final VoidCallback onUpdate;
   final VoidCallback onDelete;
-  final bool showDragHandle; // true when in edit mode & reorder enabled
+  final bool showDragHandle;
 
   const OwnerLessonCard({
     Key? key,
@@ -21,38 +21,118 @@ class OwnerLessonCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<OwnerLessonCard> createState() => _OwnerLessonCardState();
+}
+
+class _OwnerLessonCardState extends State<OwnerLessonCard> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasDescription = widget.lesson.description != null && 
+                          widget.lesson.description!.trim().isNotEmpty;
+
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(16.r),
-          decoration: BoxDecoration(
-            color: isCurrentlyPlaying
-                ? theme.colorScheme.primary.withOpacity(0.1)
-                : theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: isCurrentlyPlaying
-                  ? theme.colorScheme.primary
-                  : Colors.grey[300]!,
-              width: isCurrentlyPlaying ? 2 : 1,
+      decoration: BoxDecoration(
+        color: widget.isCurrentlyPlaying
+            ? theme.colorScheme.primary.withOpacity(0.1)
+            : theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: widget.isCurrentlyPlaying
+              ? theme.colorScheme.primary
+              : Colors.grey[300]!,
+          width: widget.isCurrentlyPlaying ? 2 : 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Main card content
+          InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12.r),
+              topRight: Radius.circular(12.r),
+              bottomLeft: hasDescription ? Radius.zero : Radius.circular(12.r),
+              bottomRight: hasDescription ? Radius.zero : Radius.circular(12.r),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Row(
+                children: [
+                  if (widget.showDragHandle) ...[
+                    Icon(Icons.drag_handle, color: Colors.grey[600], size: 24.sp),
+                    SizedBox(width: 12.w),
+                  ],
+                  _buildPlayIcon(theme),
+                  SizedBox(width: 16.w),
+                  Expanded(child: _buildInfo(theme)),
+                  _buildPopupMenu(),
+                ],
+              ),
             ),
           ),
-          child: Row(
-            children: [
-              if (showDragHandle)
-                Icon(Icons.drag_handle, color: Colors.grey[600], size: 24.sp),
-              if (showDragHandle) SizedBox(width: 12.w),
-              _buildPlayIcon(theme),
-              SizedBox(width: 16.w),
-              Expanded(child: _buildInfo(theme)),
-              _buildPopupMenu(),
-            ],
-          ),
-        ),
+
+          // ✅ Expandable description section
+          if (hasDescription)
+            Column(
+              children: [
+                Divider(height: 1, thickness: 1, color: Colors.grey[300]),
+                InkWell(
+                  onTap: () => setState(() => _isExpanded = !_isExpanded),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(12.r),
+                    bottomRight: Radius.circular(12.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isExpanded 
+                              ? Icons.keyboard_arrow_up 
+                              : Icons.keyboard_arrow_down,
+                          size: 20.sp,
+                          color: theme.colorScheme.primary,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          _isExpanded ? 'Hide Description' : 'Show Description',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Description content (animated)
+                AnimatedCrossFade(
+                  firstChild: const SizedBox.shrink(),
+                  secondChild: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                    child: Text(
+                      widget.lesson.description!,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: Colors.grey[700],
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  crossFadeState: _isExpanded
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 200),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }
@@ -78,7 +158,7 @@ class OwnerLessonCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Lesson ${lesson.order}',
+          'Lesson ${widget.lesson.order}',
           style: TextStyle(
             fontSize: 12.sp,
             color: theme.colorScheme.primary,
@@ -87,7 +167,7 @@ class OwnerLessonCard extends StatelessWidget {
         ),
         SizedBox(height: 4.h),
         Text(
-          lesson.title,
+          widget.lesson.title,
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
@@ -102,7 +182,7 @@ class OwnerLessonCard extends StatelessWidget {
             Icon(Icons.access_time, size: 14.sp, color: Colors.grey[600]),
             SizedBox(width: 4.w),
             Text(
-              _formatDuration(lesson.duration),
+              _formatDuration(widget.lesson.duration),
               style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
             ),
           ],
@@ -115,8 +195,11 @@ class OwnerLessonCard extends StatelessWidget {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert, size: 20.sp),
       onSelected: (value) {
-        if (value == 'update') onUpdate();
-        else if (value == 'delete') onDelete();
+        if (value == 'update') {
+          widget.onUpdate();
+        } else if (value == 'delete') {
+          widget.onDelete();
+        }
       },
       itemBuilder: (_) => [
         PopupMenuItem(

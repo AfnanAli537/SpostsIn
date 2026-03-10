@@ -318,7 +318,7 @@ Future<void> _onFetchCourseLessons(
     Emitter<CoursesState> emit,
   ) async {
     try {
-      emit(const EnrollmentLoading());
+      emit(EnrollmentLoading(courseId: event.courseId));
 
       await _repository.enrollInCourse(event.courseId);
 

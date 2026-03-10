@@ -5,11 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/utils/extensions/extensions.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
+import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart';
 import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
@@ -155,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            BlocProvider(create: (_) => getIt<CoursesBloc>()),
           ],
           child: Scaffold(
             body: BlocBuilder<PostsBloc, PostsState>(
@@ -164,6 +167,12 @@ class _HomePageState extends State<HomePage> {
                     context.read<PostsBloc>().add(const FetchPosts(page: 1));
                     context.read<OpportunityBloc>().add(
                       const FetchOpportunities(isRefresh: true),
+                    );
+                    context.read<CoursesBloc>().add(
+                      FetchEnrolledCourses(page: 1, size: 10, isRefresh: true),
+                    );
+                    context.read<CoursesBloc>().add(
+                      FetchAvailableCourses(page: 1, size: 10, isRefresh: true),
                     );
                   },
                   child: CustomScrollView(

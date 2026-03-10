@@ -106,6 +106,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "التقديم على الفرصة",
     ),
     "arabic": MessageLookupByLibrary.simpleMessage("العربية"),
+    "archive": MessageLookupByLibrary.simpleMessage("أرشفة"),
+    "archiveOpportunities": MessageLookupByLibrary.simpleMessage(
+      "فرصي المؤرشفة",
+    ),
+    "archivePost": MessageLookupByLibrary.simpleMessage("أرشفة المنشور"),
+    "archivePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "سيتم أرشفة هذا المنشور وإخفائه من ملفك الشخصي وتدفقك، لكن يمكنك استعادته لاحقاً. هل أنت متأكد من رغبتك في أرشفة هذا المنشور؟",
+    ),
+    "archivePosts": MessageLookupByLibrary.simpleMessage("المنشورات المؤرشفة"),
     "back": MessageLookupByLibrary.simpleMessage("رجوع"),
     "badRequest": MessageLookupByLibrary.simpleMessage("طلب غير صالح"),
     "basketball": MessageLookupByLibrary.simpleMessage("كرة السلة"),
@@ -402,6 +411,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "monthsAgo": m6,
     "moreDetails": MessageLookupByLibrary.simpleMessage("المزيد من التفاصيل"),
     "morocco": MessageLookupByLibrary.simpleMessage("المغرب"),
+    "myOpportunities": MessageLookupByLibrary.simpleMessage("فرصي"),
     "myPosts": MessageLookupByLibrary.simpleMessage("منشوراتي"),
     "name": MessageLookupByLibrary.simpleMessage("الاسم"),
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
@@ -413,6 +423,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noAchievements": MessageLookupByLibrary.simpleMessage("لا توجدإنجازات"),
     "noApplicantsFound": MessageLookupByLibrary.simpleMessage(
       "لم يتم العثور على متقدمين",
+    ),
+    "noArchivedPosts": MessageLookupByLibrary.simpleMessage(
+      "لا توجد منشورات مؤرشفة",
     ),
     "noBio": MessageLookupByLibrary.simpleMessage("لا وصف"),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage(
@@ -431,6 +444,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "لم يتم العثور على فرص",
     ),
     "noPosts": MessageLookupByLibrary.simpleMessage("لا توجد منشورات"),
+    "noPostsAvailable": MessageLookupByLibrary.simpleMessage(
+      "لا توجد منشورات متاحة",
+    ),
     "noPostsYet": MessageLookupByLibrary.simpleMessage("لا توجد منشورات بعد"),
     "noProfileData": MessageLookupByLibrary.simpleMessage(
       "لا توجد بيانات ملف شخصي.",
@@ -565,11 +581,17 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "position": MessageLookupByLibrary.simpleMessage("المركز"),
     "post": MessageLookupByLibrary.simpleMessage("نشر"),
+    "postArchived": MessageLookupByLibrary.simpleMessage(
+      "تم أرشفة المنشور بنجاح!",
+    ),
     "postDeleteFailed": MessageLookupByLibrary.simpleMessage(
       "فشل حذف المنشور. حاول مرة أخرى.",
     ),
     "postDeleted": MessageLookupByLibrary.simpleMessage(
       "تم حذف المنشور بنجاح!",
+    ),
+    "postRestored": MessageLookupByLibrary.simpleMessage(
+      "تمت استعادة المنشور بنجاح!",
     ),
     "postUpdateFailed": MessageLookupByLibrary.simpleMessage(
       "فشل تحديث المنشور. حاول مرة أخرى.",
@@ -591,6 +613,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileLoadFailed": MessageLookupByLibrary.simpleMessage(
       "فشل تحميل الملف الشخصي. يرجى المحاولة مرة أخرى.",
     ),
+    "publicOpportunities": MessageLookupByLibrary.simpleMessage("فرصي العامة"),
+    "publicPosts": MessageLookupByLibrary.simpleMessage("المنشورات العامة"),
     "register": MessageLookupByLibrary.simpleMessage("تسجيل"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
@@ -616,6 +640,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "resourceNotFound": MessageLookupByLibrary.simpleMessage(
       "المورد غير موجود.",
+    ),
+    "restore": MessageLookupByLibrary.simpleMessage("استعادة"),
+    "restorePost": MessageLookupByLibrary.simpleMessage("استعادة المنشور"),
+    "restorePostConfirmation": MessageLookupByLibrary.simpleMessage(
+      "سيتم استعادة هذا المنشور وجعله مرئياً في ملفك الشخصي وتدفقك. هل أنت متأكد من رغبتك في استعادة هذا المنشور؟",
     ),
     "retry": MessageLookupByLibrary.simpleMessage("إعادة المحاولة"),
     "rightBack": MessageLookupByLibrary.simpleMessage("ظهير أيمن"),

@@ -47,11 +47,13 @@ class FetchUserPosts extends PostsEvent {
   final String userId;
   final int page;
   final int pageSize;
+  final bool onlyInactive;
 
   const FetchUserPosts({
     required this.userId,
     this.page = 1,
     this.pageSize = 10,
+    this.onlyInactive = false,
   });
   }
 
@@ -83,7 +85,6 @@ class DeletePost extends PostsEvent {
   List<Object?> get props => [postId];
 }
 
-// Add to posts_event.dart
 class TogglePostVisibility extends PostsEvent {
   final String postId;
   const TogglePostVisibility({required this.postId});

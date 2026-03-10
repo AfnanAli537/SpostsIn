@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 
-class LessonCard extends StatelessWidget {
+class LessonCard extends StatefulWidget {
   final LessonModel lesson;
   final bool isEnrolled;
   final bool isCurrentlyPlaying;
@@ -17,42 +17,111 @@ class LessonCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<LessonCard> createState() => _LessonCardState();
+}
+
+class _LessonCardState extends State<LessonCard> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canPlay = isEnrolled;
+    final canPlay = widget.isEnrolled;
+    final hasDescription = widget.lesson.description != null && 
+                          widget.lesson.description!.trim().isNotEmpty;
 
-    return InkWell(
-      onTap: canPlay ? onTap : null,
-      child: Container(
-        padding: EdgeInsets.all(16.r),
-        decoration: BoxDecoration(
-          color: isCurrentlyPlaying
-              ? theme.colorScheme.primary.withOpacity(0.1)
-              : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: lesson.isWatched
-                ? theme.colorScheme.primary.withOpacity(0.3)
-                : (isCurrentlyPlaying
-                    ? theme.colorScheme.primary
-                    : Colors.grey[300]!),
-            width: isCurrentlyPlaying ? 2 : 1,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.isCurrentlyPlaying
+            ? theme.colorScheme.primary.withOpacity(0.1)
+            : theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: widget.lesson.isWatched
+              ? theme.colorScheme.primary.withOpacity(0.3)
+              : (widget.isCurrentlyPlaying
+                  ? theme.colorScheme.primary
+                  : Colors.grey[300]!),
+          width: widget.isCurrentlyPlaying ? 2 : 1,
         ),
-        child: Row(
-          children: [
-            _buildStatusIcon(theme),
-            SizedBox(width: 16.w),
-            Expanded(child: _buildContent(theme)),
-            Icon(
-              canPlay ? Icons.arrow_forward_ios : Icons.lock_outline,
-              size: 20.sp,
-              color: canPlay
-                  ? theme.colorScheme.onSurface.withOpacity(0.5)
-                  : Colors.grey[400],
+      ),
+      child: Column(
+        children: [
+          // Main card content
+          InkWell(
+            onTap: canPlay ? widget.onTap : null,
+            borderRadius: BorderRadius.circular(12.r),
+            child: Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Row(
+                children: [
+                  _buildStatusIcon(theme),
+                  SizedBox(width: 16.w),
+                  Expanded(child: _buildContent(theme)),
+                  !canPlay ?Icon(
+                    Icons.lock_outline,
+                    size: 20.sp,
+                    color: canPlay
+                        ? theme.colorScheme.onSurface.withOpacity(0.5)
+                        : Colors.grey[400],
+                  ): const SizedBox.shrink(),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+
+          // ✅ Expandable description section
+          if (hasDescription)
+            Column(
+              children: [
+                Divider(height: 1, thickness: 1, color: Colors.grey[300]),
+                InkWell(
+                  onTap: () => setState(() => _isExpanded = !_isExpanded),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                          size: 20.sp,
+                          color: theme.colorScheme.primary,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          _isExpanded ? 'Hide Description' : 'Show Description',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Description content (animated)
+                AnimatedCrossFade(
+                  firstChild: const SizedBox.shrink(),
+                  secondChild: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+                    child: Text(
+                      widget.lesson.description!,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: Colors.grey[700],
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  crossFadeState: _isExpanded
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 200),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }
@@ -62,14 +131,14 @@ class LessonCard extends StatelessWidget {
       width: 56.w,
       height: 56.w,
       decoration: BoxDecoration(
-        color: lesson.isWatched
+        color: widget.lesson.isWatched
             ? Colors.green.withOpacity(0.2)
             : theme.colorScheme.primary.withOpacity(0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
-        lesson.isWatched ? Icons.check_circle : Icons.play_circle_outline,
-        color: lesson.isWatched ? Colors.green : theme.colorScheme.primary,
+        widget.lesson.isWatched ? Icons.check_circle : Icons.play_circle_outline,
+        color: widget.lesson.isWatched ? Colors.green : theme.colorScheme.primary,
         size: 32.sp,
       ),
     );
@@ -82,20 +151,21 @@ class LessonCard extends StatelessWidget {
         Row(
           children: [
             Text(
-              'Lesson ${lesson.order}',
+              'Lesson ${widget.lesson.order}',
               style: TextStyle(
                 fontSize: 12.sp,
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            if (lesson.isWatched) _buildLabel('Completed', Colors.green),
-            if (isCurrentlyPlaying) _buildLabel('Playing', theme.colorScheme.primary),
+            if (widget.lesson.isWatched) _buildLabel('Completed', Colors.green),
+            if (widget.isCurrentlyPlaying) 
+              _buildLabel('Playing', theme.colorScheme.primary),
           ],
         ),
         SizedBox(height: 4.h),
         Text(
-          lesson.title,
+          widget.lesson.title,
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
@@ -110,13 +180,13 @@ class LessonCard extends StatelessWidget {
             Icon(Icons.access_time, size: 14.sp, color: Colors.grey[600]),
             SizedBox(width: 4.w),
             Text(
-              _formatDuration(lesson.duration),
+              _formatDuration(widget.lesson.duration),
               style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
             ),
-            if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+            if (widget.lesson.progressPercentage > 0 && !widget.lesson.isWatched) ...[
               SizedBox(width: 16.w),
               Text(
-                '${lesson.progressPercentage.toInt()}% watched',
+                '${widget.lesson.progressPercentage.toInt()}% watched',
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: theme.colorScheme.primary,
@@ -126,10 +196,10 @@ class LessonCard extends StatelessWidget {
             ],
           ],
         ),
-        if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
+        if (widget.lesson.progressPercentage > 0 && !widget.lesson.isWatched) ...[
           SizedBox(height: 8.h),
           LinearProgressIndicator(
-            value: lesson.progressPercentage / 100,
+            value: widget.lesson.progressPercentage / 100,
             backgroundColor: Colors.grey[200],
             valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
             minHeight: 4.h,
@@ -149,7 +219,11 @@ class LessonCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: 10.sp, color: color, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          fontSize: 10.sp,
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

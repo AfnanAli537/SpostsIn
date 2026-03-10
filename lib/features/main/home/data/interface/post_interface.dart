@@ -8,6 +8,7 @@ abstract class PostsRepository {
     required String userId,
     required int page,
     required int pageSize,
+    bool onlyInactive = false,
   });
 
   Future<void> likePost({required String postId});
@@ -30,6 +31,8 @@ abstract class PostsRepository {
   });
 
   Future<void> deletePost({required String postId});
+
+  Future<void> togglePostVisibility({required String postId});
   
   Future<void> editComment({required String commentId, required String text});
   

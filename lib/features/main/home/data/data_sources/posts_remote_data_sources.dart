@@ -230,11 +230,12 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
     required String userId,
     required int page,
     required int pageSize,
+    bool onlyInactive = false,
   }) async {
     try {
       final response = await apiClient.get(
         Endpoints.allPosts,
-        params: {'targetUserId': userId, 'page': page, 'size': pageSize},
+        params: {'targetUserId': userId, 'page': page, 'size': pageSize, 'onlyInactive':onlyInactive},
       );
 
       log(' User Posts Response status: ${response.statusCode}');
@@ -295,6 +296,23 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       log(' Post deleted successfully');
     } on DioException catch (e) {
       log(' Error deleting post: ${e.message}');
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> togglePostVisibility({required String postId}) async {
+    try {
+      final url = Endpoints.postToggleVisibility.replaceFirst('{id}', postId);
+      final response = await apiClient.patch(url);
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleDioError(_badResponse(response));
+      }
+
+      log(' Post visibility toggled successfully');
+    } on DioException catch (e) {
+      log(' Error toggling post visibility: ${e.message}');
       throw ApiErrorHandler.handleDioError(e);
     }
   }

@@ -6,10 +6,8 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
-// import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
-// import 'package:sports_in/core/utils/helper/gender_helper.dart';
 import '../interface/i_profile_data_source.dart';
 import '../../model/profile_model.dart';
 
@@ -21,7 +19,6 @@ class ApiProfileDataSource implements IProfileDataSource {
   ApiProfileDataSource(this._apiClient, this._prefs);
 
   String? get _currentUserId => _prefs.getUserId();
-  // Add this helper at the top of the class (after the fields)
   DioException _badResponse(Response response) => DioException(
     requestOptions: response.requestOptions,
     response: response,
@@ -59,13 +56,13 @@ class ApiProfileDataSource implements IProfileDataSource {
           getAchievements(userId: userId, page: 1, size: 3),
           _getAnalyzedVideos(userId),
           (profile.userType == UserType.coach ||
-            profile.userType == UserType.scout ||
-            profile.userType == UserType.club)
+                  profile.userType == UserType.scout ||
+                  profile.userType == UserType.club)
               ? getOpportunities(userId: userId, page: 1, pageSize: 3)
               : Future.value(<Opportunity>[]),
           (profile.userType == UserType.club ||
-        profile.userType == UserType.coach || 
-        profile.userType == UserType.institute)
+                  profile.userType == UserType.coach ||
+                  profile.userType == UserType.institute)
               ? getCourses(userId: userId, page: 1, pageSize: 10)
               : Future.value(<Course>[]),
           getInterests(userId: userId, page: 1, pageSize: 6),
@@ -90,7 +87,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   @override
   Future<ProfileModel> updateProfile(Map<String, dynamic> updateData) async {
     try {
-      print(  'Updating profile with data: $updateData'); // Debug print
+      print('Updating profile with data: $updateData'); // Debug print
       final response = await _apiClient.put(
         Endpoints.updateProfile,
         data: FormData.fromMap(updateData),
@@ -342,98 +339,111 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
-@override
-Future<List<Course>> getCourses({
-  required String userId,
-  int page = 1,
-  int pageSize = 10,
-}) async {
-  try {
-    final response = await _apiClient.get(
-      Endpoints.createdCourses,
-      params: {'page': page, 'size': pageSize},
-    );
-
-    if (response.statusCode == 200) {
-      final data = response.data as Map<String, dynamic>;
-      final items = data['items'] as List<dynamic>? ?? [];
-      
-      return items.map((json) => Course(
-        id: json['id'] ?? '',
-        imageUrl: json['thumbnailUrl'] ?? '',
-        title: json['title'] ?? '',
-        description: json['description'],
-        price: json['price']?.toDouble(),
-        isFree: json['isFree'] ?? false,
-        lessonsCount: json['lessonsCount'] ?? 0,
-        enrolledCount: json['enrolledUsersCount'] ?? 0,
-      )).toList();
-    }
-
-    throw ApiErrorHandler.handleDioError(_badResponse(response));
-  } catch (e) {
-    debugPrint('Error loading courses: $e');
-    return [];
-  }
-}
   @override
-  Future<List<Interest>> getInterests({
+  Future<List<Course>> getCourses({
     required String userId,
     int page = 1,
     int pageSize = 10,
   }) async {
-    final interestUserIds = [
-      "07f4e4d8-0315-48fc-82a0-89e37b67648a",
-      "3bdbe490-f7a7-4a1b-9d60-6fb1ef5d8fbf",
-      "8ee439e7-c504-4407-9ec0-24fb7b406623",
-    ];
-
     try {
-      final interests = <Interest>[];
+      final response = await _apiClient.get(
+        Endpoints.createdCourses,
+        params: {'page': page, 'size': pageSize},
+      );
 
-      for (final interestUserId in interestUserIds) {
-        try {
-          final response = await _apiClient.get(
-            Endpoints.getProfile.replaceAll('{userId}', interestUserId),
-          );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = data['items'] as List<dynamic>? ?? [];
 
-          if (response.statusCode == 200) {
-            final json = response.data as Map<String, dynamic>;
-
-            if (json['isOwner'] == true || json['userId'] == _currentUserId) {
-              continue;
-            }
-
-            final userType = _parseUserType(json['userType']);
-            final sportsList = json['sports'] as List?;
-
-            interests.add(
-              Interest(
-                id: json['userId'] ?? '',
-                name: json['fullName'] ?? 'Unknown',
-                role: _getRoleText(
-                  userType,
-                  json['specialization'],
-                  sportsList!.first,
-                ),
-                profileImage: json['profilePictureUrl'] ?? '',
-                isConnected: json['connectionStatus'] == 'Connected',
-                isFollowing: json['isFollowedByMe'] == true,
+        return items
+            .map(
+              (json) => Course(
+                id: json['id'] ?? '',
+                imageUrl: json['thumbnailUrl'] ?? '',
+                title: json['title'] ?? '',
+                description: json['description'],
+                price: json['price']?.toDouble(),
+                isFree: json['isFree'] ?? false,
+                lessonsCount: json['lessonsCount'] ?? 0,
+                enrolledCount: json['enrolledUsersCount'] ?? 0,
               ),
-            );
-          }
-        } on DioException catch (e) {
-          debugPrint('Error loading interest user $interestUserId: $e');
-          continue;
-        }
+            )
+            .toList();
       }
 
-      return interests;
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
     } catch (e) {
-      debugPrint('Error loading interests: $e');
+      debugPrint('Error loading courses: $e');
       return [];
     }
   }
+
+  @override
+@override
+Future<List<Interest>> getInterests({
+  required String userId,
+  int page = 1,
+  int pageSize = 10,
+}) async {
+  final interestUserIds = [
+    "07f4e4d8-0315-48fc-82a0-89e37b67648a",
+    "3bdbe490-f7a7-4a1b-9d60-6fb1ef5d8fbf",
+    "8ee439e7-c504-4407-9ec0-24fb7b406623",
+  ];
+
+  try {
+    final interests = <Interest>[];
+
+    for (final interestUserId in interestUserIds) {
+      try {
+        final response = await _apiClient.get(
+          Endpoints.getProfile.replaceAll('{userId}', interestUserId),
+        );
+
+        if (response.statusCode == 200) {
+          final json = response.data as Map<String, dynamic>;
+
+          if (json['isOwner'] == true || json['userId'] == _currentUserId) {
+            continue;
+          }
+
+          final userType = _parseUserType(json['userType']);
+          
+          final sportsList = EnumMapper.sportIdsToLabels((json['sports'] as List<dynamic>?)?.map((id) => id as int).toList() ?? []);
+          String? sport;
+          
+          if (sportsList.isNotEmpty) {
+            sport = sportsList.first;
+          }
+
+          interests.add(
+            Interest(
+              id: json['userId'] ?? '',
+              name: json['fullName'] ?? 'Unknown',
+              role: _getRoleText(
+                userType,
+                json['specialization'],
+                sport, 
+              ),
+              profileImage: json['profilePictureUrl'] ?? '',
+              isConnected: json['connectionStatus'] == 'Connected',
+              isFollowing: json['isFollowedByMe'] == true,
+            ),
+          );
+        }
+      } on DioException catch (e) {
+        debugPrint('Error loading interest user $interestUserId: $e');
+        continue;
+      }
+    }
+
+    debugPrint('✅ Loaded ${interests.length} interests');
+    return interests;
+  } catch (e) {
+    debugPrint('❌ Error loading interests: $e');
+    return [];
+  }
+}
 
   Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(String userId) async {
     await Future.delayed(const Duration(milliseconds: 300));
@@ -480,7 +490,6 @@ Future<List<Course>> getCourses({
     }
   }
 
-  // ─── Private helpers (unchanged) ────────────────────────────────────────────
 
   ProfileModel _apiResponseToProfile(Map<String, dynamic> json) {
     final userType = _parseUserType(json['userType']);
@@ -549,9 +558,7 @@ Future<List<Course>> getCourses({
   }
 
   String _getRoleText(UserType type, String? specialization, String? sport) {
-    final sportText =
-        specialization ??
-        sport;
+    final sportText = specialization ?? sport;
     switch (type) {
       case UserType.player:
         return sportText!.isNotEmpty ? 'Athlete - $sportText' : 'Athlete';
@@ -586,7 +593,7 @@ Future<List<Course>> getCourses({
     Map<String, dynamic> json,
     String? sportsText,
   ) => CoachSpecificData(
-    specializedSport:  json['specialization'] ?? sportsText,
+    specializedSport: json['specialization'] ?? sportsText,
     yearsOfExperience: json['yearsOfExperience'],
     certifications: null,
     age: json['age']?.toString(),
@@ -597,7 +604,7 @@ Future<List<Course>> getCourses({
     Map<String, dynamic> json,
     String? sportsText,
   ) => ScoutSpecificData(
-    specializedSport:  json['specialization'] ?? sportsText,
+    specializedSport: json['specialization'] ?? sportsText,
     yearsOfExperience: json['yearsOfExperience'],
     gender: json['gender'],
     organization: null,
@@ -606,11 +613,10 @@ Future<List<Course>> getCourses({
   ClubSpecificData _buildClubData(Map<String, dynamic> json, List? sportsList) {
     final sports =
         // sportsList?.take(6).map((s) => s.toString()).join(', ') ?? '';
-      EnumMapper.sportIdsToLabels(
-        (json['sports'] as List<dynamic>?)
-            ?.map((id) => id as int)
-            .toList() ?? [],
-      );
+        EnumMapper.sportIdsToLabels(
+          (json['sports'] as List<dynamic>?)?.map((id) => id as int).toList() ??
+              [],
+        );
     return ClubSpecificData(
       location: null,
       foundedYear: json['foundationDate'],
