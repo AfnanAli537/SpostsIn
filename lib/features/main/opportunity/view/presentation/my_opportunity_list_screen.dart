@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
-import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
-import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
@@ -37,6 +35,7 @@ class MyOpportunitiesListScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class _MyOpportunitiesListView extends StatefulWidget {
   bool showActiveOnly;
   final bool isCurrentUser;

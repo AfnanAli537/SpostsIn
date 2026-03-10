@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
@@ -35,7 +37,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       // Get user email from SharedPrefs
       final user = await getIt<SharedPref>().getUserFromPrefs();
       final userEmail = user?.email ?? 'user@example.com';
-      
+      log('User email: $userEmail'); // Debug log
       final subject = Uri.encodeComponent('Support Request from SportsIn');
       final body = Uri.encodeComponent(_messageController.text);
       

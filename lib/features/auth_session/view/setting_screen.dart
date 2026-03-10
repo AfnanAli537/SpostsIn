@@ -12,6 +12,7 @@ import 'package:sports_in/features/auth_session/view/account_switcher_screen.dar
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
+import 'package:sports_in/features/main/profile/view/presentation/achievement/achievements_list_screen.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
 
@@ -24,8 +25,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   LoginResponse? _currentUser;
-    final sharedPref = getIt<SharedPref>();
-  bool _pushNotifications = false;
+  final sharedPref = getIt<SharedPref>();
+  // bool _pushNotifications = false;
   String? get _currentUserId => sharedPref.getUserId();
 
   @override
@@ -46,45 +47,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final theme = Theme.of(context);
     final string = S.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(string.settings),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(string.settings), centerTitle: true),
       body: ListView(
         padding: EdgeInsets.all(16.w),
         children: [
           // Language Section
-          _buildSectionTitle('Language', theme),
+          _buildSectionTitle(string.selectLanguage, theme),
           SizedBox(height: 8.h),
           _buildLanguageCard(theme, string),
           SizedBox(height: 48.h),
 
-          // // Notifications Section
-          // _buildSectionTitle(string.notifications, theme),
-          // SizedBox(height: 8.h),
-          // _buildNotificationCard(theme, string),
-          // SizedBox(height: 24.h),
-
           // Personal Info Section
-          _buildSectionTitle('Personal Info', theme),
+          _buildSectionTitle(string.personalInfo, theme),
           SizedBox(height: 8.h),
           _buildPersonalInfoCards(theme, string),
           SizedBox(height: 48.h),
 
           // Account Section
-          _buildSectionTitle('Account', theme),
+          _buildSectionTitle(string.account, theme),
           SizedBox(height: 8.h),
           _buildAccountCard(theme, string),
           SizedBox(height: 48.h),
 
           // Subscription Section
-          _buildSectionTitle('Subscription', theme),
+          _buildSectionTitle(string.subscription, theme),
           SizedBox(height: 8.h),
           _buildSubscriptionCard(theme, string),
           SizedBox(height: 48.h),
 
           // Activities Section
-          _buildSectionTitle('Activities', theme),
+          _buildSectionTitle(string.activities, theme),
           SizedBox(height: 8.h),
           _buildActivitiesCards(theme, string),
           SizedBox(height: 48.h),
@@ -112,9 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
-        ),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -147,16 +137,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: EdgeInsets.all(2.w),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: borderColor,
-                        width: 1.w,
-                      ),
+                      border: Border.all(color: borderColor, width: 1.w),
                     ),
-                    child: Image.asset(
-                      imagePath,
-                      width: 20.w,
-                      height: 20.h,
-                    ),
+                    child: Image.asset(imagePath, width: 20.w, height: 20.h),
                   );
                 },
               );
@@ -167,68 +150,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // Widget _buildNotificationCard(ThemeData theme, S string) {
-  //   return Container(
-  //     padding: EdgeInsets.all(16.r),
-  //     decoration: BoxDecoration(
-  //       color: theme.colorScheme.surface,
-  //       borderRadius: BorderRadius.circular(12.r),
-  //       border: Border.all(
-  //         color: theme.colorScheme.outline.withOpacity(0.2),
-  //       ),
-  //     ),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               'Push Notifications',
-  //               style: theme.textTheme.bodyLarge?.copyWith(
-  //                 fontWeight: FontWeight.w600,
-  //               ),
-  //             ),
-  //             SizedBox(height: 4.h),
-  //             Text(
-  //               'Receive push notifications for new\nmessages, match updates and more',
-  //               style: theme.textTheme.bodySmall?.copyWith(
-  //                 color: Colors.grey[600],
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         Switch(
-  //           value: _pushNotifications,
-  //           onChanged: (value) {
-  //             setState(() => _pushNotifications = value);
-  //             // TODO: Implement notification toggle logic
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildPersonalInfoCards(ThemeData theme, S string) {
     return Column(
       children: [
         _buildInfoCard(
-          label: 'Email',
+          label: string.email,
           value: _currentUser?.email ?? 'email@example.com',
           icon: Icons.email_outlined,
           theme: theme,
         ),
         SizedBox(height: 12.h),
         _buildInfoCard(
-          label: 'Password',
+          label: string.password,
           value: '••••••••',
           icon: Icons.lock_outline,
           theme: theme,
         ),
         SizedBox(height: 12.h),
         _buildInfoCard(
-          label: 'User Type',
+          label: string.userType,
           value: _currentUser?.userType ?? 'Other',
           icon: Icons.person_outline,
           theme: theme,
@@ -248,9 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
-        ),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -277,11 +215,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           if (label == 'Password')
-            Icon(
-              Icons.chevron_right,
-              color: Colors.grey[400],
-              size: 20.sp,
-            ),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
         ],
       ),
     );
@@ -290,10 +224,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAccountCard(ThemeData theme, S string) {
     return _buildNavigationCard(
       title: 'Change Password',
-      subtitle: 'Update your current password for enhanced\nsecurity',
       icon: Icons.key_outlined,
       onTap: () {
-        Navigator.pushNamed(context, AppRoutes.otp, arguments: _currentUser?.email);
+        Navigator.pushNamed(
+          context,
+          AppRoutes.otp,
+          arguments: _currentUser?.email,
+        );
       },
       theme: theme,
     );
@@ -302,7 +239,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildSubscriptionCard(ThemeData theme, S string) {
     return _buildNavigationCard(
       title: 'Manage Subscription',
-      subtitle: 'Update your current password for enhanced\nsecurity',
       icon: Icons.card_membership_outlined,
       onTap: () {
         // TODO: Navigate to subscription screen
@@ -315,65 +251,71 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       children: [
         _buildNavigationCard(
-          title: 'Manage Posts',
-          subtitle: 'Update your current password for enhanced\nsecurity',
+          title: string.managePosts,
           icon: Icons.article_outlined,
           onTap: () {
             // Navigator.pushNamed(context, AppRoutes.managePosts);
             Navigator.pushNamed(
-                  context,
-                  AppRoutes.profilePostsListScreen,
-                  arguments: {
-                    'userId':_currentUserId,
-                    'isCurrentUser': true,
-                  },
-                );
+              context,
+              AppRoutes.profilePostsListScreen,
+              arguments: {'userId': _currentUserId, 'isCurrentUser': true},
+            );
           },
           theme: theme,
         ),
         SizedBox(height: 12.h),
-        _buildNavigationCard(
-          title: 'Manage Opportunity',
-          subtitle: 'Update your current password for enhanced\nsecurity',
-          icon: Icons.work_outline,
-          onTap: () {
-            // Navigator.pushNamed(context, AppRoutes.manageOpportunities);
-            Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MyOpportunitiesListScreen(
-                      showActiveOnly: true, // or false for inactive
-                    ),
+        _currentUser!.userType == 'coach' ||
+                _currentUser!.userType == 'scout' ||
+                _currentUser!.userType == 'club'
+            ? Column(
+                children: [
+                  _buildNavigationCard(
+                    title: string.manageOpportunities,
+                    icon: Icons.work_outline,
+                    onTap: () {
+                      // Navigator.pushNamed(context, AppRoutes.manageOpportunities);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MyOpportunitiesListScreen(
+                            showActiveOnly: true, // or false for inactive
+                          ),
+                        ),
+                      );
+                    },
+                    theme: theme,
                   ),
-                );
-          },
-          theme: theme,
-        ),
-        SizedBox(height: 12.h),
+                  SizedBox(height: 12.h),
+                ],
+              )
+            : SizedBox.shrink(),
         _buildNavigationCard(
-          title: 'Manage course',
-          subtitle: 'Update your current password for enhanced\nsecurity',
+          title: string.manageCourse,
           icon: Icons.school_outlined,
           onTap: () {
             // Navigator.pushNamed(context, AppRoutes.manageCourses);
             Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (_) => getIt<CoursesBloc>(),
-                      child: const CourseListScreen(
-                        listType: CourseListType.created,
-                      ),
-                    ),
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) => getIt<CoursesBloc>(),
+                  child: CourseListScreen(
+                    listType:
+                        _currentUser!.userType == 'coach' ||
+                            _currentUser!.userType == 'scout' ||
+                            _currentUser!.userType == 'club'
+                        ? CourseListType.created
+                        : CourseListType.enrolled,
                   ),
-                );
+                ),
+              ),
+            );
           },
           theme: theme,
         ),
         SizedBox(height: 12.h),
         _buildNavigationCard(
-          title: 'Manage video analysis people',
-          subtitle: 'Update your current password for enhanced\nsecurity',
+          title: string.manageVideoAnalysis,
           icon: Icons.video_library_outlined,
           onTap: () {
             // TODO: Navigate to video analysis screen
@@ -382,8 +324,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 12.h),
         _buildNavigationCard(
-          title: 'Manage advertisement',
-          subtitle: 'Update your current password for enhanced\nsecurity',
+          title: string.manageAdvertisement,
           icon: Icons.campaign_outlined,
           onTap: () {
             // TODO: Navigate to advertisement screen
@@ -392,11 +333,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 12.h),
         _buildNavigationCard(
-          title: 'Manage achievement',
-          subtitle: 'Update your current password for enhanced\nsecurity',
+          title: string.manageAchievement,
           icon: Icons.emoji_events_outlined,
           onTap: () {
-            // Navigator.pushNamed(context, AppRoutes.manageAchievements);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AchievementsListScreen(
+                  userId: _currentUser!.userId!,
+                  isCurrentUser: true,
+                ),
+              ),
+            );
           },
           theme: theme,
         ),
@@ -406,7 +354,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildNavigationCard({
     required String title,
-    required String subtitle,
+    // required String subtitle,
     required IconData icon,
     required VoidCallback onTap,
     required ThemeData theme,
@@ -419,9 +367,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.2),
-          ),
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
         ),
         child: Row(
           children: [
@@ -435,11 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: Colors.grey[400],
-              size: 20.sp,
-            ),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
           ],
         ),
       ),
@@ -447,22 +389,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSwitchAccountButton(ThemeData theme, S string) {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w),
-    child: OutlinedButton.icon(
-      onPressed: () {
-        AccountSwitcherBottomSheet.show(context);
-      },
-      icon: Icon(Icons.swap_horiz, size: 20.sp),
-      label: const Text('Switch account'),
-      style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: 14.h),
-        side: BorderSide(color: theme.colorScheme.primary),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: OutlinedButton.icon(
+        onPressed: () {
+          AccountSwitcherBottomSheet.show(context);
+        },
+        icon: Icon(Icons.swap_horiz, size: 20.sp),
+        label: Text(string.switchAccount),
+        style: OutlinedButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 14.h),
+          side: BorderSide(color: theme.colorScheme.primary),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

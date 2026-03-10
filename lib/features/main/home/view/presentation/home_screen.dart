@@ -10,14 +10,18 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/courses_tab.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart';
 import 'package:sports_in/core/enums/home_enums.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/content.dart';
+import 'package:sports_in/features/main/home/view/presentation/home_tab.dart';
+import 'package:sports_in/features/main/home/view/presentation/posts_tab.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/features/main/opportunity/data/data_source/opportunity_remote_data_source.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_list.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -33,6 +37,11 @@ class _HomePageState extends State<HomePage> {
   late SharedPref sharedPref;
   late Future<LoginResponse?> _userFuture;
   late Future<SharedPreferences> _prefsFuture;
+
+  final _forYouKey = GlobalKey<ForYouTabState>();
+  final _postsKey = GlobalKey<PostsTabState>();
+  final _coursesKey = GlobalKey<CoursesTabState>();
+  final _opportunitiesKey = GlobalKey<OpportunitiesContentState>();
 
   @override
   void initState() {
@@ -58,6 +67,27 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  void _onTabTapped(HomeTab tab) {
+    if (_currentTab == tab) {
+      _reloadCurrentTab(tab);
+    } else {
+      setState(() => _currentTab = tab);
+    }
+  }
+
+  void _reloadCurrentTab(HomeTab tab) {
+    switch (tab) {
+      case HomeTab.forYou:
+        _forYouKey.currentState?.reload();
+      case HomeTab.posts:
+        _postsKey.currentState?.reload();
+      case HomeTab.courses:
+        _coursesKey.currentState?.reload();
+      case HomeTab.opportunities:
+        _opportunitiesKey.currentState?.reload();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = S.of(context);
@@ -65,6 +95,10 @@ class _HomePageState extends State<HomePage> {
     return FutureBuilder<LoginResponse?>(
       future: _userFuture,
       builder: (context, snapshot) {
+        log('📊 FutureBuilder state: ${snapshot.connectionState}');
+        log('📊 Has data: ${snapshot.hasData}');
+        log('📊 Has error: ${snapshot.hasError}');
+
         if (snapshot.hasError) {
           return Scaffold(
             body: Center(
@@ -142,95 +176,96 @@ class _HomePageState extends State<HomePage> {
             BlocProvider(create: (_) => getIt<CoursesBloc>()),
           ],
           child: Scaffold(
-            // No RefreshIndicator here — each tab handles its own refresh
-            body: CustomScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              slivers: [
-                // ── Header: avatar + greeting ──────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 25.r,
-                          backgroundColor: Colors.grey[300],
-                          child: Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 30.sp,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${strings.hi}, ${user.name?.firstName ?? strings.guest}",
-                              style: GoogleFonts.poppins(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
-                                color: ColorManager.yellow,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              strings.happyToSeeYouToday,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // ── Tab chips ─────────────────────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
+            body: RefreshIndicator(
+              onRefresh: () async {
+                _reloadCurrentTab(_currentTab);
+                await Future.delayed(const Duration(milliseconds: 600));
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  // ── Greeting (same as old UI) ──────────────────────
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
                       child: Row(
-                        children: HomeTab.values.map((tab) {
-                          final isSelected = _currentTab == tab;
-                          return Padding(
-                            padding: EdgeInsets.only(right: 6.w),
-                            child: ChoiceChip(
-                              label: Text(tab.getName(strings)),
-                              selected: isSelected,
-                              onSelected: (_) =>
-                                  setState(() => _currentTab = tab),
-                              selectedColor:
-                                  Theme.of(context).colorScheme.primary,
-                              checkmarkColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              labelStyle: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14.sp,
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Theme.of(context).colorScheme.onSurface,
+                        children: [
+                          CircleAvatar(
+                            radius: 25.r,
+                            backgroundColor: Colors.grey[300],
+                            child: Icon(Icons.person,
+                                color: Colors.white, size: 30.sp),
+                          ),
+                          SizedBox(width: 12.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${strings.hi}, ${user.name?.firstName ?? strings.guest}",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorManager.yellow,
+                                ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                              Text(
+                                strings.happyToSeeYouToday,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
 
-                // ── Tab content — each child owns its scroll + refresh ─────
-                BuildContent(
-                  currentTab: _currentTab,
-                  onTabChange: (tab) => setState(() => _currentTab = tab),
-                ),
-              ],
+                  // ── Tab chips (same as old UI) ─────────────────────
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: HomeTab.values.map((tab) {
+                            final isSelected = _currentTab == tab;
+                            return Padding(
+                              padding: EdgeInsets.only(right: 6.w),
+                              child: ChoiceChip(
+                                label: Text(tab.getName(strings)),
+                                selected: isSelected,
+                                onSelected: (_) => _onTabTapped(tab),
+                                selectedColor:
+                                    Theme.of(context).colorScheme.primary,
+                                checkmarkColor:
+                                    Theme.of(context).colorScheme.secondary,
+                                labelStyle: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14.sp,
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // ── Tab content ────────────────────────────────────
+                  BuildContent(
+                    currentTab: _currentTab,
+                    onTabChange: (tab) => setState(() => _currentTab = tab),
+                    forYouKey: _forYouKey,
+                    postsKey: _postsKey,
+                    coursesKey: _coursesKey,
+                    opportunitiesKey: _opportunitiesKey,
+                  ),
+                ],
+              ),
             ),
           ),
         );

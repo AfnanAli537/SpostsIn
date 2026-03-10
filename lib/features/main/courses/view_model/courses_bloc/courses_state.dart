@@ -2,7 +2,7 @@ part of 'courses_bloc.dart';
 
 abstract class CoursesState extends Equatable {
   const CoursesState();
-  
+
   @override
   List<Object?> get props => [];
 }
@@ -13,7 +13,11 @@ class CoursesInitial extends CoursesState {
 
 // Loading states
 class CoursesLoading extends CoursesState {
-  const CoursesLoading();
+  // Which consumer triggered this load — listeners filter on this
+  final String source;
+  const CoursesLoading({this.source = 'coursesTab'});
+  @override
+  List<Object?> get props => [source];
 }
 
 class CourseDetailLoading extends CoursesState {
@@ -22,9 +26,7 @@ class CourseDetailLoading extends CoursesState {
 
 class EnrollmentLoading extends CoursesState {
   final String courseId;
-
   const EnrollmentLoading({required this.courseId});
-
   @override
   List<Object?> get props => [courseId];
 }
@@ -35,7 +37,6 @@ class LessonActionLoading extends CoursesState {
 
 class CourseActionLoading extends CoursesState {
   const CourseActionLoading();
-
   @override
   List<Object?> get props => [];
 }
@@ -45,15 +46,18 @@ class CoursesLoaded extends CoursesState {
   final List<CourseModel> courses;
   final bool hasMore;
   final int currentPage;
+  // Mirrors the source from the event so listeners can filter
+  final String source;
 
   const CoursesLoaded({
     required this.courses,
     required this.hasMore,
     required this.currentPage,
+    this.source = 'coursesTab',
   });
 
   @override
-  List<Object> get props => [courses, hasMore, currentPage];
+  List<Object> get props => [courses, hasMore, currentPage, source];
 }
 
 class EnrolledCoursesLoaded extends CoursesState {
@@ -89,9 +93,7 @@ class MyCoursesLoaded extends CoursesState {
 // Success states - Course Detail
 class CourseDetailLoaded extends CoursesState {
   final CourseModel course;
-
   const CourseDetailLoaded({required this.course});
-
   @override
   List<Object> get props => [course];
 }
@@ -104,11 +106,11 @@ class LessonsLoaded extends CoursesState {
   const LessonsLoaded({
     required this.lessons,
     required this.isEnrolled,
-    required this.courseId
+    required this.courseId,
   });
 
   @override
-  List<Object> get props => [lessons, isEnrolled];
+  List<Object> get props => [lessons, isEnrolled, courseId];
 }
 
 // Success states - Enrollment
@@ -130,10 +132,7 @@ class ProgressUpdated extends CoursesState {
   final String lessonId;
   final bool isWatched;
 
-  const ProgressUpdated({
-    required this.lessonId,
-    required this.isWatched,
-  });
+  const ProgressUpdated({required this.lessonId, required this.isWatched});
 
   @override
   List<Object> get props => [lessonId, isWatched];
@@ -142,54 +141,42 @@ class ProgressUpdated extends CoursesState {
 // Success states - Provider Actions
 class CourseCreated extends CoursesState {
   final CourseModel course;
-
   const CourseCreated({required this.course});
-
   @override
   List<Object> get props => [course];
 }
 
 class CourseUpdated extends CoursesState {
   final CourseModel course;
-
   const CourseUpdated({required this.course});
-
   @override
   List<Object?> get props => [course];
 }
 
 class CourseDeleted extends CoursesState {
   final String courseId;
-
   const CourseDeleted({required this.courseId});
-
   @override
   List<Object> get props => [courseId];
 }
 
 class LessonCreated extends CoursesState {
   final LessonModel lesson;
-
   const LessonCreated({required this.lesson});
-
   @override
   List<Object> get props => [lesson];
 }
 
 class LessonUpdated extends CoursesState {
   final LessonModel lesson;
-
   const LessonUpdated({required this.lesson});
-
   @override
   List<Object?> get props => [lesson];
 }
 
 class LessonDeleted extends CoursesState {
   final String lessonId;
-
   const LessonDeleted({required this.lessonId});
-
   @override
   List<Object?> get props => [lessonId];
 }
@@ -197,18 +184,14 @@ class LessonDeleted extends CoursesState {
 // Success states - Analytics
 class EnrolleesLoaded extends CoursesState {
   final List<EnrolledUserModel> enrollees;
-
   const EnrolleesLoaded({required this.enrollees});
-
   @override
   List<Object> get props => [enrollees];
 }
 
 class RevenueReportLoaded extends CoursesState {
-  final RevenueReportModel report; 
-
+  final RevenueReportModel report;
   const RevenueReportLoaded({required this.report});
-
   @override
   List<Object> get props => [report];
 }
@@ -216,9 +199,7 @@ class RevenueReportLoaded extends CoursesState {
 // Error states
 class CoursesError extends CoursesState {
   final String message;
-
   const CoursesError({required this.message});
-
   @override
   List<Object> get props => [message];
 }

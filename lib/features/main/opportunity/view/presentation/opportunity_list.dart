@@ -15,16 +15,21 @@ class OpportunitiesContent extends StatefulWidget {
   const OpportunitiesContent({super.key});
 
   @override
-  State<OpportunitiesContent> createState() => _OpportunitiesContentState();
+  State<OpportunitiesContent> createState() => OpportunitiesContentState();
 }
 
-class _OpportunitiesContentState extends State<OpportunitiesContent>
+class OpportunitiesContentState extends State<OpportunitiesContent>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
 
+  void reload() {
+    context.read<OpportunityBloc>().add(
+      const FetchOpportunities(isRefresh: true),
+    );
+  }
+
   final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
   late AnimationController _shimmerController;
 
@@ -55,8 +60,6 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
       duration: const Duration(milliseconds: 1500),
     )..repeat();
 
-    _scrollController.addListener(_onScroll);
-
     // Initial load
     context.read<OpportunityBloc>().add(
       const FetchOpportunities(isRefresh: true),
@@ -66,28 +69,9 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
   @override
   void dispose() {
     _searchController.dispose();
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
     _shimmerController.dispose();
     _debounce?.cancel();
     super.dispose();
-  }
-
-  // ── Data helpers ──────────────────────────────────────────────────────────
-
-  void _onScroll() {
-    if (!mounted) return;
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.9) {
-      final state = context.read<OpportunityBloc>().state;
-      if (state is OpportunityLoaded && state.hasNextPage) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            context.read<OpportunityBloc>().add(const FetchOpportunities());
-          }
-        });
-      }
-    }
   }
 
   void _onSearchChanged(String value) {
@@ -102,90 +86,65 @@ class _OpportunitiesContentState extends State<OpportunitiesContent>
     context.read<OpportunityBloc>().add(const ClearFilters());
   }
 
-  Future<void> _onRefresh() async {
-    context.read<OpportunityBloc>().add(
-      const FetchOpportunities(isRefresh: true),
-    );
-    await Future.delayed(const Duration(milliseconds: 600));
-  }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final strings = S.of(context);
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      child: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: BlocConsumer<OpportunityBloc, OpportunityState>(
-          listener: (context, state) {
-            if (state is OpportunityError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                  duration: const Duration(seconds: 3),
-                ),
-              );
-            }
-            if (state is OpportunityCreated) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(strings.opportunityCreatedSuccessfully),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-              context.read<OpportunityBloc>().add(
-                const FetchOpportunities(isRefresh: true),
-              );
-            }
-            if (state is OpportunityApplied) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(strings.applicationSubmittedSuccessfully),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            return CustomScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(child: _buildSearchBar(strings)),
-                SliverToBoxAdapter(
-                  child: _buildFilterSection(state, strings),
-                ),
-                SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-                if (state is OpportunityLoaded)
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      _buildOpportunitiesList(state, strings),
-                    ),
-                  )
-                else if (state is OpportunityLoading ||
-                    state is OpportunityInitial)
-                  SliverList(
-                    delegate: SliverChildListDelegate(_buildShimmerList()),
-                  )
-                else if (state is OpportunityError)
-                  SliverToBoxAdapter(
-                    child: _buildErrorState(state.message, strings),
-                  )
-                else
-                  const SliverToBoxAdapter(child: SizedBox.shrink()),
-                SliverToBoxAdapter(child: SizedBox(height: 100.h)),
-              ],
-            );
-          },
-        ),
-      ),
+    return BlocConsumer<OpportunityBloc, OpportunityState>(
+      listener: (context, state) {
+        if (state is OpportunityError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        if (state is OpportunityCreated) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(strings.opportunityCreatedSuccessfully),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          context.read<OpportunityBloc>().add(
+            const FetchOpportunities(isRefresh: true),
+          );
+        }
+        if (state is OpportunityApplied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(strings.applicationSubmittedSuccessfully),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSearchBar(strings),
+            _buildFilterSection(state, strings),
+            SizedBox(height: 16.h),
+            if (state is OpportunityLoaded)
+              ..._buildOpportunitiesList(state, strings)
+            else if (state is OpportunityLoading ||
+                state is OpportunityInitial)
+              ..._buildShimmerList()
+            else if (state is OpportunityError)
+              _buildErrorState(state.message, strings)
+            else
+              const SizedBox.shrink(),
+            SizedBox(height: 120.h),
+          ],
+        );
+      },
     );
   }
 

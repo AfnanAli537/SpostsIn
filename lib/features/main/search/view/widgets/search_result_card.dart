@@ -95,8 +95,6 @@ class SearchResultCard extends StatelessWidget {
         return theme.colorScheme.tertiary;
       case UserType.scout:
         return theme.colorScheme.error;
-      default:
-        return theme.colorScheme.onSurfaceVariant;
-    }
+      }
   }
 }

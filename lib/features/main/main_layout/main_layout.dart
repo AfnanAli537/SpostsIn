@@ -35,9 +35,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    setState(() => _currentIndex = index);
   }
 
   Widget _buildNavItem(IconData icon, int index) {
@@ -49,9 +47,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
         onTap: () => _onItemTapped(index),
         customBorder: const CircleBorder(),
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 8.h,
-          ), // Reduced vertical padding
+          padding: EdgeInsets.symmetric(vertical: 8.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -154,14 +150,14 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
         clipBehavior: Clip.antiAlias,
         shape: const CircularNotchedRectangle(),
         notchMargin: 6.r,
-        padding: EdgeInsets.zero, // Important to remove default padding
+        padding: EdgeInsets.zero,
         child: SizedBox(
-          height: 65.h, // Explicit height helps prevent vertical overflow
+          height: 65.h,
           child: Row(
             children: [
               _buildNavItem(Icons.home, 0),
               _buildNavItem(Icons.search, 1),
-              SizedBox(width: 60.w), // Space for FAB
+              SizedBox(width: 60.w),
               _buildNavItem(Icons.chat_bubble_outline, 2),
               _buildNavItem(Icons.person_outline, 3),
             ],

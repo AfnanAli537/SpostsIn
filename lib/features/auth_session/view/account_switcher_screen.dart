@@ -83,40 +83,42 @@ class _AccountSwitcherBottomSheetState
   }
 
   Future<void> _removeAccount(LoginResponse account) async {
-    final confirmed = await ConfirmationDialog.show(
+    ConfirmationDialog.show(
       context: context,
       title: 'Remove Account',
       message:
           'Are you sure you want to remove this account? You can add it back later by logging in again.',
       confirmText: 'Remove',
       isDestructive: true,
-      onConfirm: () async{ try {
-        await getIt<SharedPref>().removeAccount(account.userId!);
-        await _loadAccounts();
+      onConfirm: () async {
+        try {
+          await getIt<SharedPref>().removeAccount(account.userId!);
+          await _loadAccounts();
 
-        if (mounted) {
-          Fluttertoast.showToast(
-            msg: 'Account removed',
-            backgroundColor: Colors.green,
-          );
+          if (mounted) {
+            Fluttertoast.showToast(
+              msg: 'Account removed',
+              backgroundColor: Colors.green,
+            );
 
-          // If removed active account, go to login
-          if (account.userId == _activeAccountId) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRoutes.login,
-              (route) => false,
+            // If removed active account, go to login
+            if (account.userId == _activeAccountId) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                (route) => false,
+              );
+            }
+          }
+        } catch (e) {
+          if (mounted) {
+            Fluttertoast.showToast(
+              msg: 'Failed to remove account',
+              backgroundColor: Colors.red,
             );
           }
         }
-      } catch (e) {
-        if (mounted) {
-          Fluttertoast.showToast(
-            msg: 'Failed to remove account',
-            backgroundColor: Colors.red,
-          );
-        }
-      }}
+      },
     );
   }
 
@@ -183,11 +185,8 @@ class _AccountSwitcherBottomSheetState
                 shrinkWrap: true,
                 padding: EdgeInsets.symmetric(vertical: 8.h),
                 itemCount: _accounts.length,
-                separatorBuilder: (_, __) => Divider(
-                  height: 1,
-                  color: Colors.grey[200],
-                  indent: 72.w,
-                ),
+                separatorBuilder: (_, __) =>
+                    Divider(height: 1, color: Colors.grey[200], indent: 72.w),
                 itemBuilder: (context, index) {
                   final account = _accounts[index];
                   final isActive = account.userId == _activeAccountId;
@@ -354,9 +353,7 @@ class _AccountSwitcherBottomSheetState
           SizedBox(height: 8.h),
           Text(
             'Add an account to get started',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.grey[500],
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
           ),
         ],
       ),

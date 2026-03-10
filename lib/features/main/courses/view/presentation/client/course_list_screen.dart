@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/widgets/course_card.dart';
-import 'package:sports_in/features/main/courses/view/widgets/courses_search_bar.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -33,6 +32,30 @@ class _CourseListScreenState extends State<CourseListScreen> {
   String _currentSearchTerm = '';
   Timer? _debounce;
 
+  // ----- Filter state (same as opportunities) -----
+  int? _selectedSportTypeId;
+  String? _selectedSportName;
+
+  final Map<String, int> _sportTypes = {
+    'football': 1,
+    'basketball': 2,
+    'volleyball': 3,
+    'handball': 4,
+    'taekwondo': 5,
+  };
+
+  String _getLocalizedSportName(String key, S strings) {
+    final Map<String, String> names = {
+      'football': strings.football,
+      'basketball': strings.basketball,
+      'volleyball': strings.volleyball,
+      'handball': strings.handball,
+      'taekwondo': strings.taekwondo,
+    };
+    return names[key] ?? key;
+  }
+  // ------------------------------------------------
+
   @override
   void initState() {
     super.initState();
@@ -59,16 +82,18 @@ class _CourseListScreenState extends State<CourseListScreen> {
           _currentPage = 1;
           _hasMore = true;
         });
-        _fetchCoursesWithSearch(_currentSearchTerm);
+        _fetchCoursesWithFilter();
       }
     });
   }
 
   void _fetchInitialCourses() {
-    _fetchCoursesWithSearch('');
+    _fetchCoursesWithFilter();
   }
 
-  void _fetchCoursesWithSearch(String searchTerm) {
+  void _fetchCoursesWithFilter() {
+    final searchTerm = _currentSearchTerm.isEmpty ? null : _currentSearchTerm;
+
     switch (widget.listType) {
       case CourseListType.available:
         context.read<CoursesBloc>().add(
@@ -76,7 +101,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 page: 1,
                 size: 10,
                 isRefresh: true,
-                searchTerm: searchTerm.isEmpty ? null : searchTerm,
+                searchTerm: searchTerm,
+                sportTypeId: _selectedSportTypeId, // TODO: add to event
               ),
             );
         break;
@@ -86,7 +112,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 page: 1,
                 size: 10,
                 isRefresh: true,
-                searchTerm: searchTerm.isEmpty ? null : searchTerm,
+                searchTerm: searchTerm,
+                sportTypeId: _selectedSportTypeId, // TODO: add to event
               ),
             );
         break;
@@ -96,7 +123,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 page: 1,
                 size: 10,
                 isRefresh: true,
-                searchTerm: searchTerm.isEmpty ? null : searchTerm,
+                searchTerm: searchTerm,
+                sportTypeId: _selectedSportTypeId, // TODO: add to event
               ),
             );
         break;
@@ -117,13 +145,16 @@ class _CourseListScreenState extends State<CourseListScreen> {
       _isLoadingMore = true;
     });
 
+    final searchTerm = _currentSearchTerm.isEmpty ? null : _currentSearchTerm;
+
     switch (widget.listType) {
       case CourseListType.available:
         context.read<CoursesBloc>().add(
               FetchAvailableCourses(
                 page: _currentPage + 1,
                 size: 10,
-                searchTerm: _currentSearchTerm.isEmpty ? null : _currentSearchTerm,
+                searchTerm: searchTerm,
+                sportTypeId: _selectedSportTypeId, // TODO: add to event
               ),
             );
         break;
@@ -132,7 +163,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
               FetchEnrolledCourses(
                 page: _currentPage + 1,
                 size: 10,
-                searchTerm: _currentSearchTerm.isEmpty ? null : _currentSearchTerm,
+                searchTerm: searchTerm,
+                sportTypeId: _selectedSportTypeId, // TODO: add to event
               ),
             );
         break;
@@ -141,11 +173,79 @@ class _CourseListScreenState extends State<CourseListScreen> {
               FetchCreatedCourses(
                 page: _currentPage + 1,
                 size: 10,
-                searchTerm: _currentSearchTerm.isEmpty ? null : _currentSearchTerm,
+                searchTerm: searchTerm,
+                sportTypeId: _selectedSportTypeId, // TODO: add to event
               ),
             );
         break;
     }
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _selectedSportTypeId = null;
+      _selectedSportName = null;
+      _currentSearchTerm = '';
+      _searchController.clear();
+      _courses.clear();
+      _currentPage = 1;
+      _hasMore = true;
+    });
+    _fetchCoursesWithFilter();
+  }
+
+  void _showFilterDialog() {
+    final strings = S.of(context);
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            strings.selectSport,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _sportTypes.entries.map((entry) {
+                return ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  title: Card(
+                    elevation: 6,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 14.w, vertical: 10.h),
+                      child: Text(
+                        _getLocalizedSportName(entry.key, strings),
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      _selectedSportTypeId = entry.value;
+                      _selectedSportName = entry.key;
+                      _courses.clear();
+                      _currentPage = 1;
+                      _hasMore = true;
+                    });
+                    Navigator.pop(dialogContext);
+                    _fetchCoursesWithFilter();
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(strings.cancel),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String _getTitle(S string) {
@@ -162,13 +262,13 @@ class _CourseListScreenState extends State<CourseListScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final string = S.of(context);
+    final strings = S.of(context);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_getTitle(string)),
+          title: Text(_getTitle(strings)),
         ),
         body: BlocConsumer<CoursesBloc, CoursesState>(
           listener: (context, state) {
@@ -234,7 +334,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                     SizedBox(height: 16.h),
                     ElevatedButton(
                       onPressed: _fetchInitialCourses,
-                      child: Text(string.retry),
+                      child: Text(strings.retry),
                     ),
                   ],
                 ),
@@ -243,33 +343,96 @@ class _CourseListScreenState extends State<CourseListScreen> {
 
             return Column(
               children: [
+                // ----- Search bar (same as opportunities) -----
                 Padding(
-                  padding: EdgeInsets.all(16.r),
-                  child: CoursesSearchBar(
-                    controller: _searchController,
-                    hintText: 'Search courses...',
-                    onChanged: (value) {
-                      // Handled by listener
-                    },
-                    onClear: () {
-                      _searchController.clear();
-                      // This will trigger the listener
-                    },
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                      controller: _searchController,
+                      onChanged: (_) {}, // handled by listener
+                      decoration: InputDecoration(
+                        hintText: strings.search,
+                        hintStyle: TextStyle(
+                            color: Colors.grey[400], fontSize: 16.sp),
+                        prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(Icons.clear, color: Colors.grey[600]),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  // Listener will trigger refresh
+                                },
+                              )
+                            : Icon(Icons.tune, color: Colors.grey[600]),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 14.h,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
 
+                // ----- Filter chips (same as opportunities) -----
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildFilterChip(
+                          label: _selectedSportName != null
+                              ? _getLocalizedSportName(
+                                  _selectedSportName!, strings)
+                              : strings.sport,
+                          isSelected: _selectedSportTypeId != null,
+                          onTap: _showFilterDialog,
+                        ),
+                        if (_selectedSportTypeId != null ||
+                            _searchController.text.isNotEmpty)
+                          SizedBox(width: 8.w),
+                        if (_selectedSportTypeId != null ||
+                            _searchController.text.isNotEmpty)
+                          _buildFilterChip(
+                            label: strings.clear,
+                            icon: Icons.clear_all,
+                            isSelected: false,
+                            onTap: _clearFilters,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 16.h),
+
+                // ----- Course list -----
                 Expanded(
                   child: _courses.isEmpty
                       ? _buildEmptyState(theme)
                       : RefreshIndicator(
                           onRefresh: () async {
-                            _fetchCoursesWithSearch(_currentSearchTerm);
-                            await Future.delayed(const Duration(milliseconds: 500));
+                            _fetchCoursesWithFilter();
+                            await Future.delayed(
+                                const Duration(milliseconds: 500));
                           },
                           child: ListView.builder(
                             controller: _scrollController,
                             padding: EdgeInsets.only(bottom: 16.h),
-                            itemCount: _courses.length + (_isLoadingMore ? 1 : 0),
+                            itemCount:
+                                _courses.length + (_isLoadingMore ? 1 : 0),
                             itemBuilder: (context, index) {
                               if (index >= _courses.length) {
                                 return const Center(
@@ -297,30 +460,86 @@ class _CourseListScreenState extends State<CourseListScreen> {
     );
   }
 
+  // ----- Filter chip widget (same as opportunities) -----
+  Widget _buildFilterChip({
+    required String label,
+    IconData? icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey.shade300,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon ?? Icons.tune,
+              size: 18.sp,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.surface
+                  : Theme.of(context).colorScheme.onSurface,
+            ),
+            SizedBox(width: 6.w),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 120.w),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.surface
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildEmptyState(ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            _currentSearchTerm.isEmpty ? Icons.school_outlined : Icons.search_off,
+            _currentSearchTerm.isEmpty && _selectedSportTypeId == null
+                ? Icons.school_outlined
+                : Icons.search_off,
             size: 64.sp,
             color: Colors.grey[400],
           ),
           SizedBox(height: 16.h),
           Text(
-            _currentSearchTerm.isEmpty
+            _currentSearchTerm.isEmpty && _selectedSportTypeId == null
                 ? 'No courses found'
-                : 'No results for "${_currentSearchTerm}"',
+                : 'No results for your criteria',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: Colors.grey[600],
             ),
             textAlign: TextAlign.center,
           ),
-          if (_currentSearchTerm.isNotEmpty) ...[
+          if (_currentSearchTerm.isNotEmpty || _selectedSportTypeId != null) ...[
             SizedBox(height: 8.h),
             Text(
-              'Try adjusting your search',
+              'Try adjusting your search or filter',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.grey[500],
               ),
