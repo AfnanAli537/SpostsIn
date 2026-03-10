@@ -58,6 +58,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aboutUs": MessageLookupByLibrary.simpleMessage("About us"),
     "accept": MessageLookupByLibrary.simpleMessage("Accept"),
     "accepted": MessageLookupByLibrary.simpleMessage("Accepted"),
+    "account": MessageLookupByLibrary.simpleMessage("Account"),
     "achievement": MessageLookupByLibrary.simpleMessage("Achievement"),
     "achievementDeleted": MessageLookupByLibrary.simpleMessage(
       "Achievement deleted successfully",
@@ -72,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Achievement updated successfully",
     ),
     "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
+    "activities": MessageLookupByLibrary.simpleMessage("Activities"),
     "addAComment": MessageLookupByLibrary.simpleMessage("Add a comment..."),
     "addAchievement": MessageLookupByLibrary.simpleMessage(
       "Added New Achievement",
@@ -128,6 +130,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
     "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
+    "changePassword": MessageLookupByLibrary.simpleMessage("Change Password"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
       "We may update this Privacy Policy from time to time. Any significant changes will be communicated through the app.",
     ),
@@ -417,6 +420,23 @@ class MessageLookup extends MessageLookupByLibrary {
       "Make Video Analysis",
     ),
     "male": MessageLookupByLibrary.simpleMessage("Male"),
+    "manageAchievement": MessageLookupByLibrary.simpleMessage(
+      "Manage Achievement",
+    ),
+    "manageAdvertisement": MessageLookupByLibrary.simpleMessage(
+      "Manage Advertisement",
+    ),
+    "manageCourse": MessageLookupByLibrary.simpleMessage("Manage Course"),
+    "manageOpportunities": MessageLookupByLibrary.simpleMessage(
+      "Manage Opportunities",
+    ),
+    "managePosts": MessageLookupByLibrary.simpleMessage("Manage Posts"),
+    "manageSubscription": MessageLookupByLibrary.simpleMessage(
+      "Manage Subscription",
+    ),
+    "manageVideoAnalysis": MessageLookupByLibrary.simpleMessage(
+      "Manage Video Analysis People",
+    ),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
       "Maximum file size is 200 MB",
     ),
@@ -568,6 +588,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
+    ),
+    "personalInfo": MessageLookupByLibrary.simpleMessage(
+      "Personal Information",
     ),
     "pickImage": MessageLookupByLibrary.simpleMessage("Pick Image"),
     "pickVideo": MessageLookupByLibrary.simpleMessage("Pick Video"),
@@ -736,7 +759,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "strongPassword": MessageLookupByLibrary.simpleMessage(
       "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
     ),
+    "subscription": MessageLookupByLibrary.simpleMessage("Subscription"),
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
+    "switchAccount": MessageLookupByLibrary.simpleMessage("Switch Account"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("Taekwondo"),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Tap to select from gallery",
@@ -790,6 +815,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "How We Use Your Information",
     ),
     "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
+    "userType": MessageLookupByLibrary.simpleMessage("User Type"),
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
     "validationError": MessageLookupByLibrary.simpleMessage(
       "Validation error. Please check your inputs.",

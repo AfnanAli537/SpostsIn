@@ -134,6 +134,11 @@ class S {
     );
   }
 
+  /// `Account`
+  String get account {
+    return Intl.message('Account', name: 'account', desc: '', args: []);
+  }
+
   /// `Don't have an account?`
   String get notHaveAccount {
     return Intl.message(
@@ -3408,6 +3413,126 @@ class S {
     return Intl.message(
       'Failed to send message. Please try again.',
       name: 'failedToSendMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personal Information`
+  String get personalInfo {
+    return Intl.message(
+      'Personal Information',
+      name: 'personalInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription`
+  String get subscription {
+    return Intl.message(
+      'Subscription',
+      name: 'subscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activities`
+  String get activities {
+    return Intl.message('Activities', name: 'activities', desc: '', args: []);
+  }
+
+  /// `User Type`
+  String get userType {
+    return Intl.message('User Type', name: 'userType', desc: '', args: []);
+  }
+
+  /// `Change Password`
+  String get changePassword {
+    return Intl.message(
+      'Change Password',
+      name: 'changePassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Subscription`
+  String get manageSubscription {
+    return Intl.message(
+      'Manage Subscription',
+      name: 'manageSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Posts`
+  String get managePosts {
+    return Intl.message(
+      'Manage Posts',
+      name: 'managePosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Opportunities`
+  String get manageOpportunities {
+    return Intl.message(
+      'Manage Opportunities',
+      name: 'manageOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Course`
+  String get manageCourse {
+    return Intl.message(
+      'Manage Course',
+      name: 'manageCourse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Video Analysis People`
+  String get manageVideoAnalysis {
+    return Intl.message(
+      'Manage Video Analysis People',
+      name: 'manageVideoAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Advertisement`
+  String get manageAdvertisement {
+    return Intl.message(
+      'Manage Advertisement',
+      name: 'manageAdvertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Achievement`
+  String get manageAchievement {
+    return Intl.message(
+      'Manage Achievement',
+      name: 'manageAchievement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch Account`
+  String get switchAccount {
+    return Intl.message(
+      'Switch Account',
+      name: 'switchAccount',
       desc: '',
       args: [],
     );

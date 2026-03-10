@@ -12,6 +12,7 @@
   "email": "البريد الإلكتروني",
   "password": "كلمة المرور",
   "confirmPassword": "تأكيد كلمة المرور",
+  "account": "الحساب",
   "notHaveAccount": "ليس لديك حساب؟",
   "alreadyHaveAccount": "لديك حساب بالفعل؟",
   "createYourAccount": "أنشئ حسابك",
@@ -425,6 +426,21 @@
 
 
   "messageSent": "تم إرسال الرسالة بنجاح",
-  "failedToSendMessage": "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى."
+  "failedToSendMessage": "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+
+
+  "personalInfo": "المعلومات الشخصية",
+  "subscription": "الاشتراك",
+  "activities": "الأنشطة",
+  "userType": "نوع المستخدم",
+  "manageSubscription": "إدارة إلإشتراك",
+  "managePosts": "إدارة المنشورات",
+  "manageOpportunities": "إدارة الفرص",
+  "manageCourse": "إدارة الدروس",
+  "manageVideoAnalysis": "إدارة تحليل الفيديو",
+  "manageAdvertisement": "إدارة الإعلانات",
+  "manageAchievement": "إدارة الإنجازات",
+  "switchAccount": "تبديل الحساب"
+
 
 }

@@ -20,7 +20,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = S.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
@@ -53,7 +53,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                          create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+                          create: (_) =>
+                              PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
                           child: const UploadContentScreen(),
                         ),
                       ),
@@ -70,7 +71,9 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => AchievementEditScreen(userId: sharedPref.getUserId()!),
+                        builder: (_) => AchievementEditScreen(
+                          userId: sharedPref.getUserId()!,
+                        ),
                       ),
                     );
                     if (context.mounted) {
@@ -79,14 +82,15 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 16.h),
-                
+
                 FutureBuilder(
                   future: getIt<SharedPref>().getUserFromPrefs(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return const SizedBox.shrink();
 
                     final userType = snapshot.data!.userType?.toLowerCase();
-                    final canCreateCourse = userType == 'coach' ||
+                    final canCreateCourse =
+                        userType == 'coach' ||
                         userType == 'club' ||
                         userType == 'institute';
 
@@ -97,17 +101,17 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                           buildOptionCard(
                             icon: Icons.school_outlined,
                             iconColor: const Color(0xFF66BB6A),
-                            title: 
-                            // strings.createCourse ??
-                             'Create Course',
+                            title:
+                                // strings.createCourse ??
+                                'Create Course',
                             onTap: () {
                               Navigator.pop(context);
                               Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => const CreateCourseScreen(),
-  ),
-);
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CreateCourseScreen(),
+                                ),
+                              );
                             },
                           ),
                           SizedBox(height: 16.h),
@@ -116,14 +120,15 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     );
                   },
                 ),
-                
+
                 FutureBuilder(
                   future: getIt<SharedPref>().getUserFromPrefs(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return const SizedBox.shrink();
 
                     final userType = snapshot.data!.userType?.toLowerCase();
-                    final canCreateOpportunity = userType == 'coach' ||
+                    final canCreateOpportunity =
+                        userType == 'coach' ||
                         userType == 'scout' ||
                         userType == 'club';
 
@@ -140,7 +145,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => BlocProvider(
                                 create: (_) => OpportunityBloc(
-                                  opportunityRepo: getIt<OpportunityReposatory>(),
+                                  opportunityRepo:
+                                      getIt<OpportunityReposatory>(),
                                 ),
                                 child: const AddOpportunityScreen(),
                               ),
@@ -157,7 +163,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     if (!snapshot.hasData) return const SizedBox.shrink();
 
                     final userType = snapshot.data!.userType?.toLowerCase();
-                    final canCreateOpportunity = userType == 'coach' ||
+                    final canCreateOpportunity =
+                        userType == 'coach' ||
                         userType == 'scout' ||
                         userType == 'club' ||
                         userType == 'institute';
@@ -193,7 +200,6 @@ class CreateOptionsBottomSheet extends StatelessWidget {
       ),
     );
   }
-
 }
 
 void showCreateOptionsBottomSheet(BuildContext context) {

@@ -58,6 +58,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
     "accept": MessageLookupByLibrary.simpleMessage("قبول"),
     "accepted": MessageLookupByLibrary.simpleMessage("مقبول"),
+    "account": MessageLookupByLibrary.simpleMessage("الحساب"),
     "achievement": MessageLookupByLibrary.simpleMessage("الإنجاز"),
     "achievementDeleted": MessageLookupByLibrary.simpleMessage(
       "تم حذف الإنجاز بنجاح",
@@ -72,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "تم تحديث الإنجاز بنجاح",
     ),
     "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
+    "activities": MessageLookupByLibrary.simpleMessage("الأنشطة"),
     "addAComment": MessageLookupByLibrary.simpleMessage("أضف تعليقاً..."),
     "addAchievement": MessageLookupByLibrary.simpleMessage("إنجاز الجديد"),
     "add_achievement_title": MessageLookupByLibrary.simpleMessage(
@@ -126,6 +128,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
     "centerBack": MessageLookupByLibrary.simpleMessage("صانع لعب (وسط خلفي)"),
+    "changePassword": MessageLookupByLibrary.simpleMessage("تغيير كلمة المرور"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
       "قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم إعلامك بأي تغييرات مهمة من خلال التطبيق.",
     ),
@@ -394,6 +397,21 @@ class MessageLookup extends MessageLookupByLibrary {
       "عمل تحليل فيديو",
     ),
     "male": MessageLookupByLibrary.simpleMessage("ذكر"),
+    "manageAchievement": MessageLookupByLibrary.simpleMessage(
+      "إدارة الإنجازات",
+    ),
+    "manageAdvertisement": MessageLookupByLibrary.simpleMessage(
+      "إدارة الإعلانات",
+    ),
+    "manageCourse": MessageLookupByLibrary.simpleMessage("إدارة الدروس"),
+    "manageOpportunities": MessageLookupByLibrary.simpleMessage("إدارة الفرص"),
+    "managePosts": MessageLookupByLibrary.simpleMessage("إدارة المنشورات"),
+    "manageSubscription": MessageLookupByLibrary.simpleMessage(
+      "إدارة إلإشتراك",
+    ),
+    "manageVideoAnalysis": MessageLookupByLibrary.simpleMessage(
+      "إدارة تحليل الفيديو",
+    ),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
       "الحد الأقصى لحجم الملف 200 ميجابايت",
     ),
@@ -548,6 +566,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
       "كلمتا المرور غير متطابقتين",
     ),
+    "personalInfo": MessageLookupByLibrary.simpleMessage("المعلومات الشخصية"),
     "pickImage": MessageLookupByLibrary.simpleMessage("اختر صورة"),
     "pickVideo": MessageLookupByLibrary.simpleMessage("اختر فيديو"),
     "pivot": MessageLookupByLibrary.simpleMessage("محور (Pivot)"),
@@ -711,7 +730,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "strongPassword": MessageLookupByLibrary.simpleMessage(
       "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
     ),
+    "subscription": MessageLookupByLibrary.simpleMessage("الاشتراك"),
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
+    "switchAccount": MessageLookupByLibrary.simpleMessage("تبديل الحساب"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("التايكوندو"),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "اضغط للاختيار من المعرض",
@@ -763,6 +784,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "كيفية استخدام معلوماتك",
     ),
     "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
+    "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
     "validEmail": MessageLookupByLibrary.simpleMessage(
       "أدخل بريدًا إلكترونيًا صالحًا",
     ),

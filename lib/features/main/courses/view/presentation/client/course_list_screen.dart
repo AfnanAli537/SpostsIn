@@ -342,6 +342,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
             }
 
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ----- Search bar (same as opportunities) -----
                 Padding(

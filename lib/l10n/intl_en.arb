@@ -12,6 +12,7 @@
   "email": "Email",
   "password": "Password",
   "confirmPassword": "Confirm Password",
+  "account": "Account",
   "notHaveAccount": "Don't have an account?",
   "alreadyHaveAccount": "Already have an account?",
   "createYourAccount": "Create your Account",
@@ -484,7 +485,26 @@
   "achievement_updated_success": "Achievement updated successfully",
 
   "messageSent": "Message sent successfully",
-  "failedToSendMessage": "Failed to send message. Please try again."
+  "failedToSendMessage": "Failed to send message. Please try again.",
+
+
+  "personalInfo": "Personal Information",
+  "subscription": "Subscription",
+  "activities": "Activities",
+  "userType": "User Type",
+  "changePassword": "Change Password",
+  "manageSubscription": "Manage Subscription",
+  "managePosts": "Manage Posts",
+  "manageOpportunities": "Manage Opportunities",
+  "manageCourse": "Manage Course",
+  "manageVideoAnalysis": "Manage Video Analysis People",
+  "manageAdvertisement": "Manage Advertisement",
+  "manageAchievement": "Manage Achievement",
+  "switchAccount": "Switch Account"
+
+
+
+
 
   
 }
