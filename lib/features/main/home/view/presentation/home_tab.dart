@@ -28,37 +28,15 @@ class ForYouTabState extends State<ForYouTab>
   @override
   bool get wantKeepAlive => true;
 
-  static const _source = 'forYou';
-
-  List<CourseModel> _cachedCourses = [];
-  bool _isLoadingCourses = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchLatestCourses();
-  }
-
-  // ── Public ────────────────────────────────────────────────────────────────
-
   void reload() {
     context.read<PostsBloc>().add(const FetchPosts(page: 1));
     context.read<OpportunityBloc>().add(
           const FetchOpportunities(isRefresh: true),
         );
-    _fetchLatestCourses();
-  }
-
-  // ── Data ──────────────────────────────────────────────────────────────────
-
-  void _fetchLatestCourses() {
-    setState(() => _isLoadingCourses = true);
     context.read<CoursesBloc>().add(
-          const FetchAvailableCourses(page: 1, size: 1, source: _source),
+          const FetchAvailableCourses(page: 1, size: 1),
         );
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -66,163 +44,191 @@ class ForYouTabState extends State<ForYouTab>
     final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
 
-    return BlocListener<CoursesBloc, CoursesState>(
-      listenWhen: (_, current) =>
-          (current is CoursesLoaded && current.source == _source) ||
-          (current is CoursesLoading && current.source == _source) ||
-          current is EnrollmentSuccess,
-      listener: (context, state) {
-        if (state is EnrollmentSuccess) {
-          _fetchLatestCourses();
-          return;
-        }
-        if (state is CoursesLoading) {
-          setState(() => _isLoadingCourses = true);
-        } else if (state is CoursesLoaded) {
-          setState(() {
-            _cachedCourses = state.courses.take(1).toList();
-            _isLoadingCourses = false;
-          });
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildLatestPostsSection(context, strings, theme),
-          SizedBox(height: 24.h),
-          _buildLatestCoursesSection(context, strings, theme),
-          SizedBox(height: 24.h),
-          _buildOpportunitiesSection(context, strings, theme),
-          SizedBox(height: 120.h), // breathing room above bottom nav
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RepaintBoundary(
+          child: _buildLatestPostsSection(context, strings, theme),
+        ),
+        SizedBox(height: 24.h),
+        RepaintBoundary(
+          child: _buildLatestCoursesSection(context, strings, theme),
+        ),
+        SizedBox(height: 24.h),
+        RepaintBoundary(
+          child: _buildOpportunitiesSection(context, strings, theme),
+        ),
+        SizedBox(height: 120.h),
+      ],
     );
   }
 
-  // ── Sections ──────────────────────────────────────────────────────────────
+  // ─── Latest Posts Section ─────────────────────────────────────────────
 
   Widget _buildLatestPostsSection(
       BuildContext context, S strings, ColorScheme theme) {
-    return BlocBuilder<PostsBloc, PostsState>(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionHeader(
+          title: strings.latestPosts,
+          onShowAll: () => widget.onTabChange(HomeTab.posts),
+        ),
+        // buildWhen ensures PostWidget is only remounted when the first post
+        // actually changes (different id), not on every bloc emission.
+        BlocBuilder<PostsBloc, PostsState>(
+          buildWhen: (previous, current) {
+            // Always rebuild for loading/error states
+            if (current is PostsLoading || current is PostsError) return true;
+            // Only rebuild for PostsLoaded if the first post id changed
+            if (current is PostsLoaded) {
+              if (previous is PostsLoaded) {
+                if (previous.posts.isEmpty && current.posts.isEmpty) return false;
+                if (previous.posts.isEmpty || current.posts.isEmpty) return true;
+                return previous.posts.first.id != current.posts.first.id;
+              }
+              return true;
+            }
+            return false;
+          },
+          builder: (context, state) {
+            if (state is PostsLoading) return const PostShimmer();
+
+            if (state is PostsError) {
+              return _buildErrorState(
+                context,
+                strings,
+                theme,
+                state.message,
+                () => context.read<PostsBloc>().add(const FetchPosts()),
+              );
+            }
+
+            if (state is PostsLoaded) {
+              if (state.posts.isEmpty) {
+                return _buildEmptyState(strings.noPostsYet, Icons.post_add);
+              }
+              final firstPost = state.posts.first;
+              // Stable ValueKey prevents Flutter from unmounting/remounting
+              // the widget when the parent rebuilds for unrelated reasons.
+              return PostWidget(
+                key: ValueKey(firstPost.id),
+                post: firstPost,
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
+      ],
+    );
+  }
+
+  // ─── Latest Courses Section ───────────────────────────────────────────
+
+  Widget _buildLatestCoursesSection(
+      BuildContext context, S strings, ColorScheme theme) {
+    return BlocBuilder<CoursesBloc, CoursesState>(
+      buildWhen: (previous, current) =>
+          current is CoursesLoading ||
+          current is CoursesLoaded ||
+          current is CoursesError,
       builder: (context, state) {
+        final isLoading = state is CoursesLoading;
+        final courses =
+            state is CoursesLoaded ? state.courses : <CourseModel>[];
+        final hasCourses = courses.isNotEmpty;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
-              child: Row(
-                children: [
-                  Text(strings.latestPosts,
-                      style: GoogleFonts.poppins(
-                          fontSize: 18.sp, fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => widget.onTabChange(HomeTab.posts),
-                    child: Text(strings.showAll,
-                        style: GoogleFonts.poppins(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue)),
-                  ),
-                ],
-              ),
+            _sectionHeader(
+              title: 'Latest Courses',
+              onShowAll: () => widget.onTabChange(HomeTab.courses),
+              showAllEnabled: !isLoading && hasCourses,
             ),
-            if (state is PostsLoading)
-              const PostShimmer()
-            else if (state is PostsError)
-              _buildErrorState(context, strings, theme, state.message,
-                  () => context.read<PostsBloc>().add(const FetchPosts()))
-            else if (state is PostsLoaded)
-              if (state.posts.isEmpty)
-                _buildEmptyState(strings.noPostsYet, Icons.post_add)
-              else
-                ...state.posts
-                    .take(1)
-                    .map((p) => PostWidget(key: ValueKey(p.id), post: p)),
+            if (isLoading)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: const CoursesListShimmer(),
+              )
+            else if (!hasCourses)
+              _buildEmptyState(
+                  'No courses available yet', Icons.school_outlined)
+            else
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: CourseCard(
+                  course: courses.first,
+                  onTap: () =>
+                      _navigateToCourseDetail(context, courses.first.id),
+                ),
+              ),
           ],
         );
       },
     );
   }
 
-  Widget _buildLatestCoursesSection(
-      BuildContext context, S strings, ColorScheme theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
-          child: Row(
-            children: [
-              Text('Latest Courses',
-                  style: GoogleFonts.poppins(
-                      fontSize: 18.sp, fontWeight: FontWeight.bold)),
-              const Spacer(),
-              if (!_isLoadingCourses && _cachedCourses.isNotEmpty)
-                GestureDetector(
-                  onTap: () => widget.onTabChange(HomeTab.courses),
-                  child: Text(strings.showAll,
-                      style: GoogleFonts.poppins(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue)),
-                ),
-            ],
-          ),
-        ),
-        if (_isLoadingCourses)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: const CoursesListShimmer(),
-          )
-        else if (_cachedCourses.isEmpty)
-          _buildEmptyState('No courses available yet', Icons.school_outlined)
-        else
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: CourseCard(
-              course: _cachedCourses.first,
-              onTap: () =>
-                  _navigateToCourseDetail(context, _cachedCourses.first.id),
-            ),
-          ),
-      ],
-    );
-  }
+  // ─── Opportunities Section ────────────────────────────────────────────
 
   Widget _buildOpportunitiesSection(
       BuildContext context, S strings, ColorScheme theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
-          child: Row(
-            children: [
-              Text(strings.opportunities,
-                  style: GoogleFonts.poppins(
-                      fontSize: 18.sp, fontWeight: FontWeight.bold)),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => widget.onTabChange(HomeTab.opportunities),
-                child: Text(strings.showAll,
-                    style: GoogleFonts.poppins(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue)),
-              ),
-            ],
-          ),
+        _sectionHeader(
+          title: strings.opportunities,
+          onShowAll: () => widget.onTabChange(HomeTab.opportunities),
         ),
         const LatestOpportunityCard(),
       ],
     );
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // ─── Shared Widgets ───────────────────────────────────────────────────
 
-  Widget _buildErrorState(BuildContext context, S strings, ColorScheme theme,
-      String message, VoidCallback onRetry) {
+  Widget _sectionHeader({
+    required String title,
+    required VoidCallback onShowAll,
+    bool showAllEnabled = true,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Spacer(),
+          if (showAllEnabled)
+            GestureDetector(
+              onTap: onShowAll,
+              child: Text(
+                S.of(context).showAll,
+                style: GoogleFonts.poppins(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(
+    BuildContext context,
+    S strings,
+    ColorScheme theme,
+    String message,
+    VoidCallback onRetry,
+  ) {
     return Padding(
       padding: EdgeInsets.all(20.w),
       child: Center(
@@ -230,30 +236,42 @@ class ForYouTabState extends State<ForYouTab>
           children: [
             Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
             SizedBox(height: 16.h),
-            Text(strings.oopsSomethingWentWrong,
-                style: GoogleFonts.poppins(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800])),
+            Text(
+              strings.oopsSomethingWentWrong,
+              style: GoogleFonts.poppins(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
+              ),
+            ),
             SizedBox(height: 8.h),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                    fontSize: 14.sp, color: Colors.grey[600])),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 14.sp,
+                color: Colors.grey[600],
+              ),
+            ),
             SizedBox(height: 24.h),
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: Text(strings.retry,
-                  style: GoogleFonts.poppins(
-                      fontSize: 16.sp, fontWeight: FontWeight.w600)),
+              label: Text(
+                strings.retry,
+                style: GoogleFonts.poppins(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.primary,
                 foregroundColor: theme.surface,
                 padding:
                     EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r)),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
               ),
             ),
           ],
@@ -270,9 +288,13 @@ class ForYouTabState extends State<ForYouTab>
           children: [
             Icon(icon, size: 64.sp, color: Colors.grey[400]),
             SizedBox(height: 16.h),
-            Text(message,
-                style: GoogleFonts.poppins(
-                    fontSize: 16.sp, color: Colors.grey[600])),
+            Text(
+              message,
+              style: GoogleFonts.poppins(
+                fontSize: 16.sp,
+                color: Colors.grey[600],
+              ),
+            ),
           ],
         ),
       ),
@@ -289,6 +311,10 @@ class ForYouTabState extends State<ForYouTab>
         ),
       ),
     );
-    if (enrolled == true) _fetchLatestCourses();
+    if (enrolled == true) {
+      context.read<CoursesBloc>().add(
+            const FetchAvailableCourses(page: 1, size: 1),
+          );
+    }
   }
 }

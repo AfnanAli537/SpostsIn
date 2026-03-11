@@ -6,8 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/widgets/app_drawer.dart';
 import 'package:sports_in/features/main/profile/view/presentation/my_profile_screen.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
 import 'package:sports_in/features/main/search/view/presentation/search_screen.dart';
 
 class CustomBottomNav extends StatefulWidget {

@@ -46,6 +46,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
+    if (_currentUser == null) {
+    return Scaffold(
+      appBar: AppBar(title: Text(S.of(context).settings)),
+      body: const Center(child: CircularProgressIndicator()),
+    );
+  }
     return Scaffold(
       appBar: AppBar(title: Text(string.settings), centerTitle: true),
       body: ListView(

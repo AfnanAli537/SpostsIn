@@ -581,15 +581,39 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Widget _buildImageWidget() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.r),
-      child: Image.network(
-        widget.post.mediaUrl!,
-        width: double.infinity,
-        height: 200.h,
-        fit: BoxFit.cover,
-      ),
-    );
-  }
+ Widget _buildImageWidget() {
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(8.r),
+    child: Image.network(
+      widget.post.mediaUrl!,
+      width: double.infinity,
+      height: 200.h,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          color: Colors.grey[300],
+          height: 200.h,
+          child: Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
 }

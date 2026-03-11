@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
@@ -9,7 +12,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class InterestsSection extends StatelessWidget {
   final List<Interest> interests;
   final VoidCallback? onShowAll;
-  final Function(Interest)? onConnectToggle;
   final Function(Interest)? onFollowToggle;
   final Function(Interest)? onInterestTap;
   final ThemeData theme;
@@ -19,7 +21,6 @@ class InterestsSection extends StatelessWidget {
     Key? key,
     required this.interests,
     this.onShowAll,
-    this.onConnectToggle,
     this.onFollowToggle,
     this.onInterestTap,
     required this.theme,
@@ -106,7 +107,8 @@ class InterestsSection extends StatelessWidget {
                                 Text(
                                   interest.role,
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onTertiaryContainer,
+                                    color:
+                                        theme.colorScheme.onTertiaryContainer,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -118,17 +120,35 @@ class InterestsSection extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: ConnectButton(
-                                  isConnected: interest.isConnected,
-                                  onPressed: () => onConnectToggle?.call(interest),
-                                  connectedText: string.connected,
+                                  connectionStatus: interest.connectionStatus,
+                                  onPressed: () {
+                                    final status = interest.connectionStatus;
+                                    if (status == null) {
+                                      // Not connected → send request
+                                      context.read<ProfileBloc>().add(
+                                            SendConnectionRequest(
+                                                receiverId: interest.id),
+                                          );
+                                    } else if (status == 'Accepted') {
+                                      // Accepted → remove contact
+                                      context.read<ProfileBloc>().add(
+                                            RemoveContact(
+                                                targetId: interest.id),
+                                          );
+                                    }
+                                    // "Pending" → tap does nothing
+                                  },
                                   connectText: string.connect,
+                                  pendingText: 'Pending',
+                                  removeContactText: 'Remove',
                                 ),
                               ),
                               SizedBox(width: 12.w),
                               Expanded(
                                 child: FollowButton(
                                   isFollowing: interest.isFollowing,
-                                  onPressed: () => onFollowToggle?.call(interest),
+                                  onPressed: () =>
+                                      onFollowToggle?.call(interest),
                                   followingText: string.following,
                                   followText: string.follow,
                                 ),

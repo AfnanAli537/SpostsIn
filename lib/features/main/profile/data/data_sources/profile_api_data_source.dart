@@ -19,11 +19,15 @@ class ApiProfileDataSource implements IProfileDataSource {
   ApiProfileDataSource(this._apiClient, this._prefs);
 
   String? get _currentUserId => _prefs.getUserId();
+
   DioException _badResponse(Response response) => DioException(
-    requestOptions: response.requestOptions,
-    response: response,
-    type: DioExceptionType.badResponse,
-  );
+        requestOptions: response.requestOptions,
+        response: response,
+        type: DioExceptionType.badResponse,
+      );
+
+  // ── Profile ─────────────────────────────────────────────────────────────────
+
   @override
   Future<ProfileModel> getMyProfile() async {
     try {
@@ -87,7 +91,6 @@ class ApiProfileDataSource implements IProfileDataSource {
   @override
   Future<ProfileModel> updateProfile(Map<String, dynamic> updateData) async {
     try {
-      print('Updating profile with data: $updateData'); // Debug print
       final response = await _apiClient.put(
         Endpoints.updateProfile,
         data: FormData.fromMap(updateData),
@@ -95,7 +98,6 @@ class ApiProfileDataSource implements IProfileDataSource {
 
       if (response.statusCode == 200) {
         final json = response.data as Map<String, dynamic>;
-
         if (json.containsKey('message') && !json.containsKey('userId')) {
           final userId = _currentUserId;
           if (userId == null) {
@@ -106,7 +108,6 @@ class ApiProfileDataSource implements IProfileDataSource {
           }
           return await getUserProfile(userId);
         }
-
         return _apiResponseToProfile(json);
       }
 
@@ -115,6 +116,8 @@ class ApiProfileDataSource implements IProfileDataSource {
       throw ApiErrorHandler.handleDioError(e);
     }
   }
+
+  // ── Posts ────────────────────────────────────────────────────────────────────
 
   @override
   Future<List<Post>> getPosts({
@@ -132,13 +135,11 @@ class ApiProfileDataSource implements IProfileDataSource {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
         return items
-            .map(
-              (json) => Post(
-                id: json['id'] ?? '',
-                imageUrl: json['mediaUrl'] ?? '',
-                title: json['title'],
-              ),
-            )
+            .map((json) => Post(
+                  id: json['id'] ?? '',
+                  imageUrl: json['mediaUrl'] ?? '',
+                  title: json['title'],
+                ))
             .toList();
       }
 
@@ -152,6 +153,8 @@ class ApiProfileDataSource implements IProfileDataSource {
       return [];
     }
   }
+
+  // ── Achievements ─────────────────────────────────────────────────────────────
 
   @override
   Future<List<Achievement>> getAchievements({
@@ -169,17 +172,15 @@ class ApiProfileDataSource implements IProfileDataSource {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
         return items
-            .map(
-              (json) => Achievement(
-                id: json['id'] ?? '',
-                title: json['title'] ?? '',
-                subtitle: json['description'] ?? '',
-                imageUrl: json['mediaUrl'] ?? '',
-                date: json['achievementDate'] != null
-                    ? DateTime.parse(json['achievementDate'])
-                    : null,
-              ),
-            )
+            .map((json) => Achievement(
+                  id: json['id'] ?? '',
+                  title: json['title'] ?? '',
+                  subtitle: json['description'] ?? '',
+                  imageUrl: json['mediaUrl'] ?? '',
+                  date: json['achievementDate'] != null
+                      ? DateTime.parse(json['achievementDate'])
+                      : null,
+                ))
             .toList();
       }
 
@@ -209,15 +210,11 @@ class ApiProfileDataSource implements IProfileDataSource {
       });
 
       if (imageUrl.isNotEmpty && File(imageUrl).existsSync()) {
-        formData.files.add(
-          MapEntry(
-            'MediaFile',
-            await MultipartFile.fromFile(
-              imageUrl,
-              filename: imageUrl.split('/').last,
-            ),
-          ),
-        );
+        formData.files.add(MapEntry(
+          'MediaFile',
+          await MultipartFile.fromFile(imageUrl,
+              filename: imageUrl.split('/').last),
+        ));
       }
 
       final response = await _apiClient.post(
@@ -232,9 +229,7 @@ class ApiProfileDataSource implements IProfileDataSource {
           title: json['title'] ?? title,
           subtitle: json['description'] ?? subtitle,
           imageUrl: json['mediaUrl'] ?? imageUrl,
-          date: DateTime.parse(
-            json['achievementDate'] ?? date.toIso8601String(),
-          ),
+          date: DateTime.parse(json['achievementDate'] ?? date.toIso8601String()),
         );
       }
 
@@ -260,15 +255,11 @@ class ApiProfileDataSource implements IProfileDataSource {
       });
 
       if (imageUrl.isNotEmpty && File(imageUrl).existsSync()) {
-        formData.files.add(
-          MapEntry(
-            'MediaFile',
-            await MultipartFile.fromFile(
-              imageUrl,
-              filename: imageUrl.split('/').last,
-            ),
-          ),
-        );
+        formData.files.add(MapEntry(
+          'MediaFile',
+          await MultipartFile.fromFile(imageUrl,
+              filename: imageUrl.split('/').last),
+        ));
       }
 
       final response = await _apiClient.put(
@@ -283,9 +274,7 @@ class ApiProfileDataSource implements IProfileDataSource {
           title: json['title'] ?? title,
           subtitle: json['description'] ?? subtitle,
           imageUrl: json['mediaUrl'] ?? imageUrl,
-          date: DateTime.parse(
-            json['achievementDate'] ?? date.toIso8601String(),
-          ),
+          date: DateTime.parse(json['achievementDate'] ?? date.toIso8601String()),
         );
       }
 
@@ -301,7 +290,6 @@ class ApiProfileDataSource implements IProfileDataSource {
       final response = await _apiClient.delete(
         Endpoints.deleteAchievement.replaceAll('{id}', achievementId),
       );
-
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw ApiErrorHandler.handleDioError(_badResponse(response));
       }
@@ -309,6 +297,8 @@ class ApiProfileDataSource implements IProfileDataSource {
       throw ApiErrorHandler.handleDioError(e);
     }
   }
+
+  // ── Opportunities ────────────────────────────────────────────────────────────
 
   @override
   Future<List<Opportunity>> getOpportunities({
@@ -339,6 +329,8 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
+  // ── Courses ──────────────────────────────────────────────────────────────────
+
   @override
   Future<List<Course>> getCourses({
     required String userId,
@@ -354,20 +346,17 @@ class ApiProfileDataSource implements IProfileDataSource {
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
-
         return items
-            .map(
-              (json) => Course(
-                id: json['id'] ?? '',
-                imageUrl: json['thumbnailUrl'] ?? '',
-                title: json['title'] ?? '',
-                description: json['description'],
-                price: json['price']?.toDouble(),
-                isFree: json['isFree'] ?? false,
-                lessonsCount: json['lessonsCount'] ?? 0,
-                enrolledCount: json['enrolledUsersCount'] ?? 0,
-              ),
-            )
+            .map((json) => Course(
+                  id: json['id'] ?? '',
+                  imageUrl: json['thumbnailUrl'] ?? '',
+                  title: json['title'] ?? '',
+                  description: json['description'],
+                  price: json['price']?.toDouble(),
+                  isFree: json['isFree'] ?? false,
+                  lessonsCount: json['lessonsCount'] ?? 0,
+                  enrolledCount: json['enrolledUsersCount'] ?? 0,
+                ))
             .toList();
       }
 
@@ -378,72 +367,177 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
+  // ── Interests ────────────────────────────────────────────────────────────────
+// Replace the getInterests method in api_profile_data_source.dart with this:
+
   @override
-@override
-Future<List<Interest>> getInterests({
-  required String userId,
-  int page = 1,
-  int pageSize = 10,
-}) async {
-  final interestUserIds = [
-    "07f4e4d8-0315-48fc-82a0-89e37b67648a",
-    "3bdbe490-f7a7-4a1b-9d60-6fb1ef5d8fbf",
-    "8ee439e7-c504-4407-9ec0-24fb7b406623",
-  ];
+  Future<List<Interest>> getInterests({
+    required String userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    final interestUserIds = [
+      "07f4e4d8-0315-48fc-82a0-89e37b67648a",
+      "3bdbe490-f7a7-4a1b-9d60-6fb1ef5d8fbf",
+      "8ee439e7-c504-4407-9ec0-24fb7b406623",
+    ];
 
-  try {
-    final interests = <Interest>[];
+    try {
+      final interests = <Interest>[];
 
-    for (final interestUserId in interestUserIds) {
-      try {
-        final response = await _apiClient.get(
-          Endpoints.getProfile.replaceAll('{userId}', interestUserId),
-        );
+      for (final interestUserId in interestUserIds) {
+        try {
+          final response = await _apiClient.get(
+            Endpoints.getProfile.replaceAll('{userId}', interestUserId),
+          );
 
-        if (response.statusCode == 200) {
-          final json = response.data as Map<String, dynamic>;
+          if (response.statusCode == 200) {
+            final json = response.data as Map<String, dynamic>;
 
-          if (json['isOwner'] == true || json['userId'] == userId) {
-            continue;
-          }
+            if (json['isOwner'] == true || json['userId'] == userId) continue;
 
-          final userType = _parseUserType(json['userType']);
-          
-          final sportsList = EnumMapper.sportIdsToLabels((json['sports'] as List<dynamic>?)?.map((id) => id as int).toList() ?? []);
-          String? sport;
-          
-          if (sportsList.isNotEmpty) {
-            sport = sportsList.first;
-          }
+            final userType = _parseUserType(json['userType']);
+            final sportsList = EnumMapper.sportIdsToLabels(
+              (json['sports'] as List<dynamic>?)
+                      ?.map((id) => id as int)
+                      .toList() ??
+                  [],
+            );
+            final sport = sportsList.isNotEmpty ? sportsList.first : null;
 
-          interests.add(
-            Interest(
+            interests.add(Interest(
               id: json['userId'] ?? '',
               name: json['fullName'] ?? 'Unknown',
-              role: _getRoleText(
-                userType,
-                json['specialization'],
-                sport, 
-              ),
+              role: _getRoleText(userType, json['specialization'], sport),
               profileImage: json['profilePictureUrl'] ?? '',
-              isConnected: json['connectionStatus'] == 'Connected',
+              // Store the raw string: null / "Pending" / "Accepted"
+              connectionStatus: json['connectionStatus'] as String?,
               isFollowing: json['isFollowedByMe'] == true,
-            ),
-          );
+            ));
+          }
+        } on DioException catch (e) {
+          debugPrint('Error loading interest user $interestUserId: $e');
+          continue;
         }
-      } on DioException catch (e) {
-        debugPrint('Error loading interest user $interestUserId: $e');
-        continue;
       }
-    }
 
-    debugPrint('✅ Loaded ${interests.length} interests');
-    return interests;
-  } catch (e) {
-    debugPrint('❌ Error loading interests: $e');
-    return [];
+      return interests;
+    } catch (e) {
+      debugPrint('Error loading interests: $e');
+      return [];
+    }
   }
-}
+  // ── Follow ───────────────────────────────────────────────────────────────────
+
+  @override
+  Future<void> toggleFollow(String targetUserId) async {
+    try {
+      final response = await _apiClient.post(
+        Endpoints.toggleFollow.replaceAll('{targetId}', targetUserId),
+      );
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleDioError(_badResponse(response));
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  // ── Connection ───────────────────────────────────────────────────────────────
+
+  /// POST /api/Social/connect
+  @override
+  Future<void> sendConnectionRequest(String receiverId) async {
+    try {
+      final response = await _apiClient.post(
+        Endpoints.sendConnectionRequest,
+        data: {'receiverId': receiverId},
+      );
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleDioError(_badResponse(response));
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  /// DELETE /api/Social/connect/{targetId}
+  @override
+  Future<void> removeContact(String targetId) async {
+    try {
+      final response = await _apiClient.delete(
+        Endpoints.removeContact.replaceAll('{targetId}', targetId),
+      );
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleDioError(_badResponse(response));
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  /// PUT /api/Social/respond-connection
+  @override
+  Future<void> respondConnection({
+    required String senderId,
+    required String status,
+  }) async {
+    try {
+      final response = await _apiClient.put(
+        Endpoints.respondConnection,
+        data: {'senderId': senderId, 'status': status},
+      );
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleDioError(_badResponse(response));
+      }
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  /// GET /api/Social/connection-requests
+  @override
+  Future<List<ConnectionRequest>> getConnectionRequests({
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.connectionRequests,
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = data['items'] as List<dynamic>? ?? [];
+        return items
+            .map((json) =>
+                ConnectionRequest.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  /// GET /api/Chat/contacts
+  @override
+  Future<List<ContactItem>> getContacts() async {
+    try {
+      final response = await _apiClient.get(Endpoints.contacts);
+      if (response.statusCode == 200) {
+        final items = response.data as List<dynamic>? ?? [];
+        return items
+            .map((json) => ContactItem.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  // ── Analyzed Videos (mock) ───────────────────────────────────────────────────
 
   Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(String userId) async {
     await Future.delayed(const Duration(milliseconds: 300));
@@ -459,41 +553,11 @@ Future<List<Interest>> getInterests({
     ];
   }
 
-  @override
-  Future<void> toggleFollow(String targetUserId) async {
-    try {
-      final response = await _apiClient.post(
-        Endpoints.toggleFollow.replaceAll('{targetId}', targetUserId),
-      );
-
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw ApiErrorHandler.handleDioError(_badResponse(response));
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioError(e);
-    }
-  }
-
-  @override
-  Future<void> toggleConnect(String receiverId) async {
-    try {
-      final response = await _apiClient.post(
-        Endpoints.toggleConnect,
-        data: {'receiverId': receiverId},
-      );
-
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw ApiErrorHandler.handleDioError(_badResponse(response));
-      }
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioError(e);
-    }
-  }
-
+  // ── Helpers ──────────────────────────────────────────────────────────────────
 
   ProfileModel _apiResponseToProfile(Map<String, dynamic> json) {
     final userType = _parseUserType(json['userType']);
-    final connectionStatus = json['connectionStatus']?.toString();
+    final connectionStatus = json['connectionStatus'] as String?;
     final sportsList = json['sports'] as List?;
     final sportsText = sportsList != null && sportsList.isNotEmpty
         ? EnumMapper.sportIdToLabel((sportsList.first as int))
@@ -521,22 +585,19 @@ Future<List<Interest>> getInterests({
       playerData: userType == UserType.player
           ? _buildPlayerData(json, sportsText)
           : null,
-      coachData: userType == UserType.coach
-          ? _buildCoachData(json, sportsText)
-          : null,
-      scoutData: userType == UserType.scout
-          ? _buildScoutData(json, sportsText)
-          : null,
-      clubData: userType == UserType.club
-          ? _buildClubData(json, sportsList)
-          : null,
-      instituteData: userType == UserType.institute
-          ? _buildInstituteData(json)
-          : null,
+      coachData:
+          userType == UserType.coach ? _buildCoachData(json, sportsText) : null,
+      scoutData:
+          userType == UserType.scout ? _buildScoutData(json, sportsText) : null,
+      clubData:
+          userType == UserType.club ? _buildClubData(json, sportsList) : null,
+      instituteData:
+          userType == UserType.institute ? _buildInstituteData(json) : null,
       otherData: userType == UserType.other ? _buildOtherData(json) : null,
-      isConnected: connectionStatus == 'Connected',
+      // Store raw connectionStatus string — null / "Pending" / "Accepted"
+      connectionStatus: connectionStatus,
       isFollowing: json['isFollowedByMe'] == true,
-      isOwner: json['isOwner'],
+      isOwner: json['isOwner'] ?? false,
     );
   }
 
@@ -561,11 +622,17 @@ Future<List<Interest>> getInterests({
     final sportText = specialization ?? sport;
     switch (type) {
       case UserType.player:
-        return sportText!.isNotEmpty ? 'Athlete - $sportText' : 'Athlete';
+        return (sportText != null && sportText.isNotEmpty)
+            ? 'Athlete - $sportText'
+            : 'Athlete';
       case UserType.coach:
-        return sportText!.isNotEmpty ? 'Coach - $sportText' : 'Coach';
+        return (sportText != null && sportText.isNotEmpty)
+            ? 'Coach - $sportText'
+            : 'Coach';
       case UserType.scout:
-        return sportText!.isNotEmpty ? 'Scout - $sportText' : 'Scout';
+        return (sportText != null && sportText.isNotEmpty)
+            ? 'Scout - $sportText'
+            : 'Scout';
       case UserType.club:
         return 'Club';
       case UserType.institute:
@@ -576,47 +643,41 @@ Future<List<Interest>> getInterests({
   }
 
   PlayerSpecificData _buildPlayerData(
-    Map<String, dynamic> json,
-    String? sportsText,
-  ) => PlayerSpecificData(
-    position: json['position'],
-    height: json['height']?.toString(),
-    weight: json['weight']?.toString(),
-    preferredFoot: null,
-    age: json['age']?.toString(),
-    specializedSport: sportsText ?? json['specialization'],
-    yearsOfExperience: json['yearsOfExperience'],
-    gender: json['gender'],
-  );
+          Map<String, dynamic> json, String? sportsText) =>
+      PlayerSpecificData(
+        position: json['position'],
+        height: json['height']?.toString(),
+        weight: json['weight']?.toString(),
+        preferredFoot: null,
+        age: json['age']?.toString(),
+        specializedSport: sportsText ?? json['specialization'],
+        yearsOfExperience: json['yearsOfExperience'],
+        gender: json['gender'],
+      );
 
   CoachSpecificData _buildCoachData(
-    Map<String, dynamic> json,
-    String? sportsText,
-  ) => CoachSpecificData(
-    specializedSport: json['specialization'] ?? sportsText,
-    yearsOfExperience: json['yearsOfExperience'],
-    certifications: null,
-    age: json['age']?.toString(),
-    gender: json['gender'],
-  );
+          Map<String, dynamic> json, String? sportsText) =>
+      CoachSpecificData(
+        specializedSport: json['specialization'] ?? sportsText,
+        yearsOfExperience: json['yearsOfExperience'],
+        certifications: null,
+        age: json['age']?.toString(),
+        gender: json['gender'],
+      );
 
   ScoutSpecificData _buildScoutData(
-    Map<String, dynamic> json,
-    String? sportsText,
-  ) => ScoutSpecificData(
-    specializedSport: json['specialization'] ?? sportsText,
-    yearsOfExperience: json['yearsOfExperience'],
-    gender: json['gender'],
-    organization: null,
-  );
+          Map<String, dynamic> json, String? sportsText) =>
+      ScoutSpecificData(
+        specializedSport: json['specialization'] ?? sportsText,
+        yearsOfExperience: json['yearsOfExperience'],
+        gender: json['gender'],
+        organization: null,
+      );
 
   ClubSpecificData _buildClubData(Map<String, dynamic> json, List? sportsList) {
-    final sports =
-        // sportsList?.take(6).map((s) => s.toString()).join(', ') ?? '';
-        EnumMapper.sportIdsToLabels(
-          (json['sports'] as List<dynamic>?)?.map((id) => id as int).toList() ??
-              [],
-        );
+    final sports = EnumMapper.sportIdsToLabels(
+      (json['sports'] as List<dynamic>?)?.map((id) => id as int).toList() ?? [],
+    );
     return ClubSpecificData(
       location: null,
       foundedYear: json['foundationDate'],

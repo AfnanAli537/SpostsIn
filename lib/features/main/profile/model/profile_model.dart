@@ -20,9 +20,11 @@ class ProfileModel {
   final ClubSpecificData? clubData;
   final InstituteSpecificData? instituteData;
   final OtherSpecificData? otherData;
-  final bool isConnected;
+
+  /// null = not connected, "Pending" = request sent awaiting accept, "Accepted" = in contacts
+  final String? connectionStatus;
   final bool isFollowing;
-  final bool isOwner; 
+  final bool isOwner;
 
   ProfileModel({
     required this.id,
@@ -44,10 +46,14 @@ class ProfileModel {
     this.clubData,
     this.instituteData,
     this.otherData,
-    this.isConnected = false,
+    this.connectionStatus,
     this.isFollowing = false,
-    this.isOwner = false, 
+    this.isOwner = false,
   });
+
+  /// Convenience getters
+  bool get isConnected => connectionStatus == 'Accepted';
+  bool get isPending => connectionStatus == 'Pending';
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     final userType = _parseUserType(json['userType'] ?? json['user_type']);
@@ -104,9 +110,9 @@ class ProfileModel {
       otherData: userType == UserType.other && json['otherData'] != null
           ? OtherSpecificData.fromJson(json['otherData'])
           : null,
-      isConnected: json['isConnected'] as bool? ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
       isFollowing: json['isFollowing'] as bool? ?? false,
-      isOwner: json['isOwner'] as bool? ?? false, 
+      isOwner: json['isOwner'] as bool? ?? false,
     );
   }
 
@@ -148,7 +154,7 @@ class ProfileModel {
       'clubData': clubData?.toJson(),
       'instituteData': instituteData?.toJson(),
       'otherData': otherData?.toJson(),
-      'isConnected': isConnected,
+      'connectionStatus': connectionStatus,
       'isFollowing': isFollowing,
       'isOwner': isOwner,
     };
@@ -174,9 +180,11 @@ class ProfileModel {
     ClubSpecificData? clubData,
     InstituteSpecificData? instituteData,
     OtherSpecificData? otherData,
-    bool? isConnected,
+    String? connectionStatus,
     bool? isFollowing,
-    bool? isOwner, 
+    bool? isOwner,
+    // Sentinel to allow explicitly setting connectionStatus to null
+    bool clearConnectionStatus = false,
   }) {
     return ProfileModel(
       id: id ?? this.id,
@@ -198,9 +206,11 @@ class ProfileModel {
       clubData: clubData ?? this.clubData,
       instituteData: instituteData ?? this.instituteData,
       otherData: otherData ?? this.otherData,
-      isConnected: isConnected ?? this.isConnected,
+      connectionStatus: clearConnectionStatus
+          ? null
+          : (connectionStatus ?? this.connectionStatus),
       isFollowing: isFollowing ?? this.isFollowing,
-      isOwner: isOwner ?? this.isOwner, 
+      isOwner: isOwner ?? this.isOwner,
     );
   }
 }
@@ -248,7 +258,7 @@ class Post {
   final String? title;
   final String? description;
 
-  Post({required this.id, required this.imageUrl, this.title,this.description});
+  Post({required this.id, required this.imageUrl, this.title, this.description});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -345,17 +355,43 @@ class Interest {
   final String name;
   final String role;
   final String profileImage;
-  final bool isConnected;
+
+  /// null = not connected, "Pending" = request sent, "Accepted" = in contacts
+  final String? connectionStatus;
   final bool isFollowing;
+
+  // Convenience getter so existing code that reads isConnected still compiles
+  bool get isConnected => connectionStatus == 'Accepted';
 
   Interest({
     required this.id,
     required this.name,
     required this.role,
     required this.profileImage,
-    this.isConnected = false,
+    this.connectionStatus,
     this.isFollowing = false,
   });
+
+  Interest copyWith({
+    String? id,
+    String? name,
+    String? role,
+    String? profileImage,
+    String? connectionStatus,
+    bool? isFollowing,
+    bool clearConnectionStatus = false,
+  }) {
+    return Interest(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      profileImage: profileImage ?? this.profileImage,
+      connectionStatus: clearConnectionStatus
+          ? null
+          : (connectionStatus ?? this.connectionStatus),
+      isFollowing: isFollowing ?? this.isFollowing,
+    );
+  }
 
   factory Interest.fromJson(Map<String, dynamic> json) {
     return Interest(
@@ -363,7 +399,7 @@ class Interest {
       name: json['name'] ?? '',
       role: json['role'] ?? '',
       profileImage: json['profileImage'] ?? json['profile_image'] ?? '',
-      isConnected: json['isConnected'] ?? json['is_connected'] ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
       isFollowing: json['isFollowing'] ?? json['is_following'] ?? false,
     );
   }
@@ -374,12 +410,11 @@ class Interest {
       'name': name,
       'role': role,
       'profileImage': profileImage,
-      'isConnected': isConnected,
+      'connectionStatus': connectionStatus,
       'isFollowing': isFollowing,
     };
   }
 }
-
 class Opportunity {
   final String id;
   final String mediaUrl;
@@ -390,7 +425,7 @@ class Opportunity {
   factory Opportunity.fromJson(Map<String, dynamic> json) {
     return Opportunity(
       id: json['id'] ?? '',
-      mediaUrl: json['mediaUrl'] ?? json['mediaUrl'] ?? '',
+      mediaUrl: json['mediaUrl'] ?? '',
       title: json['title'],
     );
   }
@@ -399,6 +434,7 @@ class Opportunity {
     return {'id': id, 'mediaUrl': mediaUrl, 'title': title};
   }
 }
+
 class Course {
   final String id;
   final String imageUrl;
@@ -419,7 +455,8 @@ class Course {
     this.lessonsCount = 0,
     this.enrolledCount = 0,
   });
-    factory Course.fromJson(Map<String, dynamic> json) {
+
+  factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       id: json['id'] ?? '',
       imageUrl: json['thumbnailUrl'] ?? json['thumbnail_url'] ?? '',
@@ -431,7 +468,6 @@ class Course {
       enrolledCount: json['enrolledUsersCount'] ?? 0,
     );
   }
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -475,7 +511,8 @@ class PlayerSpecificData {
       weight: json['weight']?.toString(),
       preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
-      specializedSport: EnumMapper.sportIdToLabel( json['sports']) ?? json['specialized_sport'],
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       gender: json['gender'],
@@ -513,7 +550,8 @@ class CoachSpecificData {
 
   factory CoachSpecificData.fromJson(Map<String, dynamic> json) {
     return CoachSpecificData(
-      specializedSport: EnumMapper.sportIdToLabel( json['sports']) ?? json['specialized_sport'],
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       certifications: json['certifications'],
@@ -548,7 +586,8 @@ class ScoutSpecificData {
 
   factory ScoutSpecificData.fromJson(Map<String, dynamic> json) {
     return ScoutSpecificData(
-      specializedSport: EnumMapper.sportIdToLabel( json['sports']) ?? json['specialized_sport'],
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ?? json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       organization: json['organization'],
@@ -582,9 +621,7 @@ class ClubSpecificData {
   }
 
   Map<String, dynamic> toJson() {
-    return {'location': location,
-      'foundedYear': foundedYear,
-      'sport': sport};
+    return {'location': location, 'foundedYear': foundedYear, 'sport': sport};
   }
 }
 
@@ -635,5 +672,50 @@ class OtherSpecificData {
 
   Map<String, dynamic> toJson() {
     return {'customData': customData, 'gender': gender};
+  }
+}
+
+/// Model for a connection request item
+class ConnectionRequest {
+  final String id;
+  final String fullName;
+  final String? profilePictureUrl;
+
+  const ConnectionRequest({
+    required this.id,
+    required this.fullName,
+    this.profilePictureUrl,
+  });
+
+  factory ConnectionRequest.fromJson(Map<String, dynamic> json) {
+    return ConnectionRequest(
+      id: json['id'] ?? '',
+      fullName: json['fullName'] ?? '',
+      profilePictureUrl: json['profilePictureUrl'] as String?,
+    );
+  }
+}
+
+/// Model for a contact item
+class ContactItem {
+  final String id;
+  final String title;
+  final String? imageUrl;
+  final bool isOnline;
+
+  const ContactItem({
+    required this.id,
+    required this.title,
+    this.imageUrl,
+    this.isOnline = false,
+  });
+
+  factory ContactItem.fromJson(Map<String, dynamic> json) {
+    return ContactItem(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      imageUrl: json['imageUrl'] as String?,
+      isOnline: json['isOnline'] as bool? ?? false,
+    );
   }
 }
