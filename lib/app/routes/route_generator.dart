@@ -193,14 +193,16 @@ abstract class RoutesManager {
           ),
         );
       case AppRoutes.chatView:
-        final chat = settings.arguments as ChatModel;
+        final args = settings.arguments as Map<String, dynamic>;
+        final chat = args['chat'] as ChatModel;
+        final currentUserId = args['currentUserId'] as String;
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
             create: (_) => ChatBloc(
               repo: getIt<ChatRepository>(),
               hub: getIt<ChatHubService>(),
             ),
-            child: ChatView(chat: chat),
+            child: ChatView(chat: chat, currentUserId: currentUserId),
           ),
         );
     }

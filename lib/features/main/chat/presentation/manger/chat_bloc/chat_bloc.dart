@@ -301,7 +301,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       messageId: event.messageId,
       newContent: event.newContent,
     );
-    result.fold((e) => emit(state.copyWith(sendError: e.message)), (_) {});
+    result.fold((e) => emit(state.copyWith(sendError: e.message)), (_) {
+      state.copyWith(sendError: null);
+    });
   }
 
   Future<void> _onDeleteMessage(
@@ -318,7 +320,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final result = await _repo.deleteMessage(messageId: event.messageId);
     result.fold(
       (e) => emit(state.copyWith(messages: before, sendError: e.message)),
-      (_) {},
+      (_) {
+        state.copyWith(sendError: null);
+      },
     );
   }
 
@@ -387,17 +391,21 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     try {
       await _hub.connect();
-      emit(state.copyWith(
-        hubConnected: true,
-        hubReconnecting: false,
-        hubError: '',
-      ));
+      emit(
+        state.copyWith(
+          hubConnected: true,
+          hubReconnecting: false,
+          hubError: '',
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        hubConnected: false,
-        hubReconnecting: false,
-        hubError: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          hubConnected: false,
+          hubReconnecting: false,
+          hubError: e.toString(),
+        ),
+      );
     }
   }
 
@@ -407,20 +415,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) {
     switch (event.connectionState) {
       case 'connected':
-        emit(state.copyWith(
-          hubConnected: true,
-          hubReconnecting: false,
-          hubError: '',
-        ));
+        emit(
+          state.copyWith(
+            hubConnected: true,
+            hubReconnecting: false,
+            hubError: '',
+          ),
+        );
         break;
       case 'reconnecting':
         emit(state.copyWith(hubReconnecting: true));
         break;
       case 'disconnected':
-        emit(state.copyWith(
-          hubConnected: false,
-          hubReconnecting: false,
-        ));
+        emit(state.copyWith(hubConnected: false, hubReconnecting: false));
         break;
     }
   }
@@ -430,11 +437,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     await _hub.disconnect();
-    emit(state.copyWith(
-      hubConnected: false,
-      hubReconnecting: false,
-      hubError: '',
-    ));
+    emit(
+      state.copyWith(hubConnected: false, hubReconnecting: false, hubError: ''),
+    );
   }
 
   void _onHubMessageReceived(
@@ -442,15 +447,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) {
     // Append and keep messages sorted by time
-    final updated = [...state.messages, event.message]
-      ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
-
-    // Clear typing when the sender posts (so we don't show "typing..." after their message)
-    final typingInfo = state.typingInfo?.userId == event.message.senderId
-        ? TypingInfo(userId: event.message.senderId, isTyping: false)
-        : state.typingInfo;
-
-    emit(state.copyWith(messages: updated, typingInfo: typingInfo));
+    // if the message is already in the list, update the existing entry instead of appending a duplicate.
+    // fix the issue of the message being duplicated when the user sends a message and then the hub receives the message and sends it back to the user.
+    if (state.messages.last.senderId == event.message.senderId) {
+      return;
+    } else {
+      final updatedMessages = [...state.messages, event.message];
+      updatedMessages.sort((a, b) => a.sentAt.compareTo(b.sentAt));
+      // Clear typing when the sender posts (so we don't show "typing..." after their message)
+      state.typingInfo?.userId == event.message.senderId
+          ? TypingInfo(userId: event.message.senderId, isTyping: false)
+          : state.typingInfo;
+      emit(state.copyWith(messages: updatedMessages));
+    }
 
     // Refresh chats so unread counters & last message stay in sync
     add(LoadChatsEvent(isRefresh: true));

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/network/api_client.dart';
@@ -137,8 +139,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     return ChatModel.fromJson(response.data);
   }
 
-  ///✅ ─── Edit Message ─────────────────────────────────────────────────────────────
-
   @override
   Future<MessageModel> editMessage({
     required String messageId,
@@ -146,9 +146,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }) async {
     final url = Endpoints.editMessage.replaceFirst('{id}', messageId);
 
+    // Send as a JSON-encoded string
     final response = await _apiClient.put(
       url,
-      data: {'newContent': newContent},
+      data: json.encode(newContent),
+      options: Options(
+        headers: {'Content-Type': 'application/json-patch+json'},
+      ),
     );
 
     return MessageModel.fromJson(response.data);

@@ -20,9 +20,7 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatBloc, ChatState>(
-      buildWhen: (p, c) =>
-          p.typingInfo != c.typingInfo ||
-          p.chats != c.chats,
+      buildWhen: (p, c) => p.typingInfo != c.typingInfo || p.chats != c.chats,
       builder: (context, state) {
         // Use live chat from state for isOnline (updates when hub sends UserStatusChanged)
         ChatModel? liveChat;
@@ -97,7 +95,10 @@ class _ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           bottom: const PreferredSize(
             preferredSize: Size.fromHeight(1),
-            child: ColoredBox(color: Color(0xFFE0E4EE), child: SizedBox(height: 1)),
+            child: ColoredBox(
+              color: Color(0xFFE0E4EE),
+              child: SizedBox(height: 1),
+            ),
           ),
         );
       },
@@ -305,9 +306,17 @@ class _NormalMessageBubble extends StatelessWidget {
 
     switch (status) {
       case 1: // sent
-        return Icon(Icons.check_rounded, size: kStatusIconSize, color: Colors.white70);
+        return Icon(
+          Icons.check_rounded,
+          size: kStatusIconSize,
+          color: Colors.white70,
+        );
       case 2: // delivered
-        return Icon(Icons.done_all_rounded, size: kStatusIconSize, color: Colors.white70);
+        return Icon(
+          Icons.done_all_rounded,
+          size: kStatusIconSize,
+          color: Colors.white70,
+        );
       case 3: // seen
         return const Icon(
           Icons.done_all_rounded,
@@ -315,7 +324,11 @@ class _NormalMessageBubble extends StatelessWidget {
           color: Colors.lightBlueAccent,
         );
       default:
-        return Icon(Icons.check_rounded, size: kStatusIconSize, color: Colors.white70);
+        return Icon(
+          Icons.check_rounded,
+          size: kStatusIconSize,
+          color: Colors.white70,
+        );
     }
   }
 }
@@ -542,10 +555,7 @@ class _OptionTile extends StatelessWidget {
 
 /// SignalR connection banner shown at top of chat when disconnected or reconnecting.
 class _ChatSignalRBanner extends StatelessWidget {
-  const _ChatSignalRBanner({
-    required this.hubReconnecting,
-    this.hubError,
-  });
+  const _ChatSignalRBanner({required this.hubReconnecting, this.hubError});
 
   final bool hubReconnecting;
   final String? hubError;
@@ -578,7 +588,9 @@ class _ChatSignalRBanner extends StatelessWidget {
                 Icon(
                   hasError ? Icons.cloud_off_rounded : Icons.wifi_off_rounded,
                   size: 20,
-                  color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                  color: hasError
+                      ? Colors.red.shade800
+                      : Colors.orange.shade800,
                 ),
               const SizedBox(width: 10),
               Expanded(
@@ -586,11 +598,13 @@ class _ChatSignalRBanner extends StatelessWidget {
                   hubReconnecting
                       ? 'Reconnecting…'
                       : (hasError
-                          ? 'Connection failed. Tap to retry'
-                          : 'Disconnected. Tap to reconnect'),
+                            ? 'Connection failed. Tap to retry'
+                            : 'Disconnected. Tap to reconnect'),
                   style: TextStyle(
                     fontSize: 13,
-                    color: hasError ? Colors.red.shade900 : Colors.orange.shade900,
+                    color: hasError
+                        ? Colors.red.shade900
+                        : Colors.orange.shade900,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -601,7 +615,9 @@ class _ChatSignalRBanner extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                    color: hasError
+                        ? Colors.red.shade800
+                        : Colors.orange.shade800,
                   ),
                 ),
             ],

@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/utils/helper/date_time_helper.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
@@ -49,13 +53,18 @@ class ChatListSection extends StatelessWidget {
           final chat = chats[index];
 
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
+              final sharedPref = SharedPref(
+                await SharedPreferences.getInstance(),
+              );
+              final currentUserId = sharedPref.getUserId()!;
+              log('👤 currentUserId: $currentUserId');
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
                     value: context.read<ChatBloc>(),
-                    child: ChatView(chat: chat),
+                    child: ChatView(chat: chat, currentUserId: currentUserId),
                   ),
                 ),
               );

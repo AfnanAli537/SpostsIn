@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,9 +14,10 @@ import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_avat
 part 'widgets/chat_view_widgets.dart';
 
 class ChatView extends StatefulWidget {
-  const ChatView({super.key, required this.chat});
+  const ChatView({super.key, required this.chat, required this.currentUserId});
 
   final ChatModel chat;
+  final String currentUserId;
 
   @override
   State<ChatView> createState() => _ChatViewState();
@@ -29,16 +31,14 @@ class _ChatViewState extends State<ChatView> {
   String? _editingId;
   Timer? _typingTimer;
   bool _isTyping = false;
-  String _currentUserName = 'Me';
+  final String _currentUserName = 'Me';
   late SharedPref _sharedPref;
-  late String _currentUserId;
 
   String? get _otherUserId => widget.chat.isGroup ? null : widget.chat.id;
 
   @override
   void initState() {
     super.initState();
-    _initSharedPref();
     _loadMessages();
     _connectHub();
 
@@ -56,30 +56,6 @@ class _ChatViewState extends State<ChatView> {
         );
       }
     });
-  }
-
-  Future<void> _initSharedPref() async {
-    final prefs = await SharedPreferences.getInstance();
-    _sharedPref = SharedPref(prefs);
-    await _loadCurrentUser();
-  }
-
-  Future<void> _loadCurrentUser() async {
-    final user = await _sharedPref.getUserFromPrefs();
-    // if (!mounted) return;
-
-    if (user?.name != null) {
-      setState(() {
-        _currentUserName = '${user!.name!.firstName} ${user.name!.secondName}'
-            .trim();
-      });
-    }
-
-    if (user?.userId != null) {
-      setState(() {
-        _currentUserId = user!.userId!;
-      });
-    }
   }
 
   void _connectHub() {
@@ -129,7 +105,7 @@ class _ChatViewState extends State<ChatView> {
         receiverId: receiverId,
         groupId: groupId,
         senderName: _currentUserName,
-        senderId: _currentUserId,
+        senderId: widget.currentUserId,
       ),
     );
 
@@ -257,7 +233,7 @@ class _ChatViewState extends State<ChatView> {
 
           return _MessageBubble(
             message: msg,
-            currentUserId: _currentUserId,
+            currentUserId: widget.currentUserId,
             isGroupChat: widget.chat.isGroup,
             isEditing: isEditing,
             editController: _editController,
@@ -295,16 +271,23 @@ class _ChatViewState extends State<ChatView> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            _OptionTile(
-              icon: Icons.edit_rounded,
-              label: 'Edit',
-              color: Colors.black87,
-              onTap: () {
-                Navigator.pop(context);
-                _startEdit(msg);
-              },
-            ),
+
+            /// if seend mesage is not time t 15 minutes then no show edit else show edit and delete options
+            if (msg.sentAt.isAfter(
+              DateTime.now().subtract(Duration(minutes: 15)),
+            ))
+              _OptionTile(
+                icon: Icons.edit_rounded,
+                label: 'Edit',
+                color: Colors.black87,
+                onTap: () {
+                  Navigator.pop(context);
+                  _startEdit(msg);
+                },
+              ),
+
             const Divider(height: 1, color: Color(0xFFEEF0F5)),
+
             _OptionTile(
               icon: Icons.delete_outline_rounded,
               label: 'Delete',
@@ -350,14 +333,31 @@ class _ChatViewState extends State<ChatView> {
             );
           }
 
+          // add notifySeen here
+          if (state.messagesLoading == false &&
+              state.messages.last.isMe == false) {
+            log(
+              '👁️ notifySeen to: ${state.messages.last.senderId} (id: ${state.messages.last.id}, isMe: ${state.messages.last.isMe} , groupId: ${widget.chat.isGroup ? widget.chat.id : null})',
+            );
+            context.read<ChatBloc>().add(
+              NotifySeenEvent(
+                senderId: state.messages.last.senderId,
+                groupId: widget.chat.isGroup ? widget.chat.id : null,
+              ),
+            );
+          }
+
           if (state.messages.isNotEmpty) {
             _scrollToBottom();
           }
         },
         builder: (_, state) {
-          final isTypingInThisChat = state.typingInfo?.isTyping == true &&
+          final isTypingInThisChat =
+              state.typingInfo?.isTyping == true &&
               (widget.chat.isGroup
-                  ? widget.chat.members.any((m) => m.userId == state.typingInfo?.userId)
+                  ? widget.chat.members.any(
+                      (m) => m.userId == state.typingInfo?.userId,
+                    )
                   : widget.chat.id == state.typingInfo?.userId);
           final showHubBanner = !state.hubConnected || state.hubReconnecting;
           return Column(

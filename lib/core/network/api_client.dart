@@ -43,18 +43,32 @@ class ApiClient {
     );
   }
 
-Future<Response> get(String endpoint, {Map<String, dynamic>? params}) =>
+  Future<Response> get(String endpoint, {Map<String, dynamic>? params}) =>
       _dio.get(endpoint, queryParameters: params);
 
-  Future<Response> post(String endpoint, {dynamic data, Map<String, dynamic>? params}) =>
-      _dio.post(endpoint, data: data, queryParameters: params);
+  Future<Response> post(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? params,
+  }) => _dio.post(endpoint, data: data, queryParameters: params);
 
-  Future<Response> put(String endpoint, {dynamic data, Map<String, dynamic>? params}) =>
-      _dio.put(endpoint, data: data, queryParameters: params);
+  Future<Response> put(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? params,
+    Options? options,
+  }) =>
+      _dio.put(endpoint, data: data, queryParameters: params, options: options);
 
-  Future<Response> patch(String endpoint, {dynamic data, Map<String, dynamic>? params}) =>
-      _dio.patch(endpoint, data: data, queryParameters: params);
+  Future<Response> patch(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? params,
+  }) => _dio.patch(endpoint, data: data, queryParameters: params);
 
-  Future<Response> delete(String endpoint, {dynamic data, Map<String, dynamic>? params}) =>
-      _dio.delete(endpoint, data: data, queryParameters: params);
+  Future<Response> delete(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? params,
+  }) => _dio.delete(endpoint, data: data, queryParameters: params);
 }
