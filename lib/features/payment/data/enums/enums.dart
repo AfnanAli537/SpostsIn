@@ -32,11 +32,11 @@ enum PaymentMethod {
   /// method = 1 — Credit / Debit Card
   creditCard(1),
 
-  /// method = 2 — Mobile Wallet
+  /// method = 2 — Fawry Pay
  fawryPay(2),
 
-  /// method = 3 — Fawry Pay
-  mobileWallet(2);
+  /// method = 3 — Mobile Wallet
+  mobileWallet(3);
   const PaymentMethod(this.value);
   final int value;
 

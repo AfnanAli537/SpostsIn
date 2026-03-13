@@ -117,6 +117,7 @@ Future<InitiatePaymentResponse> initiatePayment(
      final id =request.targetId;
      final type= body['targetType'];
      final method = body['method'];
+     final mobileNumber = body['mobileNumber'];
     log('🚀 [Payment] initiatePayment request: $body');
 
     final response = await apiClient.post(
@@ -125,6 +126,7 @@ Future<InitiatePaymentResponse> initiatePayment(
   "targetId": id,
   "targetType": type,
   "method": method,
+  if (mobileNumber != null) "mobileNumber": mobileNumber,
 },
     );
 
@@ -200,9 +202,8 @@ Future<InitiatePaymentResponse> initiatePayment(
     try {
       log('🚀 [Payment] manualActivate orderId: $orderId');
  
-      final response = await apiClient.post(
-        '${Endpoints.manualActivate}/$orderId',
-      );
+      final url = Endpoints.manualActivate.replaceFirst('{orderId}', orderId);
+      final response = await apiClient.post(url);
  
       log('📦 [Payment] manualActivate status: ${response.statusCode}');
       log('📦 [Payment] manualActivate data: ${response.data}');
