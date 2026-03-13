@@ -447,19 +447,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) {
     // Append and keep messages sorted by time
-    // if the message is already in the list, update the existing entry instead of appending a duplicate.
-    // fix the issue of the message being duplicated when the user sends a message and then the hub receives the message and sends it back to the user.
-    if (state.messages.last.senderId == event.message.senderId) {
+    // if the message is already in the list, avoid appending a duplicate.
+    // This can happen when we optimistically add a sent message locally and then receive it back from the hub.
+    final bool isDuplicateLastMessage =
+        state.messages.isNotEmpty && state.messages.last.id == event.message.id;
+
+    if (isDuplicateLastMessage) {
       return;
-    } else {
-      final updatedMessages = [...state.messages, event.message];
-      updatedMessages.sort((a, b) => a.sentAt.compareTo(b.sentAt));
-      // Clear typing when the sender posts (so we don't show "typing..." after their message)
-      state.typingInfo?.userId == event.message.senderId
-          ? TypingInfo(userId: event.message.senderId, isTyping: false)
-          : state.typingInfo;
-      emit(state.copyWith(messages: updatedMessages));
     }
+
+    final updatedMessages = [...state.messages, event.message];
+    updatedMessages.sort((a, b) => a.sentAt.compareTo(b.sentAt));
+
+    // Clear typing when the sender posts (so we don't show "typing..." after their message)
+    final updatedTyping =
+        state.typingInfo != null &&
+            state.typingInfo!.userId == event.message.senderId
+        ? TypingInfo(userId: event.message.senderId, isTyping: false)
+        : state.typingInfo;
+
+    emit(state.copyWith(messages: updatedMessages, typingInfo: updatedTyping));
 
     // Refresh chats so unread counters & last message stay in sync
     add(LoadChatsEvent(isRefresh: true));
