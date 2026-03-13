@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class LessonTile extends StatelessWidget {
   final LessonModel lesson;
   final bool isEnrolled;
   final VoidCallback onTap;
+  final S string;
 
   const LessonTile({
     super.key,
     required this.lesson,
     required this.isEnrolled,
     required this.onTap,
+    required this.string,
   });
 
   @override
@@ -63,7 +66,7 @@ class LessonTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Lesson ${lesson.order}',
+                        string.lessonNumber(lesson.order), 
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: theme.colorScheme.primary,
@@ -82,7 +85,7 @@ class LessonTile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(
-                            'Watched',
+                            string.watched, 
                             style: TextStyle(
                               fontSize: 10.sp,
                               color: Colors.green,
@@ -135,7 +138,9 @@ class LessonTile extends StatelessWidget {
                       if (lesson.progressPercentage > 0) ...[
                         SizedBox(width: 16.w),
                         Text(
-                          '${lesson.progressPercentage.toInt()}% watched',
+                          string.percentageWatched(
+                            lesson.progressPercentage.toInt().toString(),
+                          ), 
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: theme.colorScheme.primary,

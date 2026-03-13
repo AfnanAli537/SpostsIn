@@ -42,13 +42,45 @@ class CourseHeader extends StatelessWidget {
               ),
             )
           : thumbnailUrl != null
-              ? Image.network(
-                  thumbnailUrl!,
-                  fit: BoxFit.cover,
-                  height: 200.h,
-                  errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                )
-              : SizedBox(height: 100.h),
+              ? _buildImageWidget(thumbnailUrl!)
+              : _buildPlaceholder(),
+    );
+  }
+
+  Widget _buildImageWidget(String imageUrl) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.r),
+      child: Image.network(
+        imageUrl,
+        width: double.infinity,
+        height: 200.h,
+        fit: BoxFit.cover,
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded) return child;
+          return AnimatedOpacity(
+            opacity: frame == null ? 0 : 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: child,
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: Colors.grey[300],
+            height: 200.h,
+            child: Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+      ),
     );
   }
 
@@ -56,7 +88,9 @@ class CourseHeader extends StatelessWidget {
     return Container(
       height: 200.h,
       color: Colors.grey[300],
-      child: Icon(Icons.image_not_supported, size: 48.sp),
+      child: Center(
+        child: Icon(Icons.image_not_supported, size: 48.sp, color: Colors.grey[600]),
+      ),
     );
   }
 }

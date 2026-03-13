@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppImagePicker extends StatefulWidget {
   final void Function(File?) onImageSelected;
-  final String? initialImage; // Can be URL or SharedPrefs key
+  final String? initialImage; 
 
   const AppImagePicker({
     super.key,
@@ -42,13 +42,8 @@ class _AppImagePickerState extends State<AppImagePicker> {
           CircleAvatar(
             radius: 40.r,
             backgroundColor: ColorManager.grey,
-            backgroundImage: _image != null
-                ? FileImage(_image!)
-                : (widget.initialImage != null && widget.initialImage!.isNotEmpty
-                    // ? CachedNetworkImageProvider(widget.initialImage!)
-                    ? NetworkImage(NetworkImageAssets.unknownImage)//TODO but here the pfp saved in the login
-                    : null),
-            child: _image == null && (widget.initialImage == null || widget.initialImage!.isEmpty)
+            backgroundImage: _getImageProvider(),
+            child: _shouldShowPlaceholderIcon() 
                 ? Icon(Icons.person, size: 40, color: ColorManager.white)
                 : null,
           ),
@@ -63,5 +58,26 @@ class _AppImagePickerState extends State<AppImagePicker> {
         ],
       ),
     );
+  }
+
+  ImageProvider? _getImageProvider() {
+    if (_image != null) {
+      return FileImage(_image!);
+    }
+    
+    if (widget.initialImage != null && widget.initialImage!.isNotEmpty) {
+      if (widget.initialImage!.startsWith('http')) {
+        return NetworkImage(widget.initialImage!);
+      } else {
+        return const AssetImage(NetworkImageAssets.unknownImage); 
+      }
+    }
+    
+    return null;
+  }
+
+  bool _shouldShowPlaceholderIcon() {
+    return _image == null && 
+          (widget.initialImage == null || widget.initialImage!.isEmpty);
   }
 }

@@ -240,3 +240,16 @@ class FetchRevenueReport extends CoursesEvent {
   @override
   List<Object?> get props => [courseId, month, year];
 }
+
+class ReorderLessons extends CoursesEvent {
+  final String courseId;
+  final List<LessonModel> reorderedLessons;
+
+  const ReorderLessons({
+    required this.courseId,
+    required this.reorderedLessons,
+  });
+
+  @override
+  List<Object?> get props => [courseId, reorderedLessons];
+}

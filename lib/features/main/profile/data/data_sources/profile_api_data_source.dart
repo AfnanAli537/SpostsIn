@@ -496,30 +496,30 @@ class ApiProfileDataSource implements IProfileDataSource {
   }
 
   /// GET /api/Social/connection-requests
-  @override
-  Future<List<ConnectionRequest>> getConnectionRequests({
-    int pageNumber = 1,
-    int pageSize = 20,
-  }) async {
-    try {
-      final response = await _apiClient.get(
-        Endpoints.connectionRequests,
-        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
-      );
-      if (response.statusCode == 200) {
-        final data = response.data as Map<String, dynamic>;
-        final items = data['items'] as List<dynamic>? ?? [];
-        return items
-            .map((json) =>
-                ConnectionRequest.fromJson(json as Map<String, dynamic>))
-            .toList();
-      }
-      throw ApiErrorHandler.handleDioError(_badResponse(response));
-    } on DioException catch (e) {
-      throw ApiErrorHandler.handleDioError(e);
+@override
+Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequests({
+  int pageNumber = 1,
+  int pageSize = 20,
+}) async {
+  try {
+    final response = await _apiClient.get(
+      Endpoints.connectionRequests,
+      params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+    );
+    if (response.statusCode == 200) {
+      final data = response.data as Map<String, dynamic>;
+      final items = (data['items'] as List<dynamic>? ?? [])
+          .map((json) => ConnectionRequest.fromJson(json as Map<String, dynamic>))
+          .toList();
+      final hasNextPage = data['hasNextPage'] as bool? ?? false;
+      return (items: items, hasNextPage: hasNextPage);
     }
+    throw ApiErrorHandler.handleDioError(_badResponse(response));
+  } on DioException catch (e) {
+    throw ApiErrorHandler.handleDioError(e);
   }
-
+}
+ 
   /// GET /api/Chat/contacts
   @override
   Future<List<ContactItem>> getContacts() async {

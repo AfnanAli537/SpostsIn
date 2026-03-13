@@ -74,13 +74,9 @@ class ForYouTabState extends State<ForYouTab>
           title: strings.latestPosts,
           onShowAll: () => widget.onTabChange(HomeTab.posts),
         ),
-        // buildWhen ensures PostWidget is only remounted when the first post
-        // actually changes (different id), not on every bloc emission.
         BlocBuilder<PostsBloc, PostsState>(
           buildWhen: (previous, current) {
-            // Always rebuild for loading/error states
             if (current is PostsLoading || current is PostsError) return true;
-            // Only rebuild for PostsLoaded if the first post id changed
             if (current is PostsLoaded) {
               if (previous is PostsLoaded) {
                 if (previous.posts.isEmpty && current.posts.isEmpty) return false;
@@ -109,8 +105,6 @@ class ForYouTabState extends State<ForYouTab>
                 return _buildEmptyState(strings.noPostsYet, Icons.post_add);
               }
               final firstPost = state.posts.first;
-              // Stable ValueKey prevents Flutter from unmounting/remounting
-              // the widget when the parent rebuilds for unrelated reasons.
               return PostWidget(
                 key: ValueKey(firstPost.id),
                 post: firstPost,
@@ -127,7 +121,7 @@ class ForYouTabState extends State<ForYouTab>
   // ─── Latest Courses Section ───────────────────────────────────────────
 
   Widget _buildLatestCoursesSection(
-      BuildContext context, S strings, ColorScheme theme) {
+      BuildContext context, S string, ColorScheme theme) {
     return BlocBuilder<CoursesBloc, CoursesState>(
       buildWhen: (previous, current) =>
           current is CoursesLoading ||
@@ -143,7 +137,7 @@ class ForYouTabState extends State<ForYouTab>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _sectionHeader(
-              title: 'Latest Courses',
+              title: string.availableCourses,
               onShowAll: () => widget.onTabChange(HomeTab.courses),
               showAllEnabled: !isLoading && hasCourses,
             ),
@@ -154,7 +148,7 @@ class ForYouTabState extends State<ForYouTab>
               )
             else if (!hasCourses)
               _buildEmptyState(
-                  'No courses available yet', Icons.school_outlined)
+                  string.noAvailableCourses, Icons.school_outlined)
             else
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -162,6 +156,7 @@ class ForYouTabState extends State<ForYouTab>
                   course: courses.first,
                   onTap: () =>
                       _navigateToCourseDetail(context, courses.first.id),
+                      string:string
                 ),
               ),
           ],

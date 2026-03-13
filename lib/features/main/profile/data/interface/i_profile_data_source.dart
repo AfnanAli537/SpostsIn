@@ -64,10 +64,11 @@ abstract class IProfileDataSource {
     required String status,
   });
 
-  Future<List<ConnectionRequest>> getConnectionRequests({
-    int pageNumber = 1,
-    int pageSize = 20,
-  });
+Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequests({
+  int pageNumber = 1,
+  int pageSize = 20,
+});
+
 
   Future<List<ContactItem>> getContacts();
 }

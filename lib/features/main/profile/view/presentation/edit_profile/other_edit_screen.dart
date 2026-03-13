@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/utils/helper/gender_helper.dart';
+import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -53,15 +53,8 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
   firstNameController = TextEditingController(text: firstName);
   lastNameController = TextEditingController(text: lastName);
   bioController = TextEditingController(text: widget.profile.description);
-  
-  String? initialGender;
-  if (widget.profile.otherData?.gender != null) {
-    initialGender = GenderHelper.genderIdToLabel(
-      widget.profile.otherData!.gender,
-      S.current,
-    );
-  }
-  genderNotifier = ValueNotifier<String?>(initialGender);
+  genderNotifier = ValueNotifier( EnumMapper.genderIdToLabel(widget.profile.otherData!.gender??0));
+
 }
 
   @override

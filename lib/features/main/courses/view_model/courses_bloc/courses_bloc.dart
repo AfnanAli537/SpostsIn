@@ -36,6 +36,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     on<UpdateLessonProgress>(_onUpdateLessonProgress);
     on<FetchEnrolledUsers>(_onFetchEnrolledUsers);
     on<FetchRevenueReport>(_onFetchRevenueReport);
+    on<ReorderLessons>(_onReorderLessons);
   }
 
   // ==================== BROWSE & DISCOVERY ====================
@@ -362,6 +363,48 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       emit(RevenueReportLoaded(report: report));
     } catch (e) {
       debugPrint('Error fetching revenue report: $e');
+      emit(CoursesError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onReorderLessons(
+    ReorderLessons event,
+    Emitter<CoursesState> emit,
+  ) async {
+    emit(const LessonsReorderLoading());
+
+    try {
+      final reordered = event.reorderedLessons
+          .asMap()
+          .entries
+          .map((e) => e.value.copyWith(order: e.key + 1))
+          .toList();
+
+      final originalOrder = {
+        for (final l in event.reorderedLessons) l.id: l.order,
+      };
+
+      final futures = reordered
+          .where((l) => originalOrder[l.id] != l.order)
+          .map(
+            (lesson) => _repository.updateLesson(
+              UpdateLessonRequest(
+                lessonId: lesson.id,
+                title: lesson.title,
+                description: lesson.description?? '',
+                duration: lesson.duration,
+                order: lesson.order,
+                video: lesson.videoUrl,
+              ),
+            ),
+          )
+          .toList();
+
+      await Future.wait(futures);
+
+      emit(LessonsReorderSuccess(lessons: reordered));
+    } catch (e) {
+      debugPrint('Error reordering lessons: $e');
       emit(CoursesError(message: e.toString()));
     }
   }

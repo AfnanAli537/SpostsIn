@@ -14,13 +14,13 @@ class ConnectButton extends StatelessWidget {
   final String removeContactText;
 
   const ConnectButton({
-    Key? key,
+    super.key,
     required this.connectionStatus,
     required this.onPressed,
     this.connectText = 'Connect',
     this.pendingText = 'Pending',
     this.removeContactText = 'Remove Contact',
-  }) : super(key: key);
+  });
 
   ConnectionButtonState get _state {
     switch (connectionStatus) {

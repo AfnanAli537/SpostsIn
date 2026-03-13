@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
@@ -54,9 +55,43 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
         });
       }
     } catch (e) {
+      await _showError(context, 'error_picking_image');
+    }
+  }
+
+  Future<void> _showError(BuildContext context, String message) async {
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
+    if (mounted) {
       Fluttertoast.showToast(
-        msg: 'Error picking image: $e',
+        msg: msg,
         backgroundColor: Colors.red,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
+  Future<void> _showSuccess(String message) async {
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: Colors.green,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
+  Future<void> _showWarning(String message) async {
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: Colors.orange,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
       );
     }
   }
@@ -80,10 +115,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
 
     final sportId = _getSportIdFromName(_sportNotifier.value);
     if (sportId == null) {
-      Fluttertoast.showToast(
-        msg: 'Please select a sport',
-        backgroundColor: Colors.orange,
-      );
+      _showWarning(S.of(context).pleaseSelectSport);
       return;
     }
 
@@ -109,24 +141,17 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
       create: (context) => getIt<CoursesBloc>(),
       child: Builder(
         builder: (builderContext) => BlocListener<CoursesBloc, CoursesState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is CourseCreated) {
-              Fluttertoast.showToast(
-                msg: 'Course created successfully',
-                backgroundColor: Colors.green,
-              );
-              // Navigator.pop(context);
+              await _showSuccess(string.courseCreatedSuccess);
               context.read<CoursesBloc>().add(
                 const FetchCreatedCourses(page: 1, size: 1, isRefresh: true),
               );
             } else if (state is MyCoursesLoaded && state.courses.isNotEmpty) {
-              final newCourse = state.courses.first; // Has the ID!
+              final newCourse = state.courses.first;
               _showAddLessonDialog(context, newCourse);
             } else if (state is CoursesError) {
-              Fluttertoast.showToast(
-                msg: state.message,
-                backgroundColor: Colors.red,
-              );
+              await _showError(context, state.message);
             }
           },
           child: Scaffold(
@@ -137,7 +162,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               title: Text(
-                'Create Course',
+                string.createCourse,
                 style: TextStyle(
                   color: theme.onSurface,
                   fontSize: 18.sp,
@@ -213,7 +238,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                         ),
                                         SizedBox(height: 12.h),
                                         Text(
-                                          'Upload Course Thumbnail',
+                                          string.uploadCourseThumbnail,
                                           style: TextStyle(
                                             fontSize: 14.sp,
                                             color: Colors.grey[600],
@@ -240,10 +265,10 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                       SizedBox(height: 8.h),
                       AuthTextField(
                         controller: _titleController,
-                        hintText: 'Course Title',
+                        hintText: string.courseTitleHint,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a title';
+                            return string.pleaseEnterTitle;
                           }
                           return null;
                         },
@@ -262,11 +287,11 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                       SizedBox(height: 8.h),
                       AuthTextField(
                         controller: _descriptionController,
-                        hintText: 'Course Description',
+                        hintText: string.courseDescriptionHint,
                         maxLines: 5,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a description';
+                            return string.pleaseEnterDescription;
                           }
                           return null;
                         },
@@ -289,7 +314,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
 
                       // Price field
                       Text(
-                        'Price',
+                        string.price,
                         style: GoogleFonts.poppins(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
@@ -299,15 +324,15 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                       SizedBox(height: 8.h),
                       AuthTextField(
                         controller: _priceController,
-                        hintText: 'Enter price (0 for free)',
+                        hintText: string.enterPriceHint,
                         // keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a price';
+                            return string.pleaseEnterPrice;
                           }
                           final price = double.tryParse(value);
                           if (price == null || price < 0) {
-                            return 'Invalid price';
+                            return string.invalidPrice;
                           }
                           return null;
                         },
@@ -319,7 +344,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                         builder: (context, state) {
                           final isLoading = state is CourseActionLoading;
                           return CustomElevatedButton(
-                            text: 'Create Course',
+                            text: string.createCourse,
                             isLoading: isLoading,
                             enabled: !isLoading,
                             onPressed: isLoading
@@ -341,38 +366,37 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
 
   void _showAddLessonDialog(BuildContext context, CourseModel course) {
     final coursesBloc = context.read<CoursesBloc>();
+    final string = S.of(context);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Add Lesson'),
-        content: const Text(
-          'Would you like to add a lesson to this course now?',
-        ),
+        title: Text(string.addLesson),
+        content: Text(string.addLessonQuestion),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
             },
-            child: const Text('Add Later'),
+            child: Text(string.addLater),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(dialogContext);
               Navigator.push(
-                context, // Use original context
+                context,
                 MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
                     value: coursesBloc,
                     child: UploadLessonScreen(
                       courseId: course.id,
-                      existingLessonsCount: 0, // First lesson
+                      existingLessonsCount: 0,
                     ),
                   ),
                 ),
               );
             },
-            child: const Text('Add Now'),
+            child: Text(string.addNow),
           ),
         ],
       ),

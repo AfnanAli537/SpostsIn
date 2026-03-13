@@ -21,7 +21,7 @@ class CourseDescriptionTab extends StatelessWidget {
   final VoidCallback onFieldChanged;
 
   const CourseDescriptionTab({
-    Key? key,
+    super.key,
     required this.course,
     required this.isEditMode,
     required this.hasUnsavedChanges,
@@ -35,7 +35,7 @@ class CourseDescriptionTab extends StatelessWidget {
     required this.onSaveChanges,
     required this.onFreeChanged,
     required this.onFieldChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,27 +47,27 @@ class CourseDescriptionTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isEditMode) _buildThumbnailEditor(theme),
-          _buildTitle(theme),
+          if (isEditMode) _buildThumbnailEditor(theme, string),
+          _buildTitle(theme,string),
           SizedBox(height: 16.h),
           _buildOwnerInfo(theme),
           SizedBox(height: 16.h),
-          _buildStats(theme),
+          _buildStats(theme, string),
           SizedBox(height: 16.h),
-          _buildPriceSection(theme),
+          _buildPriceSection(theme, string),
           SizedBox(height: 24.h),
           _buildDescriptionSection(theme, string),
-          if (isEditMode) _buildEditButtons(theme),
+          if (isEditMode) _buildEditButtons(theme,string),
         ],
       ),
     );
   }
 
-  Widget _buildThumbnailEditor(ThemeData theme) {
+  Widget _buildThumbnailEditor(ThemeData theme, S string) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Course Thumbnail', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+        Text(string.courseThumbnail, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         SizedBox(height: 8.h),
         GestureDetector(
           onTap: onPickThumbnail,
@@ -105,7 +105,7 @@ class CourseDescriptionTab extends StatelessWidget {
                                   children: [
                                     Icon(Icons.camera_alt, size: 40.sp, color: Colors.white),
                                     SizedBox(height: 8.h),
-                                    Text('Tap to change', style: TextStyle(color: Colors.white, fontSize: 12.sp)),
+                                    Text(string.tapToChange, style: TextStyle(color: Colors.white, fontSize: 12.sp)),
                                   ],
                                 ),
                               ),
@@ -119,7 +119,7 @@ class CourseDescriptionTab extends StatelessWidget {
                           children: [
                             Icon(Icons.add_photo_alternate, size: 48.sp, color: Colors.grey[600]),
                             SizedBox(height: 8.h),
-                            Text('Tap to upload thumbnail', style: TextStyle(fontSize: 12.sp, color: Colors.grey[600])),
+                            Text(string.uploadCourseThumbnail, style: TextStyle(fontSize: 12.sp, color: Colors.grey[600])),
                           ],
                         ),
                       ),
@@ -130,19 +130,19 @@ class CourseDescriptionTab extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle(ThemeData theme) {
+  Widget _buildTitle(ThemeData theme, S string) {
     if (isEditMode) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Course Title', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+          Text(string.courseTitleHint, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           SizedBox(height: 8.h),
           TextField(
             controller: titleController,
             onChanged: (_) => onFieldChanged(),
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
-              hintText: 'Enter course title',
+              hintText: string.enterCourseTitleHint,
             ),
             style: theme.textTheme.titleLarge,
           ),
@@ -169,12 +169,12 @@ class CourseDescriptionTab extends StatelessWidget {
     );
   }
 
-  Widget _buildStats(ThemeData theme) {
+  Widget _buildStats(ThemeData theme, S string) {
     return Row(
       children: [
         Icon(Icons.play_circle_outline, size: 16.sp, color: theme.colorScheme.primary),
         SizedBox(width: 4.w),
-        Text('${course.lessonsCount} lessons', style: theme.textTheme.bodyMedium),
+        Text(string.lessonsCount(course.lessonsCount), style: theme.textTheme.bodyMedium),
         SizedBox(width: 16.w),
         Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
         SizedBox(width: 4.w),
@@ -182,22 +182,22 @@ class CourseDescriptionTab extends StatelessWidget {
         SizedBox(width: 16.w),
         Icon(Icons.person, size: 16.sp, color: theme.colorScheme.primary),
         SizedBox(width: 4.w),
-        Text('${course.enrolledUsersCount} enrolled', style: theme.textTheme.bodyMedium),
+        Text(string.enrolledCount(course.enrolledUsersCount), style: theme.textTheme.bodyMedium),
       ],
     );
   }
 
-  Widget _buildPriceSection(ThemeData theme) {
+  Widget _buildPriceSection(ThemeData theme, S string) {
     if (isEditMode) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Price', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+          Text(string.price, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
           SizedBox(height: 8.h),
           Row(
             children: [
               Checkbox(value: isFree, onChanged: (v) { onFreeChanged(v!); onFieldChanged(); }),
-              Text('Free Course'),
+              Text(string.freeCourse),
               SizedBox(width: 16.w),
               if (!isFree)
                 Expanded(
@@ -247,28 +247,28 @@ class CourseDescriptionTab extends StatelessWidget {
             maxLines: 5,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
-              hintText: 'Enter course description',
+              hintText: string.enterCourseDescriptionHint,
             ),
           )
         else if (course.description?.isNotEmpty == true)
           Text(course.description!, style: theme.textTheme.bodyMedium)
         else
-          Text('No description available.', style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+          Text(string.noDescriptionAvailable, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
       ],
     );
   }
 
-  Widget _buildEditButtons(ThemeData theme) {
+  Widget _buildEditButtons(ThemeData theme, S string) {
     return Padding(
       padding: EdgeInsets.only(top: 24.h),
       child: Row(
         children: [
-          Expanded(child: OutlinedButton(onPressed: onCancelEdit, child: const Text('Cancel'))),
+          Expanded(child: OutlinedButton(onPressed: onCancelEdit, child: Text(string.cancel))),
           SizedBox(width: 16.w),
           Expanded(
             child: ElevatedButton(
               onPressed: hasUnsavedChanges ? onSaveChanges : null,
-              child: const Text('Save Changes'),
+              child: Text(string.save),
             ),
           ),
         ],

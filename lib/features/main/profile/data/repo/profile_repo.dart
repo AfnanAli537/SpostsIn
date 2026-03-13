@@ -29,15 +29,11 @@ class ProfileRepo {
   Future<void> respondConnection({
     required String senderId,
     required String status,
-  }) =>
-      _dataSource.respondConnection(senderId: senderId, status: status);
-
-  Future<List<ConnectionRequest>> getConnectionRequests({
-    int pageNumber = 1,
-    int pageSize = 20,
-  }) =>
-      _dataSource.getConnectionRequests(
-          pageNumber: pageNumber, pageSize: pageSize);
+  }) => _dataSource.respondConnection(senderId: senderId, status: status);
+  
+  Future<({List<ConnectionRequest> items, bool hasNextPage})>
+  getConnectionRequests({int pageNumber = 1, int pageSize = 20}) => _dataSource
+      .getConnectionRequests(pageNumber: pageNumber, pageSize: pageSize);
 
   Future<List<ContactItem>> getContacts() => _dataSource.getContacts();
 
@@ -47,17 +43,19 @@ class ProfileRepo {
     required String userId,
     int page = 1,
     int size = 10,
-  }) =>
-      _dataSource.getAchievements(userId: userId, page: page, size: size);
+  }) => _dataSource.getAchievements(userId: userId, page: page, size: size);
 
   Future<Achievement> createAchievement({
     required String title,
     required String subtitle,
     required String imageUrl,
     required DateTime date,
-  }) =>
-      _dataSource.createAchievement(
-          title: title, subtitle: subtitle, imageUrl: imageUrl, date: date);
+  }) => _dataSource.createAchievement(
+    title: title,
+    subtitle: subtitle,
+    imageUrl: imageUrl,
+    date: date,
+  );
 
   Future<Achievement> updateAchievement({
     required String achievementId,
@@ -65,13 +63,13 @@ class ProfileRepo {
     required String subtitle,
     required String imageUrl,
     required DateTime date,
-  }) =>
-      _dataSource.updateAchievement(
-          achievementId: achievementId,
-          title: title,
-          subtitle: subtitle,
-          imageUrl: imageUrl,
-          date: date);
+  }) => _dataSource.updateAchievement(
+    achievementId: achievementId,
+    title: title,
+    subtitle: subtitle,
+    imageUrl: imageUrl,
+    date: date,
+  );
 
   Future<void> deleteAchievement(String achievementId) =>
       _dataSource.deleteAchievement(achievementId);
@@ -82,8 +80,7 @@ class ProfileRepo {
     required String userId,
     int page = 1,
     int pageSize = 10,
-  }) =>
-      _dataSource.getPosts(targetUserId: userId, page: page, size: pageSize);
+  }) => _dataSource.getPosts(targetUserId: userId, page: page, size: pageSize);
 
   // ── Opportunities ────────────────────────────────────────────────────────────
 
@@ -91,9 +88,11 @@ class ProfileRepo {
     required String userId,
     int page = 1,
     int pageSize = 10,
-  }) =>
-      _dataSource.getOpportunities(
-          userId: userId, page: page, pageSize: pageSize);
+  }) => _dataSource.getOpportunities(
+    userId: userId,
+    page: page,
+    pageSize: pageSize,
+  );
 
   // ── Courses ──────────────────────────────────────────────────────────────────
 
@@ -101,8 +100,7 @@ class ProfileRepo {
     required String userId,
     int page = 1,
     int pageSize = 10,
-  }) =>
-      _dataSource.getCourses(userId: userId, page: page, pageSize: pageSize);
+  }) => _dataSource.getCourses(userId: userId, page: page, pageSize: pageSize);
 
   // ── Interests ────────────────────────────────────────────────────────────────
 

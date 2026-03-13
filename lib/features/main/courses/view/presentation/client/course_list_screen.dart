@@ -102,7 +102,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 size: 10,
                 isRefresh: true,
                 searchTerm: searchTerm,
-                sportTypeId: _selectedSportTypeId, // TODO: add to event
+                sportTypeId: _selectedSportTypeId,
               ),
             );
         break;
@@ -113,7 +113,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 size: 10,
                 isRefresh: true,
                 searchTerm: searchTerm,
-                sportTypeId: _selectedSportTypeId, // TODO: add to event
+                sportTypeId: _selectedSportTypeId,
               ),
             );
         break;
@@ -124,7 +124,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 size: 10,
                 isRefresh: true,
                 searchTerm: searchTerm,
-                sportTypeId: _selectedSportTypeId, // TODO: add to event
+                sportTypeId: _selectedSportTypeId,
               ),
             );
         break;
@@ -154,7 +154,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 page: _currentPage + 1,
                 size: 10,
                 searchTerm: searchTerm,
-                sportTypeId: _selectedSportTypeId, // TODO: add to event
+                sportTypeId: _selectedSportTypeId,
               ),
             );
         break;
@@ -164,7 +164,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 page: _currentPage + 1,
                 size: 10,
                 searchTerm: searchTerm,
-                sportTypeId: _selectedSportTypeId, // TODO: add to event
+                sportTypeId: _selectedSportTypeId,
               ),
             );
         break;
@@ -174,7 +174,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 page: _currentPage + 1,
                 size: 10,
                 searchTerm: searchTerm,
-                sportTypeId: _selectedSportTypeId, // TODO: add to event
+                sportTypeId: _selectedSportTypeId,
               ),
             );
         break;
@@ -251,24 +251,24 @@ class _CourseListScreenState extends State<CourseListScreen> {
   String _getTitle(S string) {
     switch (widget.listType) {
       case CourseListType.available:
-        return 'Available Courses';
+        return string.availableCourses;
       case CourseListType.enrolled:
-        return 'Enrolled Courses';
+        return string.enrolledCourses;
       case CourseListType.created:
-        return 'My Courses';
+        return string.myCourses;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final strings = S.of(context);
+    final string = S.of(context);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_getTitle(strings)),
+          title: Text(_getTitle(string)),
         ),
         body: BlocConsumer<CoursesBloc, CoursesState>(
           listener: (context, state) {
@@ -334,7 +334,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                     SizedBox(height: 16.h),
                     ElevatedButton(
                       onPressed: _fetchInitialCourses,
-                      child: Text(strings.retry),
+                      child: Text(string.retry),
                     ),
                   ],
                 ),
@@ -363,7 +363,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       controller: _searchController,
                       onChanged: (_) {}, // handled by listener
                       decoration: InputDecoration(
-                        hintText: strings.search,
+                        hintText: string.search,
                         hintStyle: TextStyle(
                             color: Colors.grey[400], fontSize: 16.sp),
                         prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
@@ -396,8 +396,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         _buildFilterChip(
                           label: _selectedSportName != null
                               ? _getLocalizedSportName(
-                                  _selectedSportName!, strings)
-                              : strings.sport,
+                                  _selectedSportName!, string)
+                              : string.sport,
                           isSelected: _selectedSportTypeId != null,
                           onTap: _showFilterDialog,
                         ),
@@ -407,7 +407,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         if (_selectedSportTypeId != null ||
                             _searchController.text.isNotEmpty)
                           _buildFilterChip(
-                            label: strings.clear,
+                            label: string.clear,
                             icon: Icons.clear_all,
                             isSelected: false,
                             onTap: _clearFilters,
@@ -422,7 +422,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                 // ----- Course list -----
                 Expanded(
                   child: _courses.isEmpty
-                      ? _buildEmptyState(theme)
+                      ? _buildEmptyState(theme, string)
                       : RefreshIndicator(
                           onRefresh: () async {
                             _fetchCoursesWithFilter();
@@ -448,6 +448,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                               return CourseCard(
                                 course: course,
                                 onTap: () => _navigateToCourseDetail(course.id),
+                                string: string,
                               );
                             },
                           ),
@@ -515,7 +516,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
     );
   }
 
-  Widget _buildEmptyState(ThemeData theme) {
+  Widget _buildEmptyState(ThemeData theme, S string) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -530,8 +531,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
           SizedBox(height: 16.h),
           Text(
             _currentSearchTerm.isEmpty && _selectedSportTypeId == null
-                ? 'No courses found'
-                : 'No results for your criteria',
+                ? string.noCoursesFound
+                : string.noResultsForCriteria,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: Colors.grey[600],
             ),
@@ -540,7 +541,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
           if (_currentSearchTerm.isNotEmpty || _selectedSportTypeId != null) ...[
             SizedBox(height: 8.h),
             Text(
-              'Try adjusting your search or filter',
+              string.tryAdjustingSearch,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: Colors.grey[500],
               ),

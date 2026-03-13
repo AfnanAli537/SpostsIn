@@ -49,12 +49,22 @@ class _RevenueTabState extends State<RevenueTab> {
     );
   }
 
-  String _getMonthName(int month) {
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return monthNames[month - 1];
+  String _getMonthName(int month, S string) {
+    switch (month) {
+      case 1: return string.january;
+      case 2: return string.february;
+      case 3: return string.march;
+      case 4: return string.april;
+      case 5: return string.may;
+      case 6: return string.june;
+      case 7: return string.july;
+      case 8: return string.august;
+      case 9: return string.september;
+      case 10: return string.october;
+      case 11: return string.november;
+      case 12: return string.december;
+      default: return '';
+    }
   }
 
   @override
@@ -80,8 +90,8 @@ class _RevenueTabState extends State<RevenueTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ✅ Month/Year Filter
-                  _buildMonthYearFilter(theme),
+                  // Month/Year Filter
+                  _buildMonthYearFilter(theme, string),
                   SizedBox(height: 16.h),
 
                   // Total revenue cards
@@ -90,13 +100,13 @@ class _RevenueTabState extends State<RevenueTab> {
 
                   // Weekly breakdown chart
                   Text(
-                    'Weekly Breakdown',
+                    string.weeklyBreakdown,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  _buildRevenueChart(state.report, theme),
+                  _buildRevenueChart(state.report, theme, string),
                   SizedBox(height: 24.h),
 
                   // Weekly details
@@ -138,8 +148,8 @@ class _RevenueTabState extends State<RevenueTab> {
     );
   }
 
-  // ✅ Month/Year Filter Dropdowns
-  Widget _buildMonthYearFilter(ThemeData theme) {
+  // Month/Year Filter Dropdowns
+  Widget _buildMonthYearFilter(ThemeData theme, S string) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
@@ -162,7 +172,7 @@ class _RevenueTabState extends State<RevenueTab> {
             child: DropdownButtonFormField<int>(
               value: _selectedMonth,
               decoration: InputDecoration(
-                labelText: 'Month',
+                labelText: string.month,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 12.w,
                   vertical: 8.h,
@@ -175,7 +185,7 @@ class _RevenueTabState extends State<RevenueTab> {
                 return DropdownMenuItem(
                   value: month,
                   child: Text(
-                    _getMonthName(month),
+                    _getMonthName(month, string),
                     style: TextStyle(fontSize: 14.sp),
                   ),
                 );
@@ -199,7 +209,7 @@ class _RevenueTabState extends State<RevenueTab> {
             child: DropdownButtonFormField<int>(
               value: _selectedYear,
               decoration: InputDecoration(
-                labelText: 'Year',
+                labelText: string.year,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 12.w,
                   vertical: 8.h,
@@ -237,8 +247,8 @@ class _RevenueTabState extends State<RevenueTab> {
       children: [
         Expanded(
           child: _buildRevenueCard(
-            'All-Time Revenue',
-            '${report.totalAllTimeRevenue.toStringAsFixed(0)} EGP',
+            string.allTimeRevenue,
+            '${report.totalAllTimeRevenue.toStringAsFixed(0)} ${string.egp}',
             Icons.account_balance_wallet,
             theme.colorScheme.primary,
             theme,
@@ -247,8 +257,8 @@ class _RevenueTabState extends State<RevenueTab> {
         SizedBox(width: 16.w),
         Expanded(
           child: _buildRevenueCard(
-            '${_getMonthName(_selectedMonth)} ${_selectedYear}',
-            '${report.totalMonthRevenue.toStringAsFixed(0)} EGP',
+            '${_getMonthName(_selectedMonth, string)} ${_selectedYear}',
+            '${report.totalMonthRevenue.toStringAsFixed(0)} ${string.egp}',
             Icons.calendar_today,
             Colors.green,
             theme,
@@ -297,13 +307,13 @@ class _RevenueTabState extends State<RevenueTab> {
     );
   }
 
-  Widget _buildRevenueChart(RevenueReportModel report, ThemeData theme) {
+  Widget _buildRevenueChart(RevenueReportModel report, ThemeData theme, S string) {
     if (report.weeklyBreakdown.isEmpty) {
       return Container(
         height: 200.h,
         alignment: Alignment.center,
         child: Text(
-          'No data available for ${_getMonthName(_selectedMonth)} ${_selectedYear}',
+          string.noDataForMonth('${_getMonthName(_selectedMonth, string)} ${_selectedYear}'),
           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
           textAlign: TextAlign.center,
         ),
@@ -329,7 +339,7 @@ class _RevenueTabState extends State<RevenueTab> {
             touchTooltipData: BarTouchTooltipData(
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 return BarTooltipItem(
-                  '${rod.toY.toStringAsFixed(0)} EGP',
+                  '${rod.toY.toStringAsFixed(0)} ${string.egp}',
                   const TextStyle(color: Colors.white),
                 );
               },
@@ -399,7 +409,7 @@ class _RevenueTabState extends State<RevenueTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Weekly Details',
+          string.weeklyDetails,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -423,7 +433,7 @@ class _RevenueTabState extends State<RevenueTab> {
                   ),
                 ),
                 Text(
-                  '${week.revenue.toStringAsFixed(0)} EGP',
+                  '${week.revenue.toStringAsFixed(0)} ${string.egp}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,

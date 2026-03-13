@@ -4,10 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/widgets/custom_avatar.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
-import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_event.dart';
-import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_state.dart';
+import 'package:sports_in/features/main/profile/view/widgets/connections_shimmer.dart';
+import 'package:sports_in/features/main/profile/view_model/connection bloc/connections_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/connection bloc/connections_event.dart';
+import 'package:sports_in/features/main/profile/view_model/connection bloc/connections_state.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class ConnectionsScreen extends StatelessWidget {
   const ConnectionsScreen({super.key});
@@ -21,16 +24,44 @@ class ConnectionsScreen extends StatelessWidget {
   }
 }
 
-class _ConnectionsView extends StatelessWidget {
+class _ConnectionsView extends StatefulWidget {
   const _ConnectionsView();
+
+  @override
+  State<_ConnectionsView> createState() => _ConnectionsViewState();
+}
+
+class _ConnectionsViewState extends State<_ConnectionsView> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Trigger load-more when within 200px of the bottom
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<ConnectionsBloc>().add(LoadMoreRequests());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Connections'),
+        title: Text(strings.connections),
         centerTitle: true,
       ),
       body: BlocConsumer<ConnectionsBloc, ConnectionsState>(
@@ -45,10 +76,15 @@ class _ConnectionsView extends StatelessWidget {
           }
         },
         builder: (context, state) {
+          // ── Loading ─────────────────────────────────────────────────────
           if (state is ConnectionsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              child: ConnectionsShimmer(),
+            );
           }
 
+          // ── Error ───────────────────────────────────────────────────────
           if (state is ConnectionsError) {
             return Center(
               child: Column(
@@ -62,46 +98,26 @@ class _ConnectionsView extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () =>
                         context.read<ConnectionsBloc>().add(LoadConnections()),
-                    child: const Text('Retry'),
+                    child: Text(strings.retry),
                   ),
                 ],
               ),
             );
           }
 
+          // ── Loaded ──────────────────────────────────────────────────────
           if (state is ConnectionsLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async =>
-                  context.read<ConnectionsBloc>().add(LoadConnections()),
-              child: CustomScrollView(
-                slivers: [
-                  // ── Pending Requests Section ──────────────────────────────
-                  if (state.requests.isNotEmpty) ...[
-                    SliverToBoxAdapter(
-                      child: _SectionHeader(
-                        title: 'New Connection Requests',
-                        count: state.requests.length,
-                      ),
-                    ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => _RequestTile(
-                          request: state.requests[index],
-                        ),
-                        childCount: state.requests.length,
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                        child: Divider(
-                            height: 1,
-                            color: theme.colorScheme.outlineVariant)),
-                    SliverToBoxAdapter(child: SizedBox(height: 8.h)),
-                  ],
+            final bloc = context.read<ConnectionsBloc>();
 
-                  // ── Contacts Section ──────────────────────────────────────
+            return RefreshIndicator(
+              onRefresh: () async => bloc.add(LoadConnections()),
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  // ── 1. Contacts (top) ─────────────────────────────────
                   SliverToBoxAdapter(
                     child: _SectionHeader(
-                      title: 'My Contacts',
+                      title: strings.myContacts,
                       count: state.contacts.length,
                     ),
                   ),
@@ -112,21 +128,110 @@ class _ConnectionsView extends StatelessWidget {
                             horizontal: 16.w, vertical: 32.h),
                         child: Center(
                           child: Text(
-                            'No contacts yet',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: ColorManager.hintTextColor),
+                            strings.noContactsYet,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: ColorManager.hintTextColor,
+                            ),
                           ),
                         ),
                       ),
                     )
                   else
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) =>
-                            _ContactTile(contact: state.contacts[index]),
-                        childCount: state.contacts.length,
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _ContactCard(
+                            contact: state.contacts[index],
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.userProfile,
+                              arguments: state.contacts[index].id,
+                            ),
+                          ),
+                          childCount: state.contacts.length,
+                        ),
+                      ),
+                    ),
+
+                  // Divider between sections
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Divider(height: 1.h,color: theme.colorScheme.onError,),
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+
+                  // ── 2. Connection Requests (bottom, paginated) ─────────
+                  if (state.requests.isNotEmpty ||
+                      state.hasMoreRequests) ...[
+                    SliverToBoxAdapter(
+                      child: _SectionHeader(
+                        title: strings.newConnectionRequests,
+                        count: state.requests.length,
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final request = state.requests[index];
+                            return _RequestCard(
+                              request: request,
+                              onAccept: () => bloc.add(RespondToRequest(
+                                  senderId: request.id, status: 'Accepted')),
+                              onReject: () => bloc.add(RespondToRequest(
+                                  senderId: request.id, status: 'Rejected')),
+                            );
+                          },
+                          childCount: state.requests.length,
+                        ),
+                      ),
+                    ),
+
+                    // Load-more indicator at the very bottom of requests
+                    if (state.isLoadingMoreRequests)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: const Center(
+                              child: CircularProgressIndicator()),
+                        ),
+                      ),
+
+                    // "No more" hint when everything is loaded
+                    if (!state.hasMoreRequests &&
+                        !state.isLoadingMoreRequests &&
+                        state.requests.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          child: Center(
+                            child: Text(
+                              strings.noMoreRequests,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: ColorManager.hintTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ] else
+                    // Empty requests state
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 24.h),
+                        child: Center(
+                          child: Text(
+                            strings.noConnectionRequests,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: ColorManager.hintTextColor,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
 
@@ -143,12 +248,11 @@ class _ConnectionsView extends StatelessWidget {
   }
 }
 
-// ── Section Header ────────────────────────────────────────────────────────────
+// ── Section Header ─────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   final String title;
   final int count;
-
   const _SectionHeader({required this.title, required this.count});
 
   @override
@@ -158,12 +262,9 @@ class _SectionHeader extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
       child: Row(
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(title,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           SizedBox(width: 8.w),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
@@ -185,202 +286,199 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ── Request Tile ─────────────────────────────────────────────────────────────
+// ── Contact Card ───────────────────────────────────────────────────────────────
 
-class _RequestTile extends StatelessWidget {
-  final ConnectionRequest request;
-
-  const _RequestTile({required this.request});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-      child: Row(
-        children: [
-          _Avatar(imageUrl: request.profilePictureUrl, name: request.fullName),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  request.fullName,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  'Wants to connect with you',
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: ColorManager.hintTextColor),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 8.w),
-          // Accept
-          _ActionButton(
-            label: 'Accept',
-            isPrimary: true,
-            onPressed: () {
-              context.read<ConnectionsBloc>().add(
-                    RespondToRequest(
-                        senderId: request.id, status: 'Accepted'),
-                  );
-            },
-          ),
-          SizedBox(width: 6.w),
-          // Reject
-          _ActionButton(
-            label: 'Reject',
-            isPrimary: false,
-            onPressed: () {
-              context.read<ConnectionsBloc>().add(
-                    RespondToRequest(
-                        senderId: request.id, status: 'Rejected'),
-                  );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Contact Tile ─────────────────────────────────────────────────────────────
-
-class _ContactTile extends StatelessWidget {
+class _ContactCard extends StatelessWidget {
   final ContactItem contact;
-
-  const _ContactTile({required this.contact});
+  final VoidCallback onTap;
+  const _ContactCard({required this.contact, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context);
 
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, AppRoutes.userProfile,
-            arguments: contact.id);
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-        child: Row(
-          children: [
-            Stack(
-              children: [
-                _Avatar(imageUrl: contact.imageUrl, name: contact.title),
-                if (contact.isOnline)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 10.w,
-                      height: 10.w,
-                      decoration: BoxDecoration(
-                        color: ColorManager.success,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: theme.colorScheme.surface, width: 1.5),
-                      ),
-                    ),
-                  ),
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.h),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
             ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Text(
-                contact.title,
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (contact.isOnline)
-              Text(
-                'Online',
-                style: theme.textTheme.labelSmall
-                    ?.copyWith(color: ColorManager.success),
-              ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ── Shared Widgets ────────────────────────────────────────────────────────────
-
-class _Avatar extends StatelessWidget {
-  final String? imageUrl;
-  final String name;
-
-  const _Avatar({this.imageUrl, required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final initials =
-        name.trim().isEmpty ? '?' : name.trim()[0].toUpperCase();
-
-    return CircleAvatar(
-      radius: 22.r,
-      backgroundColor: theme.colorScheme.primary.withOpacity(0.15),
-      backgroundImage:
-          (imageUrl != null && imageUrl!.isNotEmpty) ? NetworkImage(imageUrl!) : null,
-      child: (imageUrl == null || imageUrl!.isEmpty)
-          ? Text(initials,
-              style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.sp))
-          : null,
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final bool isPrimary;
-  final VoidCallback onPressed;
-
-  const _ActionButton({
-    required this.label,
-    required this.isPrimary,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    if (isPrimary) {
-      return FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-          minimumSize: Size(60.w, 32.h),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Stack(
+                children: [
+                  CustomAvatar(
+                      imageUrl: contact.imageUrl,
+                      name: contact.title,
+                      radius: 32.r),
+                  if (contact.isOnline)
+                    Positioned(
+                      right: 1,
+                      bottom: 1,
+                      child: Container(
+                        width: 13.w,
+                        height: 13.w,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: theme.colorScheme.surface, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      contact.title,
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (contact.isOnline) ...[
+                      SizedBox(height: 4.h),
+                      Text(
+                        strings.online,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.green, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded,
+                  color: theme.colorScheme.onSurfaceVariant, size: 22.sp),
+            ],
+          ),
         ),
-        child: Text(label, style: TextStyle(fontSize: 12.sp)),
-      );
-    }
-
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-        minimumSize: Size(60.w, 32.h),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        foregroundColor: theme.colorScheme.error,
-        side: BorderSide(color: theme.colorScheme.error.withOpacity(0.6)),
       ),
-      child: Text(label, style: TextStyle(fontSize: 12.sp)),
+    );
+  }
+}
+
+// ── Request Card ───────────────────────────────────────────────────────────────
+
+class _RequestCard extends StatelessWidget {
+  final ConnectionRequest request;
+  final VoidCallback onAccept;
+  final VoidCallback onReject;
+  const _RequestCard(
+      {required this.request,
+      required this.onAccept,
+      required this.onReject});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final strings = S.of(context);
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.userProfile,
+          arguments: request.id),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.h),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomAvatar(
+                  imageUrl: request.profilePictureUrl,
+                  name: request.fullName,
+                  radius: 32.r),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      request.fullName,
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      strings.wantsToConnect,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onTertiaryContainer,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(height: 16.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: onAccept,
+                            style: FilledButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.r)),
+                            ),
+                            child: Text(strings.accept,
+                                style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: onReject,
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              foregroundColor: theme.colorScheme.error,
+                              side: BorderSide(
+                                  color: theme.colorScheme.error
+                                      .withOpacity(0.6)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.r)),
+                            ),
+                            child: Text(strings.reject,
+                                style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -203,3 +203,14 @@ class CoursesError extends CoursesState {
   @override
   List<Object> get props => [message];
 }
+
+class LessonsReorderSuccess extends CoursesState {
+  final List<LessonModel> lessons;
+  const LessonsReorderSuccess({required this.lessons});
+  @override
+  List<Object> get props => [lessons];
+}
+
+class LessonsReorderLoading extends CoursesState {
+  const LessonsReorderLoading();
+}

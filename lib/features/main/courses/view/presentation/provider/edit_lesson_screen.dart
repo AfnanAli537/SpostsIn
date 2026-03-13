@@ -11,6 +11,7 @@ import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 
 class EditLessonScreen extends StatefulWidget {
   final LessonModel lesson;
@@ -51,6 +52,33 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
     super.dispose();
   }
 
+  Future<void> _showError(String errorKey) async {
+    if (!mounted) return;
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      errorKey,
+    );
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: msg,
+        backgroundColor: Colors.red,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
+  Future<void> _showInfo(String message) async {
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: Colors.blue,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
   Future<void> _pickVideo() async {
     try {
       final XFile? video = await _picker.pickVideo(
@@ -62,12 +90,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
         final fileSize = await file.length();
 
         if (fileSize > 500 * 1024 * 1024) {
-          if (mounted) {
-            Fluttertoast.showToast(
-              msg: 'File size exceeds 500MB',
-              backgroundColor: Colors.red,
-            );
-          }
+          await _showError('file_size_exceeds_limit');
           return;
         }
 
@@ -80,10 +103,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
         await _extractVideoInfo(file);
       }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: 'Error picking video: $e',
-        backgroundColor: Colors.red,
-      );
+      await _showError('error_picking_video');
       setState(() {
         _isExtracting = false;
       });
@@ -111,11 +131,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
       debugPrint('✅ Video duration extracted: $_newVideoDuration seconds');
     } catch (e) {
       debugPrint('❌ Error extracting video info: $e');
-      Fluttertoast.showToast(
-        msg: 'Failed to read video duration',
-        backgroundColor: Colors.red,
-        toastLength: Toast.LENGTH_LONG,
-      );
+      await _showError('failed_to_read_video_duration');
       setState(() {
         _newVideoDuration = null;
         _isExtracting = false;
@@ -142,11 +158,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
       ),
     );
 
-    Fluttertoast.showToast(
-      msg: 'Updating lesson...',
-      backgroundColor: Colors.blue,
-      toastLength: Toast.LENGTH_LONG,
-    );
+    await _showInfo(S.of(context).updatingLesson);
 
     if (mounted) {
       Navigator.pop(context, true);
@@ -174,17 +186,14 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
     final string = S.of(context);
 
     return BlocListener<CoursesBloc, CoursesState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is CoursesError) {
-          Fluttertoast.showToast(
-            msg: state.message,
-            backgroundColor: Colors.red,
-          );
+          await _showError(state.message);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Edit Lesson'),
+          title: Text(string.editLesson),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -196,17 +205,17 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Current or New Video
-                  _buildVideoSection(theme),
+                  _buildVideoSection(theme, string),
                   SizedBox(height: 24.h),
 
                   // Title field
-                  _buildLabel('Lesson Title', theme),
+                  _buildLabel(string.lessonTitle, theme),
                   AuthTextField(
                     controller: _titleController,
-                    hintText: 'Enter lesson title',
+                    hintText: string.enterLessonTitleHint,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Title is required';
+                        return string.titleRequired;
                       }
                       return null;
                     },
@@ -217,11 +226,11 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
                   _buildLabel(string.description, theme),
                   AuthTextField(
                     controller: _descriptionController,
-                    hintText: 'Enter description',
+                    hintText: string.enterDescriptionHint,
                     maxLines: 4,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Description is required';
+                        return string.descriptionRequired;
                       }
                       return null;
                     },
@@ -247,7 +256,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
                             ),
                             SizedBox(width: 8.w),
                             Text(
-                              'Lesson order: ${widget.lesson.order}',
+                              string.lessonOrder(widget.lesson.order.toString()),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 color: theme.onSurface,
@@ -258,7 +267,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          'Duration: ${_formatDuration(_newVideoDuration ?? widget.lesson.duration)}',
+                          string.duration(_formatDuration(_newVideoDuration ?? widget.lesson.duration)),
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: _newVideo != null ? Colors.green : theme.onSurface,
@@ -271,7 +280,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
 
                   // Update button
                   CustomElevatedButton(
-                    text: 'Update Lesson',
+                    text: string.updateLesson,
                     enabled: !_isExtracting,
                     onPressed: _updateLesson,
                   ),
@@ -281,7 +290,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
                   if (_newVideo != null)
                     Center(
                       child: Text(
-                        'New video will be uploaded',
+                        string.newVideoWillBeUploaded,
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: Colors.green,
@@ -298,7 +307,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
     );
   }
 
-  Widget _buildVideoSection(ColorScheme theme) {
+  Widget _buildVideoSection(ColorScheme theme, S string) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -306,7 +315,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Video',
+              string.video,
               style: GoogleFonts.poppins(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
@@ -316,7 +325,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
             TextButton.icon(
               onPressed: _isExtracting ? null : _pickVideo,
               icon: Icon(Icons.upload_file, size: 18.sp),
-              label: Text(_newVideo != null ? 'Change Video' : 'Replace Video'),
+              label: Text(_newVideo != null ? string.changeVideo : string.replaceVideo),
             ),
           ],
         ),
@@ -333,13 +342,13 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
               width: 2,
             ),
           ),
-          child: _buildVideoContent(theme),
+          child: _buildVideoContent(theme, string),
         ),
       ],
     );
   }
 
-  Widget _buildVideoContent(ColorScheme theme) {
+  Widget _buildVideoContent(ColorScheme theme, S string) {
     if (_isExtracting) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -347,7 +356,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
           const CircularProgressIndicator(),
           SizedBox(height: 8.h),
           Text(
-            'Extracting duration...',
+            string.extractingDuration,
             style: TextStyle(fontSize: 12.sp, color: theme.primary),
           ),
         ],
@@ -362,7 +371,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
             Icon(Icons.video_file, size: 40.sp, color: Colors.green),
             SizedBox(height: 8.h),
             Text(
-              'New video selected',
+              string.newVideoSelected,
               style: TextStyle(
                 fontSize: 12.sp,
                 color: Colors.green,
@@ -389,7 +398,7 @@ class _EditLessonScreenState extends State<EditLessonScreen> {
           Icon(Icons.videocam, size: 40.sp, color: theme.primary),
           SizedBox(height: 8.h),
           Text(
-            'Current video',
+            string.currentVideo,
             style: TextStyle(fontSize: 12.sp, color: theme.onSurface),
           ),
           SizedBox(height: 4.h),

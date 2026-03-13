@@ -155,7 +155,7 @@ class _AccountSwitcherBottomSheetState
             child: Row(
               children: [
                 Text(
-                  'Switch Account',
+                  string.switchAccount,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -208,7 +208,7 @@ class _AccountSwitcherBottomSheetState
                 );
               },
               icon: const Icon(Icons.add),
-              label: const Text('Add Account'),
+              label: Text(string.addAccount),
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 minimumSize: Size(double.infinity, 48.h),

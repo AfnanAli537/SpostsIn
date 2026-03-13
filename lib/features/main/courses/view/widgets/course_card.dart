@@ -4,12 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class CourseCard extends StatelessWidget {
   final CourseModel course;
   final VoidCallback onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final S string; 
 
   const CourseCard({
     super.key,
@@ -17,6 +19,7 @@ class CourseCard extends StatelessWidget {
     required this.onTap,
     this.onEdit,
     this.onDelete,
+    required this.string, 
   });
 
   @override
@@ -62,16 +65,9 @@ class CourseCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-          child: Image.network(
-            course.thumbnailUrl ?? '',
+          child: _buildThumbnailImage(
             height: 120.h,
             width: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              height: 120.h,
-              color: Colors.grey[300],
-              child: Icon(Icons.image_not_supported, size: 40.sp),
-            ),
           ),
         ),
         Padding(
@@ -87,16 +83,9 @@ class CourseCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.horizontal(left: Radius.circular(12.r)),
-          child: Image.network(
-            course.thumbnailUrl ?? '',
+          child: _buildThumbnailImage(
             width: 120.w,
             height: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              width: 120.w,
-              color: Colors.grey[300],
-              child: Icon(Icons.image_not_supported, size: 40.sp),
-            ),
           ),
         ),
         Expanded(
@@ -106,6 +95,72 @@ class CourseCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildThumbnailImage({
+    required double? width,
+    required double? height,
+  }) {
+    if (course.thumbnailUrl == null || course.thumbnailUrl!.isEmpty) {
+      return _buildPlaceholder(width: width, height: height);
+    }
+
+    return Image.network(
+      course.thumbnailUrl!,
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          color: Colors.grey[300],
+          width: width,
+          height: height,
+          child: Center(
+            child: SizedBox(
+              width: 24.w,
+              height: 24.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.w,
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            ),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) =>
+          _buildPlaceholder(width: width, height: height),
+    );
+  }
+
+  Widget _buildPlaceholder({
+    required double? width,
+    required double? height,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      color: Colors.grey[300],
+      child: Center(
+        child: Icon(
+          Icons.image_not_supported,
+          size: 40.sp,
+          color: Colors.grey[600],
+        ),
+      ),
     );
   }
 
@@ -155,7 +210,7 @@ class CourseCard extends StatelessWidget {
           ),
           SizedBox(height: 4.h),
           Text(
-            '${_formatProgress(course.progress)}% complete',
+            string.completePercentage(_formatProgress(course.progress)),
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 12.sp),
           ),
           SizedBox(height: 8.h),
@@ -222,13 +277,17 @@ class CourseCard extends StatelessWidget {
       children: [
         _buildStatItem(
           Icons.play_circle_outline,
-          '${course.lessonsCount} lessons',
+          string.lessonsCount(course.lessonsCount), 
           theme,
         ),
-        _buildStatItem(Icons.access_time, course.formattedDuration, theme),
+        _buildStatItem(
+          Icons.access_time, 
+          course.formattedDuration, 
+          theme,
+        ),
         _buildStatItem(
           Icons.person,
-          '${course.enrolledUsersCount} enrolled',
+          string.enrolledCount(course.enrolledUsersCount), 
           theme,
         ),
       ],
@@ -250,12 +309,10 @@ class CourseCard extends StatelessWidget {
   }
 
   Widget _buildBottomRow(ThemeData theme) {
-    // Case 1: Course is enrolled – no action needed (could show something else, but empty)
     if (course.isEnrolled) {
       return const SizedBox.shrink();
     }
 
-    // Case 2: User is owner – show edit/delete buttons
     if (course.isOwner) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -267,7 +324,7 @@ class CourseCard extends StatelessWidget {
               onPressed: onEdit,
               padding: EdgeInsets.all(4.w),
               constraints: const BoxConstraints(),
-              tooltip: 'Edit',
+              tooltip: string.edit, 
             ),
           if (onDelete != null)
             IconButton(
@@ -276,13 +333,12 @@ class CourseCard extends StatelessWidget {
               onPressed: onDelete,
               padding: EdgeInsets.all(4.w),
               constraints: const BoxConstraints(),
-              tooltip: 'Delete',
+              tooltip: string.delete, 
             ),
         ],
       );
     }
 
-    // Case 3: Not enrolled, not owner – show price + enroll button
     return BlocBuilder<CoursesBloc, CoursesState>(
       builder: (context, state) {
         final isLoading =
@@ -291,10 +347,9 @@ class CourseCard extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Price
             Flexible(
               child: Text(
-                course.isFree ? 'FREE' : '${course.price} EGP',
+                course.isFree ? string.free : '${course.price} ${string.egp}', 
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: course.isFree ? Colors.green : null,
@@ -302,7 +357,6 @@ class CourseCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            // Enroll button
             SizedBox(
               height: 30.h,
               child: ElevatedButton(
@@ -327,7 +381,7 @@ class CourseCard extends StatelessWidget {
                         height: 16.w,
                         child: const CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text('Enroll', style: TextStyle(fontSize: 12.sp,color: theme.colorScheme.onPrimary)),
+                    : Text(string.enroll, style: TextStyle(fontSize: 12.sp, color: theme.colorScheme.onPrimary)), 
               ),
             ),
           ],

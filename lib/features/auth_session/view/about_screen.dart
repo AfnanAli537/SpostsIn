@@ -13,7 +13,7 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   String _version = '1.0.0';
-  String _lastUpdated = 'May 15, 2024';
+  final String _lastUpdated = 'May 15, 2024';
 
   @override
   void initState() {

@@ -1,13 +1,3 @@
-// course_detail_screen.dart
-//
-// ONE CHANGE from the original:
-//   In the BlocConsumer listener, EnrollmentSuccess now does:
-//     Navigator.pop(context, true)   ← signals "enrolled" to the caller
-//   instead of re-fetching course detail in place.
-//
-// All callers (_navigateToCourseDetail) check the returned bool and only
-// refresh their data when it is true.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,7 +37,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
   bool _isEditMode = false;
   bool _hasUnsavedChanges = false;
-  bool _lessonsReordered = false;
   File? _newThumbnail;
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
@@ -85,7 +74,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _currentPlayingLesson = null;
         _isEditMode = false;
         _hasUnsavedChanges = false;
-        _lessonsReordered = false;
         _newThumbnail = null;
       });
       context.read<CoursesBloc>().add(
@@ -97,7 +85,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   void _updateTabController(CourseModel course) {
     if (_course?.id != course.id) {
       _allLessons = [];
-      _lessonsReordered = false;
       _currentPlayingLesson = null;
     }
 
@@ -106,10 +93,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _course!.isEnrolled != course.isEnrolled) {
       _tabController.dispose();
       int length = 2;
-      if (course.isOwner)
+      if (course.isOwner) {
         length = 4;
-      else if (course.isEnrolled)
-        length = 3;
+      } else if (course.isEnrolled)
+      { length = 3;}
       _tabController = TabController(length: length, vsync: this);
     }
 
@@ -153,10 +140,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     }
   }
 
-  Future<void> _saveAllChanges(CourseModel course) async {
+  Future<void> _saveAllChanges(CourseModel course, S string) async {
     if (_titleController.text.trim().isEmpty) {
       Fluttertoast.showToast(
-        msg: 'Title cannot be empty',
+        msg: string.titleCannotBeEmpty,
         backgroundColor: Colors.orange,
       );
       return;
@@ -165,7 +152,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       final price = double.tryParse(_priceController.text);
       if (price == null || price < 0) {
         Fluttertoast.showToast(
-          msg: 'Invalid price',
+          msg: string.invalidPrice,
           backgroundColor: Colors.orange,
         );
         return;
@@ -188,55 +175,25 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       _newThumbnail = null;
     });
     Fluttertoast.showToast(
-      msg: 'Saving changes...',
+      msg: string.savingChanges,
       backgroundColor: Colors.blue,
     );
   }
 
-  void _saveReorderedLessons() {
-    for (int i = 0; i < _allLessons.length; i++) {
-      final l = _allLessons[i];
-      if (l.order != i + 1) {
-        context.read<CoursesBloc>().add(
-          UpdateLesson(
-            lessonId: l.id,
-            title: l.title,
-            description: l.description ?? '',
-            duration: l.duration,
-            order: i + 1,
-            video: l.videoUrl ?? '',
-          ),
-        );
-      }
-    }
-    setState(() => _lessonsReordered = false);
-    Fluttertoast.showToast(
-      msg: 'Saving lesson order...',
-      backgroundColor: Colors.green,
-    );
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        context.read<CoursesBloc>().add(
-          FetchCourseLessons(courseId: widget.courseId),
-        );
-      }
-    });
-  }
-
-  Future<void> _deleteLesson(LessonModel lesson) async {
+  Future<void> _deleteLesson(LessonModel lesson, S string) async {
     final confirmed = await InlineEditDialog.showConfirmation(
       context: context,
-      title: 'Delete Lesson',
-      message:
-          'Are you sure you want to delete "${lesson.title}"? This action cannot be undone.',
-      confirmText: 'Delete',
+      string: string,
+      title: string.deleteLesson,
+      message: string.deleteLessonConfirmation(lesson.title),
+      confirmText: string.delete,
       isDestructive: true,
     );
 
     if (confirmed) {
       context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
       Fluttertoast.showToast(
-        msg: 'Deleting lesson...',
+        msg: string.deletingLesson,
         backgroundColor: Colors.orange,
       );
       Future.delayed(const Duration(seconds: 1), () {
@@ -269,19 +226,19 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final string = S.of(context);
+    
     return BlocConsumer<CoursesBloc, CoursesState>(
       listener: (context, state) {
         if (state is EnrollmentSuccess) {
           Fluttertoast.showToast(
-            msg: 'Enrolled successfully',
+            msg: string.enrolledSuccessfully,
             backgroundColor: Colors.green,
           );
-          // ✅ Pop with true so the calling tab knows to refresh its data.
-          // Do NOT re-fetch course detail here — the screen is closing.
           Navigator.pop(context, true);
         } else if (state is CourseDeleted) {
           Fluttertoast.showToast(
-            msg: 'Course deleted',
+            msg: string.courseDeleted,
             backgroundColor: Colors.green,
           );
           Navigator.pop(context, true);
@@ -305,7 +262,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         if (state is LessonsLoaded && state.courseId == widget.courseId) {
           if (state.lessons != _allLessons) {
             _allLessons = List.from(state.lessons);
-            _lessonsReordered = false;
           }
         }
 
@@ -326,7 +282,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            actions: _buildAppBarActions(course),
+            actions: _buildAppBarActions(course, string),
           ),
           body: NestedScrollView(
             headerSliverBuilder: (_, __) => [
@@ -352,61 +308,50 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                     labelColor: Theme.of(context).colorScheme.primary,
                     unselectedLabelColor: Colors.grey,
                     indicatorSize: TabBarIndicatorSize.label,
-                    tabs: _buildTabs(course),
+                    tabs: _buildTabs(course, string),
                   ),
                 ),
               ),
             ],
             body: TabBarView(
               controller: _tabController,
-              children: _buildTabViews(course),
+              children: _buildTabViews(course, string),
             ),
           ),
-          // ✅ Enroll button: pass null onPressed while loading to disable it
           bottomNavigationBar: (!course.isOwner && !course.isEnrolled)
-              ? _buildEnrollButton(course)
+              ? _buildEnrollButton(course, string)
               : null,
         );
       },
     );
   }
 
-  List<Widget> _buildTabs(CourseModel course) {
+  List<Widget> _buildTabs(CourseModel course, S string) {
     final tabs = [
-      const Tab(text: 'Lessons'),
-      Tab(text: S.of(context).description),
+      Tab(text: string.lessons),
+      Tab(text: string.description),
     ];
     if (course.isOwner) {
-      tabs.addAll([const Tab(text: 'Enrolled'), const Tab(text: 'Revenue')]);
+      tabs.addAll([Tab(text: string.enrolled), Tab(text: string.revenue)]);
     } else if (course.isEnrolled) {
-      tabs.add(const Tab(text: 'Progress'));
+      tabs.add(Tab(text: string.progress));
     }
     return tabs;
   }
-
-  List<Widget> _buildTabViews(CourseModel course) {
+  
+  List<Widget> _buildTabViews(CourseModel course, S string) {
     final views = <Widget>[
       CourseLessonsTab(
         course: course,
         lessons: _allLessons,
         currentPlayingLesson: _currentPlayingLesson,
         isEditMode: _isEditMode,
-        lessonsReordered: _lessonsReordered,
         onRefresh: () => context.read<CoursesBloc>().add(
               FetchCourseLessons(courseId: widget.courseId),
             ),
-        onReorder: (oldI, newI) {
-          setState(() {
-            if (oldI < newI) newI--;
-            final l = _allLessons.removeAt(oldI);
-            _allLessons.insert(newI, l);
-            _lessonsReordered = true;
-          });
-        },
-        onSaveReorder: _saveReorderedLessons,
         onLessonTap: (l) => setState(() => _currentPlayingLesson = l),
         onUpdateLesson: _navigateToEditLesson,
-        onDeleteLesson: _deleteLesson,
+        onDeleteLesson: (lesson) => _deleteLesson(lesson, string),
       ),
       CourseDescriptionTab(
         course: course,
@@ -419,7 +364,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         isFree: _isFreeEdit,
         onPickThumbnail: _pickThumbnail,
         onCancelEdit: _cancelEditMode,
-        onSaveChanges: () => _saveAllChanges(course),
+        onSaveChanges: () => _saveAllChanges(course, string),
         onFreeChanged: (v) => _isFreeEdit = v,
         onFieldChanged: _onFieldChanged,
       ),
@@ -432,8 +377,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     }
     return views;
   }
-
-  List<Widget> _buildAppBarActions(CourseModel course) {
+  
+  List<Widget> _buildAppBarActions(CourseModel course, S string) {
     if (!course.isOwner) return [];
     return [
       PopupMenuButton<String>(
@@ -441,7 +386,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           if (value == 'edit') {
             _isEditMode ? _cancelEditMode() : _enterEditMode(course);
           } else if (value == 'delete') {
-            _showDeleteConfirmation(course.id);
+            _showDeleteConfirmation(course.id, string);
           } else if (value == 'add_lesson') {
             Navigator.push(
               context,
@@ -458,28 +403,28 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           }
         },
         itemBuilder: (_) => [
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'add_lesson',
             child: Row(children: [
-              Icon(Icons.video_library),
-              SizedBox(width: 8),
-              Text('Add Lesson'),
+              const Icon(Icons.video_library),
+              SizedBox(width: 8.w),
+              Text(string.addLesson),
             ]),
           ),
           PopupMenuItem(
             value: 'edit',
             child: Row(children: [
               Icon(_isEditMode ? Icons.close : Icons.edit),
-              const SizedBox(width: 8),
-              Text(_isEditMode ? 'Cancel Edit' : 'Edit Course'),
+              SizedBox(width: 8.w),
+              Text(_isEditMode ? string.cancelEdit : string.editCourse),
             ]),
           ),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'delete',
             child: Row(children: [
-              Icon(Icons.delete, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Delete', style: TextStyle(color: Colors.red)),
+              const Icon(Icons.delete, color: Colors.red),
+              SizedBox(width: 8.w),
+              Text(string.delete, style: const TextStyle(color: Colors.red)),
             ]),
           ),
         ],
@@ -487,7 +432,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     ];
   }
 
-  Widget _buildEnrollButton(CourseModel course) {
+  Widget _buildEnrollButton(CourseModel course, S string) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
@@ -506,8 +451,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             final isLoading = state is EnrollmentLoading;
             return CustomElevatedButton(
               text: course.isFree
-                  ? 'Enroll Now'
-                  : 'Enroll for ${course.price} EGP',
+                  ? string.enrollNow
+                  : string.enrollForPrice('${course.price} ${string.egp}'),
               isLoading: isLoading,
               onPressed: isLoading
                   ? (){}
@@ -521,15 +466,15 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     );
   }
 
-  void _showDeleteConfirmation(String courseId) {
+  void _showDeleteConfirmation(String courseId, S string) {
     ConfirmationDialog.show(
       context: context,
-      title: 'Delete Course',
-      message: 'Are you sure you want to delete this course?',
+      title: string.deleteCourse,
+      message: string.deleteCourseConfirmation,
       onConfirm: () =>
           context.read<CoursesBloc>().add(DeleteCourse(courseId: courseId)),
-      confirmText: S.of(context).delete,
-      cancelText: S.of(context).cancel,
+      confirmText: string.delete,
+      cancelText: string.cancel,
       icon: Icons.delete_outline,
       isDestructive: true,
     );

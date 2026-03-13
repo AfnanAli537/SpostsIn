@@ -5,12 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_video_info/flutter_video_info.dart'; // <-- new import
+import 'package:flutter_video_info/flutter_video_info.dart';
 
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 
 class UploadLessonScreen extends StatefulWidget {
   final String courseId;
@@ -46,6 +47,44 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
     super.dispose();
   }
 
+  Future<void> _showError(String errorKey) async {
+    if (!mounted) return;
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      errorKey,
+    );
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: msg,
+        backgroundColor: Colors.red,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
+  Future<void> _showWarning(String message) async {
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: Colors.orange,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
+  Future<void> _showInfo(String message) async {
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: Colors.blue,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
   Future<void> _pickVideo() async {
     try {
       final XFile? video = await _picker.pickVideo(
@@ -58,12 +97,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
 
         // Check file size (500 MB limit)
         if (fileSize > 500 * 1024 * 1024) {
-          if (mounted) {
-            Fluttertoast.showToast(
-              msg: 'File size exceeds 500MB',
-              backgroundColor: Colors.red,
-            );
-          }
+          await _showError('file_size_exceeds_limit');
           return;
         }
 
@@ -76,10 +110,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
         await _extractVideoInfo(file);
       }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: 'Error picking video: $e',
-        backgroundColor: Colors.red,
-      );
+      await _showError('error_picking_video');
       setState(() {
         _isExtracting = false;
       });
@@ -110,11 +141,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
       debugPrint('✅ Video duration extracted: $_videoDuration seconds');
     } catch (e) {
       debugPrint('❌ Error extracting video info: $e');
-      Fluttertoast.showToast(
-        msg: 'Failed to read video duration. The file may be corrupted.',
-        backgroundColor: Colors.red,
-        toastLength: Toast.LENGTH_LONG,
-      );
+      await _showError('failed_to_read_video_duration');
       setState(() {
         _videoDuration = null;
         _isExtracting = false;
@@ -127,18 +154,12 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedVideo == null) {
-      Fluttertoast.showToast(
-        msg: 'Please select a video',
-        backgroundColor: Colors.orange,
-      );
+      await _showWarning(S.of(context).pleaseSelectVideo);
       return;
     }
 
     if (_videoDuration == null || _videoDuration! <= 0) {
-      Fluttertoast.showToast(
-        msg: 'Invalid video duration. Please select another video.',
-        backgroundColor: Colors.orange,
-      );
+      await _showWarning(S.of(context).invalidVideoDuration);
       return;
     }
 
@@ -155,11 +176,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
           ),
         );
 
-    Fluttertoast.showToast(
-      msg: 'Uploading lesson in background...',
-      backgroundColor: Colors.blue,
-      toastLength: Toast.LENGTH_LONG,
-    );
+    await _showInfo(S.of(context).uploadingInBackground);
 
     if (mounted) {
       Navigator.pop(context, true);
@@ -188,17 +205,14 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
     final string = S.of(context);
 
     return BlocListener<CoursesBloc, CoursesState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is CoursesError) {
-          Fluttertoast.showToast(
-            msg: state.message,
-            backgroundColor: Colors.red,
-          );
+          await _showError(state.message);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Upload Lesson'),
+          title: Text(string.uploadLesson),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -241,7 +255,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                                         ),
                                         SizedBox(height: 8.h),
                                         Text(
-                                          'Extracting duration...',
+                                          string.extractingDuration,
                                           style: TextStyle(
                                             fontSize: 12.sp,
                                             color: theme.primary,
@@ -268,7 +282,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                                               ),
                                               SizedBox(width: 4.w),
                                               Text(
-                                                'Duration: ${_formatDuration(_videoDuration!)}',
+                                                '${string.duration}: ${_formatDuration(_videoDuration!)}',
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
                                                   color: Colors.green,
@@ -331,7 +345,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                                 ),
                                 SizedBox(height: 12.h),
                                 Text(
-                                  'Upload Video',
+                                  string.uploadVideo,
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     color: Colors.grey[800],
@@ -340,7 +354,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  'Max 500MB',
+                                  string.maxFileSize,
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     color: Colors.grey[600],
@@ -354,13 +368,13 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                   SizedBox(height: 24.h),
 
                   // Title field
-                  _buildLabel('Lesson Title', theme),
+                  _buildLabel(string.lessonTitle, theme),
                   AuthTextField(
                     controller: _titleController,
-                    hintText: 'Enter lesson title',
+                    hintText: string.enterLessonTitleHint,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Title is required';
+                        return string.titleRequired;
                       }
                       return null;
                     },
@@ -371,11 +385,11 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                   _buildLabel(string.description, theme),
                   AuthTextField(
                     controller: _descriptionController,
-                    hintText: 'Enter description',
+                    hintText: string.enterDescriptionHint,
                     maxLines: 4,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Description is required';
+                        return string.descriptionRequired;
                       }
                       return null;
                     },
@@ -399,7 +413,10 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
                         SizedBox(width: 8.w),
                         Expanded(
                           child: Text(
-                            'Lesson order: ${widget.existingLessonsCount + 1} • Duration: ${_videoDuration != null ? _formatDuration(_videoDuration!) : 'Not detected'}',
+                            string.lessonOrderAndDuration(
+                              (widget.existingLessonsCount + 1).toString(),
+                              _videoDuration != null ? _formatDuration(_videoDuration!) : string.notDetected,
+                            ),
                             style: TextStyle(
                               fontSize: 14.sp,
                               color: theme.onSurface,
@@ -413,7 +430,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
 
                   // Upload button
                   CustomElevatedButton(
-                    text: 'Upload Lesson',
+                    text: string.uploadLesson,
                     enabled: !_isExtracting && _videoDuration != null,
                     onPressed: _uploadVideo,
                   ),
@@ -422,7 +439,7 @@ class _UploadLessonScreenState extends State<UploadLessonScreen> {
 
                   Center(
                     child: Text(
-                      'Upload will continue in background',
+                      string.uploadWillContinue,
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: Colors.grey[600],

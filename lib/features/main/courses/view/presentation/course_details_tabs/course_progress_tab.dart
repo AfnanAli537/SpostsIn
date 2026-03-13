@@ -3,27 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class CourseProgressTab extends StatelessWidget {
   final CourseModel course;
 
-  const CourseProgressTab({Key? key, required this.course}) : super(key: key);
+  const CourseProgressTab({super.key, required this.course});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final string = S.of(context);
+    
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProgressCard(theme),
+          _buildProgressCard(theme, string),
           SizedBox(height: 24.h),
           Row(
             children: [
-              Expanded(child: _buildStat('Completed', '${(course.lessonsCount * course.progress / 100).round()}/${course.lessonsCount}', Icons.check_circle, Colors.green, theme)),
+              Expanded(
+                child: _buildStat(
+                  string.completed,
+                  '${(course.lessonsCount * course.progress / 100).round()}/${course.lessonsCount}',
+                  Icons.check_circle,
+                  Colors.green,
+                  theme,
+                ),
+              ),
               SizedBox(width: 16.w),
-              Expanded(child: _buildStat('Time Spent', '${(course.totalDurationHours * course.progress / 100).toStringAsFixed(1)}h', Icons.access_time, Colors.blue, theme)),
+              Expanded(
+                child: _buildStat(
+                  string.timeSpent,
+                  '${(course.totalDurationHours * course.progress / 100).toStringAsFixed(1)}h',
+                  Icons.access_time,
+                  Colors.blue,
+                  theme,
+                ),
+              ),
             ],
           ),
         ],
@@ -31,7 +50,7 @@ class CourseProgressTab extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressCard(ThemeData theme) {
+  Widget _buildProgressCard(ThemeData theme, S string) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
@@ -48,7 +67,12 @@ class CourseProgressTab extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8.h),
-          Text('Course Progress', style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimaryContainer)),
+          Text(
+            string.courseProgress,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+          ),
           SizedBox(height: 16.h),
           LinearProgressIndicator(
             value: course.progress / 100,
@@ -61,7 +85,13 @@ class CourseProgressTab extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(String label, String value, IconData icon, Color color, ThemeData theme) {
+  Widget _buildStat(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    ThemeData theme,
+  ) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
@@ -73,9 +103,18 @@ class CourseProgressTab extends StatelessWidget {
         children: [
           Icon(icon, size: 32.sp, color: color),
           SizedBox(height: 8.h),
-          Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           SizedBox(height: 4.h),
-          Text(label, style: theme.textTheme.bodySmall, textAlign: TextAlign.center),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

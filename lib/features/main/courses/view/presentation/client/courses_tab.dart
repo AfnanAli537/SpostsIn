@@ -8,10 +8,9 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view/widgets/course_card.dart';
-import 'package:sports_in/features/main/courses/view/widgets/courses_search_bar.dart'; // still used? We'll replace it inline.
 import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
-import 'package:sports_in/generated/l10n.dart'; // adjust import if needed
+import 'package:sports_in/generated/l10n.dart';
 
 class CoursesTab extends StatefulWidget {
   const CoursesTab({super.key});
@@ -35,7 +34,7 @@ class CoursesTabState extends State<CoursesTab>
   bool _isLoadingAvailable = false;
   bool _isLoadingEnrolled = false;
 
-  // ----- Filter state (same as opportunities) -----
+  // ----- Filter state -----
   int? _selectedSportTypeId;
   String? _selectedSportName;
 
@@ -57,7 +56,6 @@ class CoursesTabState extends State<CoursesTab>
     };
     return names[key] ?? key;
   }
-  // ------------------------------------------------
 
   @override
   void initState() {
@@ -81,8 +79,6 @@ class CoursesTabState extends State<CoursesTab>
         ? null
         : _searchController.text.trim();
 
-    // TODO: Update your CoursesBloc events to accept sportTypeId.
-    // For now, pass _selectedSportTypeId if the events support it.
     if (mounted) {
       setState(() {
         _isLoadingAvailable = true;
@@ -94,13 +90,13 @@ class CoursesTabState extends State<CoursesTab>
           page: 1,
           size: 10,
           searchTerm: searchTerm,
-          sportTypeId: _selectedSportTypeId, // new param
+          sportTypeId: _selectedSportTypeId,
           isRefresh: true))
       ..add(FetchAvailableCourses(
           page: 1,
           size: 10,
           searchTerm: searchTerm,
-          sportTypeId: _selectedSportTypeId, // new param
+          sportTypeId: _selectedSportTypeId,
           isRefresh: true,
           source: _source));
   }
@@ -154,7 +150,7 @@ class CoursesTabState extends State<CoursesTab>
                       _selectedSportName = entry.key;
                     });
                     Navigator.pop(dialogContext);
-                    _refreshData(); // reload with new filter
+                    _refreshData();
                   },
                 );
               }).toList(),
@@ -174,7 +170,7 @@ class CoursesTabState extends State<CoursesTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final strings = S.of(context);
+    final string = S.of(context);
 
     return BlocListener<CoursesBloc, CoursesState>(
       listener: (context, state) {
@@ -200,7 +196,7 @@ class CoursesTabState extends State<CoursesTab>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ----- Search bar (same as opportunities) -----
+          // ----- Search bar -----
           Padding(
             padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
             child: Container(
@@ -217,9 +213,9 @@ class CoursesTabState extends State<CoursesTab>
               child: TextField(
                 onTapOutside: (_) => FocusScope.of(context).unfocus(),
                 controller: _searchController,
-                onChanged: (_) {}, // handled by listener
+                onChanged: (_) {},
                 decoration: InputDecoration(
-                  hintText: strings.search,
+                  hintText: string.search,
                   hintStyle:
                       TextStyle(color: Colors.grey[400], fontSize: 16.sp),
                   prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
@@ -242,7 +238,7 @@ class CoursesTabState extends State<CoursesTab>
             ),
           ),
 
-          // ----- Filter chips (same as opportunities) -----
+          // ----- Filter chips -----
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: SingleChildScrollView(
@@ -251,8 +247,8 @@ class CoursesTabState extends State<CoursesTab>
                 children: [
                   _buildFilterChip(
                     label: _selectedSportName != null
-                        ? _getLocalizedSportName(_selectedSportName!, strings)
-                        : strings.sport,
+                        ? _getLocalizedSportName(_selectedSportName!, string)
+                        : string.sport,
                     isSelected: _selectedSportTypeId != null,
                     onTap: _showFilterDialog,
                   ),
@@ -262,7 +258,7 @@ class CoursesTabState extends State<CoursesTab>
                   if (_selectedSportTypeId != null ||
                       _searchController.text.isNotEmpty)
                     _buildFilterChip(
-                      label: strings.clear,
+                      label: string.clear,
                       icon: Icons.clear_all,
                       isSelected: false,
                       onTap: _clearFilters,
@@ -274,13 +270,13 @@ class CoursesTabState extends State<CoursesTab>
 
           SizedBox(height: 16.h),
 
-          // ----- Content (unchanged) -----
+          // ----- Content -----
           if (_searchController.text.trim().isNotEmpty)
-            _buildSearchResults()
+            _buildSearchResults(string: string)
           else ...[
-            _buildContinueWatchingSection(),
-            _buildNewCoursesSection(),
-            _buildEnrolledCoursesSection(),
+            _buildContinueWatchingSection(string: string),
+            _buildNewCoursesSection(string: string),
+            _buildEnrolledCoursesSection(string: string),
           ],
           SizedBox(height: 120.h),
         ],
@@ -288,7 +284,7 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  // ----- Filter chip widget (copied from opportunities) -----
+  // ----- Filter chip widget -----
   Widget _buildFilterChip({
     required String label,
     IconData? icon,
@@ -342,7 +338,7 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildSearchResults() {
+  Widget _buildSearchResults({required S string}) {
     final total = _availableCourses.length + _enrolledCourses.length;
     if (_isLoadingAvailable && total == 0) return const CoursesListShimmer();
     if (total == 0) {
@@ -353,7 +349,7 @@ class CoursesTabState extends State<CoursesTab>
             children: [
               Icon(Icons.search_off, size: 64.sp, color: Colors.grey[400]),
               SizedBox(height: 16.h),
-              Text('No courses found for "${_searchController.text}"',
+              Text(string.noCoursesFoundFor(_searchController.text),
                   style: Theme.of(context).textTheme.titleMedium),
             ],
           ),
@@ -366,32 +362,32 @@ class CoursesTabState extends State<CoursesTab>
         if (_availableCourses.isNotEmpty) ...[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-            child: Text('Available (${_availableCourses.length})',
+            child: Text('${string.available} (${_availableCourses.length})',
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
           ),
           ..._availableCourses.map((c) =>
-              CourseCard(course: c, onTap: () => _navigateToCourseDetail(c.id))),
+              CourseCard(course: c, onTap: () => _navigateToCourseDetail(c.id), string: string)),
         ],
         if (_enrolledCourses.isNotEmpty) ...[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-            child: Text('Enrolled (${_enrolledCourses.length})',
+            child: Text('${string.enrolled} (${_enrolledCourses.length})',
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
           ),
           ..._enrolledCourses.map((c) =>
-              CourseCard(course: c, onTap: () => _navigateToCourseDetail(c.id))),
+              CourseCard(course: c, onTap: () => _navigateToCourseDetail(c.id), string: string)),
         ],
       ],
     );
   }
 
-  Widget _buildContinueWatchingSection() {
+  Widget _buildContinueWatchingSection({required S string}) {
     if (_isLoadingEnrolled || _enrolledCourses.isEmpty) return const SizedBox.shrink();
     final inProgress = _enrolledCourses
         .where((c) => c.progress > 0 && c.progress < 100)
@@ -404,7 +400,7 @@ class CoursesTabState extends State<CoursesTab>
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
-          child: Text('Continue Watching',
+          child: Text(string.continueWatching,
               style: Theme.of(context)
                   .textTheme
                   .titleLarge
@@ -412,21 +408,21 @@ class CoursesTabState extends State<CoursesTab>
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: _buildLastViewedCard(context, inProgress.first),
+          child: _buildLastViewedCard(context, inProgress.first, string),
         ),
         SizedBox(height: 24.h),
       ],
     );
   }
 
-  Widget _buildNewCoursesSection() {
+  Widget _buildNewCoursesSection({required S string}) {
     if (_isLoadingAvailable) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Text('New Courses',
+            child: Text(string.newCourses,
                 style: Theme.of(context).textTheme.titleLarge),
           ),
           SizedBox(height: 8.h),
@@ -445,7 +441,7 @@ class CoursesTabState extends State<CoursesTab>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('New Courses',
+              Text(string.newCourses,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -454,7 +450,7 @@ class CoursesTabState extends State<CoursesTab>
                 TextButton(
                   onPressed: () =>
                       _navigateToCourseList(CourseListType.available),
-                  child: const Text('Show More'),
+                  child: Text(string.showMore),
                 ),
             ],
           ),
@@ -471,7 +467,8 @@ class CoursesTabState extends State<CoursesTab>
               margin: EdgeInsets.only(right: 16.w),
               child: CourseCard(
                   course: display[i],
-                  onTap: () => _navigateToCourseDetail(display[i].id)),
+                  onTap: () => _navigateToCourseDetail(display[i].id),
+                  string: string),
             ),
           ),
         ),
@@ -480,14 +477,14 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildEnrolledCoursesSection() {
+  Widget _buildEnrolledCoursesSection({required S string}) {
     if (_isLoadingEnrolled) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Text('Enrolled Courses',
+            child: Text(string.enrolledCourses,
                 style: Theme.of(context).textTheme.titleLarge),
           ),
           SizedBox(height: 8.h),
@@ -506,7 +503,7 @@ class CoursesTabState extends State<CoursesTab>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Enrolled Courses',
+              Text(string.enrolledCourses,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -515,13 +512,13 @@ class CoursesTabState extends State<CoursesTab>
                 TextButton(
                   onPressed: () =>
                       _navigateToCourseList(CourseListType.enrolled),
-                  child: const Text('Show More'),
+                  child: Text(string.showMore),
                 ),
             ],
           ),
         ),
         SizedBox(
-          height: 290.h,
+          height: 300.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),
@@ -532,7 +529,8 @@ class CoursesTabState extends State<CoursesTab>
               margin: EdgeInsets.only(right: 16.w),
               child: CourseCard(
                   course: display[i],
-                  onTap: () => _navigateToCourseDetail(display[i].id)),
+                  onTap: () => _navigateToCourseDetail(display[i].id),
+                  string: string),
             ),
           ),
         ),
@@ -541,7 +539,7 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildLastViewedCard(BuildContext context, CourseModel course) {
+  Widget _buildLastViewedCard(BuildContext context, CourseModel course, S string) {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => _navigateToCourseDetail(course.id),
@@ -605,12 +603,15 @@ class CoursesTabState extends State<CoursesTab>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${course.progress.toStringAsFixed(0)}% Complete',
+                      Text(string.percentComplete(course.progress.toStringAsFixed(0)),
                           style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: theme.colorScheme.onPrimary)),
                       Text(
-                          '${((course.progress) / 100 * course.lessonsCount).ceil()} / ${course.lessonsCount} Lessons',
+                          string.lessonsProgress(
+                            '${((course.progress) / 100 * course.lessonsCount).ceil()}',
+                            '${course.lessonsCount}'
+                          ),
                           style: theme.textTheme.bodySmall
                               ?.copyWith(color: theme.colorScheme.onPrimary)),
                     ],

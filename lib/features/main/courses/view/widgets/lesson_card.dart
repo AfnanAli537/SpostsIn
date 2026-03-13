@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class LessonCard extends StatefulWidget {
   final LessonModel lesson;
   final bool isEnrolled;
   final bool isCurrentlyPlaying;
   final VoidCallback? onTap;
+  final S string; // Added localization
 
   const LessonCard({
     Key? key,
@@ -14,6 +16,7 @@ class LessonCard extends StatefulWidget {
     required this.isEnrolled,
     required this.isCurrentlyPlaying,
     this.onTap,
+    required this.string, // Required localization
   }) : super(key: key);
 
   @override
@@ -27,8 +30,9 @@ class _LessonCardState extends State<LessonCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final canPlay = widget.isEnrolled;
-    final hasDescription = widget.lesson.description != null && 
-                          widget.lesson.description!.trim().isNotEmpty;
+    final hasDescription =
+        widget.lesson.description != null &&
+        widget.lesson.description!.trim().isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
@@ -40,8 +44,8 @@ class _LessonCardState extends State<LessonCard> {
           color: widget.lesson.isWatched
               ? theme.colorScheme.primary.withOpacity(0.3)
               : (widget.isCurrentlyPlaying
-                  ? theme.colorScheme.primary
-                  : Colors.grey[300]!),
+                    ? theme.colorScheme.primary
+                    : Colors.grey[300]!),
           width: widget.isCurrentlyPlaying ? 2 : 1,
         ),
       ),
@@ -58,19 +62,20 @@ class _LessonCardState extends State<LessonCard> {
                   _buildStatusIcon(theme),
                   SizedBox(width: 16.w),
                   Expanded(child: _buildContent(theme)),
-                  !canPlay ?Icon(
-                    Icons.lock_outline,
-                    size: 20.sp,
-                    color: canPlay
-                        ? theme.colorScheme.onSurface.withOpacity(0.5)
-                        : Colors.grey[400],
-                  ): const SizedBox.shrink(),
+                  !canPlay
+                      ? Icon(
+                          Icons.lock_outline,
+                          size: 20.sp,
+                          color: canPlay
+                              ? theme.colorScheme.onSurface.withOpacity(0.5)
+                              : Colors.grey[400],
+                        )
+                      : const SizedBox.shrink(),
                 ],
               ),
             ),
           ),
 
-          // ✅ Expandable description section
           if (hasDescription)
             Column(
               children: [
@@ -78,17 +83,24 @@ class _LessonCardState extends State<LessonCard> {
                 InkWell(
                   onTap: () => setState(() => _isExpanded = !_isExpanded),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 12.h,
+                    ),
                     child: Row(
                       children: [
                         Icon(
-                          _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
                           size: 20.sp,
                           color: theme.colorScheme.primary,
                         ),
                         SizedBox(width: 8.w),
                         Text(
-                          _isExpanded ? 'Hide Description' : 'Show Description',
+                          _isExpanded 
+                              ? widget.string.hideDescription 
+                              : widget.string.showDescription,
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: theme.colorScheme.primary,
@@ -137,8 +149,12 @@ class _LessonCardState extends State<LessonCard> {
         shape: BoxShape.circle,
       ),
       child: Icon(
-        widget.lesson.isWatched ? Icons.check_circle : Icons.play_circle_outline,
-        color: widget.lesson.isWatched ? Colors.green : theme.colorScheme.primary,
+        widget.lesson.isWatched
+            ? Icons.check_circle
+            : Icons.play_circle_outline,
+        color: widget.lesson.isWatched
+            ? Colors.green
+            : theme.colorScheme.primary,
         size: 32.sp,
       ),
     );
@@ -151,16 +167,17 @@ class _LessonCardState extends State<LessonCard> {
         Row(
           children: [
             Text(
-              'Lesson ${widget.lesson.order}',
+              widget.string.lessonNumber(widget.lesson.order), // Localized
               style: TextStyle(
                 fontSize: 12.sp,
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            if (widget.lesson.isWatched) _buildLabel('Completed', Colors.green),
-            if (widget.isCurrentlyPlaying) 
-              _buildLabel('Playing', theme.colorScheme.primary),
+            if (widget.lesson.isWatched) 
+              _buildLabel(widget.string.completed, Colors.green),
+            if (widget.isCurrentlyPlaying)
+              _buildLabel(widget.string.playing, theme.colorScheme.primary),
           ],
         ),
         SizedBox(height: 4.h),
@@ -183,10 +200,13 @@ class _LessonCardState extends State<LessonCard> {
               _formatDuration(widget.lesson.duration),
               style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
             ),
-            if (widget.lesson.progressPercentage > 0 && !widget.lesson.isWatched) ...[
+            if (widget.lesson.progressPercentage > 0 &&
+                !widget.lesson.isWatched) ...[
               SizedBox(width: 16.w),
               Text(
-                '${widget.lesson.progressPercentage.toInt()}% watched',
+                widget.string.percentageWatched(
+                  widget.lesson.progressPercentage.toInt().toString(),
+                ), // Localized
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: theme.colorScheme.primary,
@@ -196,12 +216,15 @@ class _LessonCardState extends State<LessonCard> {
             ],
           ],
         ),
-        if (widget.lesson.progressPercentage > 0 && !widget.lesson.isWatched) ...[
+        if (widget.lesson.progressPercentage > 0 &&
+            !widget.lesson.isWatched) ...[
           SizedBox(height: 8.h),
           LinearProgressIndicator(
             value: widget.lesson.progressPercentage / 100,
             backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              theme.colorScheme.primary,
+            ),
             minHeight: 4.h,
           ),
         ],

@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'English',
+            string.selectLanguage,
             style: theme.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w500,
             ),
@@ -229,7 +229,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildAccountCard(ThemeData theme, S string) {
     return _buildNavigationCard(
-      title: 'Change Password',
+      title: string.changePassword,
       icon: Icons.key_outlined,
       onTap: () {
         Navigator.pushNamed(
@@ -244,7 +244,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSubscriptionCard(ThemeData theme, S string) {
     return _buildNavigationCard(
-      title: 'Manage Subscription',
+      title: string.manageSubscription,
       icon: Icons.card_membership_outlined,
       onTap: () {
         // TODO: Navigate to subscription screen
@@ -270,9 +270,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           theme: theme,
         ),
         SizedBox(height: 12.h),
-        _currentUser!.userType == 'coach' ||
-                _currentUser!.userType == 'scout' ||
-                _currentUser!.userType == 'club'
+        _currentUser!.userType == 'Coach' ||
+                _currentUser!.userType == 'Scout' ||
+                _currentUser!.userType == 'Club'
             ? Column(
                 children: [
                   _buildNavigationCard(
@@ -307,9 +307,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   create: (_) => getIt<CoursesBloc>(),
                   child: CourseListScreen(
                     listType:
-                        _currentUser!.userType == 'coach' ||
-                            _currentUser!.userType == 'scout' ||
-                            _currentUser!.userType == 'club'
+                        _currentUser!.userType == 'Coach' ||
+                            _currentUser!.userType == 'Scout' ||
+                            _currentUser!.userType == 'Club'
                         ? CourseListType.created
                         : CourseListType.enrolled,
                   ),

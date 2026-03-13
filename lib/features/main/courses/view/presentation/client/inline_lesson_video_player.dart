@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class InlineLessonVideoPlayer extends StatefulWidget {
   final LessonModel lesson;
@@ -42,14 +43,12 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     super.initState();
     _initializePlayer();
     _startProgressSaveTimer();
-    
   }
 
   @override
   void didUpdateWidget(InlineLessonVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.lesson.id != widget.lesson.id) {
-      // Lesson changed, reinitialize player
       debugPrint('🔄 Lesson changed, reinitializing player');
       _controller?.dispose();
       _progressSaveTimer?.cancel();
@@ -98,7 +97,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     super.dispose();
   }
 
-
   Future<void> _initializePlayer() async {
     try {
       debugPrint('🎬 Initializing video player for: ${widget.lesson.videoUrl}');
@@ -108,8 +106,8 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
         widget.lesson.videoUrl!,
         cacheConfiguration: const BetterPlayerCacheConfiguration(
           useCache: true,
-          maxCacheSize: 100 * 1024 * 1024, // 100 MB
-          maxCacheFileSize: 50 * 1024 * 1024, // 50 MB
+          maxCacheSize: 100 * 1024 * 1024,
+          maxCacheFileSize: 50 * 1024 * 1024,
         ),
       );
 
@@ -165,7 +163,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
           if (position != null && duration != null) {
             _currentPosition = position.inSeconds.toDouble();
             
-            // Check if video finished (≥90% watched)
             if (position >= duration * 0.9 && !widget.lesson.isWatched) {
               _markAsWatched();
             }
@@ -174,7 +171,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
           debugPrint('❌ Player error: ${event.parameters}');
           if (mounted) {
             setState(() {
-              _errorMessage = 'Failed to play video';
+              _errorMessage = S.of(context).failedToPlayVideo;
               _isInitialized = false;
             });
           }
@@ -217,7 +214,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
       if (mounted) {
         setState(() {
           _isInitialized = false;
-          _errorMessage = 'Failed to load video';
+          _errorMessage = S.of(context).failedToLoadVideo;
         });
       }
     }
@@ -236,7 +233,6 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     
     final currentPos = _currentPosition;
     
-    // Only save if we've progressed further than last save
     if (currentPos > _lastSavedPosition + 5) {
       debugPrint('💾 Saving progress: $currentPos seconds (was: $_lastSavedPosition)');
       
@@ -248,7 +244,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
             lessonId: widget.lesson.id,
             watchedTime: currentPos,
             isWatched: isWatched,
-            zoomScale: _isFullscreen? 2.0 : 1.0, //save the scall to 2x if in fullscreen, otherwise 1x
+            zoomScale: _isFullscreen? 2.0 : 1.0,
           ),
         );
         
@@ -280,7 +276,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
+    final string = S.of(context);
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     final isFullscreen = _isFullscreen;
 
@@ -291,7 +287,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (_errorMessage != null)
-              _buildErrorView()
+              _buildErrorViewWithLocalization(string)
             else if (_isInitialized && _controller != null)
               LayoutBuilder(
                 builder: (context, constraints) {
@@ -404,8 +400,12 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
     );
   }
 
-
   Widget _buildErrorView() {
+    // This is a fallback for the errorBuilder parameter
+    return _buildErrorViewWithLocalization(S.of(context));
+  }
+
+  Widget _buildErrorViewWithLocalization(S string) {
     final theme = Theme.of(context);
     
     return AspectRatio(
@@ -440,9 +440,9 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                       color: Colors.red[300],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Video Playback Error',
-                      style: TextStyle(
+                    Text(
+                      string.videoPlaybackError,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -451,7 +451,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _errorMessage ?? 'Unknown error',
+                      _errorMessage ?? string.unknownError,
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -468,7 +468,7 @@ class _InlineLessonVideoPlayerState extends State<InlineLessonVideoPlayer> {
                         _initializePlayer();
                       },
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Retry'),
+                      label: Text(string.retry),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

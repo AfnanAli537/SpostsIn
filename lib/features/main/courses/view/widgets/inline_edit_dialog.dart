@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class InlineEditDialog {
-  /// Edit single text field
   static Future<String?> editTextField({
     required BuildContext context,
     required String title,
     required String currentValue,
     required String hintText,
+    required S string,
     int maxLines = 1,
     int? maxLength,
     TextInputType? keyboardType,
@@ -48,7 +49,7 @@ class InlineEditDialog {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              string.cancel,
               style: GoogleFonts.poppins(color: Colors.grey[600]),
             ),
           ),
@@ -58,7 +59,7 @@ class InlineEditDialog {
                 Navigator.pop(context, controller.text.trim());
               }
             },
-            child: Text('Save', style: GoogleFonts.poppins()),
+            child: Text(string.save, style: GoogleFonts.poppins()),
           ),
         ],
       ),
@@ -70,6 +71,7 @@ class InlineEditDialog {
     required BuildContext context,
     required double currentPrice,
     required bool isFree,
+    required S string,
   }) async {
     final controller = TextEditingController(
       text: isFree ? '0' : currentPrice.toStringAsFixed(2),
@@ -82,7 +84,7 @@ class InlineEditDialog {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(
-            'Edit Price',
+            string.editPrice,
             style: GoogleFonts.poppins(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
@@ -97,7 +99,7 @@ class InlineEditDialog {
                 // Free checkbox
                 CheckboxListTile(
                   title: Text(
-                    'Free Course',
+                    string.freeCourse,
                     style: GoogleFonts.poppins(fontSize: 14.sp),
                   ),
                   value: isCurrentlyFree,
@@ -119,7 +121,7 @@ class InlineEditDialog {
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   autofocus: !isCurrentlyFree,
                   decoration: InputDecoration(
-                    labelText: 'Price (EGP)',
+                    labelText: string.priceEGP,
                     prefixIcon: const Icon(Icons.attach_money),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
@@ -128,11 +130,11 @@ class InlineEditDialog {
                   validator: (value) {
                     if (isCurrentlyFree) return null;
                     if (value == null || value.isEmpty) {
-                      return 'Price is required';
+                      return string.priceRequired;
                     }
                     final price = double.tryParse(value);
                     if (price == null || price < 0) {
-                      return 'Invalid price';
+                      return string.invalidPrice;
                     }
                     return null;
                   },
@@ -144,7 +146,7 @@ class InlineEditDialog {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'Cancel',
+                string.cancel,
                 style: GoogleFonts.poppins(color: Colors.grey[600]),
               ),
             ),
@@ -157,7 +159,7 @@ class InlineEditDialog {
                   Navigator.pop(context, price);
                 }
               },
-              child: Text('Save', style: GoogleFonts.poppins()),
+              child: Text(string.save, style: GoogleFonts.poppins()),
             ),
           ],
         ),
@@ -170,8 +172,9 @@ class InlineEditDialog {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmText = 'Confirm',
-    String cancelText = 'Cancel',
+    required S string,
+    String? confirmText,
+    String? cancelText,
     bool isDestructive = false,
   }) async {
     final result = await showDialog<bool>(
@@ -193,7 +196,7 @@ class InlineEditDialog {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              cancelText,
+              cancelText ?? string.cancel,
               style: GoogleFonts.poppins(color: Colors.grey[600]),
             ),
           ),
@@ -203,7 +206,7 @@ class InlineEditDialog {
                 ? ElevatedButton.styleFrom(backgroundColor: Colors.red[700])
                 : null,
             child: Text(
-              confirmText,
+              confirmText ?? (isDestructive ? string.delete : string.confirm),
               style: GoogleFonts.poppins(
                 color: isDestructive ? Colors.white : null,
               ),

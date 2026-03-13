@@ -96,14 +96,18 @@ class SharedPref {
   ///user data
 
   Future<void> saveUserToPrefs(LoginResponse response) async {
-    if (response.token != null)
+    if (response.token != null) {
       await _prefs.setString('Token', response.token!);
-    if (response.userId != null)
+    }
+    if (response.userId != null) {
       await _prefs.setString('userId', response.userId!);
-    if (response.userType != null)
+    }
+    if (response.userType != null) {
       await _prefs.setString('userType', response.userType!);
-    if (response.email != null)
+    }
+    if (response.email != null) {
       await _prefs.setString('email', response.email!);
+    }
     if (response.name != null) {
       await _prefs.setString('name', jsonEncode(response.name!.toJson()));
     }

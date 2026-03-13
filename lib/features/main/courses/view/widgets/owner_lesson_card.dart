@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class OwnerLessonCard extends StatefulWidget {
   final LessonModel lesson;
@@ -11,14 +12,14 @@ class OwnerLessonCard extends StatefulWidget {
   final bool showDragHandle;
 
   const OwnerLessonCard({
-    Key? key,
+    super.key,
     required this.lesson,
     required this.isCurrentlyPlaying,
     this.onTap,
     required this.onUpdate,
     required this.onDelete,
     this.showDragHandle = false,
-  }) : super(key: key);
+  });
 
   @override
   State<OwnerLessonCard> createState() => _OwnerLessonCardState();
@@ -30,6 +31,7 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final string = S.of(context);
     final hasDescription = widget.lesson.description != null && 
                           widget.lesson.description!.trim().isNotEmpty;
 
@@ -68,14 +70,13 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
                   ],
                   _buildPlayIcon(theme),
                   SizedBox(width: 16.w),
-                  Expanded(child: _buildInfo(theme)),
-                  _buildPopupMenu(),
+                  Expanded(child: _buildInfo(theme, string)),
+                  _buildPopupMenu(string),
                 ],
               ),
             ),
           ),
 
-          // ✅ Expandable description section
           if (hasDescription)
             Column(
               children: [
@@ -99,7 +100,7 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
                         ),
                         SizedBox(width: 8.w),
                         Text(
-                          _isExpanded ? 'Hide Description' : 'Show Description',
+                          _isExpanded ? string.hideDescription : string.showDescription,
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: theme.colorScheme.primary,
@@ -153,12 +154,12 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
     );
   }
 
-  Widget _buildInfo(ThemeData theme) {
+  Widget _buildInfo(ThemeData theme, S string) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Lesson ${widget.lesson.order}',
+          string.lessonNumber(widget.lesson.order),
           style: TextStyle(
             fontSize: 12.sp,
             color: theme.colorScheme.primary,
@@ -191,7 +192,7 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
     );
   }
 
-  Widget _buildPopupMenu() {
+  Widget _buildPopupMenu(S string) {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert, size: 20.sp),
       onSelected: (value) {
@@ -208,7 +209,7 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
             children: [
               Icon(Icons.edit, size: 18.sp),
               SizedBox(width: 8.w),
-              const Text('Update'),
+              Text(string.update),
             ],
           ),
         ),
@@ -218,7 +219,7 @@ class _OwnerLessonCardState extends State<OwnerLessonCard> {
             children: [
               Icon(Icons.delete, size: 18.sp, color: Colors.red[700]),
               SizedBox(width: 8.w),
-              Text('Delete', style: TextStyle(color: Colors.red[700])),
+              Text(string.delete, style: TextStyle(color: Colors.red[700])),
             ],
           ),
         ),

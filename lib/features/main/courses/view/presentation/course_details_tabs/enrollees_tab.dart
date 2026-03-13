@@ -48,16 +48,14 @@ class _EnrolleesTabState extends State<EnrolleesTab> {
                   ),
                   SizedBox(height: 16.h),
                   Text(
-                    // string.noEnrollees ?? 
-                    'No enrollees yet',
+                    string.noEnrolleesYet,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: Colors.grey[600],
                     ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
-                    // string.enrolleesWillAppear ?? 
-                    'Enrolled students will appear here',
+                    string.enrolleesWillAppear,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.grey[500],
                     ),
@@ -88,8 +86,7 @@ class _EnrolleesTabState extends State<EnrolleesTab> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildStat(
-                        // string.totalEnrolled ?? 
-                        'Total Enrolled',
+                        string.totalEnrolled,
                         '${state.enrollees.length}',
                         Icons.people,
                         theme,
@@ -100,8 +97,7 @@ class _EnrolleesTabState extends State<EnrolleesTab> {
                         color: theme.colorScheme.onPrimaryContainer.withOpacity(0.2),
                       ),
                       _buildStat(
-                        // string.avgProgress ??
-                        'Avg Progress',
+                        string.avgProgress,
                         '${_calculateAverageProgress(state.enrollees)}%',
                         Icons.trending_up,
                         theme,
@@ -121,8 +117,7 @@ class _EnrolleesTabState extends State<EnrolleesTab> {
                       return EnrolleeCard(
                         enrollee: enrollee,
                         onTap: () {
-                          // Could navigate to detailed progress screen
-                          _showEnrolleeDetails(enrollee);
+                          _showEnrolleeDetails(enrollee, string);
                         },
                       );
                     },
@@ -200,7 +195,7 @@ class _EnrolleesTabState extends State<EnrolleesTab> {
     return (total / enrollees.length).round();
   }
 
-  void _showEnrolleeDetails(enrollee) {
+  void _showEnrolleeDetails(enrollee, S string) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -209,19 +204,19 @@ class _EnrolleesTabState extends State<EnrolleesTab> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Progress: ${formatProgress(enrollee.progress)}%'),
+            Text('${string.progress}: ${formatProgress(enrollee.progress)}%'),
             SizedBox(height: 8.h),
             LinearProgressIndicator(
               value: enrollee.progress / 100,
             ),
             SizedBox(height: 16.h),
-            Text('Enrolled: ${_formatDate(enrollee.enrolledAt)}'),
+            Text('${string.enrolled}: ${_formatDate(enrollee.enrolledAt)}'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(string.close),
           ),
         ],
       ),

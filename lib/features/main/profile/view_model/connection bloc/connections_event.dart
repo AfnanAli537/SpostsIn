@@ -9,6 +9,8 @@ abstract class ConnectionsEvent extends Equatable {
 
 class LoadConnections extends ConnectionsEvent {}
 
+class LoadMoreRequests extends ConnectionsEvent {}
+
 class RespondToRequest extends ConnectionsEvent {
   final String senderId;
   final String status; // "Accepted" or "Rejected"

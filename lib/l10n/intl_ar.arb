@@ -233,7 +233,7 @@
   "follow": "تابع",
   "connected": "متصل",
   "posts": "المنشورات",
-  "myPosts":"منشوراتي",
+  "myPosts": "منشوراتي",
   "noPosts": "لا توجد منشورات",
   "opportunities": "الفرص",
   "myOpportunities": "فرصي",
@@ -305,6 +305,7 @@
   "guest": "ضيف",
   "happyToSeeYouToday": "سعداء برؤيتك اليوم",
   "latestPosts": "أحدث المنشورات",
+  "latestCourses": "أحدث الدورات",
   "oopsSomethingWentWrong": "عذراً! حدث خطأ ما",
   "noPostsYet": "لا توجد منشورات بعد",
   "noArchivedPosts": "لا توجد منشورات مؤرشفة",
@@ -377,6 +378,7 @@
   "reject": "رفض",
   "uploadAnImage": "ارفع صورة",
   "tapToSelectFromGallery": "اضغط للاختيار من المعرض",
+  "tapToChange": "اضغط للاختيار",
   "enterYourRequirements": "أدخل المتطلبات...",
   "selectEndDate": "اختر تاريخ الانتهاء",
   "upload": "رفع",
@@ -387,28 +389,63 @@
   "pleaseSelectEndDate": "الرجاء اختيار تاريخ الانتهاء",
   "details": "التفاصيل",
   "noOpportunitiesAvailable": "لا توجد فرص متاحة",
-"taekwondo": "التايكوندو",
+  "taekwondo": "التايكوندو",
   "yearsAgo": "{count, plural, =1 {منذ سنة} =2 {منذ سنتين} few {منذ {count} سنوات} many {منذ {count} سنة} other {منذ {count} سنة}}",
-  "@yearsAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "monthsAgo": "{count, plural, =1 {منذ شهر} =2 {منذ شهرين} few {منذ {count} أشهر} many {منذ {count} شهرًا} other {منذ {count} شهر}}",
-  "@monthsAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@monthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "weeksAgo": "{count, plural, =1 {منذ أسبوع} =2 {منذ أسبوعين} few {منذ {count} أسابيع} many {منذ {count} أسبوعًا} other {منذ {count} أسبوع}}",
-  "@weeksAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "daysAgo": "{count, plural, =1 {منذ يوم} =2 {منذ يومين} few {منذ {count} أيام} many {منذ {count} يومًا} other {منذ {count} يوم}}",
-  "@daysAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "hoursAgo": "{count, plural, =1 {منذ ساعة} =2 {منذ ساعتين} few {منذ {count} ساعات} many {منذ {count} ساعة} other {منذ {count} ساعة}}",
-  "@hoursAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "minutesAgo": "{count, plural, =1 {منذ دقيقة} =2 {منذ دقيقتين} few {منذ {count} دقائق} many {منذ {count} دقيقة} other {منذ {count} دقيقة}}",
-  "@minutesAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "secondsAgo": "{count, plural, =1 {منذ ثانية} =2 {منذ ثانيتين} few {منذ {count} ثوانٍ} many {منذ {count} ثانية} other {منذ {count} ثانية}}",
-  "@secondsAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@secondsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "edit_achievement": "تعديل الإنجاز",
   "add_achievement_title": "إضافة إنجاز",
   "upload_photo_hint": "رفع صورة الإنجاز",
@@ -423,12 +460,205 @@
   "please_select_date": "يرجى اختيار تاريخ",
   "achievement_added_success": "تم إضافة الإنجاز بنجاح",
   "achievement_updated_success": "تم تحديث الإنجاز بنجاح",
-
-
   "messageSent": "تم إرسال الرسالة بنجاح",
   "failedToSendMessage": "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.",
-
-
+  "free": "مجاني",
+  "egp": "جنيه",
+  "enroll": "اشتراك",
+  "lessonsCount": "{count} دروس",
+  "@lessonsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "enrolledCount": "{count} مشترك",
+  "@enrolledCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completePercentage": "اكتمل {percentage}%",
+  "@completePercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "editPrice": "تعديل السعر",
+  "freeCourse": "دورة مجانية",
+  "priceEGP": "السعر (جنيه)",
+  "priceRequired": "السعر مطلوب",
+  "invalidPrice": "سعر غير صالح",
+  "lessonNumber": "{number} درس",
+  "@lessonNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "مكتمل",
+  "playing": "جارٍ التشغيل",
+  "showDescription": "عرض الوصف",
+  "hideDescription": "إخفاء الوصف",
+  "watched": "تمت المشاهدة",
+  "percentageWatched": "تمت مشاهدة {percentage}%",
+  "@percentageWatched": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "createCourse": "إنشاء دورة",
+  "uploadCourseThumbnail": "رفع صورة مصغرة للدورة",
+  "courseThumbnail": "صورة مصغرة للدورة",
+  "courseTitleHint": "عنوان الدورة",
+  "enterCourseTitleHint": "أدخل عنوان الدورة",
+  "courseDescriptionHint": "وصف الدورة",
+  "enterCourseDescriptionHint": "أدخل وصف الدورة",
+  "noDescriptionAvailable": "لا يوجد وصف متاح",
+  "price": "السعر",
+  "enterPriceHint": "أدخل السعر (0 للمجاني)",
+  "pleaseEnterPrice": "الرجاء إدخال السعر",
+  "courseCreatedSuccess": "تم إنشاء الدورة بنجاح",
+  "addLesson": "إضافة درس",
+  "addLessonQuestion": "هل ترغب في إضافة درس إلى هذه الدورة الآن؟",
+  "addLater": "أضف لاحقاً",
+  "addNow": "أضف الآن",
+  "error_picking_image": "خطأ في اختيار الصورة. الرجاء المحاولة مرة أخرى.",
+  "select_sport_error": "الرجاء اختيار رياضة",
+  "editLesson": "تعديل الدرس",
+  "lessonTitle": "عنوان الدرس",
+  "enterLessonTitleHint": "أدخل عنوان الدرس",
+  "enterDescriptionHint": "أدخل الوصف",
+  "titleRequired": "العنوان مطلوب",
+  "descriptionRequired": "الوصف مطلوب",
+  "lessonOrder": "ترتيب الدرس: {order}",
+  "@lessonOrder": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    }
+  },
+  "duration": "المدة: {duration}",
+  "@duration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "updateLesson": "تحديث الدرس",
+  "newVideoWillBeUploaded": "سيتم رفع فيديو جديد",
+  "video": "الفيديو",
+  "changeVideo": "تغيير الفيديو",
+  "replaceVideo": "استبدال الفيديو",
+  "extractingDuration": "جاري استخراج المدة...",
+  "newVideoSelected": "تم اختيار فيديو جديد",
+  "currentVideo": "الفيديو الحالي",
+  "updatingLesson": "جاري تحديث الدرس...",
+  "file_size_exceeds_limit": "حجم الملف يتجاوز 500 ميجابايت",
+  "error_picking_video": "خطأ في اختيار الفيديو. الرجاء المحاولة مرة أخرى.",
+  "failed_to_read_video_duration": "فشل في قراءة مدة الفيديو",
+  "uploadLesson": "رفع الدرس",
+  "uploadVideo": "رفع الفيديو",
+  "maxFileSize": "الحد الأقصى 500 ميجابايت",
+  "notDetected": "غير محدد",
+  "lessonOrderAndDuration": "ترتيب الدرس: {order} • المدة: {duration}",
+  "@lessonOrderAndDuration": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "lessons": "الدروس",
+  "revenue": "الإيرادات",
+  "editCourse": "تعديل الدورة",
+  "cancelEdit": "إلغاء التعديل",
+  "deleteCourse": "حذف الدورة",
+  "deleteLesson": "حذف الدرس",
+  "deleteLessonConfirmation": "هل أنت متأكد من حذف \"{lessonTitle}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "deleteCourseConfirmation": "هل أنت متأكد من حذف هذه الدورة؟",
+  "titleCannotBeEmpty": "العنوان لا يمكن أن يكون فارغاً",
+  "savingChanges": "جاري حفظ التغييرات...",
+  "deletingLesson": "جاري حذف الدرس...",
+  "enrolledSuccessfully": "تم الاشتراك بنجاح",
+  "courseDeleted": "تم حذف الدورة",
+  "enrollNow": "اشترك الآن",
+  "enrollForPrice": "اشترك مقابل {price}",
+  
+  "@deleteLessonConfirmation": {
+    "placeholders": {
+      "lessonTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "@enrollForPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "متاح",
+  "newCourses": "دورات جديدة",
+  "continueWatching": "متابعة المشاهدة",
+  "showMore": "عرض المزيد",
+  "noCoursesFoundFor": "لا توجد دورات لـ \"{searchTerm}\"",
+  "percentComplete": "اكتمل {percentage}%",
+  "lessonsProgress": "{completed} / {total} دروس",
+  
+  "failedToPlayVideo": "فشل تشغيل الفيديو",
+  "videoPlaybackError": "خطأ في تشغيل الفيديو",
+  "unknownError": "خطأ غير معروف",
+  
+  "@noCoursesFoundFor": {
+    "placeholders": {
+      "searchTerm": {
+        "type": "String"
+      }
+    }
+  },
+  "@percentComplete": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "@lessonsProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "availableCourses": "الدورات المتاحة",
+  "noAvailableCourses": "لا توجد دورات متاحة",
+  "enrolledCourses": "الدورات المسجل فيها",
+  "myCourses": "دوراتي",
+  "noCoursesFound": "لا توجد دورات",
+  "noResultsForCriteria": "لا توجد نتائج لمعايير البحث",
+  "tryAdjustingSearch": "حاول تعديل البحث أو التصفية",
+  "pleaseSelectVideo": "الرجاء اختيار فيديو",
+  "invalidVideoDuration": "مدة الفيديو غير صالحة. الرجاء اختيار فيديو آخر.",
+  "uploadingInBackground": "جاري رفع الدرس في الخلفية...",
+  "uploadWillContinue": "سيستمر الرفع في الخلفية",
   "personalInfo": "المعلومات الشخصية",
   "subscription": "الاشتراك",
   "activities": "الأنشطة",
@@ -440,7 +670,56 @@
   "manageVideoAnalysis": "إدارة تحليل الفيديو",
   "manageAdvertisement": "إدارة الإعلانات",
   "manageAchievement": "إدارة الإنجازات",
-  "switchAccount": "تبديل الحساب"
+  "switchAccount": "تبديل الحساب",
+  "addAccount": "إضافة حساب",
 
-
+  "newConnectionRequests": "طلبات الاتصال الجديدة",
+  "noConnectionRequests": "لا توجد طلبات اتصال",
+  "noMoreRequests": "لا توجد المزيد من طلبات الاتصال",
+  "myContacts": "جهات اتصالي",
+  "noContactsYet": "لا توجد جهات اتصال بعد",
+  "wantsToConnect": "يريد الاتصال بك",
+  "online": "متصل",
+  "lessonOrderSaved": "تم حفظ ترتيب الدروس",
+  "noLessonsAvailable": "لا توجد دروس متاحة",
+  "tapToAddFirstLesson": "اضغط على زر + لإضافة أول درس لك",
+  "courseProgress": "تقدم الدورة",
+  "timeSpent": "الوقت المستغرق",
+  "noEnrolleesYet": "لا يوجد مشتركين بعد",
+  "enrolleesWillAppear": "سيظهر الطلاب المسجلون هنا",
+  "totalEnrolled": "إجمالي المشتركين",
+  "avgProgress": "متوسط التقدم",
+  "progress": "التقدم",
+  "enrolled": "تاريخ الاشتراك",
+  "close": "إغلاق",
+  "remove": "إزالة",
+  "pending": "معلق",
+  "month": "الشهر",
+  "year": "السنة",
+  "allTimeRevenue": "إجمالي الإيرادات",
+  "weeklyBreakdown": "تفاصيل الأسبوع",
+  "weeklyDetails": "التفاصيل الأسبوعية",
+  "noDataForMonth": "لا توجد بيانات متاحة لشهر {month}",
+  
+  "january": "يناير",
+  "february": "فبراير",
+  "march": "مارس",
+  "april": "أبريل",
+  "may": "مايو",
+  "june": "يونيو",
+  "july": "يوليو",
+  "august": "أغسطس",
+  "september": "سبتمبر",
+  "october": "أكتوبر",
+  "november": "نوفمبر",
+  "december": "ديسمبر",
+  
+  "@noDataForMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  }
+  
 }
