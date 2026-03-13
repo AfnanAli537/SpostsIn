@@ -97,21 +97,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(chats: updatedChats));
   }
 
-  // Future<void> _loadCurrentUser() async {
-  //   _sharedPref = SharedPref(await SharedPreferences.getInstance());
-  //   final user = await _sharedPref.getUserFromPrefs();
-  //   if (user?.userId != null) {
-  //     _currentUserId = user!.userId!;
-  //   }
-  // }
-
   Future<void> _onLoadMoreChats(
     LoadMoreChatsEvent event,
     Emitter<ChatState> emit,
   ) async {
     if (!state.chatsHasMore || state.chatsLoadingMore) return;
     emit(state.copyWith(chatsLoadingMore: true));
-
+    // pagination logic
     final result = await _repo.getAllChats(pageNumber: state.chatsPage + 1);
     result.fold(
       (e) =>
@@ -216,17 +208,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
-    final tempMsg = MessageModel(
-      id: tempId,
-      senderId: event.senderId!,
-      senderName: event.senderName!,
-      content: event.content,
-      sentAt: DateTime.now(),
-      isMe: true,
-    );
-    emit(
-      state.copyWith(messages: [...state.messages, tempMsg], isSending: true),
-    );
+    // final tempMsg = MessageModel(
+    //   id: '',
+    //   senderId: event.senderId!,
+    //   senderName: event.senderName!,
+    //   content: event.content,
+    //   sentAt: DateTime.now(),
+    //   isMe: true,
+    // );
+    emit(state.copyWith(isSending: true));
 
     final result = await _repo.sendMessage(
       content: event.content,
@@ -238,7 +228,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     result.fold(
       (e) => emit(
         state.copyWith(
-          messages: state.messages.where((m) => m.id != tempId).toList(),
+          // messages: state.messages.where((m) => m.id != tempId).toList(),
           isSending: false,
           sendError: e.message,
         ),
@@ -449,12 +439,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // Append and keep messages sorted by time
     // if the message is already in the list, avoid appending a duplicate.
     // This can happen when we optimistically add a sent message locally and then receive it back from the hub.
-    final bool isDuplicateLastMessage =
-        state.messages.isNotEmpty && state.messages.last.id == event.message.id;
+    // final bool isDuplicateLastMessage =
+    //     state.messages.isNotEmpty &&
+    //     state.messages.last.id == event.message.id &&
+    //     state.messages.last.id.isEmpty;
 
-    if (isDuplicateLastMessage) {
-      return;
-    }
+    // log('👁️ state.messages.last.id: ${state.messages.last.id}');
+    // log('👁️ event.message.id: ${event.message.id}');
+    // log('👁️ state.messages.last.senderId: ${state.messages.last.senderId}');
+    // log('👁️ event.message.senderId: ${event.message.senderId}');
+    // log(
+    //   '👁️ state.messages.last.id.isNotEmpty: ${state.messages.last.id.isNotEmpty}',
+    // );
+    // log('👁️ isDuplicateLastMessage: $isDuplicateLastMessage');
+    // if (isDuplicateLastMessage) {
+    //   return;
+    // }
 
     final updatedMessages = [...state.messages, event.message];
     updatedMessages.sort((a, b) => a.sentAt.compareTo(b.sentAt));

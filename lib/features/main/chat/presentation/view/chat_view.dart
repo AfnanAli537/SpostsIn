@@ -237,7 +237,7 @@ class _ChatViewState extends State<ChatView> {
             isGroupChat: widget.chat.isGroup,
             isEditing: isEditing,
             editController: _editController,
-            onLongPress: msg.isMe == true
+            onLongPress: msg.senderId == widget.currentUserId
                 ? () => _showMessageOptions(context, msg)
                 : null,
             onSaveEdit: _saveEdit,
@@ -347,8 +347,10 @@ class _ChatViewState extends State<ChatView> {
             );
           }
 
-          if (state.messages.isNotEmpty) {
-            _scrollToBottom();
+          if (state.messages.isNotEmpty && !state.messagesLoadingMore) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToBottom();
+            });
           }
         },
         builder: (_, state) {
