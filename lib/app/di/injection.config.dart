@@ -47,7 +47,7 @@ import 'package:sports_in/features/main/opportunity/data/interface/opportunity_i
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
     as _i294;
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart'
-    as _i743;
+    as _i1047;
 import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
     as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
@@ -64,6 +64,14 @@ import 'package:sports_in/features/main/search/data/repo/search_repo.dart'
     as _i514;
 import 'package:sports_in/features/main/search/view_model/search_bloc.dart'
     as _i803;
+import 'package:sports_in/features/payment/data/data_source/payment_remote_data_source.dart'
+    as _i505;
+import 'package:sports_in/features/payment/data/interface/payment_interface.dart'
+    as _i802;
+import 'package:sports_in/features/payment/data/repo/payment_repo.dart'
+    as _i221;
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart'
+    as _i971;
 import 'package:sports_in/features/register/data/data_sources/register_api_data_source.dart'
     as _i569;
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart'
@@ -107,6 +115,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i803.SearchBloc>(
       () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
+    gh.lazySingleton<_i802.PaymentInterface>(
+      () => _i505.PaymentRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
     );
@@ -140,8 +151,15 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
-    gh.factory<_i743.OpportunityBloc>(
-      () => _i743.OpportunityBloc(
+    gh.lazySingleton<_i221.PaymentRepository>(
+      () =>
+          _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
+    );
+    gh.factory<_i971.PaymentBloc>(
+      () => _i971.PaymentBloc(repository: gh<_i221.PaymentRepository>()),
+    );
+    gh.factory<_i1047.OpportunityBloc>(
+      () => _i1047.OpportunityBloc(
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
       ),
     );
