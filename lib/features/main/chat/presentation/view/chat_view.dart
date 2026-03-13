@@ -3,9 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/utils/helper/date_time_helper.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
@@ -32,7 +30,6 @@ class _ChatViewState extends State<ChatView> {
   Timer? _typingTimer;
   bool _isTyping = false;
   final String _currentUserName = 'Me';
-  late SharedPref _sharedPref;
 
   String? get _otherUserId => widget.chat.isGroup ? null : widget.chat.id;
 
@@ -346,11 +343,9 @@ class _ChatViewState extends State<ChatView> {
               ),
             );
           }
-
-          if (state.messages.isNotEmpty && !state.messagesLoadingMore) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _scrollToBottom();
-            });
+          // TODO:
+          if (state.messages.isNotEmpty) {
+            _scrollToBottom();
           }
         },
         builder: (_, state) {

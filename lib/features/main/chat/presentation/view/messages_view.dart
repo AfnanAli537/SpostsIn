@@ -6,6 +6,7 @@ import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/contacts_section.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/messages_header.dart';
+import 'package:sports_in/features/main/chat/presentation/view/create_group_view.dart';
 
 class MessagesView extends StatefulWidget {
   const MessagesView({super.key});
@@ -39,78 +40,92 @@ class _MessagesViewState extends State<MessagesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFFF4F6FA),
-      child: BlocBuilder<ChatBloc, ChatState>(
-        buildWhen: (p, c) =>
-            p.contacts != c.contacts ||
-            p.contactsLoading != c.contactsLoading ||
-            p.chats != c.chats ||
-            p.chatsLoading != c.chatsLoading ||
-            p.chatsLoadingMore != c.chatsLoadingMore ||
-            p.searchQuery != c.searchQuery ||
-            p.searchResult != c.searchResult ||
-            p.hubConnected != c.hubConnected ||
-            p.hubReconnecting != c.hubReconnecting ||
-            p.hubError != c.hubError,
-        builder: (context, state) {
-          final showHubBanner = !state.hubConnected || state.hubReconnecting;
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
-          // Decide which chats to show (normal vs search)
-          final isSearching = (state.searchQuery ?? '').isNotEmpty;
-          final chats = isSearching
-              ? state.searchResult
-                    .map(
-                      (s) => ChatModel(
-                        id: s.id,
-                        title: s.title,
-                        groupPhoto: s.imageUrl,
-                        isGroup: s.type.toLowerCase() == 'group',
-                        members: const [],
-                        lastMessage: null,
-                        lastMessageTime: null,
-                        unreadCount: 0,
-                        isOnline: s.isOnline,
-                      ),
-                    )
-                    .toList()
-              : state.chats;
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 90.h),
+        child: FloatingActionButton(
+          heroTag: 'main_create_group_fab', // now explicitly unique
+          onPressed: () {
+            showCreateGroupBottomSheet(context);
+          },
+          child: const Icon(Icons.add),
+        ),
+      ),
+      body: Container(
+        color: const Color(0xFFF4F6FA),
+        child: BlocBuilder<ChatBloc, ChatState>(
+          buildWhen: (p, c) =>
+              p.contacts != c.contacts ||
+              p.contactsLoading != c.contactsLoading ||
+              p.chats != c.chats ||
+              p.chatsLoading != c.chatsLoading ||
+              p.chatsLoadingMore != c.chatsLoadingMore ||
+              p.searchQuery != c.searchQuery ||
+              p.searchResult != c.searchResult ||
+              p.hubConnected != c.hubConnected ||
+              p.hubReconnecting != c.hubReconnecting ||
+              p.hubError != c.hubError,
+          builder: (context, state) {
+            final showHubBanner = !state.hubConnected || state.hubReconnecting;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (showHubBanner) _SignalRStatusBanner(state: state),
-              MessagesHeader(
-                controller: _searchController,
-                onChanged: (v) =>
-                    context.read<ChatBloc>().add(SearchChatsEvent(v)),
-              ),
-              SizedBox(height: 10.h),
-              ContactsSection(
-                loading: state.contactsLoading,
-                contacts: state.contacts,
-              ),
-              SizedBox(height: 10.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 18.w),
-                child: Text(
-                  isSearching ? "Search results" : "Inbox",
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+            // Decide which chats to show (normal vs search)
+            final isSearching = (state.searchQuery ?? '').isNotEmpty;
+            final chats = isSearching
+                ? state.searchResult
+                      .map(
+                        (s) => ChatModel(
+                          id: s.id,
+                          title: s.title,
+                          groupPhoto: s.imageUrl,
+                          isGroup: s.type.toLowerCase() == 'group',
+                          members: const [],
+                          lastMessage: null,
+                          lastMessageTime: null,
+                          unreadCount: 0,
+                          isOnline: s.isOnline,
+                        ),
+                      )
+                      .toList()
+                : state.chats;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showHubBanner) _SignalRStatusBanner(state: state),
+                MessagesHeader(
+                  controller: _searchController,
+                  onChanged: (v) =>
+                      context.read<ChatBloc>().add(SearchChatsEvent(v)),
+                ),
+                SizedBox(height: 10.h),
+                ContactsSection(
+                  loading: state.contactsLoading,
+                  contacts: state.contacts,
+                ),
+                SizedBox(height: 10.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18.w),
+                  child: Text(
+                    isSearching ? "Search results" : "Inbox",
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10.h),
-              ChatListSection(
-                chats: chats,
-                loading: state.chatsLoading,
-                loadingMore: state.chatsLoadingMore,
-              ),
-            ],
-          );
-        },
+                SizedBox(height: 10.h),
+                ChatListSection(
+                  chats: chats,
+                  loading: state.chatsLoading,
+                  loadingMore: state.chatsLoadingMore,
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -152,7 +167,9 @@ class _SignalRStatusBanner extends StatelessWidget {
                   Icon(
                     hasError ? Icons.cloud_off_rounded : Icons.wifi_off_rounded,
                     size: 20.sp,
-                    color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                    color: hasError
+                        ? Colors.red.shade800
+                        : Colors.orange.shade800,
                   ),
                 SizedBox(width: 10.w),
                 Expanded(
@@ -160,11 +177,13 @@ class _SignalRStatusBanner extends StatelessWidget {
                     isReconnecting
                         ? 'Reconnecting…'
                         : (hasError
-                            ? 'Connection failed. Tap to retry'
-                            : 'Disconnected. Tap to reconnect'),
+                              ? 'Connection failed. Tap to retry'
+                              : 'Disconnected. Tap to reconnect'),
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color: hasError ? Colors.red.shade900 : Colors.orange.shade900,
+                      color: hasError
+                          ? Colors.red.shade900
+                          : Colors.orange.shade900,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -175,7 +194,9 @@ class _SignalRStatusBanner extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w600,
-                      color: hasError ? Colors.red.shade800 : Colors.orange.shade800,
+                      color: hasError
+                          ? Colors.red.shade800
+                          : Colors.orange.shade800,
                     ),
                   ),
               ],

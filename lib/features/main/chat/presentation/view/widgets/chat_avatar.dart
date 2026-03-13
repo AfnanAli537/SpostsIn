@@ -17,6 +17,9 @@ class ChatAvatar extends StatelessWidget {
   });
 
   Color _colorFromName(String name) {
+    if (name.isEmpty) {
+      return Colors.grey; // fallback color when no name
+    }
     final colors = [
       Colors.green,
       Colors.blue,

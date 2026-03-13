@@ -136,7 +136,24 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       data: formData,
     );
 
-    return ChatModel.fromJson(response.data);
+    // { "groupId": "...", "message": "Group created successfully." }
+    final data = response.data as Map<String, dynamic>;
+    final groupId = data['groupId']?.toString() ?? '';
+
+    return ChatModel(
+      id: groupId,
+      title: title,
+      groupPhoto: groupPhoto,
+      isGroup: true,
+      members: memberIds
+          .map((e) => ChatMemberModel(userId: e, userName: e))
+          .toList(),
+      lastMessage: null,
+      lastMessageTime: null,
+      unreadCount: 0,
+      isOnline: false,
+      lastMessageStatus: null,
+    );
   }
 
   @override
