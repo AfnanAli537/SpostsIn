@@ -195,14 +195,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // ── Connections stat card tap — owner only ──────────────────────
               onConnectionsPressed: () {
-                // Navigator.pushNamed(
-                //   context,
-                //   AppRoutes.connections,
-                // );
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ConnectionsScreen(),
+                    builder: (_) => ConnectionsScreen(isOwner: isOwnProfile,),
                   ),
                 );
               },

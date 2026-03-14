@@ -141,9 +141,11 @@ class _SectionHeaderShimmer extends StatelessWidget {
   }
 }
 
-/// Full shimmer for the connections screen — 2 request cards + 3 contact cards
+/// Full shimmer for the connections screen — conditionally shows requests section based on isOwner
 class ConnectionsShimmer extends StatelessWidget {
-  const ConnectionsShimmer({super.key});
+  final bool isOwner;
+  
+  const ConnectionsShimmer({super.key, required this.isOwner});
 
   @override
   Widget build(BuildContext context) {
@@ -152,19 +154,27 @@ class ConnectionsShimmer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Requests section
-          const _SectionHeaderShimmer(),
-          const _ConnectionCardShimmer(showActions: true),
-          const _ConnectionCardShimmer(showActions: true),
-
-          Divider(height: 1.h, indent: 0, endIndent: 0),
-          SizedBox(height: 8.h),
-
-          // Contacts section
+          // Contacts section (always shown)
           const _SectionHeaderShimmer(),
           const _ConnectionCardShimmer(),
           const _ConnectionCardShimmer(),
           const _ConnectionCardShimmer(),
+
+          // Only show requests section if user is the owner
+          if (isOwner) ...[
+            Divider(
+              height: 1.h, 
+              indent: 0, 
+              endIndent: 0,
+              color: Theme.of(context).colorScheme.onError.withOpacity(0.6),
+            ),
+            SizedBox(height: 8.h),
+
+            // Requests section
+            const _SectionHeaderShimmer(),
+            const _ConnectionCardShimmer(showActions: true),
+            const _ConnectionCardShimmer(showActions: true),
+          ],
         ],
       ),
     );

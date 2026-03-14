@@ -212,8 +212,7 @@ class ProfileSectionFactory {
         onFollowersPressed: () {},
         onFollowingPressed: () {},
         // Only the profile owner can navigate to the connections screen
-        onConnectionsPressed:
-            profile.isOwner ? onConnectionsPressed : null,
+        onConnectionsPressed:onConnectionsPressed ,
         onAnalyzedPeoplePressed: () {},
         theme: theme,
         string: string,

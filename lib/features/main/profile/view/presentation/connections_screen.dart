@@ -12,20 +12,23 @@ import 'package:sports_in/features/main/profile/view_model/connection bloc/conne
 import 'package:sports_in/features/main/profile/view_model/connection bloc/connections_state.dart';
 import 'package:sports_in/generated/l10n.dart';
 
+// ignore: must_be_immutable
 class ConnectionsScreen extends StatelessWidget {
-  const ConnectionsScreen({super.key});
+  final bool isOwner; // Make it final since it shouldn't change
+  ConnectionsScreen({super.key, required this.isOwner});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<ConnectionsBloc>()..add(LoadConnections()),
-      child: const _ConnectionsView(),
+      child: _ConnectionsView(isOwner: isOwner), // Pass isOwner here
     );
   }
 }
 
 class _ConnectionsView extends StatefulWidget {
-  const _ConnectionsView();
+  final bool isOwner; // Add this
+  const _ConnectionsView({required this.isOwner}); // Update constructor
 
   @override
   State<_ConnectionsView> createState() => _ConnectionsViewState();
@@ -33,6 +36,7 @@ class _ConnectionsView extends StatefulWidget {
 
 class _ConnectionsViewState extends State<_ConnectionsView> {
   final _scrollController = ScrollController();
+  // Remove the local isOwner variable since we'll use widget.isOwner
 
   @override
   void initState() {
@@ -60,10 +64,7 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
     final strings = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(strings.connections),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(strings.connections), centerTitle: true),
       body: BlocConsumer<ConnectionsBloc, ConnectionsState>(
         listener: (context, state) {
           if (state is ConnectionsActionError) {
@@ -77,10 +78,13 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
         },
         builder: (context, state) {
           // ── Loading ─────────────────────────────────────────────────────
+          // In ConnectionsScreen builder, where you handle ConnectionsLoading state
           if (state is ConnectionsLoading) {
-            return const SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              child: ConnectionsShimmer(),
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: ConnectionsShimmer(
+                isOwner: widget.isOwner,
+              ), // Pass isOwner here
             );
           }
 
@@ -90,8 +94,11 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline,
-                      size: 48.sp, color: theme.colorScheme.error),
+                  Icon(
+                    Icons.error_outline,
+                    size: 48.sp,
+                    color: theme.colorScheme.error,
+                  ),
                   SizedBox(height: 12.h),
                   Text(state.message, textAlign: TextAlign.center),
                   SizedBox(height: 16.h),
@@ -125,7 +132,9 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 32.h),
+                          horizontal: 16.w,
+                          vertical: 32.h,
+                        ),
                         child: Center(
                           child: Text(
                             strings.noContactsYet,
@@ -154,86 +163,102 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                       ),
                     ),
 
-                  // Divider between sections
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Divider(height: 1.h,color: theme.colorScheme.onError,),
-                    ),
-                  ),
-                  SliverToBoxAdapter(child: SizedBox(height: 8.h)),
-
-                  // ── 2. Connection Requests (bottom, paginated) ─────────
-                  if (state.requests.isNotEmpty ||
-                      state.hasMoreRequests) ...[
+                  // Only show connection requests section if user is the owner
+                  if (widget.isOwner) ...[
+                    // Divider between sections
                     SliverToBoxAdapter(
-                      child: _SectionHeader(
-                        title: strings.newConnectionRequests,
-                        count: state.requests.length,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: Divider(
+                          height: 1.h,
+                          color: theme.colorScheme.onError.withOpacity(0.6),
+                        ),
                       ),
                     ),
-                    SliverPadding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
+                    SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+
+                    // ── 2. Connection Requests (bottom, paginated) ─────────
+                    if (state.requests.isNotEmpty || state.hasMoreRequests) ...[
+                      SliverToBoxAdapter(
+                        child: _SectionHeader(
+                          title: strings.newConnectionRequests,
+                          count: state.requests.length,
+                        ),
+                      ),
+                      SliverPadding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
                             final request = state.requests[index];
                             return _RequestCard(
                               request: request,
-                              onAccept: () => bloc.add(RespondToRequest(
-                                  senderId: request.id, status: 'Accepted')),
-                              onReject: () => bloc.add(RespondToRequest(
-                                  senderId: request.id, status: 'Rejected')),
+                              onAccept: () => bloc.add(
+                                RespondToRequest(
+                                  senderId: request.id,
+                                  status: 'Accepted',
+                                ),
+                              ),
+                              onReject: () => bloc.add(
+                                RespondToRequest(
+                                  senderId: request.id,
+                                  status: 'Rejected',
+                                ),
+                              ),
                             );
-                          },
-                          childCount: state.requests.length,
-                        ),
-                      ),
-                    ),
-
-                    // Load-more indicator at the very bottom of requests
-                    if (state.isLoadingMoreRequests)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.h),
-                          child: const Center(
-                              child: CircularProgressIndicator()),
+                          }, childCount: state.requests.length),
                         ),
                       ),
 
-                    // "No more" hint when everything is loaded
-                    if (!state.hasMoreRequests &&
-                        !state.isLoadingMoreRequests &&
-                        state.requests.isNotEmpty)
+                      // Load-more indicator at the very bottom of requests
+                      if (state.isLoadingMoreRequests)
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ),
+
+                      // "No more" hint when everything is loaded
+                      if (!state.hasMoreRequests &&
+                          !state.isLoadingMoreRequests &&
+                          state.requests.isNotEmpty)
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            child: Center(
+                              child: Text(
+                                strings.noMoreRequests,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: ColorManager.hintTextColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ] else
+                      // Empty requests state
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 24.h,
+                          ),
                           child: Center(
                             child: Text(
-                              strings.noMoreRequests,
-                              style: theme.textTheme.bodySmall?.copyWith(
+                              strings.noConnectionRequests,
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 color: ColorManager.hintTextColor,
                               ),
                             ),
                           ),
                         ),
                       ),
-                  ] else
-                    // Empty requests state
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.w, vertical: 24.h),
-                        child: Center(
-                          child: Text(
-                            strings.noConnectionRequests,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: ColorManager.hintTextColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  ],
 
                   SliverToBoxAdapter(child: SizedBox(height: 24.h)),
                 ],
@@ -247,7 +272,6 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
     );
   }
 }
-
 // ── Section Header ─────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
@@ -262,9 +286,12 @@ class _SectionHeader extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
       child: Row(
         children: [
-          Text(title,
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           SizedBox(width: 8.w),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
@@ -321,9 +348,10 @@ class _ContactCard extends StatelessWidget {
               Stack(
                 children: [
                   CustomAvatar(
-                      imageUrl: contact.imageUrl,
-                      name: contact.title,
-                      radius: 32.r),
+                    imageUrl: contact.imageUrl,
+                    name: contact.title,
+                    radius: 32.r,
+                  ),
                   if (contact.isOnline)
                     Positioned(
                       right: 1,
@@ -335,7 +363,9 @@ class _ContactCard extends StatelessWidget {
                           color: Colors.green,
                           shape: BoxShape.circle,
                           border: Border.all(
-                              color: theme.colorScheme.surface, width: 2),
+                            color: theme.colorScheme.surface,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -348,8 +378,9 @@ class _ContactCard extends StatelessWidget {
                   children: [
                     Text(
                       contact.title,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -358,14 +389,19 @@ class _ContactCard extends StatelessWidget {
                       Text(
                         strings.online,
                         style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.green, fontWeight: FontWeight.w500),
+                          color: Colors.green,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded,
-                  color: theme.colorScheme.onSurfaceVariant, size: 22.sp),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.colorScheme.onTertiaryContainer,
+                size: 22.sp,
+              ),
             ],
           ),
         ),
@@ -380,10 +416,11 @@ class _RequestCard extends StatelessWidget {
   final ConnectionRequest request;
   final VoidCallback onAccept;
   final VoidCallback onReject;
-  const _RequestCard(
-      {required this.request,
-      required this.onAccept,
-      required this.onReject});
+  const _RequestCard({
+    required this.request,
+    required this.onAccept,
+    required this.onReject,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -391,8 +428,11 @@ class _RequestCard extends StatelessWidget {
     final strings = S.of(context);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.userProfile,
-          arguments: request.id),
+      onTap: () => Navigator.pushNamed(
+        context,
+        AppRoutes.userProfile,
+        arguments: request.id,
+      ),
       child: Container(
         margin: EdgeInsets.only(bottom: 16.h),
         decoration: BoxDecoration(
@@ -412,9 +452,10 @@ class _RequestCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomAvatar(
-                  imageUrl: request.profilePictureUrl,
-                  name: request.fullName,
-                  radius: 32.r),
+                imageUrl: request.profilePictureUrl,
+                name: request.fullName,
+                radius: 32.r,
+              ),
               SizedBox(width: 16.w),
               Expanded(
                 child: Column(
@@ -422,8 +463,9 @@ class _RequestCard extends StatelessWidget {
                   children: [
                     Text(
                       request.fullName,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -431,8 +473,9 @@ class _RequestCard extends StatelessWidget {
                     Text(
                       strings.wantsToConnect,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onTertiaryContainer,
-                          fontWeight: FontWeight.w500),
+                        color: theme.colorScheme.onTertiaryContainer,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     SizedBox(height: 16.h),
                     Row(
@@ -443,12 +486,16 @@ class _RequestCard extends StatelessWidget {
                             style: FilledButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 12.h),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.r)),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
-                            child: Text(strings.accept,
-                                style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w600)),
+                            child: Text(
+                              strings.accept,
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(width: 12.w),
@@ -459,15 +506,19 @@ class _RequestCard extends StatelessWidget {
                               padding: EdgeInsets.symmetric(vertical: 12.h),
                               foregroundColor: theme.colorScheme.error,
                               side: BorderSide(
-                                  color: theme.colorScheme.error
-                                      .withOpacity(0.6)),
+                                color: theme.colorScheme.error.withOpacity(0.6),
+                              ),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.r)),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
-                            child: Text(strings.reject,
-                                style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w600)),
+                            child: Text(
+                              strings.reject,
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ],
