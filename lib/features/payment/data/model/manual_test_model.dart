@@ -1,4 +1,3 @@
-
 class ManualActivateResponse {
   final bool? isSuccess;
   final String? message;
@@ -9,7 +8,7 @@ class ManualActivateResponse {
   final String? name;
   final String? expiresAt;
   final String? image;
-  final dynamic errors; // null or list of validation errors
+  final dynamic errors; 
 
   const ManualActivateResponse({
     this.isSuccess,

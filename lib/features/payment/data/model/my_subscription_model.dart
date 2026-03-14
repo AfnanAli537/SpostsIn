@@ -1,28 +1,3 @@
-// lib/features/payment/data/models/my_subscription_model.dart
-
-/// Maps to the response of:
-/// GET https://sportsin.runasp.net/api/Payments/my-subscription?userId={userId}
-///
-/// Returns null body / 204 when the user has no active subscription,
-/// in which case [MySubscriptionModel.fromJson] will return null and
-/// the UI should navigate to the SubscriptionScreen.
-///
-/// Example JSON (active):
-/// ```json
-/// {
-///   "planName": "Free",
-///   "startDate": "0001-01-01T00:00:00",
-///   "endDate": "2026-04-08T17:24:29.5228181Z",
-///   "isActive": true,
-///   "planId": "a1b2c3d4-e5f6-4789-a1b2-c3d4e5f67890",
-///   "price": 0,
-///   "description": null,
-///   "monthlyAdLimit": 0,
-///   "monthlyVideoAnalysisLimit": 3,
-///   "hasDetailedReports": false,
-///   "durationDays": 30
-/// }
-/// ```
 class MySubscriptionModel {
   final String planName;
   final DateTime startDate;
@@ -50,7 +25,6 @@ class MySubscriptionModel {
     required this.durationDays,
   });
 
-  /// Returns null if [json] is null or empty — caller should show SubscriptionScreen.
   static MySubscriptionModel? fromJsonNullable(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) return null;
     return MySubscriptionModel.fromJson(json);
@@ -86,12 +60,9 @@ class MySubscriptionModel {
         'durationDays': durationDays,
       };
 
-  /// Whether the subscription is currently valid (active + not expired).
   bool get isValid => isActive && endDate.isAfter(DateTime.now());
 
   bool get isFree => price == 0;
-
-  /// Remaining days until subscription expires.
   int get remainingDays => endDate.difference(DateTime.now()).inDays;
 
   @override

@@ -1,9 +1,3 @@
-
-
-
-
-// lib/features/payment/presentation/screens/subscription_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
@@ -11,6 +5,7 @@ import 'package:sports_in/features/payment/data/model/subscription%20plan%20mode
 import 'package:sports_in/features/payment/presentation/fawery_mobile_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/features/payment/presentation/vodafon_cash_screen.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -60,6 +55,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               method: PaymentMethod.creditCard,
             ),
           );
+
       return;
     }
 
@@ -260,7 +256,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         ),
       );
     }
-
+   if (state is ProcessSuccessful) {
+     PaymentSuccessDialog(transactionId: 'transaction @?',);
+    }
     // ── Error ──
     if (state is PlansError) {
       return SizedBox(

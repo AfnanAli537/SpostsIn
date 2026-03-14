@@ -1,18 +1,14 @@
-// lib/features/payment/data/datasources/payment_remote_datasource_impl.dart
-
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/features/payment/data/interface/payment_interface.dart';
 import 'package:sports_in/features/payment/data/model/initiate_payment_model.dart';
-import 'package:sports_in/features/payment/data/model/model.dart';
+import 'package:sports_in/features/payment/data/model/manual_test_model.dart';
 import 'package:sports_in/features/payment/data/model/my_subscription_model.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
-
 
 @LazySingleton(as: PaymentInterface)
 class PaymentRemoteDataSourceImpl implements PaymentInterface {
@@ -21,14 +17,10 @@ class PaymentRemoteDataSourceImpl implements PaymentInterface {
   PaymentRemoteDataSourceImpl({required this.apiClient});
 
   DioException _badResponse(Response response) => DioException(
-        requestOptions: response.requestOptions,
-        response: response,
-        type: DioExceptionType.badResponse,
-      );
-
-  // ─────────────────────────────────────────────
-  // GET /api/Payments/plans
-  // ─────────────────────────────────────────────
+    requestOptions: response.requestOptions,
+    response: response,
+    type: DioExceptionType.badResponse,
+  );
   @override
   Future<List<SubscriptionPlanModel>> getPlans() async {
     try {
@@ -40,8 +32,10 @@ class PaymentRemoteDataSourceImpl implements PaymentInterface {
       if (response.statusCode == 200) {
         final List items = response.data as List? ?? [];
         return items
-            .map((json) =>
-                SubscriptionPlanModel.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) =>
+                  SubscriptionPlanModel.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       }
 
@@ -56,9 +50,6 @@ class PaymentRemoteDataSourceImpl implements PaymentInterface {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // GET /api/Payments/my-subscription?userId=
-  // ─────────────────────────────────────────────
   @override
   Future<MySubscriptionModel?> getMySubscription({
     required String userId,
@@ -71,8 +62,6 @@ class PaymentRemoteDataSourceImpl implements PaymentInterface {
 
       log('📦 [Payment] mySubscription status: ${response.statusCode}');
       log('📦 [Payment] mySubscription data: ${response.data}');
-
-      // 204 No Content or null/empty body → no subscription
       if (response.statusCode == 204 ||
           response.data == null ||
           (response.data is Map && (response.data as Map).isEmpty)) {
@@ -88,7 +77,6 @@ class PaymentRemoteDataSourceImpl implements PaymentInterface {
 
       throw ApiErrorHandler.handleDioError(_badResponse(response));
     } on DioException catch (e) {
-      // 404 → treat as "no subscription" not as an error
       if (e.response?.statusCode == 404) {
         log('ℹ️ [Payment] 404 → no subscription found for user');
         return null;
@@ -102,118 +90,71 @@ class PaymentRemoteDataSourceImpl implements PaymentInterface {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // POST /api/Payments/initiate
-  // ─────────────────────────────────────────────
- @override
-Future<InitiatePaymentResponse> initiatePayment(
-  InitiatePaymentRequest request,
-) async {
-  try {
-    final body = request.toJson();
+  @override
+  Future<InitiatePaymentResponse> initiatePayment(
+    InitiatePaymentRequest request,
+  ) async {
+    try {
+      final body = request.toJson();
+      final id = request.targetId;
+      final type = body['targetType'];
+      final method = body['method'];
+      final mobileNumber = body['mobileNumber'];
+      log('🚀 [Payment] initiatePayment request: $body');
 
-    // // wrap targetId with single quotes
-    // body['targetId'] = "${request.targetId}";
-     final id =request.targetId;
-     final type= body['targetType'];
-     final method = body['method'];
-     final mobileNumber = body['mobileNumber'];
-    log('🚀 [Payment] initiatePayment request: $body');
+      final response = await apiClient.post(
+        Endpoints.initiate,
+        data: {
+          "targetId": id,
+          "targetType": type,
+          "method": method,
+          if (mobileNumber != null) "mobileNumber": mobileNumber,
+        },
+      );
 
-    final response = await apiClient.post(
-      Endpoints.initiate,
-     data: {
-  "targetId": id,
-  "targetType": type,
-  "method": method,
-  if (mobileNumber != null) "mobileNumber": mobileNumber,
-},
-    );
+      log('📦 [Payment] initiatePayment status: ${response.statusCode}');
+      log('📦 [Payment] initiatePayment data: ${response.data}');
 
-    log('📦 [Payment] initiatePayment status: ${response.statusCode}');
-    log('📦 [Payment] initiatePayment data: ${response.data}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final dynamic resBody = response.data;
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final dynamic resBody = response.data;
+        if (resBody is String) {
+          return InitiatePaymentResponse(transactionId: resBody);
+        }
 
-      if (resBody is String) {
-        return InitiatePaymentResponse(transactionId: resBody);
+        return InitiatePaymentResponse.fromJson(
+          resBody as Map<String, dynamic>,
+        );
       }
 
-      return InitiatePaymentResponse.fromJson(
-        resBody as Map<String, dynamic>,
-      );
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      log('❌ [Payment] initiatePayment Dio error: ${e.message}');
+      log('❌ [Payment] initiatePayment response: ${e.response?.data}');
+      throw ApiErrorHandler.handleDioError(e);
+    } catch (e) {
+      log('❌ [Payment] initiatePayment unknown error: $e');
+      rethrow;
     }
-
-    throw ApiErrorHandler.handleDioError(_badResponse(response));
-  } on DioException catch (e) {
-    log('❌ [Payment] initiatePayment Dio error: ${e.message}');
-    log('❌ [Payment] initiatePayment response: ${e.response?.data}');
-    throw ApiErrorHandler.handleDioError(e);
-  } catch (e) {
-    log('❌ [Payment] initiatePayment unknown error: $e');
-    rethrow;
   }
-}
-  // @override
-  // Future<InitiatePaymentResponse> initiatePayment(
-  //   InitiatePaymentRequest request,
-  // ) async {
-  //   try {
-  //     log('🚀 [Payment] initiatePayment request: ${request.toJson()}');
 
-  //     final response = await apiClient.post(
-  //       Endpoints.initiate,
-  //       data: request.toJson(),
-  //     );
-
-  //     log('📦 [Payment] initiatePayment status: ${response.statusCode}');
-  //     log('📦 [Payment] initiatePayment data: ${response.data}');
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       final dynamic body = response.data;
-
-  //       // Some gateways return just the transaction ID as a plain string
-  //       if (body is String) {
-  //         return InitiatePaymentResponse(transactionId: body, );
-  //       }
-
-  //       return InitiatePaymentResponse.fromJson(body as Map<String, dynamic>);
-  //     }
-
-  //     throw ApiErrorHandler.handleDioError(_badResponse(response));
-  //   } on DioException catch (e) {
-  //     log('❌ [Payment] initiatePayment Dio error: ${e.message}');
-  //     log('❌ [Payment] initiatePayment response: ${e.response?.data}');
-  //     throw ApiErrorHandler.handleDioError(e);
-  //   } catch (e) {
-  //     log('❌ [Payment] initiatePayment unknown error: $e');
-  //     rethrow;
-  //   }
-  // }
-
-// ─────────────────────────────────────────────
-  // POST /api/Payments/admin/manual-activate/{orderId}
-  // ─────────────────────────────────────────────
   @override
-  Future<ManualActivateResponse> manualTest({
-    required String orderId,
-  }) async {
+  Future<ManualActivateResponse> manualTest({required String orderId}) async {
     try {
       log('🚀 [Payment] manualActivate orderId: $orderId');
- 
+
       final url = Endpoints.manualActivate.replaceFirst('{orderId}', orderId);
       final response = await apiClient.post(url);
- 
+
       log('📦 [Payment] manualActivate status: ${response.statusCode}');
       log('📦 [Payment] manualActivate data: ${response.data}');
- 
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ManualActivateResponse.fromJson(
           response.data as Map<String, dynamic>,
         );
       }
- 
+
       throw ApiErrorHandler.handleDioError(_badResponse(response));
     } on DioException catch (e) {
       log('❌ [Payment] manualActivate Dio error: ${e.message}');
@@ -224,12 +165,4 @@ Future<InitiatePaymentResponse> initiatePayment(
       rethrow;
     }
   }
-// @override
-//   Future<void> manualTest({
-//   required String orderId
-// })async {
-//   await apiClient.post(
-//   "${Endpoints.manualActivate}/$orderId",
-// );
-// }
 }

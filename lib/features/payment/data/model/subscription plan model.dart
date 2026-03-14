@@ -1,21 +1,3 @@
-// lib/features/payment/data/models/subscription_plan_model.dart
-
-/// Maps to one item in the array returned by:
-/// GET https://sportsin.runasp.net/api/Payments/plans
-///
-/// Example JSON:
-/// ```json
-/// {
-///   "id": "a1b2c3d4-e5f6-4789-a1b2-c3d4e5f67890",
-///   "name": "Free",
-///   "price": 0,
-///   "description": null,
-///   "monthlyAdLimit": 0,
-///   "monthlyVideoAnalysisLimit": 3,
-///   "hasDetailedReports": false,
-///   "durationDays": 30
-/// }
-/// ```
 class SubscriptionPlanModel {
   final String id;
   final String name;
@@ -61,7 +43,6 @@ class SubscriptionPlanModel {
         'durationDays': durationDays,
       };
 
-  /// Whether this is the free tier.
   bool get isFree => price == 0;
 
   @override
