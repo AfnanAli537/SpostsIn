@@ -25,15 +25,11 @@ class ProcessingPaymentDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Lottie loading animation ──
-            // Uses the public Lottie CDN URL — swap with your local asset path:
-            // Lottie.asset('assets/lottie/payment_loading.json', width: 100, height: 100)
             Lottie.network(
               'https://assets10.lottiefiles.com/packages/lf20_szviypry.json',
               width: 100,
               height: 100,
               fit: BoxFit.contain,
-              // Fallback while loading
               frameBuilder: (context, child, composition) {
                 if (composition == null) {
                   return const SizedBox(
@@ -48,10 +44,7 @@ class ProcessingPaymentDialog extends StatelessWidget {
                 return child;
               },
             ),
-
             const SizedBox(height: 24),
-
-            // ── Title ──
             const Text(
               'Processing Payment...',
               textAlign: TextAlign.center,
@@ -62,10 +55,7 @@ class ProcessingPaymentDialog extends StatelessWidget {
                 letterSpacing: -0.3,
               ),
             ),
-
             const SizedBox(height: 10),
-
-            // ── Subtitle ──
             const Text(
               'Please do not close the app',
               textAlign: TextAlign.center,

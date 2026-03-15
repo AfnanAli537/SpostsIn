@@ -3,7 +3,6 @@ import 'package:lottie/lottie.dart';
 
 /// A dialog shown when payment completes successfully.
 /// Auto-dismisses after [autoDismissAfter] duration (default 3 seconds).
-/// Has no button — caller controls dismissal via [onDismissed] callback.
 ///
 /// Usage:
 /// ```dart
@@ -12,14 +11,14 @@ import 'package:lottie/lottie.dart';
 ///   barrierDismissible: false,
 ///   builder: (_) => PaymentSuccessDialog(
 ///     transactionId: 'RTXN-SPORTSIN-998877',
-///     onDismissed: () { /* navigate or continue */ },
+///     onDismissed: () { /* navigate or re-fetch plans */ },
 ///   ),
 /// );
 /// ```
 class PaymentSuccessDialog extends StatefulWidget {
   final String transactionId;
 
-  /// Called after the animation finishes and the dialog auto-closes.
+  /// Called after the dialog auto-closes.
   final VoidCallback? onDismissed;
 
   /// How long to wait before auto-dismissing (default: 3 seconds).
@@ -46,7 +45,6 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
   void initState() {
     super.initState();
 
-    // Fade + slide-up entrance
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -59,7 +57,6 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
 
     _fadeController.forward();
 
-    // Auto-dismiss
     Future.delayed(widget.autoDismissAfter, () {
       if (mounted) {
         Navigator.of(context).pop();
@@ -81,17 +78,17 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
       child: SlideTransition(
         position: _slideIn,
         child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: Colors.white,
           elevation: 10,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // ── Lottie success animation ──
-                // Swap with local asset:
-                // Lottie.asset('assets/lottie/payment_success.json', width: 110, height: 110, repeat: false)
                 Lottie.network(
                   'https://assets2.lottiefiles.com/packages/lf20_jbrw3hcz.json',
                   width: 110,
@@ -118,7 +115,6 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
 
                 const SizedBox(height: 16),
 
-                // ── Title ──
                 const Text(
                   'Payment Successful!',
                   textAlign: TextAlign.center,
@@ -132,9 +128,8 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
 
                 const SizedBox(height: 10),
 
-                // ── Body copy ──
                 const Text(
-                  'Your video analysis will start shortly.\nSit tight — we\'re on it! 🎬',
+                  'Your subscription is now active.\nEnjoy premium access! 🎉',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -147,7 +142,8 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
 
                 // ── Transaction ID ──
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(8),
@@ -165,7 +161,7 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
 
                 const SizedBox(height: 20),
 
-                // ── Auto-dismiss indicator ──
+                // ── Auto-dismiss bouncing dots ──
                 const _CountdownDots(),
               ],
             ),
@@ -176,7 +172,7 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
   }
 }
 
-/// Animated bouncing dots indicating auto-dismiss is in progress
+/// Animated bouncing dots indicating auto-dismiss is in progress.
 class _CountdownDots extends StatefulWidget {
   const _CountdownDots();
 
