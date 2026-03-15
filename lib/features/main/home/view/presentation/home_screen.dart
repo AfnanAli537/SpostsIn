@@ -10,6 +10,8 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart';
+import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/courses_tab.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart';
@@ -166,6 +168,12 @@ class _HomePageState extends State<HomePage> {
                 ),
               )..add(const FetchPosts()),
             ),
+            // ── Ads BLoC — feeds AdWidget cards inside PostsTab ──────────────
+            BlocProvider(
+              create: (_) => AdsBloc(
+                adsRepo: getIt<AdsRepositoryImpl>(),
+              )..add(const FetchAdsFeed()),
+            ),
             BlocProvider(
               create: (_) => OpportunityBloc(
                 opportunityRepo: OpportunityReposatory(
@@ -184,7 +192,7 @@ class _HomePageState extends State<HomePage> {
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
-                  // ── Greeting (same as old UI) ──────────────────────
+                  // ── Greeting ──────────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.all(16.w),
@@ -211,7 +219,9 @@ class _HomePageState extends State<HomePage> {
                               Text(
                                 strings.happyToSeeYouToday,
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface,
                                 ),
                               ),
                             ],
@@ -221,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
 
-                  // ── Tab chips (same as old UI) ─────────────────────
+                  // ── Tab chips ─────────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -244,8 +254,12 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.w500,
                                   fontSize: 14.sp,
                                   color: isSelected
-                                      ? Theme.of(context).colorScheme.secondary
-                                      : Theme.of(context).colorScheme.onSurface,
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .secondary
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
                                 ),
                               ),
                             );
@@ -255,10 +269,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
 
-                  // ── Tab content ────────────────────────────────────
+                  // ── Tab content ───────────────────────────────────────────
                   BuildContent(
                     currentTab: _currentTab,
-                    onTabChange: (tab) => setState(() => _currentTab = tab),
+                    onTabChange: (tab) =>
+                        setState(() => _currentTab = tab),
                     forYouKey: _forYouKey,
                     postsKey: _postsKey,
                     coursesKey: _coursesKey,

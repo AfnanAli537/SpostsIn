@@ -105,4 +105,23 @@ class Endpoints {
 
   // Analytics (Provider)
   static const String revenueReport = "/api/Courses/{courseId}/revenue-report";
+
+
+
+  static const String adsFeed            = '/api/Advertisements/feed';
+static const String createAd           = '/api/Advertisements';
+static const String updateAd           = '/api/Advertisements/{id}';
+static const String deleteAd           = '/api/Advertisements/{id}';
+static const String getAdById          = '/api/Advertisements/{id}';
+static const String toggleAdStatus     = '/api/Advertisements/{id}/toggle-status';
+static const String userAds            = '/api/Advertisements/user-ads';
+static const String adsDashboard       = '/api/Advertisements/dashboard';
+static const String logAdClick         = '/api/Advertisements/{id}/click';
+static const String sendAdProgress     = '/api/Advertisements/{id}/progress';
+static const String likeAd             = '/api/Advertisements/{id}/like';
+static const String getAdLikers        = '/api/Advertisements/{id}/likers';
+static const String addAdComment       = '/api/Advertisements/{id}/comments';
+static const String getAdComments      = '/api/Advertisements/{id}/comments';
+static const String editAdComment      = '/api/Advertisements/comments/{commentId}';
+static const String deleteAdComment    = '/api/Advertisements/comments/{commentId}';
 }

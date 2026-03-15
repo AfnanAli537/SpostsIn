@@ -32,6 +32,14 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
+import 'package:sports_in/features/main/advertisement/data/data_sources/ad_remote_data_source.dart'
+    as _i823;
+import 'package:sports_in/features/main/advertisement/data/interface/i_ads_data_source.dart'
+    as _i658;
+import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart'
+    as _i277;
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart'
+    as _i259;
 import 'package:sports_in/features/main/courses/data/data_sources/course_remote_data_source.dart'
     as _i8;
 import 'package:sports_in/features/main/courses/data/interface/i_course_data_source.dart'
@@ -155,6 +163,9 @@ extension GetItInjectableX on _i174.GetIt {
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
       ),
     );
+    gh.lazySingleton<_i658.IAdsDataSource>(
+      () => _i823.AdRemoteDataSource(gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i592.ICourseDataSource>(
       () => _i8.CourseRemoteDataSource(gh<_i694.ApiClient>()),
     );
@@ -163,6 +174,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i752.ProfileRepo>(
       () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
+    );
+    gh.factory<_i277.AdsRepositoryImpl>(
+      () => _i277.AdsRepositoryImpl(gh<_i658.IAdsDataSource>()),
     );
     gh.factory<_i691.ConnectionsBloc>(
       () => _i691.ConnectionsBloc(gh<_i752.ProfileRepo>()),
@@ -175,6 +189,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i707.ForgetPasswordRepo>(
       () => _i707.ForgetPasswordRepo(gh<_i705.IForgetPasswordDataSource>()),
+    );
+    gh.factory<_i259.AdsBloc>(
+      () => _i259.AdsBloc(adsRepo: gh<_i277.AdsRepositoryImpl>()),
     );
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),

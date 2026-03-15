@@ -14,6 +14,11 @@ import 'package:sports_in/features/forget_password/view/presentation/verify_emai
 import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
 import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
+import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/create_add_screen.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/my_ads_screen.dart';
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
@@ -44,6 +49,8 @@ import 'package:sports_in/features/onboarding/view_model/onboarding_bloc/onboard
 abstract class RoutesManager {
   static Route<dynamic>? router(RouteSettings settings) {
     switch (settings.name) {
+
+      // ── Auth ────────────────────────────────────────────────────────────────
       case AppRoutes.login:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
@@ -51,8 +58,10 @@ abstract class RoutesManager {
             child: LoginScreen(),
           ),
         );
+
       case AppRoutes.privacyPolicy:
         return CupertinoPageRoute(builder: (_) => PrivacyPolicyScreen());
+
       case AppRoutes.onboarding:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
@@ -60,6 +69,7 @@ abstract class RoutesManager {
             child: OnboardingScreen(),
           ),
         );
+
       case AppRoutes.forgetPassword:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
@@ -82,10 +92,12 @@ abstract class RoutesManager {
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
             create: (_) => ForgotPasswordBloc(getIt<ForgetPasswordRepo>()),
-            child: ResetPasswordScreen(email: args['email'], otp: args['otp']),
+            child: ResetPasswordScreen(
+                email: args['email'], otp: args['otp']),
           ),
         );
 
+      // ── Register ────────────────────────────────────────────────────────────
       case AppRoutes.userType:
         return CupertinoPageRoute(builder: (_) => UserTypeScreen());
 
@@ -149,14 +161,17 @@ abstract class RoutesManager {
           ),
         );
 
+      // ── Main ────────────────────────────────────────────────────────────────
       case AppRoutes.mainLayout:
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+            create: (_) =>
+                PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: CustomBottomNav(),
           ),
         );
 
+      // ── Profile ─────────────────────────────────────────────────────────────
       case AppRoutes.userProfile:
         final userId = settings.arguments as String;
         return CupertinoPageRoute(
@@ -164,7 +179,8 @@ abstract class RoutesManager {
         );
 
       case AppRoutes.editProfile:
-        return CupertinoPageRoute(builder: (_) => EditProfileRouterScreen());
+        return CupertinoPageRoute(
+            builder: (_) => EditProfileRouterScreen());
 
       case AppRoutes.profilePostsListScreen:
         final args = settings.arguments as Map<String, dynamic>;
@@ -179,11 +195,13 @@ abstract class RoutesManager {
         final args = settings.arguments as PostModel;
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+            create: (_) =>
+                PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: UpdatePostScreen(post: args),
           ),
         );
 
+      // ── Opportunity ─────────────────────────────────────────────────────────
       case AppRoutes.opportunityEditScreen:
         final opportunityId = settings.arguments as String;
         return CupertinoPageRoute(
@@ -195,6 +213,7 @@ abstract class RoutesManager {
           ),
         );
 
+      // ── Courses ─────────────────────────────────────────────────────────────
       case AppRoutes.courseList:
         final args = settings.arguments as Map<String, dynamic>;
         final coursesBloc = args['coursesBloc'] as CoursesBloc;
@@ -207,16 +226,44 @@ abstract class RoutesManager {
           ),
         );
 
+      // ── Settings / misc ─────────────────────────────────────────────────────
       case AppRoutes.settings:
-        return CupertinoPageRoute(builder: (_) => const SettingsScreen());
+        return CupertinoPageRoute(
+            builder: (_) => const SettingsScreen());
+
       case AppRoutes.contactUs:
-        return CupertinoPageRoute(builder: (_) => const ContactUsScreen());
+        return CupertinoPageRoute(
+            builder: (_) => const ContactUsScreen());
+
       case AppRoutes.about:
         return CupertinoPageRoute(builder: (_) => const AboutScreen());
+
       case AppRoutes.accountSwitcher:
         return CupertinoPageRoute(
           builder: (_) => const AccountSwitcherBottomSheet(),
         );
+
+      // ── Advertisements ──────────────────────────────────────────────────────
+      /// [settings.arguments] is null  → create mode
+      /// [settings.arguments] is [AdModel] → edit mode
+      case AppRoutes.createAdScreen:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                AdsBloc(adsRepo: getIt<AdsRepositoryImpl>()),
+            child: CreateAdScreen(
+              existingAd: settings.arguments as AdModel?,
+            ),
+          ),
+        );
+
+      /// Navigate to "My Ads" — MyAdsScreen provides its own BLoC internally,
+      /// so no wrapper is needed here.
+      case AppRoutes.myAdsScreen:
+        return CupertinoPageRoute(
+          builder: (_) => const MyAdsScreen(),
+        );
+
       default:
         return null;
     }

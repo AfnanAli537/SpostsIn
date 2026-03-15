@@ -9,6 +9,9 @@ import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
 import 'package:sports_in/features/auth_session/view/account_switcher_screen.dart';
+import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/my_ads_screen.dart';
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
@@ -26,7 +29,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   LoginResponse? _currentUser;
   final sharedPref = getIt<SharedPref>();
-  // bool _pushNotifications = false;
   String? get _currentUserId => sharedPref.getUserId();
 
   @override
@@ -37,62 +39,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadUserData() async {
     final user = await getIt<SharedPref>().getUserFromPrefs();
-    setState(() {
-      _currentUser = user;
-    });
+    setState(() => _currentUser = user);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
+
     if (_currentUser == null) {
-    return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).settings)),
-      body: const Center(child: CircularProgressIndicator()),
-    );
-  }
+      return Scaffold(
+        appBar: AppBar(title: Text(string.settings)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(string.settings), centerTitle: true),
       body: ListView(
         padding: EdgeInsets.all(16.w),
         children: [
-          // Language Section
           _buildSectionTitle(string.selectLanguage, theme),
           SizedBox(height: 8.h),
           _buildLanguageCard(theme, string),
           SizedBox(height: 48.h),
 
-          // Personal Info Section
           _buildSectionTitle(string.personalInfo, theme),
           SizedBox(height: 8.h),
           _buildPersonalInfoCards(theme, string),
           SizedBox(height: 48.h),
 
-          // Account Section
           _buildSectionTitle(string.account, theme),
           SizedBox(height: 8.h),
           _buildAccountCard(theme, string),
           SizedBox(height: 48.h),
 
-          // Subscription Section
           _buildSectionTitle(string.subscription, theme),
           SizedBox(height: 8.h),
           _buildSubscriptionCard(theme, string),
           SizedBox(height: 48.h),
 
-          // Activities Section
           _buildSectionTitle(string.activities, theme),
           SizedBox(height: 8.h),
           _buildActivitiesCards(theme, string),
           SizedBox(height: 48.h),
 
-          // Switch Account Button
           _buildSwitchAccountButton(theme, string),
         ],
       ),
     );
   }
+
+  // ─── Section title ─────────────────────────────────────────────────────────
 
   Widget _buildSectionTitle(String title, ThemeData theme) {
     return Text(
@@ -103,6 +101,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+
+  // ─── Language ──────────────────────────────────────────────────────────────
 
   Widget _buildLanguageCard(ThemeData theme, S string) {
     return Container(
@@ -135,17 +135,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   final borderColor = isSelected
                       ? ColorManager.borderCircular
                       : Colors.transparent;
-                  final imagePath = value == "en"
-                      ? IconAssets.us
-                      : IconAssets.eg;
-
+                  final imagePath =
+                      value == "en" ? IconAssets.us : IconAssets.eg;
                   return Container(
                     padding: EdgeInsets.all(2.w),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: borderColor, width: 1.w),
                     ),
-                    child: Image.asset(imagePath, width: 20.w, height: 20.h),
+                    child:
+                        Image.asset(imagePath, width: 20.w, height: 20.h),
                   );
                 },
               );
@@ -155,6 +154,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+
+  // ─── Personal info ─────────────────────────────────────────────────────────
 
   Widget _buildPersonalInfoCards(ThemeData theme, S string) {
     return Column(
@@ -206,41 +207,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(
                   label,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: Colors.grey[600]),
                 ),
                 SizedBox(height: 2.h),
                 Text(
                   value,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: theme.textTheme.bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
           ),
           if (label == 'Password')
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
+            Icon(Icons.chevron_right,
+                color: Colors.grey[400], size: 20.sp),
         ],
       ),
     );
   }
 
+  // ─── Account ───────────────────────────────────────────────────────────────
+
   Widget _buildAccountCard(ThemeData theme, S string) {
     return _buildNavigationCard(
       title: string.changePassword,
       icon: Icons.key_outlined,
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRoutes.otp,
-          arguments: _currentUser?.email,
-        );
-      },
+      onTap: () => Navigator.pushNamed(
+        context,
+        AppRoutes.otp,
+        arguments: _currentUser?.email,
+      ),
       theme: theme,
     );
   }
+
+  // ─── Subscription ──────────────────────────────────────────────────────────
 
   Widget _buildSubscriptionCard(ThemeData theme, S string) {
     return _buildNavigationCard(
@@ -253,73 +255,67 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  // ─── Activities ────────────────────────────────────────────────────────────
+
   Widget _buildActivitiesCards(ThemeData theme, S string) {
     return Column(
       children: [
+        // Manage Posts
         _buildNavigationCard(
           title: string.managePosts,
           icon: Icons.article_outlined,
-          onTap: () {
-            // Navigator.pushNamed(context, AppRoutes.managePosts);
-            Navigator.pushNamed(
-              context,
-              AppRoutes.profilePostsListScreen,
-              arguments: {'userId': _currentUserId, 'isCurrentUser': true},
-            );
-          },
+          onTap: () => Navigator.pushNamed(
+            context,
+            AppRoutes.profilePostsListScreen,
+            arguments: {'userId': _currentUserId, 'isCurrentUser': true},
+          ),
           theme: theme,
         ),
         SizedBox(height: 12.h),
-        _currentUser!.userType == 'Coach' ||
-                _currentUser!.userType == 'Scout' ||
-                _currentUser!.userType == 'Club'
-            ? Column(
-                children: [
-                  _buildNavigationCard(
-                    title: string.manageOpportunities,
-                    icon: Icons.work_outline,
-                    onTap: () {
-                      // Navigator.pushNamed(context, AppRoutes.manageOpportunities);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MyOpportunitiesListScreen(
-                            showActiveOnly: true, // or false for inactive
-                          ),
-                        ),
-                      );
-                    },
-                    theme: theme,
-                  ),
-                  SizedBox(height: 12.h),
-                ],
-              )
-            : SizedBox.shrink(),
+
+        // Manage Opportunities (coach / scout / club)
+        if (_currentUser!.userType == 'Coach' ||
+            _currentUser!.userType == 'Scout' ||
+            _currentUser!.userType == 'Club') ...[
+          _buildNavigationCard(
+            title: string.manageOpportunities,
+            icon: Icons.work_outline,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    MyOpportunitiesListScreen(showActiveOnly: true),
+              ),
+            ),
+            theme: theme,
+          ),
+          SizedBox(height: 12.h),
+        ],
+
+        // Manage Courses
         _buildNavigationCard(
           title: string.manageCourse,
           icon: Icons.school_outlined,
-          onTap: () {
-            // Navigator.pushNamed(context, AppRoutes.manageCourses);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (_) => getIt<CoursesBloc>(),
-                  child: CourseListScreen(
-                    listType:
-                        _currentUser!.userType == 'Coach' ||
-                            _currentUser!.userType == 'Scout' ||
-                            _currentUser!.userType == 'Club'
-                        ? CourseListType.created
-                        : CourseListType.enrolled,
-                  ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BlocProvider(
+                create: (_) => getIt<CoursesBloc>(),
+                child: CourseListScreen(
+                  listType: (_currentUser!.userType == 'Coach' ||
+                          _currentUser!.userType == 'Scout' ||
+                          _currentUser!.userType == 'Club')
+                      ? CourseListType.created
+                      : CourseListType.enrolled,
                 ),
               ),
-            );
-          },
+            ),
+          ),
           theme: theme,
         ),
         SizedBox(height: 12.h),
+
+        // Manage Video Analysis
         _buildNavigationCard(
           title: string.manageVideoAnalysis,
           icon: Icons.video_library_outlined,
@@ -329,38 +325,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
           theme: theme,
         ),
         SizedBox(height: 12.h),
+
+        // ── Manage Advertisements ──────────────────────────────────────────
         _buildNavigationCard(
           title: string.manageAdvertisement,
           icon: Icons.campaign_outlined,
-          onTap: () {
-            // TODO: Navigate to advertisement screen
-          },
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BlocProvider(
+                create: (_) =>
+                    AdsBloc(adsRepo: getIt<AdsRepositoryImpl>()),
+                child: const MyAdsScreen(),
+              ),
+            ),
+          ),
           theme: theme,
         ),
         SizedBox(height: 12.h),
+
+        // Manage Achievements
         _buildNavigationCard(
           title: string.manageAchievement,
           icon: Icons.emoji_events_outlined,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AchievementsListScreen(
-                  userId: _currentUser!.userId!,
-                  isCurrentUser: true,
-                ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AchievementsListScreen(
+                userId: _currentUser!.userId!,
+                isCurrentUser: true,
               ),
-            );
-          },
+            ),
+          ),
           theme: theme,
         ),
       ],
     );
   }
 
+  // ─── Reusable nav card ─────────────────────────────────────────────────────
+
   Widget _buildNavigationCard({
     required String title,
-    // required String subtitle,
     required IconData icon,
     required VoidCallback onTap,
     required ThemeData theme,
@@ -373,7 +379,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(
+              color: theme.colorScheme.outline.withOpacity(0.2)),
         ),
         child: Row(
           children: [
@@ -382,25 +389,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Expanded(
               child: Text(
                 title,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: theme.textTheme.bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
+            Icon(Icons.chevron_right,
+                color: Colors.grey[400], size: 20.sp),
           ],
         ),
       ),
     );
   }
 
+  // ─── Switch account ────────────────────────────────────────────────────────
+
   Widget _buildSwitchAccountButton(ThemeData theme, S string) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: OutlinedButton.icon(
-        onPressed: () {
-          AccountSwitcherBottomSheet.show(context);
-        },
+        onPressed: () => AccountSwitcherBottomSheet.show(context),
         icon: Icon(Icons.swap_horiz, size: 20.sp),
         label: Text(string.switchAccount),
         style: OutlinedButton.styleFrom(

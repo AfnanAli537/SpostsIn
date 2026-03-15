@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sports_in/features/main/advertisement/view/widgets/ad.dart';
+import 'package:sports_in/features/main/advertisement/view/widgets/ad_shimmer.dart';
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/home/view/widgets/post.dart';
 import 'package:sports_in/features/main/home/view/widgets/post_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
+
+/// One ad is injected after every 5 posts.
+const int _adInterval = 5;
 
 class PostsTab extends StatefulWidget {
   const PostsTab({super.key});
@@ -21,6 +27,7 @@ class PostsTabState extends State<PostsTab>
 
   void reload() {
     context.read<PostsBloc>().add(const FetchPosts(page: 1));
+    context.read<AdsBloc>().add(const FetchAdsFeed());
   }
 
   @override
@@ -30,21 +37,24 @@ class PostsTabState extends State<PostsTab>
     final theme = Theme.of(context).colorScheme;
 
     return BlocBuilder<PostsBloc, PostsState>(
-      builder: (context, state) {
-        if (state is PostsLoading || state is PostsInitial) {
+      builder: (context, postsState) {
+        // ── Loading ─────────────────────────────────────────────────────────
+        if (postsState is PostsLoading || postsState is PostsInitial) {
           return Column(
             children: List.generate(5, (_) => const PostShimmer()),
           );
         }
 
-        if (state is PostsError) {
+        // ── Error ───────────────────────────────────────────────────────────
+        if (postsState is PostsError) {
           return Padding(
             padding: EdgeInsets.all(20.w),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
+                  Icon(Icons.error_outline,
+                      size: 64.sp, color: Colors.red[300]),
                   SizedBox(height: 16.h),
                   Text(strings.oopsSomethingWentWrong,
                       style: GoogleFonts.poppins(
@@ -52,14 +62,20 @@ class PostsTabState extends State<PostsTab>
                           fontWeight: FontWeight.w600,
                           color: Colors.grey[800])),
                   SizedBox(height: 8.h),
-                  Text(state.message,
+                  Text(postsState.message,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                           fontSize: 14.sp, color: Colors.grey[600])),
                   SizedBox(height: 24.h),
                   ElevatedButton.icon(
-                    onPressed: () =>
-                        context.read<PostsBloc>().add(const FetchPosts()),
+                    onPressed: () {
+                      context
+                          .read<PostsBloc>()
+                          .add(const FetchPosts());
+                      context
+                          .read<AdsBloc>()
+                          .add(const FetchAdsFeed());
+                    },
                     icon: const Icon(Icons.refresh),
                     label: Text(strings.retry),
                     style: ElevatedButton.styleFrom(
@@ -73,13 +89,14 @@ class PostsTabState extends State<PostsTab>
           );
         }
 
-        if (state is PostsLoaded || state is PostsLoadingMore) {
-          final posts = state is PostsLoaded
-              ? state.posts
-              : (state as PostsLoadingMore).currentPosts;
+        // ── Loaded ──────────────────────────────────────────────────────────
+        if (postsState is PostsLoaded || postsState is PostsLoadingMore) {
+          final posts = postsState is PostsLoaded
+              ? postsState.posts
+              : (postsState as PostsLoadingMore).currentPosts;
           final hasNextPage =
-              state is PostsLoaded ? state.hasNextPage : true;
-          final isLoadingMore = state is PostsLoadingMore;
+              postsState is PostsLoaded ? postsState.hasNextPage : true;
+          final isLoadingMore = postsState is PostsLoadingMore;
 
           if (posts.isEmpty) {
             return Padding(
@@ -87,7 +104,8 @@ class PostsTabState extends State<PostsTab>
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.post_add, size: 64.sp, color: Colors.grey[400]),
+                    Icon(Icons.post_add,
+                        size: 64.sp, color: Colors.grey[400]),
                     SizedBox(height: 16.h),
                     Text(strings.noPostsYet,
                         style: GoogleFonts.poppins(
@@ -102,28 +120,68 @@ class PostsTabState extends State<PostsTab>
             );
           }
 
-          return Column(
-            children: [
-              ...posts.asMap().entries.map((entry) {
-                final index = entry.key;
-                final post = entry.value;
+          // ── Merge posts + ads ──────────────────────────────────────────────
+          return BlocBuilder<AdsBloc, AdsState>(
+            builder: (context, adsState) {
+              final ads = adsState is AdsLoaded
+                  ? adsState.ads
+                  : adsState is AdsLoadingMore
+                      ? adsState.currentAds
+                      : <dynamic>[];
 
-                // Trigger load-more when last post becomes visible
-                if (index == posts.length - 1 && hasNextPage && !isLoadingMore) {
+              // Build the interleaved list
+              final List<Widget> items = [];
+              int adIndex = 0;
+
+              for (int i = 0; i < posts.length; i++) {
+                // Load-more trigger
+                if (i == posts.length - 1 &&
+                    hasNextPage &&
+                    !isLoadingMore) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    context.read<PostsBloc>().add(LoadMorePosts());
+                    context
+                        .read<PostsBloc>()
+                        .add(LoadMorePosts());
                   });
                 }
 
-                return PostWidget(key: ValueKey(post.id), post: post);
-              }),
-              if (isLoadingMore)
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
+                items.add(PostWidget(
+                    key: ValueKey('post_${posts[i].id}'), post: posts[i]));
+
+                // Inject an ad after every _adInterval posts
+                if ((i + 1) % _adInterval == 0 &&
+                    ads.isNotEmpty) {
+                  final ad = ads[adIndex % ads.length];
+                  adIndex++;
+                  items.add(
+                    BlocProvider.value(
+                      value: context.read<AdsBloc>(),
+                      child: AdWidget(
+                        key: ValueKey('ad_${ad.id}_$i'),
+                        ad: ad,
+                      ),
+                    ),
+                  );
+                }
+              }
+
+              if (isLoadingMore) {
+                items.add(const Padding(
+                  padding: EdgeInsets.all(16),
                   child: Center(child: CircularProgressIndicator()),
-                ),
-              SizedBox(height: 120.h),
-            ],
+                ));
+              }
+
+              // Show shimmer ad placeholder while ads are loading
+              if (adsState is AdsLoading &&
+                  posts.length >= _adInterval) {
+                items.insert(_adInterval, const AdShimmer());
+              }
+
+              items.add(SizedBox(height: 120.h));
+
+              return Column(children: items);
+            },
           );
         }
 

@@ -32,4 +32,8 @@ abstract class AppRoutes {
   static const String manageOpportunities = '/manage-opportunities';
   static const String manageCourses = '/manage-courses';
   static const String manageAchievements = '/manage-achievements';
+
+  // ── Advertisements ────────────────────────────────────────────────────────
+  static const String createAdScreen = '/create-ad';
+  static const String myAdsScreen    = '/my-ads';
 }
