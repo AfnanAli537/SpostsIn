@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_cast
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,54 +61,92 @@ class _FawryScreenState extends State<FawryScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<PaymentBloc, PaymentState>(
-      listener: (context, state) {
-        if (state is PaymentInitiating) {
-          setState(() => _isLoading = true);
-        }
+            listener: (context, state) {
+  if (state is PaymentInitiating || state is ManualActivating ) {
+    setState(() => _isLoading = true);
+  }
+   else if(state is PaymentInitiatedAwaitingActivation) {
+    setState((){
+       _isLoading = false;
+          _referenceCode =state.referenceCode;
+    }  );
+  }
+  else{
+   setState(() {
+     _isLoading = false;
+   }); 
+  }
 
-        if (state is PaymentInitiatedAwaitingActivation) {
-          setState(() {
-            _isLoading = false;
-            _referenceCode = state.transactionId;
-          });
-        }
+  // ✅ بس pop — الـ SubscriptionScreen هيعرض الـ dialog
+  if (state is ManualActivateSuccess) {
+    Navigator.of(context).pop();
+  }
 
-        if (state is ManualActivateSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message ?? 'Subscription activated!'),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
+  if (state is PaymentInitiateError || state is ManualActivateError) {
+    final msg = state is PaymentInitiateError
+        ? (state as PaymentInitiateError).message
+        : (state as ManualActivateError).message;
 
-        if (state is PaymentInitiateError) {
-          setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-        }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(12),
+      ),
+    );
+  }
+},
+      // listener: (context, state) {
+      //   if (state is PaymentInitiating) {
+      //     setState(() => _isLoading = true);
+      //   }
 
-        if (state is ManualActivateError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-        }
-      },
+      //   if (state is PaymentInitiatedAwaitingActivation) {
+      //     setState(() {
+      //       _isLoading = false;
+      //       _referenceCode = state.transactionId;
+      //     });
+      //   }
+
+      //   if (state is ManualActivateSuccess) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(state.message ?? 'Subscription activated!'),
+      //         backgroundColor: Colors.green,
+      //         duration: const Duration(seconds: 3),
+      //       ),
+      //     );
+      //   }
+
+      //   if (state is PaymentInitiateError) {
+      //     setState(() => _isLoading = false);
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(state.message),
+      //         backgroundColor: Colors.red.shade700,
+      //       ),
+      //     );
+      //   }
+
+      //   if (state is ManualActivateError) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(state.message),
+      //         backgroundColor: Colors.red.shade700,
+      //       ),
+      //     );
+      //   }
+      // },
+     
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () { context.read<PaymentBloc>().add(const FetchPlansEvent());Navigator.of(context).pop(); },
             icon: const Icon(Icons.arrow_back, color: Colors.black87),
           ),
           title: const Text(

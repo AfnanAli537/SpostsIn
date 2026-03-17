@@ -1,5 +1,7 @@
 // lib/features/payment/presentation/screens/vodafone_cash_screen.dart
 
+// ignore_for_file: unnecessary_cast
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
@@ -51,44 +53,72 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   Widget build(BuildContext context) {
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
-        if (state is PaymentInitiating) {
-          setState(() => _isLoading = true);
-        } else {
-          setState(() => _isLoading = false);
-        }
+  if (state is PaymentInitiating || state is ManualActivating) {
+    setState(() => _isLoading = true);
+  } else {
+    setState(() => _isLoading = false);
+  }
 
-        if (state is ManualActivateSuccess) {
-          // Pop back to subscription screen or home
-          Navigator.of(context).popUntil((route) => route.isFirst);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message ?? 'Subscription activated!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else if (state is PaymentInitiateError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-        } else if (state is ManualActivateError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-        }
-      },
+  // ✅ بس pop — الـ SubscriptionScreen هيعرض الـ dialog
+  if (state is ManualActivateSuccess) {
+    Navigator.of(context).pop();
+  }
+
+  if (state is PaymentInitiateError || state is ManualActivateError) {
+    final msg = state is PaymentInitiateError
+        ? (state as PaymentInitiateError).message
+        : (state as ManualActivateError).message;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(12),
+      ),
+    );
+  }
+},
+      // listener: (context, state) {
+      //   if (state is PaymentInitiating) {
+      //     setState(() => _isLoading = true);
+      //   } else {
+      //     setState(() => _isLoading = false);
+      //   }
+
+      //   if (state is ManualActivateSuccess) {
+      //     // Pop back to subscription screen or home
+      //     Navigator.of(context).popUntil((route) => route.isFirst);
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(state.message ?? 'Subscription activated!'),
+      //         backgroundColor: Colors.green,
+      //       ),
+      //     );
+      //   } else if (state is PaymentInitiateError) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(state.message),
+      //         backgroundColor: Colors.red.shade700,
+      //       ),
+      //     );
+      //   } else if (state is ManualActivateError) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(state.message),
+      //         backgroundColor: Colors.red.shade700,
+      //       ),
+      //     );
+      //   }
+      // },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () { context.read<PaymentBloc>().add(const FetchPlansEvent());Navigator.of(context).pop(); },
             icon: const Icon(Icons.arrow_back, color: Colors.black87),
           ),
           title: const Text(
