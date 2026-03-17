@@ -70,5 +70,5 @@ Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequest
 });
 
 
-  Future<List<ContactItem>> getContacts();
+  Future<List<ContactItem>> getContacts({String? userId});
 }

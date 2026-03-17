@@ -10,11 +10,13 @@ import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/features/main/advertisement/data/enums/target_audience_enum.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_payment_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_success_screen.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
+import 'package:sports_in/features/register/view/presentation/register/widgets/checkbox_dropdown_overlay.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -41,7 +43,16 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
 
+  /// Selected audience labels e.g. ['Player', 'Coach']
+  List<String> _selectedAudienceLabels = [];
+
   bool get _isEditing => widget.existingAd != null;
+
+  bool get _hasExistingMedia =>
+      _selectedFile == null &&
+      _isEditing &&
+      widget.existingAd?.mediaUrl != null &&
+      widget.existingAd!.mediaUrl!.isNotEmpty;
 
   @override
   void initState() {
@@ -55,6 +66,10 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       _startDate = ad.startDate;
       _endDate = ad.endDate;
       _sportNotifier.value = EnumMapper.sportIdToLabel(ad.sportTypeId);
+      // Convert the existing int list → display labels for the checkbox widget
+      _selectedAudienceLabels = TargetAudienceMapper.idsToLabels(
+        ad.targetAudiences,
+      );
     }
   }
 
@@ -68,46 +83,62 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     super.dispose();
   }
 
-  // ─── Helpers ───────────────────────────────────────────────────────────────
+  // ─── Date / price helpers ──────────────────────────────────────────────────
 
-  /// Price = number of days × 5 EGP
+  DateTime _buildStartDateTime(DateTime pickedDay) {
+    final now = DateTime.now();
+    final isToday =
+        pickedDay.year == now.year &&
+        pickedDay.month == now.month &&
+        pickedDay.day == now.day;
+    return isToday
+        ? now
+        : DateTime(pickedDay.year, pickedDay.month, pickedDay.day);
+  }
+
+  DateTime _buildEndDateTime(DateTime pickedDay) {
+    if (_startDate == null) {
+      return DateTime(pickedDay.year, pickedDay.month, pickedDay.day);
+    }
+    final isSameDay =
+        pickedDay.year == _startDate!.year &&
+        pickedDay.month == _startDate!.month &&
+        pickedDay.day == _startDate!.day;
+    return isSameDay
+        ? _startDate!.add(const Duration(hours: 23))
+        : DateTime(pickedDay.year, pickedDay.month, pickedDay.day);
+  }
+
   double _calculatePrice() {
     if (_startDate == null || _endDate == null) return 0;
     final days = _endDate!.difference(_startDate!).inDays;
-    // Same-day = treated as 1 day by backend (we add 23 hrs), minimum 5 EGP
     return (days < 1 ? 1 : days) * 5.0;
-  }
-
-  /// If start == end add 23 hours as backend requires
-  DateTime _adjustedEndDate() {
-    if (_startDate == null || _endDate == null) return _endDate!;
-    if (_endDate!.year == _startDate!.year &&
-        _endDate!.month == _startDate!.month &&
-        _endDate!.day == _startDate!.day) {
-      return _endDate!.add(const Duration(hours: 23));
-    }
-    return _endDate!;
   }
 
   Future<void> _pickDate({required bool isStart}) async {
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStart ? (_startDate ?? now) : (_endDate ?? now),
+      initialDate: isStart
+          ? (_startDate ?? now)
+          : (_endDate ?? _startDate ?? now),
       firstDate: isStart ? now : (_startDate ?? now),
       lastDate: DateTime(now.year + 2),
     );
     if (picked == null) return;
     setState(() {
       if (isStart) {
-        _startDate = picked;
-        // reset end if it's before start
-        if (_endDate != null && _endDate!.isBefore(picked)) _endDate = null;
+        _startDate = _buildStartDateTime(picked);
+        if (_endDate != null && _endDate!.isBefore(_startDate!)) {
+          _endDate = null;
+        }
       } else {
-        _endDate = picked;
+        _endDate = _buildEndDateTime(picked);
       }
     });
   }
+
+  // ─── Media pickers ─────────────────────────────────────────────────────────
 
   Future<void> _pickImage() async {
     final img = await _picker.pickImage(source: ImageSource.gallery);
@@ -123,15 +154,18 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
       builder: (_) => Container(
         padding: EdgeInsets.all(20.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.image,
-                  color: Theme.of(context).colorScheme.primary),
+              leading: Icon(
+                Icons.image,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('Pick Image'),
               onTap: () {
                 Navigator.pop(context);
@@ -139,8 +173,10 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.video_library,
-                  color: Theme.of(context).colorScheme.primary),
+              leading: Icon(
+                Icons.video_library,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('Pick Video'),
               onTap: () {
                 Navigator.pop(context);
@@ -153,9 +189,13 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     );
   }
 
+  // ─── Error helper ──────────────────────────────────────────────────────────
+
   Future<void> _showError(String message) async {
     final msg = await TranslateErrorHelper.translateErrorKeyAsync(
-        context, message);
+      context,
+      message,
+    );
     Fluttertoast.showToast(
       msg: msg,
       backgroundColor: Colors.red,
@@ -163,6 +203,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       gravity: ToastGravity.TOP,
     );
   }
+
+  // ─── Submit ────────────────────────────────────────────────────────────────
 
   void _submit() {
     final title = _titleController.text.trim();
@@ -182,41 +224,49 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       return;
     }
 
-    final sportId =
-        EnumMapper.getSportId(EnumMapper.fromLabel(
-              EnumMapper.sportLabels(),
-              _sportNotifier.value!,
-            ) ??
-            EnumMapper.sportLabels().keys.first);
+    final sportId = EnumMapper.getSportId(
+      EnumMapper.fromLabel(EnumMapper.sportLabels(), _sportNotifier.value!) ??
+          EnumMapper.sportLabels().keys.first,
+    );
 
     final price = _calculatePrice();
-    final adjustedEnd = _adjustedEndDate();
+
+    // Convert selected audience labels → list of ints for the API
+    final audienceIds = (TargetAudienceMapper.labelsToIds(
+      _selectedAudienceLabels,
+    )..sort());
 
     if (_isEditing) {
-      context.read<AdsBloc>().add(UpdateAd(
-            adId: widget.existingAd!.id,
-            title: title,
-            description: description,
-            mediaFilePath: _selectedFile?.path,
-            price: price,
-            actionUrl: _actionUrlController.text.trim(),
-            actionText: _actionTextController.text.trim(),
-            startDate: _startDate!,
-            endDate: adjustedEnd,
-            sportTypeId: sportId,
-          ));
+      context.read<AdsBloc>().add(
+        UpdateAd(
+          adId: widget.existingAd!.id,
+          title: title,
+          description: description,
+          mediaFilePath: _selectedFile?.path,
+          price: price,
+          actionUrl: _actionUrlController.text.trim(),
+          actionText: _actionTextController.text.trim(),
+          startDate: _startDate!,
+          endDate: _endDate!,
+          sportTypeId: sportId,
+          targetAudiences: audienceIds,
+        ),
+      );
     } else {
-      context.read<AdsBloc>().add(CreateAd(
-            title: title,
-            description: description,
-            mediaFilePath: _selectedFile?.path,
-            price: price,
-            actionUrl: _actionUrlController.text.trim(),
-            actionText: _actionTextController.text.trim(),
-            startDate: _startDate!,
-            endDate: adjustedEnd,
-            sportTypeId: sportId,
-          ));
+      context.read<AdsBloc>().add(
+        CreateAd(
+          title: title,
+          description: description,
+          mediaFilePath: _selectedFile?.path,
+          price: price,
+          actionUrl: _actionUrlController.text.trim(),
+          actionText: _actionTextController.text.trim(),
+          startDate: _startDate!,
+          endDate: _endDate!,
+          sportTypeId: sportId,
+          targetAudiences: audienceIds,
+        ),
+      );
     }
   }
 
@@ -231,7 +281,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       listener: (context, state) {
         if (state is AdCreated) {
           if (state.isPaid && state.isActive) {
-            // subscription covered → success screen
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -242,7 +291,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
             );
           } else {
-            // not paid → payment screen (payment not integrated yet)
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -306,51 +354,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                       height: 200.h,
                       width: double.infinity,
                       color: theme.surface,
-                      child: _selectedFile == null
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.cloud_upload_outlined,
-                                    size: 60.sp, color: Colors.grey[600]),
-                                SizedBox(height: 12.h),
-                                Text('Upload Image or Video',
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.w500)),
-                                SizedBox(height: 4.h),
-                                if (_isEditing &&
-                                    widget.existingAd?.mediaUrl != null)
-                                  Text('Current media will be kept if empty',
-                                      style: TextStyle(
-                                          fontSize: 11.sp,
-                                          color: Colors.grey[500])),
-                              ],
-                            )
-                          : Stack(
-                              children: [
-                                Image.file(_selectedFile!,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    fit: BoxFit.cover),
-                                Positioned(
-                                  top: 8.h,
-                                  right: 8.w,
-                                  child: GestureDetector(
-                                    onTap: () =>
-                                        setState(() => _selectedFile = null),
-                                    child: Container(
-                                      padding: EdgeInsets.all(4.w),
-                                      decoration: const BoxDecoration(
-                                          color: Colors.black54,
-                                          shape: BoxShape.circle),
-                                      child: Icon(Icons.close,
-                                          color: Colors.white, size: 20.sp),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                      child: _buildMediaPreview(theme),
                     ),
                   ),
                 ),
@@ -361,7 +365,9 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               _sectionLabel('Title *'),
               SizedBox(height: 8.h),
               AuthTextField(
-                  controller: _titleController, label: 'Enter ad title'),
+                controller: _titleController,
+                label: 'Enter ad title',
+              ),
               SizedBox(height: 20.h),
 
               // ── Description ────────────────────────────────────────────────
@@ -384,6 +390,19 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                   onChanged: (val) => _sportNotifier.value = val,
                   validator: (_) => null,
                 ),
+              ),
+              SizedBox(height: 20.h),
+
+              // ── Target Audiences ───────────────────────────────────────────
+              _sectionLabel('Target Audience'),
+              SizedBox(height: 8.h),
+              CheckboxDropdownOverlay(
+                labelText: 'Who should see this ad?',
+                value: _selectedAudienceLabels,
+                options: TargetAudienceMapper.allLabels(),
+                onChanged: (selected) {
+                  setState(() => _selectedAudienceLabels = selected);
+                },
               ),
               SizedBox(height: 20.h),
 
@@ -416,32 +435,36 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                   padding: EdgeInsets.only(top: 12.h),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 16.w, vertical: 12.h),
+                      horizontal: 16.w,
+                      vertical: 12.h,
+                    ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.08),
+                      color: theme.primary.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.monetization_on_outlined,
-                            color: Theme.of(context).colorScheme.primary),
+                        Icon(
+                          Icons.monetization_on_outlined,
+                          color: theme.primary,
+                        ),
                         SizedBox(width: 8.w),
                         Text(
                           'Estimated cost: ${_calculatePrice().toStringAsFixed(0)} EGP',
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.primary,
                           ),
                         ),
                         SizedBox(width: 4.w),
-                        Text('(5 EGP/day)',
-                            style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.grey[600])),
+                        Text(
+                          '(5 EGP/day)',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -457,7 +480,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              // ── Action Text / CTA ──────────────────────────────────────────
+              // ── CTA text ───────────────────────────────────────────────────
               _sectionLabel('CTA Button Text (optional)'),
               SizedBox(height: 8.h),
               AuthTextField(
@@ -473,7 +496,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                   return CustomElevatedButton(
                     text: _isEditing ? 'Update Ad' : 'Continue',
                     isLoading: isLoading,
-                    enabled: !isLoading,
+                    enabled:
+                        true, // Always true - let isLoading control the visual state
                     onPressed: _submit,
                   );
                 },
@@ -483,6 +507,114 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // ─── Media preview ─────────────────────────────────────────────────────────
+
+  Widget _buildMediaPreview(ColorScheme theme) {
+    if (_selectedFile != null) {
+      return Stack(
+        children: [
+          Image.file(
+            _selectedFile!,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+          _clearMediaButton(),
+        ],
+      );
+    }
+
+    if (_hasExistingMedia) {
+      return Stack(
+        children: [
+          Image.network(
+            widget.existingAd!.mediaUrl!,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            loadingBuilder: (_, child, progress) {
+              if (progress == null) return child;
+              return Container(
+                color: Colors.grey[200],
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: progress.expectedTotalBytes != null
+                        ? progress.cumulativeBytesLoaded /
+                              progress.expectedTotalBytes!
+                        : null,
+                  ),
+                ),
+              );
+            },
+            errorBuilder: (_, __, ___) => _emptyMediaPlaceholder(),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 6.h),
+              color: Colors.black45,
+              child: Text(
+                'Tap to change media',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          _clearMediaButton(),
+        ],
+      );
+    }
+
+    return _emptyMediaPlaceholder();
+  }
+
+  Widget _clearMediaButton() {
+    return Positioned(
+      top: 8.h,
+      right: 8.w,
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedFile = null),
+        child: Container(
+          padding: EdgeInsets.all(4.w),
+          decoration: const BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.close, color: Colors.white, size: 20.sp),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyMediaPlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.cloud_upload_outlined, size: 60.sp, color: Colors.grey[600]),
+        SizedBox(height: 12.h),
+        Text(
+          'Upload Image or Video',
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          'Optional',
+          style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+        ),
+      ],
     );
   }
 
@@ -498,7 +630,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
   }
 }
 
-// ── Small helper widget ────────────────────────────────────────────────────────
+// ── Date picker tile ──────────────────────────────────────────────────────────
 
 class _DatePickerTile extends StatelessWidget {
   final String label;
@@ -525,13 +657,18 @@ class _DatePickerTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label,
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
+            Text(
+              label,
+              style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+            ),
             SizedBox(height: 4.h),
             Row(
               children: [
-                Icon(Icons.calendar_today_outlined,
-                    size: 16.sp, color: theme.primary),
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16.sp,
+                  color: theme.primary,
+                ),
                 SizedBox(width: 6.w),
                 Text(
                   date != null

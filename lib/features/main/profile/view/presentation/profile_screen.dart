@@ -75,7 +75,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return _buildErrorState(state.message, theme, string);
         } else if (state is ProfileLoaded) {
           return _buildProfileContent(
-              state.profile, state.isOwnProfile, theme, string);
+            state.profile,
+            state.isOwnProfile,
+            theme,
+            string,
+          );
         }
         return const SizedBox.shrink();
       },
@@ -90,10 +94,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       description: 'Loading description text that will be replaced',
       userType: UserType.player,
       stats: ProfileStats(
-          followers: '0',
-          following: '0',
-          connections: '0',
-          analyzedPeople: '0'),
+        followers: '0',
+        following: '0',
+        connections: '0',
+        analyzedPeople: '0',
+      ),
       posts: [],
       achievements: [],
       analyzedVideos: [],
@@ -107,7 +112,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileHeader(
-                profile: fakeProfile, theme: theme, isOwnProfile: false),
+              profile: fakeProfile,
+              theme: theme,
+              isOwnProfile: false,
+            ),
             ProfileDescription(description: fakeProfile.description),
             SizedBox(height: 16.h),
             ProfileStatsWidget(
@@ -123,14 +131,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                      height: 20.h,
-                      width: 150.w,
-                      color: theme.colorScheme.surfaceVariant),
+                    height: 20.h,
+                    width: 150.w,
+                    color: theme.colorScheme.surfaceVariant,
+                  ),
                   SizedBox(height: 12.h),
                   Container(
-                      height: 100.h,
-                      width: double.infinity,
-                      color: theme.colorScheme.surfaceVariant),
+                    height: 100.h,
+                    width: double.infinity,
+                    color: theme.colorScheme.surfaceVariant,
+                  ),
                 ],
               ),
             ),
@@ -145,19 +155,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 60.sp, color: theme.colorScheme.error),
+          Icon(
+            Icons.error_outline,
+            size: 60.sp,
+            color: theme.colorScheme.error,
+          ),
           SizedBox(height: 16.h),
           Text(string.profileLoadFailed, textAlign: TextAlign.center),
           SizedBox(height: 8.h),
-          Text(message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.primary)),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
           SizedBox(height: 24.h),
           ElevatedButton(
             onPressed: _loadProfile,
-            child: Text(string.retry,
-                style: TextStyle(color: theme.colorScheme.secondary)),
+            child: Text(
+              string.retry,
+              style: TextStyle(color: theme.colorScheme.secondary),
+            ),
           ),
         ],
       ),
@@ -181,8 +200,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               profile: profile,
               isOwnProfile: profile.isOwner,
               theme: theme,
-              onEditPressed:
-                  profile.isOwner ? () => _navigateToEditProfile(context) : null,
+              onEditPressed: profile.isOwner
+                  ? () => _navigateToEditProfile(context)
+                  : null,
             ),
             ProfileDescription(description: profile.description),
             SizedBox(height: 8.h),
@@ -198,7 +218,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ConnectionsScreen(isOwner: isOwnProfile,),
+                    builder: (_) => ConnectionsScreen(
+                      isOwner: isOwnProfile,
+                      userId: isOwnProfile ? null : profile.id,
+                    ),
                   ),
                 );
               },
@@ -209,22 +232,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (status == null) {
                   // null → send request
                   context.read<ProfileBloc>().add(
-                        SendConnectionRequest(receiverId: profile.id),
-                      );
+                    SendConnectionRequest(receiverId: profile.id),
+                  );
                 } else if (status == 'Accepted') {
                   // Accepted → remove contact
                   context.read<ProfileBloc>().add(
-                        RemoveContact(targetId: profile.id),
-                      );
+                    RemoveContact(targetId: profile.id),
+                  );
                 }
                 // "Pending" → button is visually disabled, tap does nothing
               },
 
               // ── Follow button ───────────────────────────────────────────────
               onFollowPressed: () {
-                context
-                    .read<ProfileBloc>()
-                    .add(ToggleFollow(userId: profile.id));
+                context.read<ProfileBloc>().add(
+                  ToggleFollow(userId: profile.id),
+                );
               },
 
               // ── Section callbacks ───────────────────────────────────────────
@@ -256,7 +279,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     builder: (_) => BlocProvider(
                       create: (_) => getIt<CoursesBloc>(),
                       child: const CourseListScreen(
-                          listType: CourseListType.created),
+                        listType: CourseListType.created,
+                      ),
                     ),
                   ),
                 );
@@ -298,9 +322,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onVideoTap: (video) {},
               onConnectToggle: (interest) {},
               onFollowToggle: (interest) {
-                context
-                    .read<ProfileBloc>()
-                    .add(ToggleFollow(userId: interest.id));
+                context.read<ProfileBloc>().add(
+                  ToggleFollow(userId: interest.id),
+                );
               },
               onInterestTap: (interest) {
                 _navigateToUserProfile(context, interest.id);

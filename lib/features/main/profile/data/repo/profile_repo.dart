@@ -35,7 +35,7 @@ class ProfileRepo {
   getConnectionRequests({int pageNumber = 1, int pageSize = 20}) => _dataSource
       .getConnectionRequests(pageNumber: pageNumber, pageSize: pageSize);
 
-  Future<List<ContactItem>> getContacts() => _dataSource.getContacts();
+  Future<List<ContactItem>> getContacts({String? userId}) => _dataSource.getContacts(userId: userId);
 
   // ── Achievements ─────────────────────────────────────────────────────────────
 

@@ -12,23 +12,32 @@ import 'package:sports_in/features/main/profile/view_model/connection bloc/conne
 import 'package:sports_in/features/main/profile/view_model/connection bloc/connections_state.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-// ignore: must_be_immutable
 class ConnectionsScreen extends StatelessWidget {
-  final bool isOwner; // Make it final since it shouldn't change
-  ConnectionsScreen({super.key, required this.isOwner});
+  final bool isOwner;
+
+  /// Pass the other user's ID when isOwner is false.
+  /// Null means we're loading the current user's own data.
+  final String? userId;
+
+  const ConnectionsScreen({
+    super.key,
+    required this.isOwner,
+    this.userId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<ConnectionsBloc>()..add(LoadConnections()),
-      child: _ConnectionsView(isOwner: isOwner), // Pass isOwner here
+      create: (_) => getIt<ConnectionsBloc>()
+        ..add(LoadConnections(userId: isOwner ? null : userId)),
+      child: _ConnectionsView(isOwner: isOwner),
     );
   }
 }
 
 class _ConnectionsView extends StatefulWidget {
-  final bool isOwner; // Add this
-  const _ConnectionsView({required this.isOwner}); // Update constructor
+  final bool isOwner;
+  const _ConnectionsView({required this.isOwner});
 
   @override
   State<_ConnectionsView> createState() => _ConnectionsViewState();
@@ -36,7 +45,6 @@ class _ConnectionsView extends StatefulWidget {
 
 class _ConnectionsViewState extends State<_ConnectionsView> {
   final _scrollController = ScrollController();
-  // Remove the local isOwner variable since we'll use widget.isOwner
 
   @override
   void initState() {
@@ -51,7 +59,6 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
   }
 
   void _onScroll() {
-    // Trigger load-more when within 200px of the bottom
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       context.read<ConnectionsBloc>().add(LoadMoreRequests());
@@ -78,13 +85,10 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
         },
         builder: (context, state) {
           // ── Loading ─────────────────────────────────────────────────────
-          // In ConnectionsScreen builder, where you handle ConnectionsLoading state
           if (state is ConnectionsLoading) {
             return SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
-              child: ConnectionsShimmer(
-                isOwner: widget.isOwner,
-              ), // Pass isOwner here
+              child: ConnectionsShimmer(isOwner: widget.isOwner),
             );
           }
 
@@ -94,17 +98,17 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 48.sp,
-                    color: theme.colorScheme.error,
-                  ),
+                  Icon(Icons.error_outline,
+                      size: 48.sp, color: theme.colorScheme.error),
                   SizedBox(height: 12.h),
                   Text(state.message, textAlign: TextAlign.center),
                   SizedBox(height: 16.h),
                   ElevatedButton(
-                    onPressed: () =>
-                        context.read<ConnectionsBloc>().add(LoadConnections()),
+                    onPressed: () => context
+                        .read<ConnectionsBloc>()
+                        .add(LoadConnections(
+                          userId: widget.isOwner ? null : null,
+                        )),
                     child: Text(strings.retry),
                   ),
                 ],
@@ -117,11 +121,13 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
             final bloc = context.read<ConnectionsBloc>();
 
             return RefreshIndicator(
-              onRefresh: () async => bloc.add(LoadConnections()),
+              onRefresh: () async => bloc.add(LoadConnections(
+                userId: widget.isOwner ? null : null,
+              )),
               child: CustomScrollView(
                 controller: _scrollController,
                 slivers: [
-                  // ── 1. Contacts (top) ─────────────────────────────────
+                  // ── Contacts (always shown) ───────────────────────────
                   SliverToBoxAdapter(
                     child: _SectionHeader(
                       title: strings.myContacts,
@@ -132,9 +138,7 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 32.h,
-                        ),
+                            horizontal: 16.w, vertical: 32.h),
                         child: Center(
                           child: Text(
                             strings.noContactsYet,
@@ -163,9 +167,8 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                       ),
                     ),
 
-                  // Only show connection requests section if user is the owner
+                  // ── Requests (owner only, paginated) ──────────────────
                   if (widget.isOwner) ...[
-                    // Divider between sections
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -177,7 +180,6 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 8.h)),
 
-                    // ── 2. Connection Requests (bottom, paginated) ─────────
                     if (state.requests.isNotEmpty || state.hasMoreRequests) ...[
                       SliverToBoxAdapter(
                         child: _SectionHeader(
@@ -188,42 +190,29 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                       SliverPadding(
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
                         sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final request = state.requests[index];
-                            return _RequestCard(
-                              request: request,
-                              onAccept: () => bloc.add(
-                                RespondToRequest(
-                                  senderId: request.id,
-                                  status: 'Accepted',
-                                ),
-                              ),
-                              onReject: () => bloc.add(
-                                RespondToRequest(
-                                  senderId: request.id,
-                                  status: 'Rejected',
-                                ),
-                              ),
-                            );
-                          }, childCount: state.requests.length),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final request = state.requests[index];
+                              return _RequestCard(
+                                request: request,
+                                onAccept: () => bloc.add(RespondToRequest(
+                                    senderId: request.id, status: 'Accepted')),
+                                onReject: () => bloc.add(RespondToRequest(
+                                    senderId: request.id, status: 'Rejected')),
+                              );
+                            },
+                            childCount: state.requests.length,
+                          ),
                         ),
                       ),
-
-                      // Load-more indicator at the very bottom of requests
                       if (state.isLoadingMoreRequests)
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 16.h),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                            child:
+                                const Center(child: CircularProgressIndicator()),
                           ),
                         ),
-
-                      // "No more" hint when everything is loaded
                       if (!state.hasMoreRequests &&
                           !state.isLoadingMoreRequests &&
                           state.requests.isNotEmpty)
@@ -241,13 +230,10 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                           ),
                         ),
                     ] else
-                      // Empty requests state
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 24.h,
-                          ),
+                              horizontal: 16.w, vertical: 24.h),
                           child: Center(
                             child: Text(
                               strings.noConnectionRequests,
@@ -272,6 +258,7 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
     );
   }
 }
+
 // ── Section Header ─────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
@@ -286,12 +273,9 @@ class _SectionHeader extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
       child: Row(
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(title,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           SizedBox(width: 8.w),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
@@ -348,10 +332,9 @@ class _ContactCard extends StatelessWidget {
               Stack(
                 children: [
                   CustomAvatar(
-                    imageUrl: contact.imageUrl,
-                    name: contact.title,
-                    radius: 32.r,
-                  ),
+                      imageUrl: contact.imageUrl,
+                      name: contact.title,
+                      radius: 32.r),
                   if (contact.isOnline)
                     Positioned(
                       right: 1,
@@ -363,9 +346,7 @@ class _ContactCard extends StatelessWidget {
                           color: Colors.green,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: theme.colorScheme.surface,
-                            width: 2,
-                          ),
+                              color: theme.colorScheme.surface, width: 2),
                         ),
                       ),
                     ),
@@ -378,9 +359,8 @@ class _ContactCard extends StatelessWidget {
                   children: [
                     Text(
                       contact.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -389,19 +369,14 @@ class _ContactCard extends StatelessWidget {
                       Text(
                         strings.online,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w500,
-                        ),
+                            color: Colors.green, fontWeight: FontWeight.w500),
                       ),
                     ],
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: theme.colorScheme.onTertiaryContainer,
-                size: 22.sp,
-              ),
+              Icon(Icons.chevron_right_rounded,
+                  color: theme.colorScheme.onTertiaryContainer, size: 22.sp),
             ],
           ),
         ),
@@ -416,11 +391,10 @@ class _RequestCard extends StatelessWidget {
   final ConnectionRequest request;
   final VoidCallback onAccept;
   final VoidCallback onReject;
-  const _RequestCard({
-    required this.request,
-    required this.onAccept,
-    required this.onReject,
-  });
+  const _RequestCard(
+      {required this.request,
+      required this.onAccept,
+      required this.onReject});
 
   @override
   Widget build(BuildContext context) {
@@ -428,11 +402,8 @@ class _RequestCard extends StatelessWidget {
     final strings = S.of(context);
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.userProfile,
-        arguments: request.id,
-      ),
+      onTap: () => Navigator.pushNamed(context, AppRoutes.userProfile,
+          arguments: request.id),
       child: Container(
         margin: EdgeInsets.only(bottom: 16.h),
         decoration: BoxDecoration(
@@ -452,10 +423,9 @@ class _RequestCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomAvatar(
-                imageUrl: request.profilePictureUrl,
-                name: request.fullName,
-                radius: 32.r,
-              ),
+                  imageUrl: request.profilePictureUrl,
+                  name: request.fullName,
+                  radius: 32.r),
               SizedBox(width: 16.w),
               Expanded(
                 child: Column(
@@ -463,9 +433,8 @@ class _RequestCard extends StatelessWidget {
                   children: [
                     Text(
                       request.fullName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -473,9 +442,8 @@ class _RequestCard extends StatelessWidget {
                     Text(
                       strings.wantsToConnect,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          color: theme.colorScheme.onTertiaryContainer,
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(height: 16.h),
                     Row(
@@ -486,16 +454,12 @@ class _RequestCard extends StatelessWidget {
                             style: FilledButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 12.h),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
+                                  borderRadius: BorderRadius.circular(8.r)),
                             ),
-                            child: Text(
-                              strings.accept,
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: Text(strings.accept,
+                                style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600)),
                           ),
                         ),
                         SizedBox(width: 12.w),
@@ -506,19 +470,15 @@ class _RequestCard extends StatelessWidget {
                               padding: EdgeInsets.symmetric(vertical: 12.h),
                               foregroundColor: theme.colorScheme.error,
                               side: BorderSide(
-                                color: theme.colorScheme.error.withOpacity(0.6),
-                              ),
+                                  color: theme.colorScheme.error
+                                      .withOpacity(0.6)),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
+                                  borderRadius: BorderRadius.circular(8.r)),
                             ),
-                            child: Text(
-                              strings.reject,
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: Text(strings.reject,
+                                style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600)),
                           ),
                         ),
                       ],

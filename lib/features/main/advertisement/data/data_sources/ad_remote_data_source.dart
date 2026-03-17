@@ -73,8 +73,10 @@ class AdRemoteDataSource implements IAdsDataSource {
         'VideoDuration': videoDuration,
         if (mediaFilePath != null)
           'MediaFile': await MultipartFile.fromFile(mediaFilePath),
-        for (final audience in targetAudiences) 'TargetAudiences': audience,
+        // for (final audience in targetAudiences) 'TargetAudiences': audience,
+        'TargetAudiences': targetAudiences.map((id) => id.toString()).toList(),
       });
+      log('Form data prepared for create: ${formData.fields} ');
 
       final response =
           await _apiClient.post(Endpoints.createAd, data: formData);
@@ -122,9 +124,11 @@ class AdRemoteDataSource implements IAdsDataSource {
         'VideoDuration': videoDuration,
         if (mediaFilePath != null)
           'MediaFile': await MultipartFile.fromFile(mediaFilePath),
-        for (final audience in targetAudiences) 'TargetAudiences': audience,
+        // for (final audience in targetAudiences) 'TargetAudiences': audience,
+        'TargetAudiences': targetAudiences.map((id) => id.toString()).toList(),
       });
-
+      log('Form data prepared for update: ${formData.fields} ');
+      log('TargetAudiences update: $targetAudiences');
       final url = Endpoints.updateAd.replaceFirst('{id}', adId);
       final response = await _apiClient.put(url, data: formData);
 

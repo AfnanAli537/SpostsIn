@@ -522,9 +522,12 @@ Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequest
  
   /// GET /api/Chat/contacts
   @override
-  Future<List<ContactItem>> getContacts() async {
+  Future<List<ContactItem>> getContacts({String? userId}) async {
     try {
-      final response = await _apiClient.get(Endpoints.contacts);
+      final response = await _apiClient.get(
+        Endpoints.contacts,
+        params: {'userId': userId},
+      );
       if (response.statusCode == 200) {
         final items = response.data as List<dynamic>? ?? [];
         return items

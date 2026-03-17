@@ -1,22 +1,19 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:better_player_plus/better_player_plus.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
-// import 'package:sports_in/core/utils/helper/time_formate.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_comments_sheet.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_likes_sheet.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/advertisement/view_model/likes_bloc/likes_bloc.dart';
 import 'package:sports_in/features/main/home/view/widgets/full_screen_image.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdWidget extends StatefulWidget {
   final AdModel ad;
@@ -43,6 +40,16 @@ class _AdWidgetState extends State<AdWidget> {
   late int _likesCount;
   late int _commentsCount;
 
+  // Whether this ad has a valid action link
+  bool get _hasActionLink =>
+      widget.ad.actionUrl != null && widget.ad.actionUrl!.isNotEmpty;
+
+  // Label shown on the banner and CTA button
+  String get _actionLabel =>
+      (widget.ad.actionText != null && widget.ad.actionText!.isNotEmpty)
+          ? widget.ad.actionText!
+          : 'Learn More';
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +73,8 @@ class _AdWidgetState extends State<AdWidget> {
       _initializeMedia();
     }
   }
+
+  // ─── Media ─────────────────────────────────────────────────────────────────
 
   Future<void> _initializeMedia() async {
     final url = widget.ad.mediaUrl;
@@ -110,6 +119,8 @@ class _AdWidgetState extends State<AdWidget> {
         url.toLowerCase().contains('cloudinary.com/video');
   }
 
+  // ─── Actions ───────────────────────────────────────────────────────────────
+
   void _handleLike() {
     setState(() {
       _isLiked ? _likesCount-- : _likesCount++;
@@ -118,22 +129,23 @@ class _AdWidgetState extends State<AdWidget> {
     context.read<AdsBloc>().add(LikeAd(widget.ad.id));
   }
 
-  void _handleActionTap() {
-    final url = widget.ad.actionUrl;
-    if (url == null || url.isEmpty) return;
+  /// Opens the action URL inside the app (WebView) and logs the click.
+  void _openActionUrl() {
+    if (!_hasActionLink) return;
 
+    // Log the click
     context.read<AdsBloc>().add(LogAdClick(widget.ad.id));
-    _launchUrl(url);
-  }
 
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      log('Could not launch $url: $e');
-    }
+    // Open inside the app — no browser picker shown to the user
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WebViewScreen(
+          url: widget.ad.actionUrl!,
+          title: _actionLabel,
+        ),
+      ),
+    );
   }
 
   void _navigateToAuthorProfile() {
@@ -191,6 +203,8 @@ class _AdWidgetState extends State<AdWidget> {
     super.dispose();
   }
 
+  // ─── Build ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -206,7 +220,7 @@ class _AdWidgetState extends State<AdWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ──────────────────────────────────────────────────────
+            // ── Header ────────────────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -313,7 +327,7 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
-            // ── Title ───────────────────────────────────────────────────────
+            // ── Title ─────────────────────────────────────────────────────
             Text(
               widget.ad.title,
               style: TextStyle(
@@ -324,7 +338,7 @@ class _AdWidgetState extends State<AdWidget> {
             ),
             SizedBox(height: 6.h),
 
-            // ── Description ─────────────────────────────────────────────────
+            // ── Description ───────────────────────────────────────────────
             Text(
               widget.ad.description,
               style: TextStyle(
@@ -336,23 +350,38 @@ class _AdWidgetState extends State<AdWidget> {
               overflow: TextOverflow.ellipsis,
             ),
 
-            // ── Media ───────────────────────────────────────────────────────
+            // ── Media with action banner ───────────────────────────────────
             if (widget.ad.mediaUrl != null && widget.ad.mediaUrl!.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(top: 12.h),
-                child: GestureDetector(
-                  onTap: _openFullScreenImage,
-                  child: Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
-                      // "Advertisement ›" label over media
-                      Container(
+                child: Stack(
+                  alignment: Alignment.bottomLeft,
+                  children: [
+                    // Tapping the media itself → full screen image (images only)
+                    GestureDetector(
+                      onTap: _openFullScreenImage,
+                      child: _isVideo
+                          ? _buildVideoPlayer()
+                          : _buildImageWidget(),
+                    ),
+
+                    // ── Bottom banner ─────────────────────────────────────
+                    // If there is an action link:
+                    //   • shows actionText (or "Learn More")
+                    //   • tapping opens the URL inside the app (WebView)
+                    // If there is no action link:
+                    //   • shows plain "Advertisement" label (not tappable)
+                    GestureDetector(
+                      onTap: _hasActionLink ? _openActionUrl : null,
+                      child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(
-                            horizontal: 12.w, vertical: 6.h),
+                            horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.45),
+                          // Slightly darker when tappable so it looks clickable
+                          color: _hasActionLink
+                              ? Colors.black.withOpacity(0.6)
+                              : Colors.black.withOpacity(0.45),
                           borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(8.r),
                             bottomRight: Radius.circular(8.r),
@@ -361,49 +390,62 @@ class _AdWidgetState extends State<AdWidget> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Advertisement',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Text(
+                                _hasActionLink
+                                    ? _actionLabel   // ← actionText from the ad
+                                    : 'Advertisement',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            Icon(Icons.chevron_right,
-                                color: Colors.white, size: 18.sp),
+                            if (_hasActionLink) ...[
+                              SizedBox(width: 8.w),
+                              Icon(Icons.arrow_forward_ios,
+                                  color: Colors.white, size: 13.sp),
+                            ] else
+                              Icon(Icons.chevron_right,
+                                  color: Colors.white, size: 18.sp),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
 
             SizedBox(height: 12.h),
 
-            // ── CTA button ──────────────────────────────────────────────────
-            if (widget.ad.actionText != null &&
-                widget.ad.actionText!.isNotEmpty)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: _handleActionTap,
-                  icon: Icon(Icons.open_in_new, size: 16.sp),
-                  label: Text(widget.ad.actionText!),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: theme.primary),
-                    foregroundColor: theme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
+            // ── CTA button (shown when no media OR as a standalone button) ─
+            // Only show the standalone CTA button when there is no media,
+            // because when there IS media the banner already acts as the CTA.
+            if (_hasActionLink &&
+                (widget.ad.mediaUrl == null || widget.ad.mediaUrl!.isEmpty))
+              Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _openActionUrl,
+                    icon: Icon(Icons.open_in_new, size: 16.sp),
+                    label: Text(_actionLabel),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: theme.primary),
+                      foregroundColor: theme.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
                     ),
                   ),
                 ),
               ),
 
-            if (widget.ad.actionText != null && widget.ad.actionText!.isNotEmpty)
-              SizedBox(height: 12.h),
-
-            // ── Like & Comment row ───────────────────────────────────────────
+            // ── Like & Comment row ─────────────────────────────────────────
             Row(
               children: [
                 _buildActionButton(
@@ -447,6 +489,8 @@ class _AdWidgetState extends State<AdWidget> {
       ),
     );
   }
+
+  // ─── Helpers ───────────────────────────────────────────────────────────────
 
   Widget _buildActionButton({
     required IconData icon,

@@ -7,7 +7,14 @@ abstract class ConnectionsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadConnections extends ConnectionsEvent {}
+class LoadConnections extends ConnectionsEvent {
+  final String? userId;
+
+  const LoadConnections({this.userId});
+
+  @override
+  List<Object?> get props => [userId];
+}
 
 class LoadMoreRequests extends ConnectionsEvent {}
 

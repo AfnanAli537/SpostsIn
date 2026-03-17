@@ -27,25 +27,34 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
     try {
       emit(ConnectionsLoading());
 
-      final contacts = await _repository.getContacts();
-      final requestResult = await _repository.getConnectionRequests(
-        pageNumber: 1,
-        pageSize: _kPageSize,
-      );
-
-      emit(ConnectionsLoaded(
-        contacts: contacts,
-        requests: requestResult.items,
-        hasMoreRequests: requestResult.hasNextPage,
-        currentRequestPage: 1,
-      ));
+      if (event.userId != null) {
+        final contacts = await _repository.getContacts(userId: event.userId);
+        emit(ConnectionsLoaded(
+          contacts: contacts,
+          requests: const [],
+          hasMoreRequests: false,
+          currentRequestPage: 1,
+        ));
+      } else {
+        final contacts = await _repository.getContacts();
+        final requestResult = await _repository.getConnectionRequests(
+          pageNumber: 1,
+          pageSize: _kPageSize,
+        );
+        emit(ConnectionsLoaded(
+          contacts: contacts,
+          requests: requestResult.items,
+          hasMoreRequests: requestResult.hasNextPage,
+          currentRequestPage: 1,
+        ));
+      }
     } catch (e) {
       emit(ConnectionsError(
           message: e is ApiException ? e.message : e.toString()));
     }
   }
 
-  // ── Load next page of requests ────────────────────────────────────────────────
+  // ── Load next page of requests (owner only) ───────────────────────────────────
 
   Future<void> _onLoadMoreRequests(
     LoadMoreRequests event,
