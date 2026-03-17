@@ -21,10 +21,10 @@ class ApiProfileDataSource implements IProfileDataSource {
   String? get _currentUserId => _prefs.getUserId();
 
   DioException _badResponse(Response response) => DioException(
-        requestOptions: response.requestOptions,
-        response: response,
-        type: DioExceptionType.badResponse,
-      );
+    requestOptions: response.requestOptions,
+    response: response,
+    type: DioExceptionType.badResponse,
+  );
 
   // ── Profile ─────────────────────────────────────────────────────────────────
 
@@ -70,6 +70,7 @@ class ApiProfileDataSource implements IProfileDataSource {
               ? getCourses(userId: userId, page: 1, pageSize: 10)
               : Future.value(<Course>[]),
           getInterests(userId: userId, page: 1, pageSize: 6),
+          getActiveAds(userId: userId),
         ]);
 
         return profile.copyWith(
@@ -79,6 +80,7 @@ class ApiProfileDataSource implements IProfileDataSource {
           opportunities: results[3] as List<Opportunity>,
           courses: results[4] as List<Course>,
           interests: results[5] as List<Interest>,
+          ads: results[6] as List<ProfileAd>,
         );
       }
 
@@ -135,11 +137,13 @@ class ApiProfileDataSource implements IProfileDataSource {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
         return items
-            .map((json) => Post(
-                  id: json['id'] ?? '',
-                  imageUrl: json['mediaUrl'] ?? '',
-                  title: json['title'],
-                ))
+            .map(
+              (json) => Post(
+                id: json['id'] ?? '',
+                imageUrl: json['mediaUrl'] ?? '',
+                title: json['title'],
+              ),
+            )
             .toList();
       }
 
@@ -154,6 +158,37 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
+  @override
+  Future<List<ProfileAd>> getActiveAds({
+    required String userId,
+    int page = 1,
+    int size = 3,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userAds,
+        params: {
+          'userId': userId,
+          'isActive': true,
+          'page': page,
+          'size': size,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = data['items'] as List<dynamic>? ?? [];
+        return items.map((json) => ProfileAd.fromJson(json)).toList();
+      }
+
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    } catch (e) {
+      debugPrint('Error loading ads for profile: $e');
+      return [];
+    }
+  }
   // ── Achievements ─────────────────────────────────────────────────────────────
 
   @override
@@ -172,15 +207,17 @@ class ApiProfileDataSource implements IProfileDataSource {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
         return items
-            .map((json) => Achievement(
-                  id: json['id'] ?? '',
-                  title: json['title'] ?? '',
-                  subtitle: json['description'] ?? '',
-                  imageUrl: json['mediaUrl'] ?? '',
-                  date: json['achievementDate'] != null
-                      ? DateTime.parse(json['achievementDate'])
-                      : null,
-                ))
+            .map(
+              (json) => Achievement(
+                id: json['id'] ?? '',
+                title: json['title'] ?? '',
+                subtitle: json['description'] ?? '',
+                imageUrl: json['mediaUrl'] ?? '',
+                date: json['achievementDate'] != null
+                    ? DateTime.parse(json['achievementDate'])
+                    : null,
+              ),
+            )
             .toList();
       }
 
@@ -210,11 +247,15 @@ class ApiProfileDataSource implements IProfileDataSource {
       });
 
       if (imageUrl.isNotEmpty && File(imageUrl).existsSync()) {
-        formData.files.add(MapEntry(
-          'MediaFile',
-          await MultipartFile.fromFile(imageUrl,
-              filename: imageUrl.split('/').last),
-        ));
+        formData.files.add(
+          MapEntry(
+            'MediaFile',
+            await MultipartFile.fromFile(
+              imageUrl,
+              filename: imageUrl.split('/').last,
+            ),
+          ),
+        );
       }
 
       final response = await _apiClient.post(
@@ -229,7 +270,9 @@ class ApiProfileDataSource implements IProfileDataSource {
           title: json['title'] ?? title,
           subtitle: json['description'] ?? subtitle,
           imageUrl: json['mediaUrl'] ?? imageUrl,
-          date: DateTime.parse(json['achievementDate'] ?? date.toIso8601String()),
+          date: DateTime.parse(
+            json['achievementDate'] ?? date.toIso8601String(),
+          ),
         );
       }
 
@@ -255,11 +298,15 @@ class ApiProfileDataSource implements IProfileDataSource {
       });
 
       if (imageUrl.isNotEmpty && File(imageUrl).existsSync()) {
-        formData.files.add(MapEntry(
-          'MediaFile',
-          await MultipartFile.fromFile(imageUrl,
-              filename: imageUrl.split('/').last),
-        ));
+        formData.files.add(
+          MapEntry(
+            'MediaFile',
+            await MultipartFile.fromFile(
+              imageUrl,
+              filename: imageUrl.split('/').last,
+            ),
+          ),
+        );
       }
 
       final response = await _apiClient.put(
@@ -274,7 +321,9 @@ class ApiProfileDataSource implements IProfileDataSource {
           title: json['title'] ?? title,
           subtitle: json['description'] ?? subtitle,
           imageUrl: json['mediaUrl'] ?? imageUrl,
-          date: DateTime.parse(json['achievementDate'] ?? date.toIso8601String()),
+          date: DateTime.parse(
+            json['achievementDate'] ?? date.toIso8601String(),
+          ),
         );
       }
 
@@ -347,16 +396,18 @@ class ApiProfileDataSource implements IProfileDataSource {
         final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>? ?? [];
         return items
-            .map((json) => Course(
-                  id: json['id'] ?? '',
-                  imageUrl: json['thumbnailUrl'] ?? '',
-                  title: json['title'] ?? '',
-                  description: json['description'],
-                  price: json['price']?.toDouble(),
-                  isFree: json['isFree'] ?? false,
-                  lessonsCount: json['lessonsCount'] ?? 0,
-                  enrolledCount: json['enrolledUsersCount'] ?? 0,
-                ))
+            .map(
+              (json) => Course(
+                id: json['id'] ?? '',
+                imageUrl: json['thumbnailUrl'] ?? '',
+                title: json['title'] ?? '',
+                description: json['description'],
+                price: json['price']?.toDouble(),
+                isFree: json['isFree'] ?? false,
+                lessonsCount: json['lessonsCount'] ?? 0,
+                enrolledCount: json['enrolledUsersCount'] ?? 0,
+              ),
+            )
             .toList();
       }
 
@@ -368,7 +419,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   }
 
   // ── Interests ────────────────────────────────────────────────────────────────
-// Replace the getInterests method in api_profile_data_source.dart with this:
+  // Replace the getInterests method in api_profile_data_source.dart with this:
 
   @override
   Future<List<Interest>> getInterests({
@@ -405,15 +456,17 @@ class ApiProfileDataSource implements IProfileDataSource {
             );
             final sport = sportsList.isNotEmpty ? sportsList.first : null;
 
-            interests.add(Interest(
-              id: json['userId'] ?? '',
-              name: json['fullName'] ?? 'Unknown',
-              role: _getRoleText(userType, json['specialization'], sport),
-              profileImage: json['profilePictureUrl'] ?? '',
-              // Store the raw string: null / "Pending" / "Accepted"
-              connectionStatus: json['connectionStatus'] as String?,
-              isFollowing: json['isFollowedByMe'] == true,
-            ));
+            interests.add(
+              Interest(
+                id: json['userId'] ?? '',
+                name: json['fullName'] ?? 'Unknown',
+                role: _getRoleText(userType, json['specialization'], sport),
+                profileImage: json['profilePictureUrl'] ?? '',
+                // Store the raw string: null / "Pending" / "Accepted"
+                connectionStatus: json['connectionStatus'] as String?,
+                isFollowing: json['isFollowedByMe'] == true,
+              ),
+            );
           }
         } on DioException catch (e) {
           debugPrint('Error loading interest user $interestUserId: $e');
@@ -496,30 +549,31 @@ class ApiProfileDataSource implements IProfileDataSource {
   }
 
   /// GET /api/Social/connection-requests
-@override
-Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequests({
-  int pageNumber = 1,
-  int pageSize = 20,
-}) async {
-  try {
-    final response = await _apiClient.get(
-      Endpoints.connectionRequests,
-      params: {'pageNumber': pageNumber, 'pageSize': pageSize},
-    );
-    if (response.statusCode == 200) {
-      final data = response.data as Map<String, dynamic>;
-      final items = (data['items'] as List<dynamic>? ?? [])
-          .map((json) => ConnectionRequest.fromJson(json as Map<String, dynamic>))
-          .toList();
-      final hasNextPage = data['hasNextPage'] as bool? ?? false;
-      return (items: items, hasNextPage: hasNextPage);
+  @override
+  Future<({List<ConnectionRequest> items, bool hasNextPage})>
+  getConnectionRequests({int pageNumber = 1, int pageSize = 20}) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.connectionRequests,
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map(
+              (json) =>
+                  ConnectionRequest.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
     }
-    throw ApiErrorHandler.handleDioError(_badResponse(response));
-  } on DioException catch (e) {
-    throw ApiErrorHandler.handleDioError(e);
   }
-}
- 
+
   /// GET /api/Chat/contacts
   @override
   Future<List<ContactItem>> getContacts({String? userId}) async {
@@ -588,14 +642,18 @@ Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequest
       playerData: userType == UserType.player
           ? _buildPlayerData(json, sportsText)
           : null,
-      coachData:
-          userType == UserType.coach ? _buildCoachData(json, sportsText) : null,
-      scoutData:
-          userType == UserType.scout ? _buildScoutData(json, sportsText) : null,
-      clubData:
-          userType == UserType.club ? _buildClubData(json, sportsList) : null,
-      instituteData:
-          userType == UserType.institute ? _buildInstituteData(json) : null,
+      coachData: userType == UserType.coach
+          ? _buildCoachData(json, sportsText)
+          : null,
+      scoutData: userType == UserType.scout
+          ? _buildScoutData(json, sportsText)
+          : null,
+      clubData: userType == UserType.club
+          ? _buildClubData(json, sportsList)
+          : null,
+      instituteData: userType == UserType.institute
+          ? _buildInstituteData(json)
+          : null,
       otherData: userType == UserType.other ? _buildOtherData(json) : null,
       // Store raw connectionStatus string — null / "Pending" / "Accepted"
       connectionStatus: connectionStatus,
@@ -646,36 +704,39 @@ Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequest
   }
 
   PlayerSpecificData _buildPlayerData(
-          Map<String, dynamic> json, String? sportsText) =>
-      PlayerSpecificData(
-        position: json['position'],
-        height: json['height']?.toString(),
-        weight: json['weight']?.toString(),
-        preferredFoot: null,
-        age: json['age']?.toString(),
-        specializedSport: sportsText ?? json['specialization'],
-        yearsOfExperience: json['yearsOfExperience'],
-        gender: json['gender'],
-      );
+    Map<String, dynamic> json,
+    String? sportsText,
+  ) => PlayerSpecificData(
+    position: json['position'],
+    height: json['height']?.toString(),
+    weight: json['weight']?.toString(),
+    preferredFoot: null,
+    age: json['age']?.toString(),
+    specializedSport: sportsText ?? json['specialization'],
+    yearsOfExperience: json['yearsOfExperience'],
+    gender: json['gender'],
+  );
 
   CoachSpecificData _buildCoachData(
-          Map<String, dynamic> json, String? sportsText) =>
-      CoachSpecificData(
-        specializedSport: json['specialization'] ?? sportsText,
-        yearsOfExperience: json['yearsOfExperience'],
-        certifications: null,
-        age: json['age']?.toString(),
-        gender: json['gender'],
-      );
+    Map<String, dynamic> json,
+    String? sportsText,
+  ) => CoachSpecificData(
+    specializedSport: json['specialization'] ?? sportsText,
+    yearsOfExperience: json['yearsOfExperience'],
+    certifications: null,
+    age: json['age']?.toString(),
+    gender: json['gender'],
+  );
 
   ScoutSpecificData _buildScoutData(
-          Map<String, dynamic> json, String? sportsText) =>
-      ScoutSpecificData(
-        specializedSport: json['specialization'] ?? sportsText,
-        yearsOfExperience: json['yearsOfExperience'],
-        gender: json['gender'],
-        organization: null,
-      );
+    Map<String, dynamic> json,
+    String? sportsText,
+  ) => ScoutSpecificData(
+    specializedSport: json['specialization'] ?? sportsText,
+    yearsOfExperience: json['yearsOfExperience'],
+    gender: json['gender'],
+    organization: null,
+  );
 
   ClubSpecificData _buildClubData(Map<String, dynamic> json, List? sportsList) {
     final sports = EnumMapper.sportIdsToLabels(

@@ -103,6 +103,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Achievement updated successfully",
     ),
     "achievements": MessageLookupByLibrary.simpleMessage("Achievements"),
+    "activate": MessageLookupByLibrary.simpleMessage("Activate"),
     "activities": MessageLookupByLibrary.simpleMessage("Activities"),
     "addAComment": MessageLookupByLibrary.simpleMessage("Add a comment..."),
     "addAccount": MessageLookupByLibrary.simpleMessage("Add Account"),
@@ -266,6 +267,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "date": MessageLookupByLibrary.simpleMessage("Date"),
     "date_label": MessageLookupByLibrary.simpleMessage("Date"),
     "daysAgo": m1,
+    "deactivate": MessageLookupByLibrary.simpleMessage("Deactivate"),
     "december": MessageLookupByLibrary.simpleMessage("December"),
     "defender": MessageLookupByLibrary.simpleMessage("Defender"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
@@ -780,6 +782,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords do not match",
     ),
+    "pay": MessageLookupByLibrary.simpleMessage("Pay"),
     "pending": MessageLookupByLibrary.simpleMessage("Pending"),
     "percentComplete": m19,
     "percentageWatched": m20,

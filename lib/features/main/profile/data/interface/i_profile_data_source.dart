@@ -10,7 +10,11 @@ abstract class IProfileDataSource {
     int page = 1,
     int size = 10,
   });
-
+  Future<List<ProfileAd>> getActiveAds({
+    required String userId,
+    int page = 1,
+    int size = 3,
+  });
   Future<List<Achievement>> getAchievements({
     required String userId,
     int page = 1,
@@ -54,7 +58,6 @@ abstract class IProfileDataSource {
 
   Future<void> toggleFollow(String userId);
 
-
   Future<void> sendConnectionRequest(String receiverId);
 
   Future<void> removeContact(String targetId);
@@ -64,11 +67,8 @@ abstract class IProfileDataSource {
     required String status,
   });
 
-Future<({List<ConnectionRequest> items, bool hasNextPage})> getConnectionRequests({
-  int pageNumber = 1,
-  int pageSize = 20,
-});
-
+  Future<({List<ConnectionRequest> items, bool hasNextPage})>
+  getConnectionRequests({int pageNumber = 1, int pageSize = 20});
 
   Future<List<ContactItem>> getContacts({String? userId});
 }

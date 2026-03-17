@@ -103,6 +103,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "تم تحديث الإنجاز بنجاح",
     ),
     "achievements": MessageLookupByLibrary.simpleMessage("الإنجازات"),
+    "activate": MessageLookupByLibrary.simpleMessage("تفعيل"),
     "activities": MessageLookupByLibrary.simpleMessage("الأنشطة"),
     "addAComment": MessageLookupByLibrary.simpleMessage("أضف تعليقاً..."),
     "addAccount": MessageLookupByLibrary.simpleMessage("إضافة حساب"),
@@ -252,6 +253,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "date": MessageLookupByLibrary.simpleMessage("التاريخ"),
     "date_label": MessageLookupByLibrary.simpleMessage("التاريخ"),
     "daysAgo": m1,
+    "deactivate": MessageLookupByLibrary.simpleMessage("تعطيل"),
     "december": MessageLookupByLibrary.simpleMessage("ديسمبر"),
     "defender": MessageLookupByLibrary.simpleMessage("مدافع"),
     "delete": MessageLookupByLibrary.simpleMessage("حذف"),
@@ -757,6 +759,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
       "كلمتا المرور غير متطابقتين",
     ),
+    "pay": MessageLookupByLibrary.simpleMessage("دفع"),
     "pending": MessageLookupByLibrary.simpleMessage("معلق"),
     "percentComplete": m19,
     "percentageWatched": m20,

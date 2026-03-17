@@ -52,9 +52,6 @@ class AdsError extends AdsState {
   List<Object?> get props => [message];
 }
 
-/// Emitted right after the API responds to CreateAd.
-/// [isPaid] true  → show success screen
-/// [isPaid] false → show payment screen (ad saved as draft)
 class AdCreated extends AdsState {
   final bool isPaid;
   final bool isActive;

@@ -17,7 +17,6 @@ class AdSuccessScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // ── Success icon ───────────────────────────────────────────────
               Container(
                 width: 120.w,
                 height: 120.w,
@@ -58,7 +57,7 @@ class AdSuccessScreen extends StatelessWidget {
               CustomElevatedButton(
                 text: 'Back to Home',
                 onPressed: () {
-                  // Pop back to root — adjust to your nav approach
+                  // Pop back to root
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
               ),

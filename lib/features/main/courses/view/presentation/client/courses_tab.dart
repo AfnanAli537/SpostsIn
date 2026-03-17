@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
@@ -33,6 +34,8 @@ class CoursesTabState extends State<CoursesTab>
   List<CourseModel> _enrolledCourses = [];
   bool _isLoadingAvailable = false;
   bool _isLoadingEnrolled = false;
+  String? _availableError;
+  String? _enrolledError;
 
   // ----- Filter state -----
   int? _selectedSportTypeId;
@@ -83,6 +86,8 @@ class CoursesTabState extends State<CoursesTab>
       setState(() {
         _isLoadingAvailable = true;
         _isLoadingEnrolled = true;
+        _availableError = null;
+        _enrolledError = null;
       });
     }
     context.read<CoursesBloc>()
@@ -122,10 +127,9 @@ class CoursesTabState extends State<CoursesTab>
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(
-            strings.selectSport,
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-          ),
+          title: Text(strings.selectSport,
+              style:
+                  TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -138,10 +142,8 @@ class CoursesTabState extends State<CoursesTab>
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: 14.w, vertical: 10.h),
-                      child: Text(
-                        _getLocalizedSportName(entry.key, strings),
-                        style: TextStyle(fontSize: 14.sp),
-                      ),
+                      child: Text(_getLocalizedSportName(entry.key, strings),
+                          style: TextStyle(fontSize: 14.sp)),
                     ),
                   ),
                   onTap: () {
@@ -171,6 +173,7 @@ class CoursesTabState extends State<CoursesTab>
   Widget build(BuildContext context) {
     super.build(context);
     final string = S.of(context);
+    final theme = Theme.of(context).colorScheme;
 
     return BlocListener<CoursesBloc, CoursesState>(
       listener: (context, state) {
@@ -178,11 +181,13 @@ class CoursesTabState extends State<CoursesTab>
           setState(() {
             _availableCourses = state.courses;
             _isLoadingAvailable = false;
+            _availableError = null;
           });
         } else if (state is EnrolledCoursesLoaded) {
           setState(() {
             _enrolledCourses = state.courses;
             _isLoadingEnrolled = false;
+            _enrolledError = null;
           });
         } else if (state is EnrollmentSuccess) {
           _refreshData();
@@ -190,6 +195,8 @@ class CoursesTabState extends State<CoursesTab>
           setState(() {
             _isLoadingAvailable = false;
             _isLoadingEnrolled = false;
+            _availableError = state.message;
+            _enrolledError = state.message;
           });
         }
       },
@@ -221,7 +228,8 @@ class CoursesTabState extends State<CoursesTab>
                   prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.grey[600]),
+                          icon:
+                              Icon(Icons.clear, color: Colors.grey[600]),
                           onPressed: () {
                             _searchController.clear();
                             _onSearchChanged();
@@ -230,9 +238,7 @@ class CoursesTabState extends State<CoursesTab>
                       : Icon(Icons.tune, color: Colors.grey[600]),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 14.h,
-                  ),
+                      horizontal: 16.w, vertical: 14.h),
                 ),
               ),
             ),
@@ -247,7 +253,8 @@ class CoursesTabState extends State<CoursesTab>
                 children: [
                   _buildFilterChip(
                     label: _selectedSportName != null
-                        ? _getLocalizedSportName(_selectedSportName!, string)
+                        ? _getLocalizedSportName(
+                            _selectedSportName!, string)
                         : string.sport,
                     isSelected: _selectedSportTypeId != null,
                     onTap: _showFilterDialog,
@@ -272,11 +279,11 @@ class CoursesTabState extends State<CoursesTab>
 
           // ----- Content -----
           if (_searchController.text.trim().isNotEmpty)
-            _buildSearchResults(string: string)
+            _buildSearchResults(string: string, theme: theme)
           else ...[
-            _buildContinueWatchingSection(string: string),
-            _buildNewCoursesSection(string: string),
-            _buildEnrolledCoursesSection(string: string),
+            _buildContinueWatchingSection(string: string, theme: theme),
+            _buildNewCoursesSection(string: string, theme: theme),
+            _buildEnrolledCoursesSection(string: string, theme: theme),
           ],
           SizedBox(height: 120.h),
         ],
@@ -284,7 +291,7 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  // ----- Filter chip widget -----
+  // ----- Filter chip -----
   Widget _buildFilterChip({
     required String label,
     IconData? icon,
@@ -309,13 +316,11 @@ class CoursesTabState extends State<CoursesTab>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon ?? Icons.tune,
-              size: 18.sp,
-              color: isSelected
-                  ? Theme.of(context).colorScheme.surface
-                  : Theme.of(context).colorScheme.onSurface,
-            ),
+            Icon(icon ?? Icons.tune,
+                size: 18.sp,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.surface
+                    : Theme.of(context).colorScheme.onSurface),
             SizedBox(width: 6.w),
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 120.w),
@@ -338,7 +343,61 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildSearchResults({required S string}) {
+  // ----- Error widget (shared style) -----
+  Widget _buildErrorWidget({
+    required String message,
+    required S string,
+    required ColorScheme theme,
+    required VoidCallback onRetry,
+  }) {
+    return Padding(
+      padding: EdgeInsets.all(20.w),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
+            SizedBox(height: 16.h),
+            Text(
+              string.oopsSomethingWentWrong,
+              style: GoogleFonts.poppins(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800]),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                  fontSize: 14.sp, color: Colors.grey[600]),
+            ),
+            SizedBox(height: 24.h),
+            ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: Text(string.retry),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primary,
+                foregroundColor: theme.surface,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ----- Search results -----
+  Widget _buildSearchResults({required S string, required ColorScheme theme}) {
+    if (_availableError != null) {
+      return _buildErrorWidget(
+        message: _availableError!,
+        string: string,
+        theme: theme,
+        onRetry: _refreshData,
+      );
+    }
     final total = _availableCourses.length + _enrolledCourses.length;
     if (_isLoadingAvailable && total == 0) return const CoursesListShimmer();
     if (total == 0) {
@@ -368,8 +427,10 @@ class CoursesTabState extends State<CoursesTab>
                     .titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
           ),
-          ..._availableCourses.map((c) =>
-              CourseCard(course: c, onTap: () => _navigateToCourseDetail(c.id), string: string)),
+          ..._availableCourses.map((c) => CourseCard(
+              course: c,
+              onTap: () => _navigateToCourseDetail(c.id),
+              string: string)),
         ],
         if (_enrolledCourses.isNotEmpty) ...[
           Padding(
@@ -380,15 +441,21 @@ class CoursesTabState extends State<CoursesTab>
                     .titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
           ),
-          ..._enrolledCourses.map((c) =>
-              CourseCard(course: c, onTap: () => _navigateToCourseDetail(c.id), string: string)),
+          ..._enrolledCourses.map((c) => CourseCard(
+              course: c,
+              onTap: () => _navigateToCourseDetail(c.id),
+              string: string)),
         ],
       ],
     );
   }
 
-  Widget _buildContinueWatchingSection({required S string}) {
-    if (_isLoadingEnrolled || _enrolledCourses.isEmpty) return const SizedBox.shrink();
+  // ----- Continue watching -----
+  Widget _buildContinueWatchingSection(
+      {required S string, required ColorScheme theme}) {
+    if (_isLoadingEnrolled || _enrolledCourses.isEmpty) {
+      return const SizedBox.shrink();
+    }
     final inProgress = _enrolledCourses
         .where((c) => c.progress > 0 && c.progress < 100)
         .toList()
@@ -415,7 +482,18 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildNewCoursesSection({required S string}) {
+  // ----- New courses -----
+  Widget _buildNewCoursesSection(
+      {required S string, required ColorScheme theme}) {
+    // Error state
+    if (_availableError != null && !_isLoadingAvailable) {
+      return _buildErrorWidget(
+        message: _availableError!,
+        string: string,
+        theme: theme,
+        onRetry: _refreshData,
+      );
+    }
     if (_isLoadingAvailable) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,6 +510,7 @@ class CoursesTabState extends State<CoursesTab>
       );
     }
     if (_availableCourses.isEmpty) return const SizedBox.shrink();
+
     final display = _availableCourses.take(3).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -477,7 +556,18 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildEnrolledCoursesSection({required S string}) {
+  // ----- Enrolled courses -----
+  Widget _buildEnrolledCoursesSection(
+      {required S string, required ColorScheme theme}) {
+    // Error state
+    if (_enrolledError != null && !_isLoadingEnrolled) {
+      return _buildErrorWidget(
+        message: _enrolledError!,
+        string: string,
+        theme: theme,
+        onRetry: _refreshData,
+      );
+    }
     if (_isLoadingEnrolled) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -494,6 +584,7 @@ class CoursesTabState extends State<CoursesTab>
       );
     }
     if (_enrolledCourses.isEmpty) return const SizedBox.shrink();
+
     final display = _enrolledCourses.take(3).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,7 +630,9 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
-  Widget _buildLastViewedCard(BuildContext context, CourseModel course, S string) {
+  // ----- Continue watching card -----
+  Widget _buildLastViewedCard(
+      BuildContext context, CourseModel course, S string) {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => _navigateToCourseDetail(course.id),
@@ -603,17 +696,18 @@ class CoursesTabState extends State<CoursesTab>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(string.percentComplete(course.progress.toStringAsFixed(0)),
+                      Text(
+                          string.percentComplete(
+                              course.progress.toStringAsFixed(0)),
                           style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: theme.colorScheme.onPrimary)),
                       Text(
                           string.lessonsProgress(
-                            '${((course.progress) / 100 * course.lessonsCount).ceil()}',
-                            '${course.lessonsCount}'
-                          ),
-                          style: theme.textTheme.bodySmall
-                              ?.copyWith(color: theme.colorScheme.onPrimary)),
+                              '${((course.progress) / 100 * course.lessonsCount).ceil()}',
+                              '${course.lessonsCount}'),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onPrimary)),
                     ],
                   ),
                   SizedBox(height: 8.h),

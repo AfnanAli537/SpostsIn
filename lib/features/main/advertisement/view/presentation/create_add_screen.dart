@@ -338,7 +338,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Media picker ───────────────────────────────────────────────
               GestureDetector(
                 onTap: _showPickerOptions,
                 child: DottedBorder(
@@ -361,7 +360,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 24.h),
 
-              // ── Title ──────────────────────────────────────────────────────
               _sectionLabel('Title *'),
               SizedBox(height: 8.h),
               AuthTextField(
@@ -370,7 +368,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              // ── Description ────────────────────────────────────────────────
               _sectionLabel('Description *'),
               SizedBox(height: 8.h),
               AuthTextField(
@@ -380,7 +377,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              // ── Sport ──────────────────────────────────────────────────────
               ValueListenableBuilder<String?>(
                 valueListenable: _sportNotifier,
                 builder: (_, sport, __) => AppDropdownOverlay(
@@ -393,7 +389,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              // ── Target Audiences ───────────────────────────────────────────
               _sectionLabel('Target Audience'),
               SizedBox(height: 8.h),
               CheckboxDropdownOverlay(
@@ -406,7 +401,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              // ── Date range ─────────────────────────────────────────────────
               _sectionLabel('Campaign Duration *'),
               SizedBox(height: 8.h),
               Row(
@@ -429,7 +423,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 ],
               ),
 
-              // ── Price display ──────────────────────────────────────────────
               if (_startDate != null && _endDate != null)
                 Padding(
                   padding: EdgeInsets.only(top: 12.h),
@@ -471,7 +464,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 ),
               SizedBox(height: 20.h),
 
-              // ── Action URL ─────────────────────────────────────────────────
               _sectionLabel('Action URL (optional)'),
               SizedBox(height: 8.h),
               AuthTextField(
@@ -480,7 +472,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              // ── CTA text ───────────────────────────────────────────────────
               _sectionLabel('CTA Button Text (optional)'),
               SizedBox(height: 8.h),
               AuthTextField(
@@ -489,7 +480,6 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 40.h),
 
-              // ── Submit ─────────────────────────────────────────────────────
               BlocBuilder<AdsBloc, AdsState>(
                 builder: (_, state) {
                   final isLoading = state is AdsLoaded && state.isUploading;
@@ -497,7 +487,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                     text: _isEditing ? 'Update Ad' : 'Continue',
                     isLoading: isLoading,
                     enabled:
-                        true, // Always true - let isLoading control the visual state
+                        true,
                     onPressed: _submit,
                   );
                 },

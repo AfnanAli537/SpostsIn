@@ -30,12 +30,13 @@ class ProfileRepo {
     required String senderId,
     required String status,
   }) => _dataSource.respondConnection(senderId: senderId, status: status);
-  
+
   Future<({List<ConnectionRequest> items, bool hasNextPage})>
   getConnectionRequests({int pageNumber = 1, int pageSize = 20}) => _dataSource
       .getConnectionRequests(pageNumber: pageNumber, pageSize: pageSize);
 
-  Future<List<ContactItem>> getContacts({String? userId}) => _dataSource.getContacts(userId: userId);
+  Future<List<ContactItem>> getContacts({String? userId}) =>
+      _dataSource.getContacts(userId: userId);
 
   // ── Achievements ─────────────────────────────────────────────────────────────
 
@@ -82,6 +83,11 @@ class ProfileRepo {
     int pageSize = 10,
   }) => _dataSource.getPosts(targetUserId: userId, page: page, size: pageSize);
 
+  Future<List<ProfileAd>> getActiveAds({
+    required String userId,
+    int page = 1,
+    int size = 3,
+  }) => _dataSource.getActiveAds(userId: userId, page: page, size: size);
   // ── Opportunities ────────────────────────────────────────────────────────────
 
   Future<List<Opportunity>> getOpportunities({

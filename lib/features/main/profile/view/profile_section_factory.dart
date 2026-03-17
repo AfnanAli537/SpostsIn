@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
 import 'package:sports_in/features/main/profile/view/widgets/empty_section.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/main/profile/view/widgets/profile_stats_widget.dart';
@@ -72,6 +73,10 @@ class ProfileSectionFactory {
     VoidCallback? onAchievementsShowAll,
     VoidCallback? onVideosShowAll,
     VoidCallback? onInterestsShowAll,
+    // ── Ads callbacks ───────────────────────────────────────────────────────
+    VoidCallback? onAdsShowAll,
+    Function(ProfileAd)? onAdTap,
+    // ── Other callbacks ─────────────────────────────────────────────────────
     Function(Post)? onPostTap,
     Function(Opportunity)? onOpportunityTap,
     Function(Course)? onCourseTap,
@@ -83,6 +88,7 @@ class ProfileSectionFactory {
   }) {
     final List<Widget> sections = [];
 
+    // ── Posts ────────────────────────────────────────────────────────────────
     if (profile.posts.isNotEmpty) {
       sections.add(PostsSection(
         posts: profile.posts,
@@ -94,7 +100,18 @@ class ProfileSectionFactory {
     } else {
       sections.add(EmptySection(title: string.posts, message: string.noPosts));
     }
-
+    // ── Advertisements ───────────────────────────────────────────────────────
+    if (profile.ads.isNotEmpty) {
+      sections.add(AdsSection(
+        ads: profile.ads,
+        isOwner: isOwnProfile,
+        onShowAll: onAdsShowAll,
+        onAdTap: onAdTap,
+        theme: theme,
+        string: string,
+      ));
+    }
+    // ── Opportunities ────────────────────────────────────────────────────────
     if (profile.opportunities != null &&
         profile.opportunities!.isNotEmpty &&
         (profile.userType == UserType.coach ||
@@ -117,6 +134,7 @@ class ProfileSectionFactory {
           title: string.opportunities, message: string.noOpportunities));
     }
 
+    // ── Courses ──────────────────────────────────────────────────────────────
     if (profile.courses != null &&
         profile.courses!.isNotEmpty &&
         (profile.userType == UserType.club ||
@@ -138,6 +156,7 @@ class ProfileSectionFactory {
           EmptySection(title: string.courses, message: string.noCourses));
     }
 
+    // ── Achievements ─────────────────────────────────────────────────────────
     if (profile.achievements.isNotEmpty) {
       sections.add(AchievementsSection(
         achievements: profile.achievements,
@@ -151,6 +170,7 @@ class ProfileSectionFactory {
           title: string.achievements, message: string.noAchievements));
     }
 
+    // ── Analyzed videos ──────────────────────────────────────────────────────
     if (profile.analyzedVideos.isNotEmpty) {
       sections.add(AnalyzedVideosSection(
         videos: profile.analyzedVideos,
@@ -161,11 +181,13 @@ class ProfileSectionFactory {
       ));
     }
 
+
+
+    // ── Interests ────────────────────────────────────────────────────────────
     if (profile.interests.isNotEmpty) {
       sections.add(InterestsSection(
         interests: profile.interests,
         onShowAll: onInterestsShowAll,
-        // onConnectToggle: onConnectToggle,
         onFollowToggle: onFollowToggle,
         onInterestTap: onInterestTap,
         theme: theme,
@@ -181,7 +203,6 @@ class ProfileSectionFactory {
     required bool isOwnProfile,
     required ThemeData theme,
     required S string,
-    // connectionStatus is read directly from profile.connectionStatus
     bool isFollowing = false,
     VoidCallback? onPostsShowAll,
     VoidCallback? onOpportunitiesShowAll,
@@ -189,6 +210,10 @@ class ProfileSectionFactory {
     VoidCallback? onAchievementsShowAll,
     VoidCallback? onVideosShowAll,
     VoidCallback? onInterestsShowAll,
+    // ── Ads ──────────────────────────────────────────────────────────────────
+    VoidCallback? onAdsShowAll,
+    Function(ProfileAd)? onAdTap,
+    // ── Other ─────────────────────────────────────────────────────────────────
     Function(Post)? onPostTap,
     Function(Opportunity)? onOpportunityTap,
     Function(Course)? onCourseTap,
@@ -199,7 +224,6 @@ class ProfileSectionFactory {
     Function(Interest)? onInterestTap,
     VoidCallback? onConnectPressed,
     VoidCallback? onFollowPressed,
-    // Called when the connections stat card is tapped (owner only)
     VoidCallback? onConnectionsPressed,
   }) {
     final List<Widget> sections = [];
@@ -211,8 +235,7 @@ class ProfileSectionFactory {
         stats: profile.stats,
         onFollowersPressed: () {},
         onFollowingPressed: () {},
-        // Only the profile owner can navigate to the connections screen
-        onConnectionsPressed:onConnectionsPressed ,
+        onConnectionsPressed: onConnectionsPressed,
         onAnalyzedPeoplePressed: () {},
         theme: theme,
         string: string,
@@ -229,7 +252,6 @@ class ProfileSectionFactory {
             children: [
               Expanded(
                 child: ConnectButton(
-                  // Pass the raw status string; the button handles all 3 states
                   connectionStatus: profile.connectionStatus,
                   onPressed: onConnectPressed ?? () {},
                   connectText: string.connect,
@@ -263,6 +285,8 @@ class ProfileSectionFactory {
       onAchievementsShowAll: onAchievementsShowAll,
       onVideosShowAll: onVideosShowAll,
       onInterestsShowAll: onInterestsShowAll,
+      onAdsShowAll: onAdsShowAll,
+      onAdTap: onAdTap,
       onPostTap: onPostTap,
       onOpportunityTap: onOpportunityTap,
       onCourseTap: onCourseTap,

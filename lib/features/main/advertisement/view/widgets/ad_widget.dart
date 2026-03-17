@@ -8,6 +8,7 @@ import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_comments_sheet.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/ad_dashboard_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_likes_sheet.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
@@ -40,11 +41,9 @@ class _AdWidgetState extends State<AdWidget> {
   late int _likesCount;
   late int _commentsCount;
 
-  // Whether this ad has a valid action link
   bool get _hasActionLink =>
       widget.ad.actionUrl != null && widget.ad.actionUrl!.isNotEmpty;
 
-  // Label shown on the banner and CTA button
   String get _actionLabel =>
       (widget.ad.actionText != null && widget.ad.actionText!.isNotEmpty)
           ? widget.ad.actionText!
@@ -129,14 +128,9 @@ class _AdWidgetState extends State<AdWidget> {
     context.read<AdsBloc>().add(LikeAd(widget.ad.id));
   }
 
-  /// Opens the action URL inside the app (WebView) and logs the click.
   void _openActionUrl() {
     if (!_hasActionLink) return;
-
-    // Log the click
     context.read<AdsBloc>().add(LogAdClick(widget.ad.id));
-
-    // Open inside the app — no browser picker shown to the user
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -164,6 +158,18 @@ class _AdWidgetState extends State<AdWidget> {
       context,
       MaterialPageRoute(
         builder: (_) => FullScreenImageViewer(imageUrl: url),
+      ),
+    );
+  }
+
+  void _openDashboard() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdDashboardScreen(
+          adId: widget.ad.id,
+          adTitle: widget.ad.title,
+        ),
       ),
     );
   }
@@ -203,7 +209,6 @@ class _AdWidgetState extends State<AdWidget> {
     super.dispose();
   }
 
-  // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +225,6 @@ class _AdWidgetState extends State<AdWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ────────────────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -268,7 +272,7 @@ class _AdWidgetState extends State<AdWidget> {
                     ],
                   ),
                 ),
-                // Three-dot menu — only for owner
+
                 if (widget.isCurrentUser)
                   PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: theme.onSurface),
@@ -276,19 +280,39 @@ class _AdWidgetState extends State<AdWidget> {
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     onSelected: (value) {
-                      if (value == 'edit') {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.createAdScreen,
-                          arguments: widget.ad,
-                        );
-                      } else if (value == 'toggle') {
-                        _showToggleConfirmation();
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmation();
+                      switch (value) {
+                        case 'dashboard':
+                          _openDashboard();
+                          break;
+                        case 'edit':
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.createAdScreen,
+                            arguments: widget.ad,
+                          );
+                          break;
+                        case 'toggle':
+                          _showToggleConfirmation();
+                          break;
+                          case 'pay':
+                          (){};
+                          break;
+                        case 'delete':
+                          _showDeleteConfirmation();
+                          break;
                       }
                     },
                     itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: 'dashboard',
+                        child: Row(children: [
+                          Icon(Icons.analytics_outlined,
+                              size: 20.sp, color: theme.primary),
+                          SizedBox(width: 8.w),
+                          Text('Dashboard',
+                              style: TextStyle(color: theme.primary)),
+                        ]),
+                      ),
                       PopupMenuItem(
                         value: 'edit',
                         child: Row(children: [
@@ -296,7 +320,7 @@ class _AdWidgetState extends State<AdWidget> {
                           SizedBox(width: 8.w),
                           Text(strings.edit),
                         ]),
-                      ),
+                      ), widget.ad.isPaid?
                       PopupMenuItem(
                         value: 'toggle',
                         child: Row(children: [
@@ -307,7 +331,16 @@ class _AdWidgetState extends State<AdWidget> {
                             size: 20.sp,
                           ),
                           SizedBox(width: 8.w),
-                          Text(widget.ad.isActive ? 'Deactivate' : 'Activate'),
+                          Text(widget.ad.isActive
+                              ? strings.deactivate
+                              : strings.activate),
+                        ]),
+                      ):PopupMenuItem(
+                        value: 'pay',
+                        child: Row(children: [
+                          Icon(Icons.payment, size: 20.sp),
+                          SizedBox(width: 8.w),
+                          Text(strings.pay),
                         ]),
                       ),
                       PopupMenuItem(
@@ -327,7 +360,6 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
-            // ── Title ─────────────────────────────────────────────────────
             Text(
               widget.ad.title,
               style: TextStyle(
@@ -338,7 +370,6 @@ class _AdWidgetState extends State<AdWidget> {
             ),
             SizedBox(height: 6.h),
 
-            // ── Description ───────────────────────────────────────────────
             Text(
               widget.ad.description,
               style: TextStyle(
@@ -350,27 +381,18 @@ class _AdWidgetState extends State<AdWidget> {
               overflow: TextOverflow.ellipsis,
             ),
 
-            // ── Media with action banner ───────────────────────────────────
             if (widget.ad.mediaUrl != null && widget.ad.mediaUrl!.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(top: 12.h),
                 child: Stack(
                   alignment: Alignment.bottomLeft,
                   children: [
-                    // Tapping the media itself → full screen image (images only)
                     GestureDetector(
                       onTap: _openFullScreenImage,
                       child: _isVideo
                           ? _buildVideoPlayer()
                           : _buildImageWidget(),
                     ),
-
-                    // ── Bottom banner ─────────────────────────────────────
-                    // If there is an action link:
-                    //   • shows actionText (or "Learn More")
-                    //   • tapping opens the URL inside the app (WebView)
-                    // If there is no action link:
-                    //   • shows plain "Advertisement" label (not tappable)
                     GestureDetector(
                       onTap: _hasActionLink ? _openActionUrl : null,
                       child: Container(
@@ -378,7 +400,6 @@ class _AdWidgetState extends State<AdWidget> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
-                          // Slightly darker when tappable so it looks clickable
                           color: _hasActionLink
                               ? Colors.black.withOpacity(0.6)
                               : Colors.black.withOpacity(0.45),
@@ -393,7 +414,7 @@ class _AdWidgetState extends State<AdWidget> {
                             Expanded(
                               child: Text(
                                 _hasActionLink
-                                    ? _actionLabel   // ← actionText from the ad
+                                    ? _actionLabel
                                     : 'Advertisement',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -421,9 +442,6 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
-            // ── CTA button (shown when no media OR as a standalone button) ─
-            // Only show the standalone CTA button when there is no media,
-            // because when there IS media the banner already acts as the CTA.
             if (_hasActionLink &&
                 (widget.ad.mediaUrl == null || widget.ad.mediaUrl!.isEmpty))
               Padding(
@@ -445,7 +463,6 @@ class _AdWidgetState extends State<AdWidget> {
                 ),
               ),
 
-            // ── Like & Comment row ─────────────────────────────────────────
             Row(
               children: [
                 _buildActionButton(
@@ -518,9 +535,7 @@ class _AdWidgetState extends State<AdWidget> {
   }
 
   Widget _buildVideoPlayer() {
-    if (_videoError != null) {
-      return Center(child: Text(_videoError!));
-    }
+    if (_videoError != null) return Center(child: Text(_videoError!));
     if (_isInitializing || _videoController == null) {
       return const Center(child: CircularProgressIndicator());
     }

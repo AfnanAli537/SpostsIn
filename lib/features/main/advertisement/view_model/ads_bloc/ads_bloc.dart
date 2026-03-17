@@ -6,6 +6,7 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 
+
 part 'ads_event.dart';
 part 'ads_state.dart';
 
@@ -169,8 +170,6 @@ class AdsBloc extends Bloc<AdsEvent, AdsState> {
         isUploading: false,
       ));
 
-      // The backend returns isSuccess + message. We infer payment/active status
-      // from the message — a 'Subscription' response means paid & active.
       final message = (response['message'] as String?) ?? '';
       final isPaid = message.toLowerCase().contains('subscription') ||
           message.toLowerCase().contains('paid') ||
@@ -267,9 +266,6 @@ class AdsBloc extends Bloc<AdsEvent, AdsState> {
     try {
       await adsRepo.toggleAdStatus(adId: event.adId);
       emit(AdStatusToggled());
-      await Future.delayed(const Duration(milliseconds: 100));
-      // Refresh user ads list after toggle
-      add(const FetchUserAds());
     } catch (e) {
       emit(AdsError(
         'Failed to toggle ad: ${e is ApiException ? e.message : e.toString()}',

@@ -44,7 +44,6 @@ class AdPaymentScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Summary card ───────────────────────────────────────────────
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20.w),
@@ -120,7 +119,6 @@ class AdPaymentScreen extends StatelessWidget {
 
               SizedBox(height: 32.h),
 
-              // ── Coming soon notice ─────────────────────────────────────────
               Container(
                 padding: EdgeInsets.all(14.w),
                 decoration: BoxDecoration(
@@ -148,7 +146,6 @@ class AdPaymentScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // ── Pay now (disabled) ─────────────────────────────────────────
               CustomElevatedButton(
                 text: 'Pay Now (Coming Soon)',
                 onPressed: () {}, // disabled — payment not integrated
@@ -156,7 +153,6 @@ class AdPaymentScreen extends StatelessWidget {
               ),
               SizedBox(height: 12.h),
 
-              // ── Pay later ──────────────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(

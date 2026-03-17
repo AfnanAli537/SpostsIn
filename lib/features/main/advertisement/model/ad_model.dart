@@ -66,10 +66,10 @@ class AdModel {
       actionText: json['actionText'],
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
-      sportTypeId: json['sportTypeId'] ?? 1,
+      sportTypeId: (json['sportTypeId'] ?? 1).toInt(),
       sportTypeName: json['sportTypeName'],
       videoDuration: (json['videoDuration'] ?? 0).toDouble(),
-      targetAudiences: List<int>.from(json['targetAudiences'] ?? []),
+      targetAudiences: List<int>.from((json['targetAudiences'] ?? []).map((e) => (e as num).toInt())),
       isActive: json['isActive'] ?? false,
       isPaid: json['isPaid'] ?? false,
       watchedTime: (json['watchedTime'] ?? 0).toDouble(),
@@ -78,10 +78,10 @@ class AdModel {
       lastWatchedAt: json['lastWatchedAt'] != null
           ? DateTime.parse(json['lastWatchedAt'])
           : null,
-      viewCount: json['viewCount'] ?? 0,
-      clickCount: json['clickCount'] ?? 0,
-      likesCount: json['likesCount'] ?? 0,
-      commentsCount: json['commentsCount'] ?? 0,
+      viewCount: (json['viewCount'] ?? 0).toInt(),
+      clickCount: (json['clickCount'] ?? 0).toInt(),
+      likesCount: (json['likesCount'] ?? 0).toInt(),
+      commentsCount: (json['commentsCount'] ?? 0).toInt(),
       isLikedByCurrentUser: json['isLikedByCurrentUser'] ?? false,
       author: json['author'] != null
           ? AuthorModel.fromJson(json['author'])
@@ -169,11 +169,11 @@ class AdDashboardModel {
 
   factory AdDashboardModel.fromJson(Map<String, dynamic> json) {
     return AdDashboardModel(
-      totalAds: json['totalAds'] ?? 0,
-      totalViews: json['totalViews'] ?? 0,
-      totalClicks: json['totalClicks'] ?? 0,
+      totalAds: (json['totalAds'] ?? 0).toInt(),
+      totalViews: (json['totalViews'] ?? 0).toInt(),
+      totalClicks: (json['totalClicks'] ?? 0).toInt(),
       averageCompletionRate: (json['averageCompletionRate'] ?? 0).toDouble(),
-      totalEngagementSeconds: json['totalEngagementSeconds'] ?? 0,
+      totalEngagementSeconds: (json['totalEngagementSeconds'] ?? 0).toInt(),
     );
   }
 }

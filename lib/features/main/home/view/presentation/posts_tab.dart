@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sports_in/features/main/advertisement/view/widgets/ad.dart';
+import 'package:sports_in/features/main/advertisement/view/widgets/ad_widget.dart';
 import 'package:sports_in/features/main/advertisement/view/widgets/ad_shimmer.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/home/view/widgets/post.dart';

@@ -2829,6 +2829,21 @@ class S {
     return Intl.message('Archive', name: 'archive', desc: '', args: []);
   }
 
+  /// `Activate`
+  String get activate {
+    return Intl.message('Activate', name: 'activate', desc: '', args: []);
+  }
+
+  /// `Pay`
+  String get pay {
+    return Intl.message('Pay', name: 'pay', desc: '', args: []);
+  }
+
+  /// `Deactivate`
+  String get deactivate {
+    return Intl.message('Deactivate', name: 'deactivate', desc: '', args: []);
+  }
+
   /// `Restore`
   String get restore {
     return Intl.message('Restore', name: 'restore', desc: '', args: []);

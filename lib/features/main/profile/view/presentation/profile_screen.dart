@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/my_ads_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
@@ -19,7 +21,6 @@ import '../widgets/profile_header.dart';
 import '../widgets/profile_description.dart';
 import '../widgets/profile_stats_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sports_in/app/routes/app_routes.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? userId;
@@ -103,6 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       achievements: [],
       analyzedVideos: [],
       interests: [],
+      ads: [],
     );
 
     return Skeletonizer(
@@ -155,20 +157,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 60.sp,
-            color: theme.colorScheme.error,
-          ),
+          Icon(Icons.error_outline,
+              size: 60.sp, color: theme.colorScheme.error),
           SizedBox(height: 16.h),
           Text(string.profileLoadFailed, textAlign: TextAlign.center),
           SizedBox(height: 8.h),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.primary,
-            ),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: theme.colorScheme.primary),
           ),
           SizedBox(height: 24.h),
           ElevatedButton(
@@ -213,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               string: string,
               isFollowing: profile.isFollowing,
 
-              // ── Connections stat card tap — owner only ──────────────────────
+              // ── Connections ───────────────────────────────────────────────
               onConnectionsPressed: () {
                 Navigator.push(
                   context,
@@ -226,31 +224,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
 
-              // ── Connect button — 3-state logic ─────────────────────────────
+              // ── Connect button ────────────────────────────────────────────
               onConnectPressed: () {
                 final status = profile.connectionStatus;
                 if (status == null) {
-                  // null → send request
                   context.read<ProfileBloc>().add(
-                    SendConnectionRequest(receiverId: profile.id),
-                  );
+                        SendConnectionRequest(receiverId: profile.id),
+                      );
                 } else if (status == 'Accepted') {
-                  // Accepted → remove contact
                   context.read<ProfileBloc>().add(
-                    RemoveContact(targetId: profile.id),
-                  );
+                        RemoveContact(targetId: profile.id),
+                      );
                 }
-                // "Pending" → button is visually disabled, tap does nothing
               },
 
-              // ── Follow button ───────────────────────────────────────────────
+              // ── Follow button ─────────────────────────────────────────────
               onFollowPressed: () {
                 context.read<ProfileBloc>().add(
-                  ToggleFollow(userId: profile.id),
-                );
+                      ToggleFollow(userId: profile.id),
+                    );
               },
 
-              // ── Section callbacks ───────────────────────────────────────────
+              // ── Posts ─────────────────────────────────────────────────────
               onPostsShowAll: () {
                 Navigator.pushNamed(
                   context,
@@ -261,6 +256,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 );
               },
+              onPostTap: (post) {
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.profilePostsListScreen,
+                  arguments: {
+                    'userId': profile.id,
+                    'isCurrentUser': profile.isOwner,
+                  },
+                );
+              },
+
+              // ── Opportunities ─────────────────────────────────────────────
               onOpportunitiesShowAll: () {
                 Navigator.push(
                   context,
@@ -272,6 +279,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
+              onOpportunityTap: (opportunity) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyOpportunitiesListScreen(
+                        showActiveOnly: true),
+                  ),
+                );
+              },
+
+              // ── Courses ───────────────────────────────────────────────────
               onCoursesShowAll: () {
                 Navigator.push(
                   context,
@@ -282,28 +300,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         listType: CourseListType.created,
                       ),
                     ),
-                  ),
-                );
-              },
-              onAchievementsShowAll: () {},
-              onVideosShowAll: () {},
-              onInterestsShowAll: () {},
-              onPostTap: (post) {
-                Navigator.pushNamed(
-                  context,
-                  AppRoutes.profilePostsListScreen,
-                  arguments: {
-                    'userId': profile.id,
-                    'isCurrentUser': profile.isOwner,
-                  },
-                );
-              },
-              onOpportunityTap: (opportunity) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        MyOpportunitiesListScreen(showActiveOnly: true),
                   ),
                 );
               },
@@ -318,13 +314,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
+
+              // ── Advertisements ────────────────────────────────────────────
+              // "Show All" navigates to MyAdsScreen — only shown for owner
+              // (AdsSection handles the isOwner check internally)
+              onAdsShowAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyAdsScreen(
+                      userId: profile.id,
+                      isOwner: profile.isOwner,
+                    ),
+                  ),
+                );
+              },
+              // Tapping a single ad thumbnail also goes to MyAdsScreen
+              onAdTap: (ProfileAd ad) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MyAdsScreen(
+                      userId: profile.id,
+                      isOwner: profile.isOwner,
+                    ),
+                  ),
+                );
+              },
+
+              // ── Achievements ──────────────────────────────────────────────
+              onAchievementsShowAll: () {},
               onAchievementTap: (achievement) {},
+
+              // ── Videos ────────────────────────────────────────────────────
+              onVideosShowAll: () {},
               onVideoTap: (video) {},
+
+              // ── Interests ─────────────────────────────────────────────────
+              onInterestsShowAll: () {},
               onConnectToggle: (interest) {},
               onFollowToggle: (interest) {
                 context.read<ProfileBloc>().add(
-                  ToggleFollow(userId: interest.id),
-                );
+                      ToggleFollow(userId: interest.id),
+                    );
               },
               onInterestTap: (interest) {
                 _navigateToUserProfile(context, interest.id);

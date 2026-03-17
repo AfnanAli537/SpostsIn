@@ -47,23 +47,66 @@ class ForYouTabState extends State<ForYouTab>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RepaintBoundary(
-          child: _buildLatestPostsSection(context, strings, theme),
-        ),
+        RepaintBoundary(child: _buildLatestPostsSection(context, strings, theme)),
         SizedBox(height: 24.h),
-        RepaintBoundary(
-          child: _buildLatestCoursesSection(context, strings, theme),
-        ),
+        RepaintBoundary(child: _buildLatestCoursesSection(context, strings, theme)),
         SizedBox(height: 24.h),
-        RepaintBoundary(
-          child: _buildOpportunitiesSection(context, strings, theme),
-        ),
+        RepaintBoundary(child: _buildOpportunitiesSection(context, strings, theme)),
         SizedBox(height: 120.h),
       ],
     );
   }
 
-  // ─── Latest Posts Section ─────────────────────────────────────────────
+  // ── Shared error widget ───────────────────────────────────────────────────
+
+  Widget _buildErrorState(
+    BuildContext context,
+    S strings,
+    ColorScheme theme,
+    String message,
+    VoidCallback onRetry,
+  ) {
+    return Padding(
+      padding: EdgeInsets.all(20.w),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
+            SizedBox(height: 16.h),
+            Text(
+              strings.oopsSomethingWentWrong,
+              style: GoogleFonts.poppins(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800]),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                  fontSize: 14.sp, color: Colors.grey[600]),
+            ),
+            SizedBox(height: 24.h),
+            ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: Text(strings.retry,
+                  style: GoogleFonts.poppins(
+                      fontSize: 16.sp, fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primary,
+                foregroundColor: theme.surface,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Latest Posts ──────────────────────────────────────────────────────────
 
   Widget _buildLatestPostsSection(
       BuildContext context, S strings, ColorScheme theme) {
@@ -92,10 +135,7 @@ class ForYouTabState extends State<ForYouTab>
 
             if (state is PostsError) {
               return _buildErrorState(
-                context,
-                strings,
-                theme,
-                state.message,
+                context, strings, theme, state.message,
                 () => context.read<PostsBloc>().add(const FetchPosts()),
               );
             }
@@ -104,10 +144,9 @@ class ForYouTabState extends State<ForYouTab>
               if (state.posts.isEmpty) {
                 return _buildEmptyState(strings.noPostsYet, Icons.post_add);
               }
-              final firstPost = state.posts.first;
               return PostWidget(
-                key: ValueKey(firstPost.id),
-                post: firstPost,
+                key: ValueKey(state.posts.first.id),
+                post: state.posts.first,
               );
             }
 
@@ -118,12 +157,12 @@ class ForYouTabState extends State<ForYouTab>
     );
   }
 
-  // ─── Latest Courses Section ───────────────────────────────────────────
+  // ── Latest Courses ────────────────────────────────────────────────────────
 
   Widget _buildLatestCoursesSection(
       BuildContext context, S string, ColorScheme theme) {
     return BlocBuilder<CoursesBloc, CoursesState>(
-      buildWhen: (previous, current) =>
+      buildWhen: (_, current) =>
           current is CoursesLoading ||
           current is CoursesLoaded ||
           current is CoursesError,
@@ -141,14 +180,29 @@ class ForYouTabState extends State<ForYouTab>
               onShowAll: () => widget.onTabChange(HomeTab.courses),
               showAllEnabled: !isLoading && hasCourses,
             ),
-            if (isLoading)
+
+            // Error
+            if (state is CoursesError)
+              _buildErrorState(
+                context, string, theme, state.message,
+                () => context.read<CoursesBloc>().add(
+                      const FetchAvailableCourses(page: 1, size: 1),
+                    ),
+              )
+
+            // Loading
+            else if (isLoading)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: const CoursesListShimmer(),
               )
+
+            // Empty
             else if (!hasCourses)
               _buildEmptyState(
                   string.noAvailableCourses, Icons.school_outlined)
+
+            // Content
             else
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -156,7 +210,7 @@ class ForYouTabState extends State<ForYouTab>
                   course: courses.first,
                   onTap: () =>
                       _navigateToCourseDetail(context, courses.first.id),
-                      string:string
+                  string: string,
                 ),
               ),
           ],
@@ -165,7 +219,7 @@ class ForYouTabState extends State<ForYouTab>
     );
   }
 
-  // ─── Opportunities Section ────────────────────────────────────────────
+  // ── Opportunities ─────────────────────────────────────────────────────────
 
   Widget _buildOpportunitiesSection(
       BuildContext context, S strings, ColorScheme theme) {
@@ -176,12 +230,24 @@ class ForYouTabState extends State<ForYouTab>
           title: strings.opportunities,
           onShowAll: () => widget.onTabChange(HomeTab.opportunities),
         ),
-        const LatestOpportunityCard(),
+        BlocBuilder<OpportunityBloc, OpportunityState>(
+          builder: (context, state) {
+            if (state is OpportunityError) {
+              return _buildErrorState(
+                context, strings, theme, state.message,
+                () => context.read<OpportunityBloc>().add(
+                      const FetchOpportunities(isRefresh: true),
+                    ),
+              );
+            }
+            return const LatestOpportunityCard();
+          },
+        ),
       ],
     );
   }
 
-  // ─── Shared Widgets ───────────────────────────────────────────────────
+  // ── Shared helpers ────────────────────────────────────────────────────────
 
   Widget _sectionHeader({
     required String title,
@@ -192,85 +258,20 @@ class ForYouTabState extends State<ForYouTab>
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
       child: Row(
         children: [
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(title,
+              style: GoogleFonts.poppins(
+                  fontSize: 18.sp, fontWeight: FontWeight.bold)),
           const Spacer(),
           if (showAllEnabled)
             GestureDetector(
               onTap: onShowAll,
-              child: Text(
-                S.of(context).showAll,
-                style: GoogleFonts.poppins(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
+              child: Text(S.of(context).showAll,
+                  style: GoogleFonts.poppins(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue)),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(
-    BuildContext context,
-    S strings,
-    ColorScheme theme,
-    String message,
-    VoidCallback onRetry,
-  ) {
-    return Padding(
-      padding: EdgeInsets.all(20.w),
-      child: Center(
-        child: Column(
-          children: [
-            Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
-            SizedBox(height: 16.h),
-            Text(
-              strings.oopsSomethingWentWrong,
-              style: GoogleFonts.poppins(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 14.sp,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: 24.h),
-            ElevatedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: Text(
-                strings.retry,
-                style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.primary,
-                foregroundColor: theme.surface,
-                padding:
-                    EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -283,13 +284,9 @@ class ForYouTabState extends State<ForYouTab>
           children: [
             Icon(icon, size: 64.sp, color: Colors.grey[400]),
             SizedBox(height: 16.h),
-            Text(
-              message,
-              style: GoogleFonts.poppins(
-                fontSize: 16.sp,
-                color: Colors.grey[600],
-              ),
-            ),
+            Text(message,
+                style: GoogleFonts.poppins(
+                    fontSize: 16.sp, color: Colors.grey[600])),
           ],
         ),
       ),
