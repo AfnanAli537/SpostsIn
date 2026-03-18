@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/fawery_mobile_screen.dart';
@@ -156,6 +157,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         if (state is ProcessSuccessful || state is ManualActivateSuccess) {
           _dismissProcessingDialog();
           _showPaymentSuccessDialog(_transId ?? s.unKnown);
+          
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.mainLayout,
+              (route) => false,
+            );
         }
 
         if (state is PaymentInitiateError ||
