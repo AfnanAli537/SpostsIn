@@ -5272,6 +5272,511 @@ class S {
   String get payNow {
     return Intl.message('Pay Now', name: 'payNow', desc: '', args: []);
   }
+
+  /// `Choose Payment Method`
+  String get chooseMethod {
+    return Intl.message(
+      'Choose Payment Method',
+      name: 'chooseMethod',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Processing Payment...`
+  String get processing_payment_title {
+    return Intl.message(
+      'Processing Payment...',
+      name: 'processing_payment_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please do not close the app`
+  String get processing_payment_subtitle {
+    return Intl.message(
+      'Please do not close the app',
+      name: 'processing_payment_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment Successful!`
+  String get payment_success_title {
+    return Intl.message(
+      'Payment Successful!',
+      name: 'payment_success_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your subscription is now active.\nEnjoy your access! `
+  String get payment_success_subtitle {
+    return Intl.message(
+      'Your subscription is now active.\nEnjoy your access! ',
+      name: 'payment_success_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Transaction ID: {id}`
+  String payment_success_transaction_id(Object id) {
+    return Intl.message(
+      'Transaction ID: $id',
+      name: 'payment_success_transaction_id',
+      desc: '',
+      args: [id],
+    );
+  }
+
+  /// `Enter Mobile Number`
+  String get fawry_mobile_appbar_title {
+    return Intl.message(
+      'Enter Mobile Number',
+      name: 'fawry_mobile_appbar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your Fawry mobile number`
+  String get fawry_mobile_label {
+    return Intl.message(
+      'Enter your Fawry mobile number',
+      name: 'fawry_mobile_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing you agree to our Terms`
+  String get fawry_mobile_terms {
+    return Intl.message(
+      'By continuing you agree to our Terms',
+      name: 'fawry_mobile_terms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mobile Number (e.g., 010xxxxxxxx)`
+  String get fawry_mobile_hint {
+    return Intl.message(
+      'Mobile Number (e.g., 010xxxxxxxx)',
+      name: 'fawry_mobile_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue to Fawry`
+  String get fawry_mobile_confirm_btn {
+    return Intl.message(
+      'Continue to Fawry',
+      name: 'fawry_mobile_confirm_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your mobile number`
+  String get fawry_mobile_validation_empty {
+    return Intl.message(
+      'Please enter your mobile number',
+      name: 'fawry_mobile_validation_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid Egyptian mobile number`
+  String get fawry_mobile_validation_invalid {
+    return Intl.message(
+      'Enter a valid Egyptian mobile number',
+      name: 'fawry_mobile_validation_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fawry Reference Code`
+  String get fawry_screen_appbar_title {
+    return Intl.message(
+      'Fawry Reference Code',
+      name: 'fawry_screen_appbar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your payment details`
+  String get fawry_screen_label {
+    return Intl.message(
+      'Enter your payment details',
+      name: 'fawry_screen_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing you agree to our Terms`
+  String get fawry_screen_terms {
+    return Intl.message(
+      'By continuing you agree to our Terms',
+      name: 'fawry_screen_terms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay at any Fawry POS using this code\nwithin 24 hours`
+  String get fawry_screen_pay_instruction {
+    return Intl.message(
+      'Pay at any Fawry POS using this code\nwithin 24 hours',
+      name: 'fawry_screen_pay_instruction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to generate reference code`
+  String get fawry_screen_failed_code {
+    return Intl.message(
+      'Failed to generate reference code',
+      name: 'fawry_screen_failed_code',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get fawry_screen_retry {
+    return Intl.message(
+      'Retry',
+      name: 'fawry_screen_retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy Code`
+  String get fawry_screen_copy_btn {
+    return Intl.message(
+      'Copy Code',
+      name: 'fawry_screen_copy_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reference code copied to clipboard`
+  String get fawry_screen_copied {
+    return Intl.message(
+      'Reference code copied to clipboard',
+      name: 'fawry_screen_copied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Card Details`
+  String get vodafone_appbar_title {
+    return Intl.message(
+      'Enter Card Details',
+      name: 'vodafone_appbar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your payment details`
+  String get vodafone_label {
+    return Intl.message(
+      'Enter your payment details',
+      name: 'vodafone_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing you agree to our Terms`
+  String get vodafone_terms {
+    return Intl.message(
+      'By continuing you agree to our Terms',
+      name: 'vodafone_terms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mobile Number (e.g., 010xxxxxxxx)`
+  String get vodafone_hint {
+    return Intl.message(
+      'Mobile Number (e.g., 010xxxxxxxx)',
+      name: 'vodafone_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send Payment Request`
+  String get vodafone_send_btn {
+    return Intl.message(
+      'Send Payment Request',
+      name: 'vodafone_send_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your mobile number`
+  String get vodafone_validation_empty {
+    return Intl.message(
+      'Please enter your mobile number',
+      name: 'vodafone_validation_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid Egyptian mobile number`
+  String get vodafone_validation_invalid {
+    return Intl.message(
+      'Enter a valid Egyptian mobile number',
+      name: 'vodafone_validation_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `vodafone Cash`
+  String get vodafone_name {
+    return Intl.message(
+      'vodafone Cash',
+      name: 'vodafone_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Premium Access`
+  String get subscription_title {
+    return Intl.message(
+      'Premium Access',
+      name: 'subscription_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrade and analyse your game without limits`
+  String get subscription_subtitle {
+    return Intl.message(
+      'Upgrade and analyse your game without limits',
+      name: 'subscription_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SUBSCRIBE NOW`
+  String get subscription_btn {
+    return Intl.message(
+      'SUBSCRIBE NOW',
+      name: 'subscription_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This is an automatically renewed subscription.\nYou can cancel anytime in settings.`
+  String get subscription_renewal_note {
+    return Intl.message(
+      'This is an automatically renewed subscription.\nYou can cancel anytime in settings.',
+      name: 'subscription_renewal_note',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get subscription_retry {
+    return Intl.message(
+      'Retry',
+      name: 'subscription_retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `POPULAR`
+  String get subscription_plan_popular {
+    return Intl.message(
+      'POPULAR',
+      name: 'subscription_plan_popular',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `BEST VALUE`
+  String get subscription_plan_best_value {
+    return Intl.message(
+      'BEST VALUE',
+      name: 'subscription_plan_best_value',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `forever`
+  String get subscription_plan_forever {
+    return Intl.message(
+      'forever',
+      name: 'subscription_plan_forever',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `/ month`
+  String get subscription_plan_per_month {
+    return Intl.message(
+      '/ month',
+      name: 'subscription_plan_per_month',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `/ year`
+  String get subscription_plan_per_year {
+    return Intl.message(
+      '/ year',
+      name: 'subscription_plan_per_year',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Plan`
+  String get subscription_plan_current {
+    return Intl.message(
+      'Current Plan',
+      name: 'subscription_plan_current',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Now`
+  String get subscription_plan_select {
+    return Intl.message(
+      'Select Now',
+      name: 'subscription_plan_select',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlimited Videos`
+  String get subscription_plan_unlimited_videos {
+    return Intl.message(
+      'Unlimited Videos',
+      name: 'subscription_plan_unlimited_videos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} Videos / month`
+  String subscription_plan_videos_month(Object count) {
+    return Intl.message(
+      '$count Videos / month',
+      name: 'subscription_plan_videos_month',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} Ads / month`
+  String subscription_plan_ads_month(Object count) {
+    return Intl.message(
+      '$count Ads / month',
+      name: 'subscription_plan_ads_month',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Detailed Reports`
+  String get subscription_plan_detailed_reports {
+    return Intl.message(
+      'Detailed Reports',
+      name: 'subscription_plan_detailed_reports',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Basic Stats`
+  String get subscription_plan_basic_stats {
+    return Intl.message(
+      'Basic Stats',
+      name: 'subscription_plan_basic_stats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Videos`
+  String get subscription_plan_no_videos {
+    return Intl.message(
+      'No Videos',
+      name: 'subscription_plan_no_videos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Ads`
+  String get subscription_plan_no_ads {
+    return Intl.message(
+      'No Ads',
+      name: 'subscription_plan_no_ads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} Days`
+  String subscription_plan_duration_month(Object count) {
+    return Intl.message(
+      '$count Days',
+      name: 'subscription_plan_duration_month',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} Months`
+  String subscription_plan_duration_year(Object count) {
+    return Intl.message(
+      '$count Months',
+      name: 'subscription_plan_duration_year',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `N/A`
+  String get unKnown {
+    return Intl.message('N/A', name: 'unKnown', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

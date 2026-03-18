@@ -66,25 +66,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m19(month) => "لا توجد بيانات متاحة لشهر ${month}";
 
-  static String m20(percentage) => "اكتمل ${percentage}%";
+  static String m20(id) => "رقم العملية: ${id}";
 
-  static String m21(value) => "${value}%";
+  static String m21(percentage) => "اكتمل ${percentage}%";
 
-  static String m22(percentage) => "تمت مشاهدة ${percentage}%";
+  static String m22(value) => "${value}%";
 
-  static String m23(price) => "${price} جنيه";
+  static String m23(percentage) => "تمت مشاهدة ${percentage}%";
 
-  static String m24(price) => "(${price} جنيه في اليوم)";
+  static String m24(price) => "${price} جنيه";
 
-  static String m25(count) =>
+  static String m25(price) => "(${price} جنيه في اليوم)";
+
+  static String m26(count) =>
       "${Intl.plural(count, one: 'منذ ثانية', two: 'منذ ثانيتين', few: 'منذ ${count} ثوانٍ', many: 'منذ ${count} ثانية', other: 'منذ ${count} ثانية')}";
 
-  static String m26(field) => "يرجى اختيار ${field}";
+  static String m27(field) => "يرجى اختيار ${field}";
 
-  static String m27(count) =>
+  static String m28(count) => "${count} إعلان / شهر";
+
+  static String m29(count) => "${count} يوم";
+
+  static String m30(count) => "${count} شهر";
+
+  static String m31(count) => "${count} فيديو / شهر";
+
+  static String m32(count) =>
       "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
 
-  static String m28(count) =>
+  static String m33(count) =>
       "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ ${count} سنوات', many: 'منذ ${count} سنة', other: 'منذ ${count} سنة')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -236,6 +246,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "chat": MessageLookupByLibrary.simpleMessage("دردشة"),
     "chats": MessageLookupByLibrary.simpleMessage("المحادثات"),
+    "chooseMethod": MessageLookupByLibrary.simpleMessage("اختر طريقة للدفع"),
     "clear": MessageLookupByLibrary.simpleMessage("مسح"),
     "clearFilters": MessageLookupByLibrary.simpleMessage("مسح الفلاتر"),
     "clicks": MessageLookupByLibrary.simpleMessage("نقرات"),
@@ -492,6 +503,49 @@ class MessageLookup extends MessageLookupByLibrary {
     "failedToTranslate": MessageLookupByLibrary.simpleMessage("فشلت الترجمة"),
     "failed_to_read_video_duration": MessageLookupByLibrary.simpleMessage(
       "فشل في قراءة مدة الفيديو",
+    ),
+    "fawry_mobile_appbar_title": MessageLookupByLibrary.simpleMessage(
+      "أدخل رقم الهاتف",
+    ),
+    "fawry_mobile_confirm_btn": MessageLookupByLibrary.simpleMessage(
+      "متابعة إلى فوري",
+    ),
+    "fawry_mobile_hint": MessageLookupByLibrary.simpleMessage(
+      "رقم الهاتف (مثال: 010xxxxxxxx)",
+    ),
+    "fawry_mobile_label": MessageLookupByLibrary.simpleMessage(
+      "أدخل رقم هاتف فوري",
+    ),
+    "fawry_mobile_terms": MessageLookupByLibrary.simpleMessage(
+      "بالمتابعة فإنك توافق على الشروط والأحكام",
+    ),
+    "fawry_mobile_validation_empty": MessageLookupByLibrary.simpleMessage(
+      "من فضلك أدخل رقم هاتفك",
+    ),
+    "fawry_mobile_validation_invalid": MessageLookupByLibrary.simpleMessage(
+      "أدخل رقم هاتف مصري صحيح",
+    ),
+    "fawry_screen_appbar_title": MessageLookupByLibrary.simpleMessage(
+      "كود فوري المرجعي",
+    ),
+    "fawry_screen_copied": MessageLookupByLibrary.simpleMessage(
+      "تم نسخ الكود المرجعي",
+    ),
+    "fawry_screen_copy_btn": MessageLookupByLibrary.simpleMessage("نسخ الكود"),
+    "fawry_screen_failed_code": MessageLookupByLibrary.simpleMessage(
+      "فشل في توليد الكود المرجعي",
+    ),
+    "fawry_screen_label": MessageLookupByLibrary.simpleMessage(
+      "أدخل بيانات الدفع",
+    ),
+    "fawry_screen_pay_instruction": MessageLookupByLibrary.simpleMessage(
+      "ادفع في أي نقطة فوري باستخدام هذا الكود\nخلال 24 ساعة",
+    ),
+    "fawry_screen_retry": MessageLookupByLibrary.simpleMessage(
+      "إعادة المحاولة",
+    ),
+    "fawry_screen_terms": MessageLookupByLibrary.simpleMessage(
+      "بالمتابعة فإنك توافق على الشروط والأحكام",
     ),
     "february": MessageLookupByLibrary.simpleMessage("فبراير"),
     "female": MessageLookupByLibrary.simpleMessage("أنثى"),
@@ -865,10 +919,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentIntegrationComingSoon": MessageLookupByLibrary.simpleMessage(
       "تكامل الدفع قريباً. يمكنك الدفع لاحقاً من لوحة تحكم إعلاناتك.",
     ),
+    "payment_success_subtitle": MessageLookupByLibrary.simpleMessage(
+      "اشتراكك أصبح نشطاً الآن.\nاستمتع بالوصول المميز! ",
+    ),
+    "payment_success_title": MessageLookupByLibrary.simpleMessage(
+      "تمت عملية الدفع بنجاح!",
+    ),
+    "payment_success_transaction_id": m20,
     "pending": MessageLookupByLibrary.simpleMessage("معلق"),
-    "percentComplete": m20,
-    "percentage": m21,
-    "percentageWatched": m22,
+    "percentComplete": m21,
+    "percentage": m22,
+    "percentageWatched": m23,
     "performanceOverview": MessageLookupByLibrary.simpleMessage(
       "نظرة عامة على الأداء",
     ),
@@ -939,12 +1000,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "مهاجم قوي (Power Forward)",
     ),
     "price": MessageLookupByLibrary.simpleMessage("السعر"),
-    "priceEGP": m23,
+    "priceEGP": m24,
     "priceEGPtxt": MessageLookupByLibrary.simpleMessage("السعر (جنيه)"),
-    "pricePerDay": m24,
+    "pricePerDay": m25,
     "priceRequired": MessageLookupByLibrary.simpleMessage("السعر مطلوب"),
     "privacyPolicyTitle": MessageLookupByLibrary.simpleMessage(
       "الخصوصية والسياسة",
+    ),
+    "processing_payment_subtitle": MessageLookupByLibrary.simpleMessage(
+      "من فضلك لا تغلق التطبيق",
+    ),
+    "processing_payment_title": MessageLookupByLibrary.simpleMessage(
+      "جارٍ معالجة الدفع...",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("الملف الشخصي"),
     "profileLoadFailed": MessageLookupByLibrary.simpleMessage(
@@ -1000,13 +1067,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
     "search": MessageLookupByLibrary.simpleMessage("أبحث"),
     "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
-    "secondsAgo": m25,
+    "secondsAgo": m26,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("رؤية النص الأصلي"),
     "select": MessageLookupByLibrary.simpleMessage("اختر"),
     "selectEndDate": MessageLookupByLibrary.simpleMessage(
       "اختر تاريخ الانتهاء",
     ),
-    "selectField": m26,
+    "selectField": m27,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
     "selectSport": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
     "selectSports": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
@@ -1064,6 +1131,53 @@ class MessageLookup extends MessageLookupByLibrary {
       "أدخل كلمة مرور قوية تحتوي على 8 أحرف على الأقل، حرف كبير واحد، حرف صغير واحد، رقم واحد، وحرف خاص واحد.",
     ),
     "subscription": MessageLookupByLibrary.simpleMessage("الاشتراك"),
+    "subscription_btn": MessageLookupByLibrary.simpleMessage("اشترك الآن"),
+    "subscription_plan_ads_month": m28,
+    "subscription_plan_basic_stats": MessageLookupByLibrary.simpleMessage(
+      "إحصائيات أساسية",
+    ),
+    "subscription_plan_best_value": MessageLookupByLibrary.simpleMessage(
+      "الأفضل قيمة",
+    ),
+    "subscription_plan_current": MessageLookupByLibrary.simpleMessage(
+      "الخطة الحالية",
+    ),
+    "subscription_plan_detailed_reports": MessageLookupByLibrary.simpleMessage(
+      "تقارير مفصّلة",
+    ),
+    "subscription_plan_duration_month": m29,
+    "subscription_plan_duration_year": m30,
+    "subscription_plan_forever": MessageLookupByLibrary.simpleMessage("للأبد"),
+    "subscription_plan_no_ads": MessageLookupByLibrary.simpleMessage(
+      "بدون إعلانات",
+    ),
+    "subscription_plan_no_videos": MessageLookupByLibrary.simpleMessage(
+      "بدون فيديوهات",
+    ),
+    "subscription_plan_per_month": MessageLookupByLibrary.simpleMessage(
+      "/ شهر",
+    ),
+    "subscription_plan_per_year": MessageLookupByLibrary.simpleMessage("/ سنة"),
+    "subscription_plan_popular": MessageLookupByLibrary.simpleMessage(
+      "الأكثر شيوعاً",
+    ),
+    "subscription_plan_select": MessageLookupByLibrary.simpleMessage(
+      "اختر الآن",
+    ),
+    "subscription_plan_unlimited_videos": MessageLookupByLibrary.simpleMessage(
+      "فيديوهات غير محدودة",
+    ),
+    "subscription_plan_videos_month": m31,
+    "subscription_renewal_note": MessageLookupByLibrary.simpleMessage(
+      "هذا اشتراك يتجدد تلقائياً.\nيمكنك الإلغاء في أي وقت من الإعدادات.",
+    ),
+    "subscription_retry": MessageLookupByLibrary.simpleMessage(
+      "إعادة المحاولة",
+    ),
+    "subscription_subtitle": MessageLookupByLibrary.simpleMessage(
+      "طوّر لعبتك وحلّل أداءك بلا حدود",
+    ),
+    "subscription_title": MessageLookupByLibrary.simpleMessage("الوصول المميز"),
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
     "switchAccount": MessageLookupByLibrary.simpleMessage("تبديل الحساب"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("التايكوندو"),
@@ -1103,6 +1217,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage("جرب بحث أخر"),
     "tunisia": MessageLookupByLibrary.simpleMessage("تونس"),
+    "unKnown": MessageLookupByLibrary.simpleMessage("غير محدد"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
     ),
@@ -1172,13 +1287,33 @@ class MessageLookup extends MessageLookupByLibrary {
       "عرض لوحة التحكم التحليلية",
     ),
     "views": MessageLookupByLibrary.simpleMessage("مشاهدات"),
+    "vodafone_appbar_title": MessageLookupByLibrary.simpleMessage(
+      "أدخل تفاصيل البطاقة",
+    ),
+    "vodafone_hint": MessageLookupByLibrary.simpleMessage(
+      "رقم الهاتف (مثال: 010xxxxxxxx)",
+    ),
+    "vodafone_label": MessageLookupByLibrary.simpleMessage("أدخل بيانات الدفع"),
+    "vodafone_name": MessageLookupByLibrary.simpleMessage("فودافون كاش"),
+    "vodafone_send_btn": MessageLookupByLibrary.simpleMessage(
+      "إرسال طلب الدفع",
+    ),
+    "vodafone_terms": MessageLookupByLibrary.simpleMessage(
+      "بالمتابعة فإنك توافق على الشروط والأحكام",
+    ),
+    "vodafone_validation_empty": MessageLookupByLibrary.simpleMessage(
+      "من فضلك أدخل رقم هاتفك",
+    ),
+    "vodafone_validation_invalid": MessageLookupByLibrary.simpleMessage(
+      "أدخل رقم هاتف مصري صحيح",
+    ),
     "volleyball": MessageLookupByLibrary.simpleMessage("كرة الطائرة"),
     "volleyballer": MessageLookupByLibrary.simpleMessage("لاعب كرة الطائرة"),
     "wantsToConnect": MessageLookupByLibrary.simpleMessage("يريد الاتصال بك"),
     "watched": MessageLookupByLibrary.simpleMessage("تمت المشاهدة"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("تفاصيل الأسبوع"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("التفاصيل الأسبوعية"),
-    "weeksAgo": m27,
+    "weeksAgo": m32,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
     "whatIsYourType": MessageLookupByLibrary.simpleMessage("ما هو نوعك؟"),
@@ -1186,7 +1321,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "من يجب أن يرى هذا الإعلان؟",
     ),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
-    "yearsAgo": m28,
+    "yearsAgo": m33,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),
     "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(

@@ -1,27 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sports_in/generated/l10n.dart';
 
-/// A dialog shown when payment completes successfully.
-/// Auto-dismisses after [autoDismissAfter] duration (default 3 seconds).
-///
-/// Usage:
-/// ```dart
-/// showDialog(
-///   context: context,
-///   barrierDismissible: false,
-///   builder: (_) => PaymentSuccessDialog(
-///     transactionId: 'RTXN-SPORTSIN-998877',
-///     onDismissed: () { /* navigate or re-fetch plans */ },
-///   ),
-/// );
-/// ```
 class PaymentSuccessDialog extends StatefulWidget {
   final String transactionId;
-
-  /// Called after the dialog auto-closes.
   final VoidCallback? onDismissed;
-
-  /// How long to wait before auto-dismissing (default: 3 seconds).
   final Duration autoDismissAfter;
 
   const PaymentSuccessDialog({
@@ -78,33 +62,31 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
       child: SlideTransition(
         position: _slideIn,
         child: Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
           elevation: 10,
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+            padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 36.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // ── Lottie success animation ──
                 Lottie.network(
                   'https://assets2.lottiefiles.com/packages/lf20_jbrw3hcz.json',
-                  width: 110,
-                  height: 110,
+                  width: 110.w,
+                  height: 110.h,
                   fit: BoxFit.contain,
                   repeat: false,
                   frameBuilder: (context, child, composition) {
                     if (composition == null) {
-                      return const SizedBox(
-                        width: 110,
-                        height: 110,
+                      return SizedBox(
+                        width: 110.w,
+                        height: 110.h,
                         child: Center(
                           child: Icon(
                             Icons.check_circle_outline,
-                            color: Color(0xFF4CAF50),
-                            size: 64,
+                            color: const Color(0xFF4CAF50),
+                            size: 64.sp,
                           ),
                         ),
                       );
@@ -113,55 +95,56 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
                   },
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
 
-                const Text(
-                  'Payment Successful!',
+                Text(
+                  S.of(context).payment_success_title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
+                    color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: -0.3,
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
 
-                const Text(
-                  'Your subscription is now active.\nEnjoy premium access! 🎉',
+                Text(
+                  S.of(context).payment_success_subtitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF757575),
+                    fontSize: 14.sp,
+                    color: const Color(0xFF757575),
                     height: 1.6,
                   ),
                 ),
 
-                const SizedBox(height: 14),
+                SizedBox(height: 14.h),
 
-                // ── Transaction ID ──
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 8.h,
+                  ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(8),
+                    color:Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
-                    'Transaction ID: ${widget.transactionId}',
+                    S.of(context).payment_success_transaction_id(
+                       widget.transactionId,
+                    ),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF9E9E9E),
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: const Color(0xFF9E9E9E),
                       fontFamily: 'monospace',
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
-
-                // ── Auto-dismiss bouncing dots ──
+                SizedBox(height: 20.h),
                 const _CountdownDots(),
               ],
             ),
@@ -172,7 +155,6 @@ class _PaymentSuccessDialogState extends State<PaymentSuccessDialog>
   }
 }
 
-/// Animated bouncing dots indicating auto-dismiss is in progress.
 class _CountdownDots extends StatefulWidget {
   const _CountdownDots();
 
@@ -195,9 +177,10 @@ class _CountdownDotsState extends State<_CountdownDots>
       );
       _controllers.add(ctrl);
       _anims.add(
-        Tween<double>(begin: 0, end: -6).animate(
-          CurvedAnimation(parent: ctrl, curve: Curves.easeInOut),
-        ),
+        Tween<double>(
+          begin: 0,
+          end: -6,
+        ).animate(CurvedAnimation(parent: ctrl, curve: Curves.easeInOut)),
       );
       Future.delayed(Duration(milliseconds: i * 180), () {
         if (mounted) ctrl.repeat(reverse: true);
@@ -223,9 +206,9 @@ class _CountdownDotsState extends State<_CountdownDots>
           builder: (_, __) => Transform.translate(
             offset: Offset(0, _anims[i].value),
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: 7,
-              height: 7,
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
+              width: 7.w,
+              height: 7.w,
               decoration: const BoxDecoration(
                 color: Color(0xFF4CAF50),
                 shape: BoxShape.circle,

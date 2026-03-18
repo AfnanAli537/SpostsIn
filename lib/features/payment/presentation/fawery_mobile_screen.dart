@@ -1,14 +1,12 @@
-// lib/features/payment/presentation/screens/fawry_mobile_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/fawray_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 
-/// Step 1 of Fawry flow — user enters their mobile number.
-/// On confirm → navigates to [FawryScreen] which initiates payment
-/// and shows the reference code.
 class FawryMobileScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
 
@@ -30,18 +28,13 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
 
   void _onConfirm() {
     if (!_formKey.currentState!.validate()) return;
-
     final mobile = _mobileController.text.trim();
-
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<PaymentBloc>(),
-          child: FawryScreen(
-            plan: widget.plan,
-            mobileNumber: mobile,
-          ),
+          child: FawryScreen(plan: widget.plan, mobileNumber: mobile),
         ),
       ),
     );
@@ -49,20 +42,20 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+    final s = S.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: theme.onSurface),
         ),
-        title: const Text(
-          'Enter Mobile Number',
+        title: Text(
+          s.fawry_mobile_appbar_title,
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
+            // color: Colors.black87,
+            fontSize: 20.sp,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -70,34 +63,32 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-
-                // ── Fawry Banner ──
+                SizedBox(height: 20.h),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   child: Container(
                     width: double.infinity,
-                    height: 180,
+                    height: 180.h,
                     color: const Color(0xFFF5C400),
                     child: Center(
                       child: Container(
-                        width: 130,
-                        height: 130,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
+                        width: 130.w,
+                        height: 130.w,
+                        decoration: BoxDecoration(
+                          color: ColorManager.white,
                           shape: BoxShape.circle,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.sync_rounded,
-                            size: 80,
-                            color: Color(0xFF0055A5),
+                            size: 80.sp,
+                            color: const Color(0xFF0055A5),
                           ),
                         ),
                       ),
@@ -105,62 +96,66 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28.h),
 
-                const Text(
-                  'Enter your Fawry mobile number',
-                  style: TextStyle(fontSize: 15, color: Colors.black87),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'By continuing you agree to our Terms',
+                Text(s.fawry_mobile_label, style: TextStyle(fontSize: 15.sp)),
+                SizedBox(height: 4.h),
+                Text(
+                  s.fawry_mobile_terms,
                   style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black45,
+                    fontSize: 13.sp,
+                    // color: Colors.black45,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // ── Mobile Number Field ──
+                SizedBox(height: 20.h),
                 TextFormField(
                   controller: _mobileController,
                   keyboardType: TextInputType.phone,
                   autofocus: true,
-                  style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                  style: TextStyle(fontSize: 15.sp),
                   decoration: InputDecoration(
-                    hintText: 'Mobile Number (e.g., 010xxxxxxxx)',
-                    hintStyle:
-                        const TextStyle(color: Colors.black38, fontSize: 14),
-                    prefixIcon: const Icon(Icons.phone_android,
-                        color: Color(0xFFF5C400)),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 18),
+                    hintText: s.fawry_mobile_hint,
+                    hintStyle: TextStyle(color: theme.onError, fontSize: 14.sp),
+                    prefixIcon: Icon(
+                      Icons.phone_android,
+                      color: const Color(0xFFF5C400),
+                      size: 22.sp,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 18.h,
+                    ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Colors.black26),
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide: BorderSide(color: theme.onSurface),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                       borderSide: const BorderSide(
-                          color: Color(0xFFF5C400), width: 1.5),
+                        color: Color(0xFFF5C400),
+                        width: 1.5,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                       borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: Colors.red, width: 1.5),
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                        width: 1.5,
+                      ),
                     ),
                   ),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) {
-                      return 'Please enter your mobile number';
+                      return s.fawry_mobile_validation_empty;
                     }
                     if (!RegExp(r'^01[0125]\d{8}$').hasMatch(v.trim())) {
-                      return 'Enter a valid Egyptian mobile number';
+                      return s.fawry_mobile_validation_invalid;
                     }
                     return null;
                   },
@@ -169,31 +164,31 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
 
                 const Spacer(),
 
-                // ── Confirm Button ──
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 56.h,
                   child: ElevatedButton(
                     onPressed: _onConfirm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1A2A3A),
+                      backgroundColor: theme.primary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Continue to Fawry',
+                    child: Text(
+                      s.fawry_mobile_confirm_btn,
                       style: TextStyle(
-                        color: Color(0xFFCCFF00),
-                        fontSize: 16,
+                        // color: theme.onPrimary,
+                        color: const Color(0xFFF5C400),
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.3,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
               ],
             ),
           ),

@@ -103,10 +103,12 @@ final class PaymentRedirectReady extends PaymentState {
 final class PaymentInitiatedAwaitingActivation extends PaymentState {
   final String transactionId;
   final PaymentMethod method;
+  final String? referenceCode;
 
   const PaymentInitiatedAwaitingActivation({
     required this.transactionId,
     required this.method,
+    this.referenceCode,
   });
 
   @override

@@ -32,6 +32,8 @@ import 'package:sports_in/features/main/profile/view/presentation/edit_profile_r
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
+import 'package:sports_in/features/payment/presentation/subscription_screen.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
 import 'package:sports_in/features/register/view/presentation/registration_otp/registration_otp_screen.dart';
 import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
@@ -49,16 +51,20 @@ import 'package:sports_in/features/onboarding/view_model/onboarding_bloc/onboard
 abstract class RoutesManager {
   static Route<dynamic>? router(RouteSettings settings) {
     switch (settings.name) {
-
-      // ── Auth ────────────────────────────────────────────────────────────────
-      case AppRoutes.login:
-        return CupertinoPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => LoginBloc(getIt<LoginRepo>()),
-            child: LoginScreen(),
-          ),
-        );
-
+    case AppRoutes.login:
+  return CupertinoPageRoute(
+    builder: (_) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => LoginBloc(getIt<LoginRepo>()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<PaymentBloc>(),
+        ),
+      ],
+      child: LoginScreen(),
+    ),
+  );
       case AppRoutes.privacyPolicy:
         return CupertinoPageRoute(builder: (_) => PrivacyPolicyScreen());
 
@@ -101,6 +107,13 @@ abstract class RoutesManager {
       case AppRoutes.userType:
         return CupertinoPageRoute(builder: (_) => UserTypeScreen());
 
+      case AppRoutes.subscription:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => getIt<PaymentBloc>()..add(const FetchPlansEvent()),
+            child: const SubscriptionScreen(),
+          ),
+        );
       case AppRoutes.registrationOtp:
         final args = settings.arguments as Map<String, dynamic>;
         return CupertinoPageRoute(
@@ -195,8 +208,7 @@ abstract class RoutesManager {
         final args = settings.arguments as PostModel;
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+            create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: UpdatePostScreen(post: args),
           ),
         );

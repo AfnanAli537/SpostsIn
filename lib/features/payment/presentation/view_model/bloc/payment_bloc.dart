@@ -1,9 +1,7 @@
 import 'dart:developer';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:sports_in/app/di/injection.dart';
-import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/my_subscription_model.dart';
@@ -16,7 +14,6 @@ part 'payment_state.dart';
 @injectable
 class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final PaymentRepository _repository;
-   final SharedPref _sharedPref = getIt<SharedPref>();
 
   PaymentBloc({required PaymentRepository repository})
     : _repository = repository,
@@ -53,7 +50,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     if (state is PlansLoaded) {
       emit((state as PlansLoaded).copyWith(selectedPlan: event.plan));
     } else {
-      // Edge-case: state was reset or something unexpected — re-wrap.
       emit(PlansLoaded(plans: const [], selectedPlan: event.plan));
     }
   }
@@ -103,20 +99,17 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   ) async {
     emit(const PaymentInitiating());
     try {
+      if (_selectedPlan?.isFree == true) {
+        emit(const ProcessSuccessful());
+        return;
+      }
+
       final response = await _repository.initiatePayment(
         targetId: event.targetId,
         targetType: event.targetType,
         method: event.method,
         mobileNumber: event.mobileNumber,
       );
-   /// ✅ CASE 1: Free plan → success مباشرة
-   final userId = _sharedPref.getUserId();
- final myPlan = await _repository.getMySubscription(userId: userId! );
-     if (myPlan!.planName == 'Free') {
-      emit(
-        const ProcessSuccessful() );
-      return;
-    }
       log('✅ [PaymentBloc] initiatePayment response: $response');
       if (event.method == PaymentMethod.creditCard) {
         final url = response.paymentUrl;
@@ -136,7 +129,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         );
         return;
       }
-
       final txId = response.transactionId;
       if (txId == null || txId.isEmpty) {
         emit(
@@ -151,9 +143,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         PaymentInitiatedAwaitingActivation(
           transactionId: txId,
           method: event.method,
+          referenceCode: response.referenceCode,
         ),
       );
-
       add(ManualActivateEvent(orderId: txId));
     } catch (e) {
       log('❌ [PaymentBloc] InitiatePaymentEvent error: $e');
