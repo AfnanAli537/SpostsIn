@@ -95,7 +95,7 @@ class LoginScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is MySubscriptionLoaded) {
             final needsSubscription =
-                state.subscription.isFree && !state.subscription.isValid;
+                state.subscription.isFree || !state.subscription.isValid;
             Navigator.of(context).pushNamedAndRemoveUntil(
               needsSubscription ? AppRoutes.subscription : AppRoutes.mainLayout,
               (route) => false,

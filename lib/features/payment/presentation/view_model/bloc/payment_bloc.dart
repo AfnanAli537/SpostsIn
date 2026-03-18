@@ -100,6 +100,13 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     emit(const PaymentInitiating());
     try {
       if (_selectedPlan?.isFree == true) {
+        
+      final response = await _repository.initiatePayment(
+        targetId: event.targetId,
+        targetType: event.targetType,
+        method: event.method,
+      );
+      log('✅ [PaymentBloc] initiatePayment response: $response');
         emit(const ProcessSuccessful());
         return;
       }
