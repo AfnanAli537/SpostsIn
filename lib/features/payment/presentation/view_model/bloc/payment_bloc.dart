@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import 'package:sports_in/features/payment/data/enums/enums.dart';
@@ -14,7 +14,6 @@ part 'payment_state.dart';
 @injectable
 class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final PaymentRepository _repository;
-  //  final SharedPref _sharedPref = getIt<SharedPref>();
 
   PaymentBloc({required PaymentRepository repository})
     : _repository = repository,
@@ -51,7 +50,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     if (state is PlansLoaded) {
       emit((state as PlansLoaded).copyWith(selectedPlan: event.plan));
     } else {
-      // Edge-case: state was reset or something unexpected — re-wrap.
       emit(PlansLoaded(plans: const [], selectedPlan: event.plan));
     }
   }
@@ -95,130 +93,66 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     emit(PaymentMethodSelected(plan: _selectedPlan!, method: event.method));
   }
 
-//   Future<void> _onInitiatePayment(
-//     InitiatePaymentEvent event,
-//     Emitter<PaymentState> emit,
-//   ) async {
-//     emit(const PaymentInitiating());
-//     try {
-//       final response = await _repository.initiatePayment(
-//         targetId: event.targetId,
-//         targetType: event.targetType,
-//         method: event.method,
-//         mobileNumber: event.mobileNumber,
-//       );
-//    /// ✅ CASE 1: Free plan → success مباشرة
-//    final userId = _sharedPref.getUserId();
-//  final myPlan = await _repository.getMySubscription(userId: userId! );
-//      if (myPlan!.planName == 'Free') {
-//       emit(
-//         const ProcessSuccessful() );
-//       return;
-//     }
-//       log('✅ [PaymentBloc] initiatePayment response: $response');
-//       if (event.method == PaymentMethod.creditCard) {
-//         final url = response.paymentUrl;
-//         if (url == null || url.isEmpty) {
-//           emit(
-//             const PaymentInitiateError(
-//               'Credit card flow: no redirect URL returned by server.',
-//             ),
-//           );
-//           return;
-//         }
-//         emit(
-//           PaymentRedirectReady(
-//             redirectUrl: url,
-//             transactionId: response.transactionId ?? '',
-//           ),
-//         );
-//         return;
-//       }
-
-//       final txId = response.transactionId;
-//       if (txId == null || txId.isEmpty) {
-//         emit(
-//           const PaymentInitiateError(
-//             'No transaction ID returned. Cannot activate subscription.',
-//           ),
-//         );
-//         return;
-//       }
-
-//       emit(
-//         PaymentInitiatedAwaitingActivation(
-//           transactionId: txId,
-//           method: event.method,
-//         ),
-//       );
-
-//       add(ManualActivateEvent(orderId: txId));
-//     } catch (e) {
-//       log('❌ [PaymentBloc] InitiatePaymentEvent error: $e');
-//       emit(PaymentInitiateError(e.toString()));
-//     }
-//   }
-
-
-Future<void> _onInitiatePayment(
-  InitiatePaymentEvent event,
-  Emitter<PaymentState> emit,
-) async {
-  emit(const PaymentInitiating());
-  try {
-    // ✅ CASE 1: Free plan — no API call needed, success immediately
-    if (_selectedPlan?.isFree == true) {
-      emit(const ProcessSuccessful());
-      return;
-    }
-
-    final response = await _repository.initiatePayment(
-      targetId: event.targetId,
-      targetType: event.targetType,
-      method: event.method,
-      mobileNumber: event.mobileNumber,
-    );
-    log('✅ [PaymentBloc] initiatePayment response: $response');
-
-    // ✅ CASE 2: Credit card → redirect to browser
-    if (event.method == PaymentMethod.creditCard) {
-      final url = response.paymentUrl;
-      if (url == null || url.isEmpty) {
-        emit(const PaymentInitiateError(
-          'Credit card flow: no redirect URL returned by server.',
-        ));
+  Future<void> _onInitiatePayment(
+    InitiatePaymentEvent event,
+    Emitter<PaymentState> emit,
+  ) async {
+    emit(const PaymentInitiating());
+    try {
+      if (_selectedPlan?.isFree == true) {
+        emit(const ProcessSuccessful());
         return;
       }
-      emit(PaymentRedirectReady(
-        redirectUrl: url,
-        transactionId: response.transactionId ?? '',
-      ));
-      return;
+
+      final response = await _repository.initiatePayment(
+        targetId: event.targetId,
+        targetType: event.targetType,
+        method: event.method,
+        mobileNumber: event.mobileNumber,
+      );
+      log('✅ [PaymentBloc] initiatePayment response: $response');
+      if (event.method == PaymentMethod.creditCard) {
+        final url = response.paymentUrl;
+        if (url == null || url.isEmpty) {
+          emit(
+            const PaymentInitiateError(
+              'Credit card flow: no redirect URL returned by server.',
+            ),
+          );
+          return;
+        }
+        emit(
+          PaymentRedirectReady(
+            redirectUrl: url,
+            transactionId: response.transactionId ?? '',
+          ),
+        );
+        return;
+      }
+      final txId = response.transactionId;
+      if (txId == null || txId.isEmpty) {
+        emit(
+          const PaymentInitiateError(
+            'No transaction ID returned. Cannot activate subscription.',
+          ),
+        );
+        return;
+      }
+
+      emit(
+        PaymentInitiatedAwaitingActivation(
+          transactionId: txId,
+          method: event.method,
+          referenceCode: response.referenceCode,
+        ),
+      );
+      add(ManualActivateEvent(orderId: txId));
+    } catch (e) {
+      log('❌ [PaymentBloc] InitiatePaymentEvent error: $e');
+      emit(PaymentInitiateError(e.toString()));
     }
-
-    // ✅ CASE 3: Vodafone / Fawry → get txId then call manualActivate
-    final txId = response.transactionId;
-    if (txId == null || txId.isEmpty) {
-      emit(const PaymentInitiateError(
-        'No transaction ID returned. Cannot activate subscription.',
-      ));
-      return;
-    }
-
-    emit(PaymentInitiatedAwaitingActivation(
-      transactionId: txId,
-      method: event.method,
-      referenceCode: response.referenceCode,
-    ));
-
-    // 👇 This triggers _onManualActivate which calls the backend
-    add(ManualActivateEvent(orderId: txId));
-
-  } catch (e) {
-    log('❌ [PaymentBloc] InitiatePaymentEvent error: $e');
-    emit(PaymentInitiateError(e.toString()));
   }
-}
+
   Future<void> _onManualActivate(
     ManualActivateEvent event,
     Emitter<PaymentState> emit,

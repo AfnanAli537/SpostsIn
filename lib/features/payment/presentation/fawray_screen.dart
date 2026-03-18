@@ -3,12 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
+import 'package:sports_in/generated/l10n.dart';
 
-/// Step 2 of Fawry flow — initiates payment and shows the reference code.
-/// Always receives [mobileNumber] from [FawryMobileScreen].
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
@@ -37,123 +38,95 @@ class _FawryScreenState extends State<FawryScreen> {
 
   void _initiatePayment() {
     context.read<PaymentBloc>().add(
-          InitiatePaymentEvent(
-            targetId: widget.plan.id,
-            targetType: PaymentTargetType.supscription,
-            method: PaymentMethod.fawryPay,
-            mobileNumber: widget.mobileNumber,
-          ),
-        );
+      InitiatePaymentEvent(
+        targetId: widget.plan.id,
+        targetType: PaymentTargetType.supscription,
+        method: PaymentMethod.fawryPay,
+        mobileNumber: widget.mobileNumber,
+      ),
+    );
   }
 
   void _copyCode() {
     if (_referenceCode == null) return;
     Clipboard.setData(ClipboardData(text: _referenceCode!));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Reference code copied to clipboard'),
-        backgroundColor: Color(0xFF1A2A3A),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(S.of(context).fawry_screen_copied),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        margin: EdgeInsets.all(12.w),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+    final s = S.of(context);
     return BlocListener<PaymentBloc, PaymentState>(
-            listener: (context, state) {
-  if (state is PaymentInitiating || state is ManualActivating ) {
-    setState(() => _isLoading = true);
-  }
-   else if(state is PaymentInitiatedAwaitingActivation) {
-    setState((){
-       _isLoading = false;
-          _referenceCode =state.referenceCode;
-    }  );
-  }
-  else{
-   setState(() {
-     _isLoading = false;
-   }); 
-  }
+      listener: (context, state) {
+        if (state is PaymentInitiating || state is ManualActivating) {
+          setState(() => _isLoading = true);
+        } else if (state is PaymentInitiatedAwaitingActivation) {
+          setState(() {
+            _isLoading = false;
+            _referenceCode = state.referenceCode;
+          });
+        } else {
+          setState(() => _isLoading = false);
+        }
 
-  // ✅ بس pop — الـ SubscriptionScreen هيعرض الـ dialog
-  if (state is ManualActivateSuccess) {
-    Navigator.of(context).pop();
-  }
+        if (state is ManualActivateSuccess) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => PaymentSuccessDialog(
+              transactionId: s.unKnown,
+              onDismissed: () {
+                context.read<PaymentBloc>().add(const FetchPlansEvent());
+                // Navigator.of(context).pop();
+              },
+            ),
+          );
+        }
 
-  if (state is PaymentInitiateError || state is ManualActivateError) {
-    final msg = state is PaymentInitiateError
-        ? (state as PaymentInitiateError).message
-        : (state as ManualActivateError).message;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: Colors.red.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(12),
-      ),
-    );
-  }
-},
-      // listener: (context, state) {
-      //   if (state is PaymentInitiating) {
-      //     setState(() => _isLoading = true);
-      //   }
-
-      //   if (state is PaymentInitiatedAwaitingActivation) {
-      //     setState(() {
-      //       _isLoading = false;
-      //       _referenceCode = state.transactionId;
-      //     });
-      //   }
-
-      //   if (state is ManualActivateSuccess) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(
-      //         content: Text(state.message ?? 'Subscription activated!'),
-      //         backgroundColor: Colors.green,
-      //         duration: const Duration(seconds: 3),
-      //       ),
-      //     );
-      //   }
-
-      //   if (state is PaymentInitiateError) {
-      //     setState(() => _isLoading = false);
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(
-      //         content: Text(state.message),
-      //         backgroundColor: Colors.red.shade700,
-      //       ),
-      //     );
-      //   }
-
-      //   if (state is ManualActivateError) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(
-      //         content: Text(state.message),
-      //         backgroundColor: Colors.red.shade700,
-      //       ),
-      //     );
-      //   }
-      // },
-     
+        if (state is PaymentInitiateError || state is ManualActivateError) {
+          final msg = state is PaymentInitiateError
+              ? (state as PaymentInitiateError).message
+              : (state as ManualActivateError).message;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(msg),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              margin: EdgeInsets.all(12.w),
+            ),
+          );
+        }
+      },
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            onPressed: () { context.read<PaymentBloc>().add(const FetchPlansEvent());Navigator.of(context).pop(); },
-            icon: const Icon(Icons.arrow_back, color: Colors.black87),
+            onPressed: () {
+              context.read<PaymentBloc>().add(const FetchPlansEvent());
+              Navigator.of(context).pop();
+            },
+            icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
-          title: const Text(
-            'Fawry Reference Code',
+          title: Text(
+            s.fawry_screen_appbar_title,
             style: TextStyle(
-              color: Colors.black87,
-              fontSize: 20,
+              // color: Colors.black87,
+              fontSize: 20.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -161,32 +134,30 @@ class _FawryScreenState extends State<FawryScreen> {
         ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-
-                // ── Fawry Banner ──
+                SizedBox(height: 20.h),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   child: Container(
                     width: double.infinity,
-                    height: 180,
+                    height: 180.h,
                     color: const Color(0xFFF5C400),
                     child: Center(
                       child: Container(
-                        width: 130,
-                        height: 130,
+                        width: 130.w,
+                        height: 130.w,
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.sync_rounded,
-                            size: 80,
-                            color: Color(0xFF0055A5),
+                            size: 80.sp,
+                            color: const Color(0xFF0055A5),
                           ),
                         ),
                       ),
@@ -194,67 +165,65 @@ class _FawryScreenState extends State<FawryScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28.h),
 
-                const Text(
-                  'Enter your payment details',
-                  style: TextStyle(fontSize: 15, color: Colors.black87),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'By continuing you agree to our Terms',
+                Text(s.fawry_screen_label, style: TextStyle(fontSize: 15.sp)),
+                SizedBox(height: 4.h),
+                Text(
+                  s.fawry_screen_terms,
                   style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black45,
+                    fontSize: 13.sp,
+                    // color: Colors.black45,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
-                // ── Reference Code Card ──
+                SizedBox(height: 24.h),
                 if (_isLoading)
                   Container(
                     width: double.infinity,
-                    height: 120,
+                    height: 120.h,
                     decoration: BoxDecoration(
                       color: const Color(0xFFF0F7D4),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFFF5C400),
-                        strokeWidth: 2.5,
+                        color: const Color(0xFFF5C400),
+                        strokeWidth: 2.5.w,
                       ),
                     ),
                   )
                 else if (_referenceCode != null)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 28, horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 28.h,
+                      horizontal: 20.w,
+                    ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7D4),
-                      borderRadius: BorderRadius.circular(14),
+                      color: theme.onError,
+                      // color: const Color(0xFFF0F7D4),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Column(
                       children: [
                         Text(
                           _referenceCode!,
-                          style: const TextStyle(
-                            fontSize: 34,
+                          style: TextStyle(
+                            fontSize: 34.sp,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
                             letterSpacing: 1.5,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Pay at any Fawry POS using this code\nwithin 24 hours',
+                        SizedBox(height: 12.h),
+                        Text(
+                          s.fawry_screen_pay_instruction,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 13.5,
+                            fontSize: 13.5.sp,
                             color: Colors.black54,
                             height: 1.6,
                           ),
@@ -265,61 +234,66 @@ class _FawryScreenState extends State<FawryScreen> {
                 else
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.all(24.w),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFF3F3),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Column(
                       children: [
-                        const Icon(Icons.error_outline,
-                            color: Colors.red, size: 36),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Failed to generate reference code',
-                          style:
-                              TextStyle(color: Colors.red, fontSize: 14),
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 36.sp,
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 10.h),
+                        Text(
+                          s.fawry_screen_failed_code,
+                          style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                        ),
+                        SizedBox(height: 12.h),
                         TextButton(
                           onPressed: _initiatePayment,
-                          child: const Text('Retry',
-                              style:
-                                  TextStyle(color: Color(0xFF1A2A3A))),
+                          child: Text(
+                            s.fawry_screen_retry,
+                            style: TextStyle(
+                              // color: const Color(0xFF1A2A3A),
+                              color: theme.primary,
+                              fontSize: 14.sp,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
 
                 const Spacer(),
-
-                // ── Copy Code Button ──
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 56.h,
                   child: ElevatedButton(
                     onPressed: _referenceCode != null ? _copyCode : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1A2A3A),
-                      disabledBackgroundColor:
-                          const Color(0xFF1A2A3A).withOpacity(0.4),
+                      // backgroundColor: const Color(0xFF1A2A3A),
+                      backgroundColor: theme.primary,
+                      disabledBackgroundColor: theme.primary.withOpacity(0.4),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Copy Code',
+                    child: Text(
+                      s.fawry_screen_copy_btn,
                       style: TextStyle(
-                        color: Color(0xFFCCFF00),
-                        fontSize: 16,
+                        color: const Color(0xFFCCFF00),
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.3,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
               ],
             ),
           ),

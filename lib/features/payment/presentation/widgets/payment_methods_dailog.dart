@@ -1,15 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:sports_in/features/payment/data/enums/enums.dart';
+// ignore_for_file: deprecated_member_use
 
-/// A dialog for selecting a payment method.
-///
-/// Returns the chosen [PaymentMethod] via [Navigator.pop], or null if dismissed.
-///
-/// Usage:
-/// ```dart
-/// final method = await showPaymentMethodDialog(context);
-/// if (method != null) { /* handle selection */ }
-/// ```
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/features/payment/data/enums/enums.dart';
+import 'package:sports_in/generated/l10n.dart';
+
 Future<PaymentMethod?> showPaymentMethodDialog(BuildContext context) {
   return showDialog<PaymentMethod>(
     context: context,
@@ -23,23 +18,21 @@ class PaymentMethodDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: const Color(0xFF0D1B2A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+      // backgroundColor: const Color(0xFF0D1B2A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+      insetPadding:  EdgeInsets.symmetric(horizontal: 32.w, vertical: 40.h),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header row ──
             Row(
               children: [
-                const Expanded(
+                 Expanded(
                   child: Text(
-                    'Choose Payment Method',
+                    S.of(context).chooseMethod,
                     style: TextStyle(
-                      color: Colors.white,
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                     ),
@@ -48,33 +41,30 @@ class PaymentMethodDialog extends StatelessWidget {
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Container(
-                    width: 30,
-                    height: 30,
+                    width: 30.w,
+                    height: 30.h,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.08),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child:  Icon(
                       Icons.close,
-                      color: Colors.white54,
-                      size: 16,
+                      // color: Colors.white54,
+                      color:Theme.of(context).colorScheme.onError ,
+                      size: 16.sp,
                     ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 8),
-
-            // ── Divider ──
-            Divider(color: Colors.white.withOpacity(0.08), height: 24),
-
-            // ── Method tiles ──
+             SizedBox(height: 8.h),
+            Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08), height: 24.h),
             ...PaymentMethod.values.map(
               (m) => _MethodTile(method: m),
             ),
 
-            const SizedBox(height: 4),
+             SizedBox(height: 4.h),
           ],
         ),
       ),
@@ -126,43 +116,38 @@ class _MethodTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => Navigator.of(context).pop(method),
-        borderRadius: BorderRadius.circular(12),
-        splashColor: Colors.white.withOpacity(0.06),
-        highlightColor: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(12.r),
+        splashColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.06),
+        highlightColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.04),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          padding:  EdgeInsets.symmetric(vertical: 10.h, horizontal: 4.w),
           child: Row(
             children: [
-              // ── Icon container ──
               Container(
-                width: 44,
-                height: 44,
+                width: 44.w,
+                height: 44.h,
                 decoration: BoxDecoration(
                   color: _iconBg,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
-                child: Icon(_icon, color: _iconColor, size: 22),
+                child: Icon(_icon, color: _iconColor, size: 22.sp),
               ),
 
-              const SizedBox(width: 14),
-
-              // ── Label ──
+               SizedBox(width: 14.h),
               Expanded(
                 child: Text(
                   method.displayName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
+                  style:  TextStyle(
+                    // color: Colors.white,
+                    fontSize: 15.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-
-              // ── Chevron ──
               Icon(
                 Icons.chevron_right_rounded,
-                color: Colors.white.withOpacity(0.3),
-                size: 20,
+                color:Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                size: 20.sp,
               ),
             ],
           ),

@@ -1,5 +1,4 @@
 // ignore_for_file: unnecessary_cast
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +10,7 @@ import 'package:sports_in/features/payment/presentation/vodafon_cash_screen.dart
 import 'package:sports_in/features/payment/presentation/widgets/payment_methods_dailog.dart';
 import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -25,6 +25,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   SubscriptionPlanModel? _selectedPlan;
   late AnimationController _btnController;
   bool _isProcessingDialogOpen = false;
+  String? _transId;
 
   @override
   void initState() {
@@ -44,8 +45,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     _btnController.dispose();
     super.dispose();
   }
-
-  // ── Dialog helpers ────────────────────────────────────────────────────────
 
   void _showProcessingDialog() {
     if (_isProcessingDialogOpen) return;
@@ -72,36 +71,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         transactionId: transactionId,
         onDismissed: () {
           if (mounted) {
-             context.read<PaymentBloc>().add(const FetchPlansEvent());
-          // Navigator.of(context).pop(); // close subscription screen
+            context.read<PaymentBloc>().add(const FetchPlansEvent());
           }
         },
       ),
     );
   }
 
-  // void _showManualActivationSuccessDialog(String message) {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (_) => ManualActivationSuccessDialog(
-  //       message: message,
-  //       onDone: () {
-  //         Navigator.pop(context); // close dialog
-  //         context.read<PaymentBloc>().add(const FetchPlansEvent());
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // ── Subscribe button tap ──────────────────────────────────────────────────
-
   Future<void> _onSubscribeTap(List<SubscriptionPlanModel> plans) async {
     if (_selectedPlan == null) return;
 
     context.read<PaymentBloc>().add(SelectPlanEvent(_selectedPlan!));
 
-    // Free plan — no payment method picker needed
     if (_selectedPlan!.isFree) {
       context.read<PaymentBloc>().add(
         InitiatePaymentEvent(
@@ -113,7 +94,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       return;
     }
 
-    // Show payment method bottom sheet
     final method = await showPaymentMethodDialog(context);
     if (method == null || !mounted) return;
 
@@ -151,83 +131,77 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     }
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    // final theme = Theme.of(context).colorScheme;
+    final s = S.of(context);
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) async {
-  // ── Loading ──────────────────────────────────────────
-  if (state is PaymentInitiating || state is ManualActivating) {
-    _showProcessingDialog();
-  }
+        if (state is PaymentInitiating || state is ManualActivating) {
+          _showProcessingDialog();
+        }
 
-  // ── Credit card → open browser ────────────────────────
-  if (state is PaymentRedirectReady) {
-    _dismissProcessingDialog();
-     await launchUrl(
-    Uri.parse(state.redirectUrl),
-    mode: LaunchMode.inAppBrowserView,
-  );
+        if (state is PaymentRedirectReady) {
+          _dismissProcessingDialog();
+          _transId = state.transactionId;
+          await launchUrl(
+            Uri.parse(state.redirectUrl),
+            mode: LaunchMode.inAppBrowserView,
+          );
+          if (mounted) {
+            context.read<PaymentBloc>().add(const FetchPlansEvent());
+          }
+        }
 
-  // ✅ هنا بيجي بعد ما الـ browser يتقفل
-  if (mounted) {
-    context.read<PaymentBloc>().add(const FetchPlansEvent());
-  }
+        if (state is ProcessSuccessful || state is ManualActivateSuccess) {
+          _dismissProcessingDialog();
+          _showPaymentSuccessDialog(_transId ?? s.unKnown);
+        }
 
-  }
+        if (state is PaymentInitiateError ||
+            state is ManualActivateError ||
+            state is PlansError) {
+          _dismissProcessingDialog();
+          final message = state is PaymentInitiateError
+              ? (state as PaymentInitiateError).message
+              : state is ManualActivateError
+              ? (state as ManualActivateError).message
+              : (state as PlansError).message;
 
-  // ── ALL success cases → same dialog ──────────────────
-  if (state is ProcessSuccessful || state is ManualActivateSuccess) {
-    _dismissProcessingDialog();
-    _showPaymentSuccessDialog('N/A'); // ✅ dialog واحد للكل
-    // refresh plans after dialog closes (already inside onDismissed)
-  }
-
-  // ── Error → toast only ────────────────────────────────
-  if (state is PaymentInitiateError ||
-      state is ManualActivateError ||
-      state is PlansError) {
-    _dismissProcessingDialog();
-    final message = state is PaymentInitiateError
-        ? (state as PaymentInitiateError).message
-        : state is ManualActivateError
-            ? (state as ManualActivateError).message
-            : (state as PlansError).message;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.white, size: 18),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: Colors.red.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(12),
-      ),
-    );
-  }
-},
-    
-    
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(child: Text(message)),
+                ],
+              ),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              margin: EdgeInsets.all(12.w),
+            ),
+          );
+        }
+      },
       child: Scaffold(
         backgroundColor: const Color(0xFF0D1B2A),
         body: BlocBuilder<PaymentBloc, PaymentState>(
           builder: (context, state) {
             return Stack(
               children: [
-                // ── Hero image ──────────────────────────────────────────────
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.38,
                   width: double.infinity,
                   child: const _HeroImage(),
                 ),
-
-                // ── Main scrollable content ─────────────────────────────────
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Column(
@@ -243,35 +217,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                           ),
                         ),
                         padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
-                        child: _buildBody(state),
+                        child: _buildBody(state, s),
                       ),
-                      
                     ],
                   ),
                 ),
-
-                // ── Close button ────────────────────────────────────────────
-                // Positioned(
-                //   top: MediaQuery.of(context).padding.top + 12,
-                //   right: 16,
-                //   child: GestureDetector(
-                //     onTap: () => Navigator.of(context).pop(),
-                //     child: Container(
-                //       width: 34,
-                //       height: 34,
-                //       decoration: BoxDecoration(
-                //         color: Colors.black.withOpacity(0.45),
-                //         shape: BoxShape.circle,
-                //       ),
-                //       child: const Icon(
-                //         Icons.close,
-                //         color: Colors.white,
-                //         size: 18,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-            
               ],
             );
           },
@@ -280,11 +230,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     );
   }
 
-  Widget _buildBody(PaymentState state) {
+  Widget _buildBody(PaymentState state, S s) {
     if (state is PlansLoading) {
-      return const SizedBox(
-        height: 300,
-        child: Center(
+      return SizedBox(
+        height: 300.h,
+        child: const Center(
           child: CircularProgressIndicator(color: Color(0xFF4CAF50)),
         ),
       );
@@ -292,25 +242,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
     if (state is PlansError) {
       return SizedBox(
-        height: 300,
+        height: 300.h,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 48),
-              const SizedBox(height: 12),
+              Icon(Icons.error_outline, color: Colors.red, size: 48.sp),
+              SizedBox(height: 12.h),
               Text(
                 state.message,
-                style: const TextStyle(color: Colors.white70),
+                style: TextStyle(color: Colors.white70, fontSize: 14.sp),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextButton(
                 onPressed: () =>
                     context.read<PaymentBloc>().add(const FetchPlansEvent()),
-                child: const Text(
-                  'Retry',
-                  style: TextStyle(color: Color(0xFF4CAF50)),
+                child: Text(
+                  s.subscription_retry,
+                  style: TextStyle(
+                    color: const Color(0xFF4CAF50),
+                    fontSize: 14.sp,
+                  ),
                 ),
               ),
             ],
@@ -335,32 +288,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
     return Column(
       children: [
-        const Text(
-          'Premium Access',
+        Text(
+          s.subscription_title,
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 26.sp,
             fontWeight: FontWeight.w800,
             color: Colors.white,
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 10),
-        const Text(
-          'Upgrade and analyse your game without limits',
+        SizedBox(height: 10.h),
+        Text(
+          s.subscription_subtitle,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 14,
-            color: Color(0xFFB8C8D8),
+            fontSize: 14.sp,
+            color: const Color(0xFFB8C8D8),
             height: 1.55,
           ),
         ),
-        const SizedBox(height: 28),
-
-        // ── Plan cards ──────────────────────────────────────────────────────
+        SizedBox(height: 28.h),
         plans.isEmpty
-            ? const SizedBox(
-                height: 180,
-                child: Center(
+            ? SizedBox(
+                height: 180.h,
+                child: const Center(
                   child: CircularProgressIndicator(color: Color(0xFF4CAF50)),
                 ),
               )
@@ -376,14 +327,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       onTap: () => setState(() => _selectedPlan = plan),
                       child: Padding(
                         padding: EdgeInsets.only(
-                          left: entry.key == 0 ? 0 : 5,
-                          right: entry.key == plans.length - 1 ? 0 : 5,
+                          left: entry.key == 0 ? 0 : 5.w,
+                          right: entry.key == plans.length - 1 ? 0 : 5.w,
                         ),
                         child: _PlanCard(
                           plan: plan,
                           isSelected: isSelected,
                           index: entry.key,
                           total: plans.length,
+                          context: context,
                         ),
                       ),
                     ),
@@ -391,9 +343,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                 }).toList(),
               ),
 
-        const SizedBox(height: 28),
+        SizedBox(height: 28.h),
 
-        // ── Subscribe button ────────────────────────────────────────────────
         ScaleTransition(
           scale: _btnController,
           child: GestureDetector(
@@ -403,14 +354,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               opacity: _selectedPlan != null ? 1.0 : 0.5,
               child: Container(
                 width: double.infinity,
-                height: 58,
+                height: 58.h,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF8BC34A), Color(0xFF4CAF50)],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
-                  borderRadius: BorderRadius.circular(32),
+                  borderRadius: BorderRadius.circular(32.r),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF4CAF50).withOpacity(0.4),
@@ -419,12 +370,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                     ),
                   ],
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'SUBSCRIBE NOW',
+                    s.subscription_btn,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 17,
+                      fontSize: 17.sp,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.5,
                     ),
@@ -435,36 +386,35 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           ),
         ),
 
-        const SizedBox(height: 16),
-        const Text(
-          'This is an automatically renewed subscription.\nYou can cancel anytime in settings.',
+        SizedBox(height: 16.h),
+        Text(
+          s.subscription_renewal_note,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 11.5,
-            color: Color(0xFF607080),
+            fontSize: 11.5.sp,
+            color: const Color(0xFF607080),
             height: 1.6,
           ),
         ),
-          SizedBox(height: 100.h,)
+        SizedBox(height: 100.h),
       ],
     );
   }
 }
 
-// ─────────────────────────────────────────────
-//  PLAN CARD
-// ─────────────────────────────────────────────
 class _PlanCard extends StatelessWidget {
   final SubscriptionPlanModel plan;
   final bool isSelected;
   final int index;
   final int total;
+  final context;
 
   const _PlanCard({
     required this.plan,
     required this.isSelected,
     required this.index,
     required this.total,
+    this.context,
   });
 
   Color get _accent {
@@ -479,20 +429,52 @@ class _PlanCard extends StatelessWidget {
   }
 
   String? get _badge {
-    if (index == 1 && total >= 3) return 'POPULAR';
-    if (index == total - 1 && total >= 3) return 'BEST VALUE';
+    if (index == 1 && total >= 3)
+      return S.of(context).subscription_plan_popular;
+    if (index == total - 1 && total >= 3)
+      return S.of(context).subscription_plan_best_value;
     return null;
   }
 
-  List<String> get _features {
+  List<Map<String, dynamic>> get _features {
     return [
-      if (plan.monthlyVideoAnalysisLimit > 0)
-        plan.monthlyVideoAnalysisLimit == -1
-            ? 'Unlimited Videos'
-            : '${plan.monthlyVideoAnalysisLimit} Videos / month',
-      if (plan.monthlyAdLimit > 0) '${plan.monthlyAdLimit} Ads / month',
-      if (plan.hasDetailedReports) 'Detailed Reports',
-      if (plan.isFree) 'Basic Stats',
+      {
+        'icon': Icons.videocam_rounded,
+        'label': plan.monthlyVideoAnalysisLimit == -1
+            ? S.of(context).subscription_plan_unlimited_videos
+            : plan.monthlyVideoAnalysisLimit == 0
+            ? S.of(context).subscription_plan_no_videos
+            : S
+                  .of(context)
+                  .subscription_plan_videos_month(
+                    plan.monthlyVideoAnalysisLimit,
+                  ),
+      },
+      {
+        'icon': Icons.campaign_rounded,
+        'label': plan.monthlyAdLimit == 0
+            ? S.of(context).subscription_plan_no_ads
+            : S.of(context).subscription_plan_ads_month(plan.monthlyAdLimit),
+      },
+      {
+        'icon': plan.hasDetailedReports
+            ? Icons.analytics_rounded
+            : Icons.bar_chart_rounded,
+        'label': plan.hasDetailedReports
+            ? S.of(context).subscription_plan_detailed_reports
+            : S.of(context).subscription_plan_basic_stats,
+      },
+      if (!plan.isFree)
+        {
+          'icon': Icons.calendar_today_rounded,
+          'label': plan.durationDays <= 31
+              ? S
+                    .of(context)
+                    .subscription_plan_duration_month(plan.durationDays)
+              : S.of(context).subscription_plan_duration_year({
+                  (plan.durationDays / 30).round(),
+                }),
+        },
     ];
   }
 
@@ -503,31 +485,31 @@ class _PlanCard extends StatelessWidget {
       children: [
         if (_badge != null)
           Container(
-            margin: const EdgeInsets.only(bottom: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            margin: EdgeInsets.only(bottom: 6.h),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
             decoration: BoxDecoration(
               color: _accent,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Text(
               _badge!,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 9,
+                fontSize: 9.sp,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.8,
               ),
             ),
           )
         else
-          const SizedBox(height: 26),
+          SizedBox(height: 26.h),
 
         AnimatedContainer(
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOut,
           decoration: BoxDecoration(
             color: _cardBg,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: isSelected ? _accent : Colors.transparent,
               width: 2.5,
@@ -542,7 +524,7 @@ class _PlanCard extends StatelessWidget {
                   ]
                 : [],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -551,52 +533,72 @@ class _PlanCard extends StatelessWidget {
                   plan.name,
                   style: TextStyle(
                     color: _accent,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 6.h),
+
               Center(
                 child: Text(
                   plan.price == 0 ? '0' : plan.price.toStringAsFixed(0),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: 28.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
+
               Center(
                 child: Text(
                   plan.isFree
-                      ? 'forever'
+                      ? S.of(context).subscription_plan_forever
                       : plan.durationDays <= 31
-                      ? '/ month'
-                      : '/ year',
-                  style: const TextStyle(
-                    color: Color(0xFF8099B0),
-                    fontSize: 10,
+                      ? S.of(context).subscription_plan_per_month
+                      : S.of(context).subscription_plan_per_year,
+                  style: TextStyle(
+                    color: const Color(0xFF8099B0),
+                    fontSize: 10.sp,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+
+              if (plan.description != null && plan.description!.isNotEmpty) ...[
+                SizedBox(height: 8.h),
+                Center(
+                  child: Text(
+                    plan.description!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 9.5.sp,
+                      height: 1.4,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
+
+              SizedBox(height: 10.h),
               Divider(color: Colors.white.withOpacity(0.1), height: 1),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
+
               ..._features.map(
                 (f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
+                  padding: EdgeInsets.only(bottom: 6.h),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.check_rounded, size: 13, color: _accent),
-                      const SizedBox(width: 5),
+                      Icon(f['icon'] as IconData, size: 13.sp, color: _accent),
+                      SizedBox(width: 5.w),
                       Expanded(
                         child: Text(
-                          f,
-                          style: const TextStyle(
-                            color: Color(0xFFCCDDEE),
-                            fontSize: 10.5,
+                          f['label'] as String,
+                          style: TextStyle(
+                            color: const Color(0xFFCCDDEE),
+                            fontSize: 10.5.sp,
                             height: 1.3,
                           ),
                         ),
@@ -605,25 +607,29 @@ class _PlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 14),
+
+              SizedBox(height: 14.h),
+
               SizedBox(
                 width: double.infinity,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
                   decoration: BoxDecoration(
                     color: isSelected ? _accent : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                     border: isSelected
                         ? null
                         : Border.all(color: _accent.withOpacity(0.5)),
                   ),
                   child: Center(
                     child: Text(
-                      plan.isFree ? 'Current Plan' : 'Select Now',
+                      plan.isFree
+                          ? S.of(context).subscription_plan_current
+                          : S.of(context).subscription_plan_select,
                       style: TextStyle(
                         color: isSelected ? Colors.white : _accent,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -638,9 +644,6 @@ class _PlanCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-//  HERO IMAGE
-// ─────────────────────────────────────────────
 class _HeroImage extends StatelessWidget {
   const _HeroImage();
 
@@ -659,25 +662,19 @@ class _HeroImage extends StatelessWidget {
           ),
         ),
         Center(
-          child:
-          Image.asset(
-  'assets/images/logo.png', // <-- put your image path here
-  width: 120,
-  height: 120,
-  color: Colors.white.withOpacity(0.06), // optional (works like icon tint)
-  colorBlendMode: BlendMode.srcIn, // important for tint effect
-) 
-          // Icon(
-          //   Icons.sports_soccer,
-          //   size: 120,
-          //   color: Colors.white.withOpacity(0.06),
-          // ),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 120.w,
+            height: 120.w,
+            color: Colors.white.withOpacity(0.06),
+            colorBlendMode: BlendMode.srcIn,
+          ),
         ),
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
-          height: 80,
+          height: 80.h,
           child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
