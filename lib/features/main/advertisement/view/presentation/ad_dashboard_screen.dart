@@ -4,17 +4,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
+import 'package:sports_in/generated/l10n.dart';
 
-/// Shows analytics for a single ad.
-/// Fetches the dashboard data directly — no BLoC needed for a simple read.
+/// Shows analytics for a single ad (when [adId] is provided) or an
+/// overview of all the owner's ads (when [adId] is null).
 class AdDashboardScreen extends StatefulWidget {
-  final String adId;
+  /// null → show all-ads summary (the top banner in MyAdsScreen)
+  /// non-null → show this specific ad's stats
+  final String? adId;
   final String adTitle;
 
   const AdDashboardScreen({
     super.key,
-    required this.adId,
-    required this.adTitle,
+    this.adId,
+    this.adTitle = 'All Advertisements',
   });
 
   @override
@@ -33,28 +36,35 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
   }
 
   Future<void> _load() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
+      // When adId is null the backend /dashboard endpoint is called with an
+      // empty adId query — it returns aggregate stats for all the user's ads.
       final data = await getIt<AdsRepositoryImpl>()
-          .getDashboard(adId: widget.adId);
-      if (mounted) {setState(() {
-        _data = data;
-        _isLoading = false;
-      });}
+          .getDashboard(adId: widget.adId ?? '');
+      if (mounted) {
+        setState(() {
+          _data = data;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      if (mounted) {setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });}
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +76,7 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
         title: Column(
           children: [
             Text(
-              'Ad Dashboard',
+              strings.adDashboard,
               style: TextStyle(
                 color: theme.onSurface,
                 fontSize: 17.sp,
@@ -75,10 +85,7 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
             ),
             Text(
               widget.adTitle,
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 12.sp,
-              ),
+              style: TextStyle(color: Colors.grey[500], fontSize: 12.sp),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -111,16 +118,16 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
                       ElevatedButton.icon(
                         onPressed: _load,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Retry'),
+                        label: Text(strings.retry),
                       ),
                     ],
                   ),
                 )
-              : _buildDashboard(theme),
+              : _buildDashboard(theme, strings),
     );
   }
 
-  Widget _buildDashboard(ColorScheme theme) {
+  Widget _buildDashboard(ColorScheme theme, S strings) {
     final d = _data!;
 
     return SingleChildScrollView(
@@ -129,7 +136,9 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Performance Overview',
+            widget.adId == null
+                ? strings.overviewAllAds
+                : strings.performanceOverview,
             style: GoogleFonts.poppins(
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,
@@ -138,6 +147,7 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
           ),
           SizedBox(height: 16.h),
 
+          // ── Stat grid ─────────────────────────────────────────────────────
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -148,25 +158,25 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
             children: [
               _StatCard(
                 icon: Icons.campaign_outlined,
-                label: 'Total Ads',
+                label: strings.totalAds,
                 value: d.totalAds.toString(),
                 color: Colors.blue,
               ),
               _StatCard(
                 icon: Icons.visibility_outlined,
-                label: 'Total Views',
+                label: strings.totalViews,
                 value: d.totalViews.toString(),
                 color: Colors.green,
               ),
               _StatCard(
                 icon: Icons.touch_app_outlined,
-                label: 'Total Clicks',
+                label: strings.totalClicks,
                 value: d.totalClicks.toString(),
                 color: Colors.orange,
               ),
               _StatCard(
                 icon: Icons.timer_outlined,
-                label: 'Engagement',
+                label: strings.engagement,
                 value: '${d.totalEngagementSeconds}s',
                 color: Colors.purple,
               ),
@@ -174,6 +184,7 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
           ),
           SizedBox(height: 16.h),
 
+          // ── Completion rate ────────────────────────────────────────────────
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(16.w),
@@ -198,7 +209,7 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
                         color: Colors.teal, size: 20.sp),
                     SizedBox(width: 8.w),
                     Text(
-                      'Avg. Completion Rate',
+                      strings.averageCompletionRate,
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
@@ -219,7 +230,7 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  '${d.averageCompletionRate.toStringAsFixed(1)}%',
+                  strings.percentage(d.averageCompletionRate.toStringAsFixed(1)),
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
@@ -234,6 +245,8 @@ class _AdDashboardScreenState extends State<AdDashboardScreen> {
     );
   }
 }
+
+// ─── Stat card ────────────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
   final IconData icon;
@@ -269,17 +282,13 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(6.w),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Icon(icon, color: color, size: 16.sp),
-              ),
-            ],
+          Container(
+            padding: EdgeInsets.all(6.w),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(icon, color: color, size: 16.sp),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,8 +303,7 @@ class _StatCard extends StatelessWidget {
               ),
               Text(
                 label,
-                style:
-                    TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+                style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
               ),
             ],
           ),

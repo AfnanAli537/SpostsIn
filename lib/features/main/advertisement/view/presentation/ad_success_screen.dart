@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class AdSuccessScreen extends StatelessWidget {
   const AdSuccessScreen({super.key});
@@ -9,6 +10,7 @@ class AdSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -33,7 +35,7 @@ class AdSuccessScreen extends StatelessWidget {
               SizedBox(height: 32.h),
 
               Text(
-                'Ad Published!',
+                strings.adPublished,
                 style: GoogleFonts.poppins(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.w700,
@@ -44,7 +46,7 @@ class AdSuccessScreen extends StatelessWidget {
               SizedBox(height: 12.h),
 
               Text(
-                'Your advertisement is now live and will appear in the feed to your target audience.',
+                strings.adPublishedDescription,
                 style: GoogleFonts.poppins(
                   fontSize: 14.sp,
                   color: Colors.grey[600],
@@ -55,7 +57,7 @@ class AdSuccessScreen extends StatelessWidget {
               SizedBox(height: 48.h),
 
               CustomElevatedButton(
-                text: 'Back to Home',
+                text: strings.backToHome,
                 onPressed: () {
                   // Pop back to root
                   Navigator.of(context).popUntil((route) => route.isFirst);

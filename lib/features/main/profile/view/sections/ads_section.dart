@@ -44,16 +44,14 @@ class AdsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: 'Advertisements',
-          // Show "Show All" only for the profile owner
-          onShowAllPressed: isOwner ? onShowAll : null,
+          title: string.advertisements,
+          onShowAllPressed: onShowAll,
         ),
         SizedBox(
           height: 100.h,
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
-            // Show at most 3 thumbnails (same as PostsSection)
             itemCount: ads.length > 3 ? 3 : ads.length,
             itemBuilder: (context, index) {
               final ad = ads[index];

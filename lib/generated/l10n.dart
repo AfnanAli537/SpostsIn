@@ -3509,8 +3509,8 @@ class S {
   }
 
   /// `Price (EGP)`
-  String get priceEGP {
-    return Intl.message('Price (EGP)', name: 'priceEGP', desc: '', args: []);
+  String get priceEGPtxt {
+    return Intl.message('Price (EGP)', name: 'priceEGPtxt', desc: '', args: []);
   }
 
   /// `Price is required`
@@ -4701,6 +4701,576 @@ class S {
   /// `December`
   String get december {
     return Intl.message('December', name: 'december', desc: '', args: []);
+  }
+
+  /// `Advertisements`
+  String get advertisements {
+    return Intl.message(
+      'Advertisements',
+      name: 'advertisements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad Dashboard`
+  String get adDashboard {
+    return Intl.message(
+      'Ad Dashboard',
+      name: 'adDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Overview — All Ads`
+  String get overviewAllAds {
+    return Intl.message(
+      'Overview — All Ads',
+      name: 'overviewAllAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Performance Overview`
+  String get performanceOverview {
+    return Intl.message(
+      'Performance Overview',
+      name: 'performanceOverview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Ads`
+  String get totalAds {
+    return Intl.message('Total Ads', name: 'totalAds', desc: '', args: []);
+  }
+
+  /// `Total Views`
+  String get totalViews {
+    return Intl.message('Total Views', name: 'totalViews', desc: '', args: []);
+  }
+
+  /// `Total Clicks`
+  String get totalClicks {
+    return Intl.message(
+      'Total Clicks',
+      name: 'totalClicks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Engagement`
+  String get engagement {
+    return Intl.message('Engagement', name: 'engagement', desc: '', args: []);
+  }
+
+  /// `Avg. Completion Rate`
+  String get averageCompletionRate {
+    return Intl.message(
+      'Avg. Completion Rate',
+      name: 'averageCompletionRate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{value}%`
+  String percentage(String value) {
+    return Intl.message('$value%', name: 'percentage', desc: '', args: [value]);
+  }
+
+  /// `Complete Payment`
+  String get completePayment {
+    return Intl.message(
+      'Complete Payment',
+      name: 'completePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad Created — Pending Payment`
+  String get adCreatedPendingPayment {
+    return Intl.message(
+      'Ad Created — Pending Payment',
+      name: 'adCreatedPendingPayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your ad has been saved. Complete payment to activate it in the feed.`
+  String get adSavedCompletePayment {
+    return Intl.message(
+      'Your ad has been saved. Complete payment to activate it in the feed.',
+      name: 'adSavedCompletePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Amount`
+  String get totalAmount {
+    return Intl.message(
+      'Total Amount',
+      name: 'totalAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `({price} EGP per day)`
+  String pricePerDay(String price) {
+    return Intl.message(
+      '($price EGP per day)',
+      name: 'pricePerDay',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Payment integration is coming soon. You can pay later from your ads dashboard.`
+  String get paymentIntegrationComingSoon {
+    return Intl.message(
+      'Payment integration is coming soon. You can pay later from your ads dashboard.',
+      name: 'paymentIntegrationComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now (Coming Soon)`
+  String get payNowComingSoon {
+    return Intl.message(
+      'Pay Now (Coming Soon)',
+      name: 'payNowComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Later (Ad saved as draft)`
+  String get payLaterDraft {
+    return Intl.message(
+      'Pay Later (Ad saved as draft)',
+      name: 'payLaterDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{price} EGP`
+  String priceEGP(String price) {
+    return Intl.message(
+      '$price EGP',
+      name: 'priceEGP',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Ad Published!`
+  String get adPublished {
+    return Intl.message(
+      'Ad Published!',
+      name: 'adPublished',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your advertisement is now live and will appear in the feed to your target audience.`
+  String get adPublishedDescription {
+    return Intl.message(
+      'Your advertisement is now live and will appear in the feed to your target audience.',
+      name: 'adPublishedDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to Home`
+  String get backToHome {
+    return Intl.message('Back to Home', name: 'backToHome', desc: '', args: []);
+  }
+
+  /// `Edit Advertisement`
+  String get editAdvertisement {
+    return Intl.message(
+      'Edit Advertisement',
+      name: 'editAdvertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Advertisement updated successfully`
+  String get adUpdatedSuccessfully {
+    return Intl.message(
+      'Advertisement updated successfully',
+      name: 'adUpdatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter ad title`
+  String get enterAdTitle {
+    return Intl.message(
+      'Enter ad title',
+      name: 'enterAdTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter ad description`
+  String get enterAdDescription {
+    return Intl.message(
+      'Enter ad description',
+      name: 'enterAdDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Target Audience`
+  String get targetAudience {
+    return Intl.message(
+      'Target Audience',
+      name: 'targetAudience',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Who should see this ad?`
+  String get whoShouldSeeThisAd {
+    return Intl.message(
+      'Who should see this ad?',
+      name: 'whoShouldSeeThisAd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Campaign Duration *`
+  String get campaignDurationRequired {
+    return Intl.message(
+      'Campaign Duration *',
+      name: 'campaignDurationRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Date`
+  String get startDate {
+    return Intl.message('Start Date', name: 'startDate', desc: '', args: []);
+  }
+
+  /// `Estimated cost: {price} EGP`
+  String estimatedCost(String price) {
+    return Intl.message(
+      'Estimated cost: $price EGP',
+      name: 'estimatedCost',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Action URL (optional)`
+  String get actionUrlOptional {
+    return Intl.message(
+      'Action URL (optional)',
+      name: 'actionUrlOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `https://...`
+  String get urlPlaceholder {
+    return Intl.message(
+      'https://...',
+      name: 'urlPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CTA Button Text (optional)`
+  String get ctaButtonTextOptional {
+    return Intl.message(
+      'CTA Button Text (optional)',
+      name: 'ctaButtonTextOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. Learn More, Buy Now`
+  String get ctaPlaceholder {
+    return Intl.message(
+      'e.g. Learn More, Buy Now',
+      name: 'ctaPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update Ad`
+  String get updateAd {
+    return Intl.message('Update Ad', name: 'updateAd', desc: '', args: []);
+  }
+
+  /// `Tap to change media`
+  String get tapToChangeMedia {
+    return Intl.message(
+      'Tap to change media',
+      name: 'tapToChangeMedia',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Optional`
+  String get optional {
+    return Intl.message('Optional', name: 'optional', desc: '', args: []);
+  }
+
+  /// `My Advertisements`
+  String get myAdvertisements {
+    return Intl.message(
+      'My Advertisements',
+      name: 'myAdvertisements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inactive / Draft`
+  String get inactiveDraft {
+    return Intl.message(
+      'Inactive / Draft',
+      name: 'inactiveDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active`
+  String get active {
+    return Intl.message('Active', name: 'active', desc: '', args: []);
+  }
+
+  /// `Ad deleted successfully`
+  String get adDeletedSuccessfully {
+    return Intl.message(
+      'Ad deleted successfully',
+      name: 'adDeletedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad activated`
+  String get adActivated {
+    return Intl.message(
+      'Ad activated',
+      name: 'adActivated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad deactivated`
+  String get adDeactivated {
+    return Intl.message(
+      'Ad deactivated',
+      name: 'adDeactivated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No active advertisements`
+  String get noActiveAds {
+    return Intl.message(
+      'No active advertisements',
+      name: 'noActiveAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No inactive advertisements`
+  String get noInactiveAds {
+    return Intl.message(
+      'No inactive advertisements',
+      name: 'noInactiveAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Analytics Dashboard`
+  String get viewAnalyticsDashboard {
+    return Intl.message(
+      'View Analytics Dashboard',
+      name: 'viewAnalyticsDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analytics Overview`
+  String get analyticsOverview {
+    return Intl.message(
+      'Analytics Overview',
+      name: 'analyticsOverview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ads`
+  String get ads {
+    return Intl.message('Ads', name: 'ads', desc: '', args: []);
+  }
+
+  /// `Views`
+  String get views {
+    return Intl.message('Views', name: 'views', desc: '', args: []);
+  }
+
+  /// `Clicks`
+  String get clicks {
+    return Intl.message('Clicks', name: 'clicks', desc: '', args: []);
+  }
+
+  /// `Completion`
+  String get completion {
+    return Intl.message('Completion', name: 'completion', desc: '', args: []);
+  }
+
+  /// `Failed to load page`
+  String get failedToLoadPage {
+    return Intl.message(
+      'Failed to load page',
+      name: 'failedToLoadPage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Learn More`
+  String get learnMore {
+    return Intl.message('Learn More', name: 'learnMore', desc: '', args: []);
+  }
+
+  /// `Sponsor`
+  String get sponsor {
+    return Intl.message('Sponsor', name: 'sponsor', desc: '', args: []);
+  }
+
+  /// `Advertisement`
+  String get advertisement {
+    return Intl.message(
+      'Advertisement',
+      name: 'advertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get dashboard {
+    return Intl.message('Dashboard', name: 'dashboard', desc: '', args: []);
+  }
+
+  /// `Deactivate Ad`
+  String get deactivateAd {
+    return Intl.message(
+      'Deactivate Ad',
+      name: 'deactivateAd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activate Ad`
+  String get activateAd {
+    return Intl.message('Activate Ad', name: 'activateAd', desc: '', args: []);
+  }
+
+  /// `This ad will no longer appear in the feed.`
+  String get deactivateAdMessage {
+    return Intl.message(
+      'This ad will no longer appear in the feed.',
+      name: 'deactivateAdMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This ad will appear in the feed again.`
+  String get activateAdMessage {
+    return Intl.message(
+      'This ad will appear in the feed again.',
+      name: 'activateAdMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this advertisement?`
+  String get deleteAdConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this advertisement?',
+      name: 'deleteAdConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad saved as draft — not published`
+  String get adSavedAsDraft {
+    return Intl.message(
+      'Ad saved as draft — not published',
+      name: 'adSavedAsDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment to activate this ad in the feed.`
+  String get completePaymentToActivate {
+    return Intl.message(
+      'Complete payment to activate this ad in the feed.',
+      name: 'completePaymentToActivate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment coming soon`
+  String get paymentComingSoon {
+    return Intl.message(
+      'Payment coming soon',
+      name: 'paymentComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now`
+  String get payNow {
+    return Intl.message('Pay Now', name: 'payNow', desc: '', args: []);
   }
 }
 

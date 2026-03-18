@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 /// Payment is NOT integrated yet.
 /// The "Pay Now" button is disabled; "Pay Later" skips payment — the ad is
@@ -19,6 +20,7 @@ class AdPaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +31,7 @@ class AdPaymentScreen extends StatelessWidget {
               Navigator.of(context).popUntil((route) => route.isFirst),
         ),
         title: Text(
-          'Complete Payment',
+          strings.completePayment,
           style: TextStyle(
             color: theme.onSurface,
             fontSize: 18.sp,
@@ -65,7 +67,7 @@ class AdPaymentScreen extends StatelessWidget {
                         size: 48.sp, color: theme.primary),
                     SizedBox(height: 12.h),
                     Text(
-                      'Ad Created — Pending Payment',
+                      strings.adCreatedPendingPayment,
                       style: GoogleFonts.poppins(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
@@ -75,7 +77,7 @@ class AdPaymentScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Your ad has been saved. Complete payment to activate it in the feed.',
+                      strings.adSavedCompletePayment,
                       style: GoogleFonts.poppins(
                         fontSize: 13.sp,
                         color: Colors.grey[600],
@@ -89,12 +91,12 @@ class AdPaymentScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Amount',
+                        Text(strings.totalAmount,
                             style: TextStyle(
                                 fontSize: 15.sp,
                                 color: Colors.grey[600])),
                         Text(
-                          '${price.toStringAsFixed(0)} EGP',
+                          strings.priceEGP(price.toStringAsFixed(0)),
                           style: GoogleFonts.poppins(
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w700,
@@ -107,7 +109,7 @@ class AdPaymentScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text('(5 EGP per day)',
+                        Text(strings.pricePerDay('5'),
                             style: TextStyle(
                                 fontSize: 12.sp,
                                 color: Colors.grey[500])),
@@ -133,7 +135,7 @@ class AdPaymentScreen extends StatelessWidget {
                     SizedBox(width: 10.w),
                     Expanded(
                       child: Text(
-                        'Payment integration is coming soon. You can pay later from your ads dashboard.',
+                        strings.paymentIntegrationComingSoon,
                         style: TextStyle(
                             fontSize: 12.sp,
                             color: Colors.amber[900],
@@ -147,7 +149,7 @@ class AdPaymentScreen extends StatelessWidget {
               const Spacer(),
 
               CustomElevatedButton(
-                text: 'Pay Now (Coming Soon)',
+                text: strings.payNowComingSoon,
                 onPressed: () {}, // disabled — payment not integrated
                 enabled: false,
               ),
@@ -168,7 +170,7 @@ class AdPaymentScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.r)),
                   ),
                   child: Text(
-                    'Pay Later (Ad saved as draft)',
+                    strings.payLaterDraft,
                     style: TextStyle(
                         fontSize: 14.sp, fontWeight: FontWeight.w600),
                   ),

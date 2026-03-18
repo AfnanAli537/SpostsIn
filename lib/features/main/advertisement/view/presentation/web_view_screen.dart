@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/generated/l10n.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// Opens a URL inside the app using a WebView.
@@ -39,7 +40,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         onPageFinished: (_) => setState(() => _isLoading = false),
         onWebResourceError: (error) => setState(() {
           _isLoading = false;
-          _errorMessage = 'Failed to load page';
+          _errorMessage = S.of(context).failedToLoadPage;
         }),
       ))
       ..loadRequest(Uri.parse(widget.url));
@@ -48,6 +49,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -94,7 +96,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   ElevatedButton.icon(
                     onPressed: () => _controller.reload(),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    label: Text(strings.retry),
                   ),
                 ],
               ),

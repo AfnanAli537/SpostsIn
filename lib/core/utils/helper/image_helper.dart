@@ -26,10 +26,10 @@ class CloudinaryService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data['secure_url'];
       } else {
-        return _defaultImageUrl;
+        return '';
       }
     } catch (e) {
-      return _defaultImageUrl;
+      return '';
     }
   }
 }

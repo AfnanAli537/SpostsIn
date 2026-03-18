@@ -42,6 +42,7 @@ dependencies:
   url_launcher: ^6.3.2
   package_info_plus: ^9.0.0
   webview_flutter: ^4.13.1
+  visibility_detector: ^0.4.0+2
 
   
 # flutter_intl:

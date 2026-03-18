@@ -133,16 +133,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   final borderColor = isSelected
                       ? ColorManager.borderCircular
                       : Colors.transparent;
-                  final imagePath =
-                      value == "en" ? IconAssets.us : IconAssets.eg;
+                  final imagePath = value == "en"
+                      ? IconAssets.us
+                      : IconAssets.eg;
                   return Container(
                     padding: EdgeInsets.all(2.w),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: borderColor, width: 1.w),
                     ),
-                    child:
-                        Image.asset(imagePath, width: 20.w, height: 20.h),
+                    child: Image.asset(imagePath, width: 20.w, height: 20.h),
                   );
                 },
               );
@@ -205,21 +205,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(
                   label,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: Colors.grey[600]),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
                 ),
                 SizedBox(height: 2.h),
                 Text(
                   value,
-                  style: theme.textTheme.bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
           ),
           if (label == 'Password')
-            Icon(Icons.chevron_right,
-                color: Colors.grey[400], size: 20.sp),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
         ],
       ),
     );
@@ -281,8 +282,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) =>
-                    MyOpportunitiesListScreen(showActiveOnly: true),
+                builder: (_) => MyOpportunitiesListScreen(showActiveOnly: true),
               ),
             ),
             theme: theme,
@@ -300,7 +300,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (_) => BlocProvider(
                 create: (_) => getIt<CoursesBloc>(),
                 child: CourseListScreen(
-                  listType: (_currentUser!.userType == 'Coach' ||
+                  listType:
+                      (_currentUser!.userType == 'Coach' ||
                           _currentUser!.userType == 'Scout' ||
                           _currentUser!.userType == 'Club')
                       ? CourseListType.created
@@ -313,6 +314,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 12.h),
 
+        // ── Manage Advertisements ──────────────────────────────────────────
+        _buildNavigationCard(
+          title: string.manageAdvertisement,
+          icon: Icons.campaign_outlined,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MyAdsScreen()),
+          ),
+          theme: theme,
+        ),
+        SizedBox(height: 12.h),
+
         // Manage Video Analysis
         _buildNavigationCard(
           title: string.manageVideoAnalysis,
@@ -320,20 +333,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onTap: () {
             // TODO: Navigate to video analysis screen
           },
-          theme: theme,
-        ),
-        SizedBox(height: 12.h),
-
-        // ── Manage Advertisements ──────────────────────────────────────────
-        _buildNavigationCard(
-          title: string.manageAdvertisement,
-          icon: Icons.campaign_outlined,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const MyAdsScreen(),
-            ),
-          ),
           theme: theme,
         ),
         SizedBox(height: 12.h),
@@ -373,8 +372,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
         ),
         child: Row(
           children: [
@@ -383,12 +381,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Expanded(
               child: Text(
                 title,
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            Icon(Icons.chevron_right,
-                color: Colors.grey[400], size: 20.sp),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
           ],
         ),
       ),

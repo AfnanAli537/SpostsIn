@@ -494,7 +494,7 @@
   },
   "editPrice": "تعديل السعر",
   "freeCourse": "دورة مجانية",
-  "priceEGP": "السعر (جنيه)",
+  "priceEGPtxt": "السعر (جنيه)",
   "priceRequired": "السعر مطلوب",
   "invalidPrice": "سعر غير صالح",
   "lessonNumber": "{number} درس",
@@ -723,6 +723,105 @@
         "type": "String"
       }
     }
-  }
+  },
+  "advertisements": "إعلانات",
+  "adDashboard": "لوحة تحكم الإعلانات",
+  "overviewAllAds": "نظرة عامة — جميع الإعلانات",
+  "performanceOverview": "نظرة عامة على الأداء",
+  "totalAds": "إجمالي الإعلانات",
+  "totalViews": "إجمالي المشاهدات",
+  "totalClicks": "إجمالي النقرات",
+  "engagement": "التفاعل",
+  "averageCompletionRate": "متوسط نسبة الإكمال",
+  "percentage": "{value}%",
+  
+  "@percentage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+
+  "completePayment": "إتمام الدفع",
+  "adCreatedPendingPayment": "تم إنشاء الإعلان — في انتظار الدفع",
+  "adSavedCompletePayment": "تم حفظ إعلانك. أكمل الدفع لتفعيله في الخلاصة.",
+  "totalAmount": "المبلغ الإجمالي",
+  "pricePerDay": "({price} جنيه في اليوم)",
+  "paymentIntegrationComingSoon": "تكامل الدفع قريباً. يمكنك الدفع لاحقاً من لوحة تحكم إعلاناتك.",
+  "payNowComingSoon": "ادفع الآن (قريباً)",
+  "payLaterDraft": "ادفع لاحقاً (سيتم حفظ الإعلان كمسودة)",
+  "priceEGP": "{price} جنيه",
+  "@priceEGP": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@pricePerDay": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "adPublished": "تم نشر الإعلان!",
+  "adPublishedDescription": "إعلانك أصبح نشطاً الآن وسيظهر في الخلاصة لجمهورك المستهدف.",
+  "backToHome": "العودة للرئيسية",
+  "editAdvertisement": "تعديل الإعلان",
+  "adUpdatedSuccessfully": "تم تحديث الإعلان بنجاح",
+  "enterAdTitle": "أدخل عنوان الإعلان",
+  "enterAdDescription": "أدخل وصف الإعلان",
+  "targetAudience": "الجمهور المستهدف",
+  "whoShouldSeeThisAd": "من يجب أن يرى هذا الإعلان؟",
+  "campaignDurationRequired": "مدة الحملة *",
+  "startDate": "تاريخ البدء",
+  "estimatedCost": "التكلفة التقديرية: {price} جنيه",
+  "actionUrlOptional": "رابط الإجراء (اختياري)",
+  "urlPlaceholder": "https://...",
+  "ctaButtonTextOptional": "نص زر الإجراء (اختياري)",
+  "ctaPlaceholder": "مثال: اعرف المزيد, اشتر الآن",
+  "updateAd": "تحديث الإعلان",
+  "tapToChangeMedia": "اضغط لتغيير الوسائط",
+  "optional": "اختياري",
+  
+  "@estimatedCost": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "myAdvertisements": "إعلاناتي",
+  "inactiveDraft": "غير نشط / مسودة",
+  "active": "نشط",
+  "adDeletedSuccessfully": "تم حذف الإعلان بنجاح",
+  "adActivated": "تم تنشيط الإعلان",
+  "adDeactivated": "تم إلغاء تنشيط الإعلان",
+  "noActiveAds": "لا توجد إعلانات نشطة",
+  "noInactiveAds": "لا توجد إعلانات غير نشطة",
+  
+  "viewAnalyticsDashboard": "عرض لوحة التحكم التحليلية",
+  "analyticsOverview": "نظرة عامة تحليلية",
+  "ads": "إعلانات",
+  "views": "مشاهدات",
+  "clicks": "نقرات",
+  "completion": "الإكمال",
+  "failedToLoadPage": "فشل تحميل الصفحة",
+    "learnMore": "اعرف المزيد",
+  "sponsor": "راعي",
+  "advertisement": "إعلان",
+  "dashboard": "لوحة التحكم",
+  "deactivateAd": "إلغاء تنشيط الإعلان",
+  "activateAd": "تنشيط الإعلان",
+  "deactivateAdMessage": "لن يظهر هذا الإعلان في الخلاصة بعد الآن.",
+  "activateAdMessage": "سيظهر هذا الإعلان في الخلاصة مرة أخرى.",
+  "deleteAdConfirmation": "هل أنت متأكد من حذف هذا الإعلان؟",
+
+  "adSavedAsDraft": "تم حفظ الإعلان كمسودة — لم ينشر",
+  "completePaymentToActivate": "أكمل الدفع لتفعيل هذا الإعلان في الخلاصة.",
+  "paymentComingSoon": "الدفع قريباً",
+  "payNow": "ادفع الآن"
   
 }

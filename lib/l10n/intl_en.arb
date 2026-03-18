@@ -519,7 +519,7 @@
   },
   "editPrice": "Edit Price",
   "freeCourse": "Free Course",
-  "priceEGP": "Price (EGP)",
+  "priceEGPtxt": "Price (EGP)",
   "priceRequired": "Price is required",
   "invalidPrice": "Invalid price",
   "lessonNumber": "{number} Lesson",
@@ -752,6 +752,108 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "advertisements": "Advertisements",
+  "adDashboard": "Ad Dashboard",
+  "overviewAllAds": "Overview — All Ads",
+  "performanceOverview": "Performance Overview",
+  "totalAds": "Total Ads",
+  "totalViews": "Total Views",
+  "totalClicks": "Total Clicks",
+  "engagement": "Engagement",
+  "averageCompletionRate": "Avg. Completion Rate",
+  "percentage": "{value}%",
+  
+  "@percentage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "completePayment": "Complete Payment",
+  "adCreatedPendingPayment": "Ad Created — Pending Payment",
+  "adSavedCompletePayment": "Your ad has been saved. Complete payment to activate it in the feed.",
+  "totalAmount": "Total Amount",
+  "pricePerDay": "({price} EGP per day)",
+  "paymentIntegrationComingSoon": "Payment integration is coming soon. You can pay later from your ads dashboard.",
+  "payNowComingSoon": "Pay Now (Coming Soon)",
+  "payLaterDraft": "Pay Later (Ad saved as draft)",
+  "priceEGP": "{price} EGP",
+  "@priceEGP": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@pricePerDay": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "adPublished": "Ad Published!",
+  "adPublishedDescription": "Your advertisement is now live and will appear in the feed to your target audience.",
+  "backToHome": "Back to Home",
+
+  "editAdvertisement": "Edit Advertisement",
+  "adUpdatedSuccessfully": "Advertisement updated successfully",
+  "enterAdTitle": "Enter ad title",
+  "enterAdDescription": "Enter ad description",
+  "targetAudience": "Target Audience",
+  "whoShouldSeeThisAd": "Who should see this ad?",
+  "campaignDurationRequired": "Campaign Duration *",
+  "startDate": "Start Date",
+  "estimatedCost": "Estimated cost: {price} EGP",
+  "actionUrlOptional": "Action URL (optional)",
+  "urlPlaceholder": "https://...",
+  "ctaButtonTextOptional": "CTA Button Text (optional)",
+  "ctaPlaceholder": "e.g. Learn More, Buy Now",
+  "updateAd": "Update Ad",
+  "tapToChangeMedia": "Tap to change media",
+  "optional": "Optional",
+  
+  "@estimatedCost": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "myAdvertisements": "My Advertisements",
+  "inactiveDraft": "Inactive / Draft",
+  "active": "Active",
+  "adDeletedSuccessfully": "Ad deleted successfully",
+  "adActivated": "Ad activated",
+  "adDeactivated": "Ad deactivated",
+  "noActiveAds": "No active advertisements",
+  "noInactiveAds": "No inactive advertisements",
+  
+
+  "viewAnalyticsDashboard": "View Analytics Dashboard",
+  "analyticsOverview": "Analytics Overview",
+  "ads": "Ads",
+  "views": "Views",
+  "clicks": "Clicks",
+  "completion": "Completion",
+  "failedToLoadPage": "Failed to load page",
+  "learnMore": "Learn More",
+  "sponsor": "Sponsor",
+  "advertisement": "Advertisement",
+  "dashboard": "Dashboard",
+  "deactivateAd": "Deactivate Ad",
+  "activateAd": "Activate Ad",
+  "deactivateAdMessage": "This ad will no longer appear in the feed.",
+  "activateAdMessage": "This ad will appear in the feed again.",
+  "deleteAdConfirmation": "Are you sure you want to delete this advertisement?",
+
+  "adSavedAsDraft": "Ad saved as draft — not published",
+  "completePaymentToActivate": "Complete payment to activate this ad in the feed.",
+  "paymentComingSoon": "Payment coming soon",
+  "payNow": "Pay Now"
+
 
 }
