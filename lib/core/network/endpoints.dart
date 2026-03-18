@@ -35,6 +35,10 @@ class Endpoints {
       "/api/Profile/{userId}"; //(get) profile by userId as a parameter
   static const String updateProfile =
       "/api/Profile/Update"; //(put) update the profile take the date from the get and put it in the update body as default value the Request body is the same as the responce body from the profile get
+  static const String myActiveOpportunities =
+      "/api/Opportunity/my-active"; //(get) takes page and pageSize parameters and get list of my active opportunities
+  static const String getCourses =
+      "/api/Profile/courses"; //keep for the courses the mock data for now
   static const String sendConnectionRequest = '/api/Social/connect';
   static const String removeContact = '/api/Social/connect/{targetId}';
   static const String respondConnection = '/api/Social/respond-connection';
@@ -77,7 +81,12 @@ class Endpoints {
       "/api/Social/follow/{targetId}"; //(post) takes the targetId  as a parameter
   static const String toggleConnect =
       "/api/Social/connect"; //(post) takes the { "receiverId": "string" } in the request body and the connection now in pendding state so there is 3 states in totle (not connect, pending, connected)
-
+  //payment
+  static const String initiate = "/api/Payments/initiate";
+  static const String showPlans = '/api/Payments/plans';
+  static const String mySubscription = "/api/Payments/my-subscription";
+  static const String manualActivate =
+      "/api/Payments/admin/manual-activate/{orderId}";
   // Browse & Discovery
   static const String availableCourses = "/api/Courses/available";
   static const String enrolledCourses = "/api/Courses/enrolled";
@@ -106,22 +115,22 @@ class Endpoints {
   // Analytics (Provider)
   static const String revenueReport = "/api/Courses/{courseId}/revenue-report";
 
-
-
-  static const String adsFeed            = '/api/Advertisements/feed';
-static const String createAd           = '/api/Advertisements';
-static const String updateAd           = '/api/Advertisements/{id}';
-static const String deleteAd           = '/api/Advertisements/{id}';
-static const String getAdById          = '/api/Advertisements/{id}';
-static const String toggleAdStatus     = '/api/Advertisements/{id}/toggle-status';
-static const String userAds            = '/api/Advertisements/user-ads';
-static const String adsDashboard       = '/api/Advertisements/dashboard';
-static const String logAdClick         = '/api/Advertisements/{id}/click';
-static const String sendAdProgress     = '/api/Advertisements/{id}/progress';
-static const String likeAd             = '/api/Advertisements/{id}/like';
-static const String getAdLikers        = '/api/Advertisements/{id}/likers';
-static const String addAdComment       = '/api/Advertisements/{id}/comments';
-static const String getAdComments      = '/api/Advertisements/{id}/comments';
-static const String editAdComment      = '/api/Advertisements/comments/{commentId}';
-static const String deleteAdComment    = '/api/Advertisements/comments/{commentId}';
+  static const String adsFeed = '/api/Advertisements/feed';
+  static const String createAd = '/api/Advertisements';
+  static const String updateAd = '/api/Advertisements/{id}';
+  static const String deleteAd = '/api/Advertisements/{id}';
+  static const String getAdById = '/api/Advertisements/{id}';
+  static const String toggleAdStatus = '/api/Advertisements/{id}/toggle-status';
+  static const String userAds = '/api/Advertisements/user-ads';
+  static const String adsDashboard = '/api/Advertisements/dashboard';
+  static const String logAdClick = '/api/Advertisements/{id}/click';
+  static const String sendAdProgress = '/api/Advertisements/{id}/progress';
+  static const String likeAd = '/api/Advertisements/{id}/like';
+  static const String getAdLikers = '/api/Advertisements/{id}/likers';
+  static const String addAdComment = '/api/Advertisements/{id}/comments';
+  static const String getAdComments = '/api/Advertisements/{id}/comments';
+  static const String editAdComment =
+      '/api/Advertisements/comments/{commentId}';
+  static const String deleteAdComment =
+      '/api/Advertisements/comments/{commentId}';
 }

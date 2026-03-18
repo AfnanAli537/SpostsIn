@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/home/view/presentation/home_screen.dart';
 import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,8 @@ import 'package:sports_in/features/main/profile/view/presentation/my_profile_scr
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
 import 'package:sports_in/features/main/search/view/presentation/search_screen.dart';
+import 'package:sports_in/features/payment/presentation/subscription_screen.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 
 class CustomBottomNav extends StatefulWidget {
   const CustomBottomNav({super.key});
@@ -24,7 +27,10 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   final List<Widget> _pages = [
     const HomePage(),
     const SearchScreen(),
-    const Center(child: Text("Messages")),
+  BlocProvider(
+    create: (_) => getIt<PaymentBloc>()..add(const FetchPlansEvent()),
+    child: const SubscriptionScreen(),
+  ),
     const MyProfileScreen(),
   ];
 
