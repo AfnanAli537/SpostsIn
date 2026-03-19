@@ -8,11 +8,10 @@ import 'package:sports_in/features/payment/presentation/fawray_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
+/// Shown as a full-screen dialog via [showGeneralDialog].
+/// Navigates to [FawryScreen] by pushing a standard route on top.
 class FawryMobileScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
-
-  /// Defaults to [PaymentTargetType.supscription] to keep backward
-  /// compatibility with the existing subscription flow.
   final PaymentTargetType targetType;
 
   const FawryMobileScreen({
@@ -38,7 +37,8 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
   void _onConfirm() {
     if (!_formKey.currentState!.validate()) return;
     final mobile = _mobileController.text.trim();
-    Navigator.pushReplacement(
+    // Push FawryScreen as a normal route on top of this dialog
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
@@ -46,7 +46,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
           child: FawryScreen(
             plan: widget.plan,
             mobileNumber: mobile,
-            targetType: widget.targetType, // ← forward targetType
+            targetType: widget.targetType,
           ),
         ),
       ),
@@ -57,6 +57,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
     final s = S.of(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -66,8 +67,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
         ),
         title: Text(
           s.fawry_mobile_appbar_title,
-          style:
-              TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
       ),
@@ -121,8 +121,8 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                   style: TextStyle(fontSize: 15.sp),
                   decoration: InputDecoration(
                     hintText: s.fawry_mobile_hint,
-                    hintStyle: TextStyle(
-                        color: theme.onError, fontSize: 14.sp),
+                    hintStyle:
+                        TextStyle(color: theme.onError, fontSize: 14.sp),
                     prefixIcon: Icon(Icons.phone_android,
                         color: const Color(0xFFF5C400), size: 22.sp),
                     contentPadding: EdgeInsets.symmetric(

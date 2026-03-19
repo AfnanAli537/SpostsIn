@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/fawery_mobile_screen.dart';
@@ -14,7 +15,6 @@ import 'package:sports_in/features/payment/presentation/widgets/payment_methods_
 import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   /// When true (default), the X close button is hidden.
@@ -22,10 +22,7 @@ class SubscriptionScreen extends StatefulWidget {
   /// so the button is shown.
   final bool hideCloseButton;
 
-  const SubscriptionScreen({
-    super.key,
-    this.hideCloseButton = false,
-  });
+  const SubscriptionScreen({super.key, this.hideCloseButton = false});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -94,12 +91,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
     if (_selectedPlan!.isFree) {
       context.read<PaymentBloc>().add(
-            InitiatePaymentEvent(
-              targetId: _selectedPlan!.id,
-              targetType: PaymentTargetType.supscription,
-              method: PaymentMethod.creditCard,
-            ),
-          );
+        InitiatePaymentEvent(
+          targetId: _selectedPlan!.id,
+          targetType: PaymentTargetType.supscription,
+          method: PaymentMethod.creditCard,
+        ),
+      );
       return;
     }
 
@@ -131,12 +128,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
       case PaymentMethod.creditCard:
         context.read<PaymentBloc>().add(
-              InitiatePaymentEvent(
-                targetId: _selectedPlan!.id,
-                targetType: PaymentTargetType.supscription,
-                method: PaymentMethod.creditCard,
-              ),
-            );
+          InitiatePaymentEvent(
+            targetId: _selectedPlan!.id,
+            targetType: PaymentTargetType.supscription,
+            method: PaymentMethod.creditCard,
+          ),
+        );
     }
   }
 
@@ -152,8 +149,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             _cachedPlans = state.plans;
             _isLoadingPlans = false;
             if (_selectedPlan == null && state.plans.isNotEmpty) {
-              _selectedPlan =
-                  state.plans.length >= 2 ? state.plans[1] : state.plans[0];
+              _selectedPlan = state.plans.length >= 2
+                  ? state.plans[1]
+                  : state.plans[0];
             }
           });
         }
@@ -192,14 +190,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           _showProcessingDialog();
         }
 
-        // ── Credit card redirect ──
+        // ── Credit card redirect → WebViewScreen ──
         if (state is PaymentRedirectReady) {
           _dismissProcessingDialog();
           _transId = state.transactionId;
-          await launchUrl(
-            Uri.parse(state.redirectUrl),
-            mode: LaunchMode.inAppBrowserView,
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WebViewScreen(
+                url: state.redirectUrl,
+                title: S.of(context).completePayment,
+              ),
+            ),
           );
+          // Refresh plans when user returns from WebView
           if (mounted) {
             context.read<PaymentBloc>().add(const FetchPlansEvent());
           }
@@ -246,15 +250,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           final message = state is PaymentInitiateError
               ? (state as PaymentInitiateError).message
               : state is ManualActivateError
-                  ? (state as ManualActivateError).message
-                  : (state as PlansError).message;
+              ? (state as ManualActivateError).message
+              : (state as PlansError).message;
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.error_outline,
-                      color: Colors.white, size: 18),
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                   SizedBox(width: 8.w),
                   Expanded(child: Text(message)),
                 ],
@@ -262,7 +269,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r)),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
               margin: EdgeInsets.all(12.w),
             ),
           );
@@ -284,9 +292,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.30,
-                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.30),
                   Container(
                     decoration: const BoxDecoration(
                       color: Color(0xFF0D1B2A),
@@ -318,11 +324,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       color: Colors.black.withOpacity(0.45),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 18.sp,
-                    ),
+                    child: Icon(Icons.close, color: Colors.white, size: 18.sp),
                   ),
                 ),
               ),
@@ -511,16 +513,18 @@ class _PlanCard extends StatelessWidget {
         'label': plan.monthlyVideoAnalysisLimit == -1
             ? S.of(context).subscription_plan_unlimited_videos
             : plan.monthlyVideoAnalysisLimit == 0
-                ? S.of(context).subscription_plan_no_videos
-                : S.of(context).subscription_plan_videos_month(
-                    plan.monthlyVideoAnalysisLimit),
+            ? S.of(context).subscription_plan_no_videos
+            : S
+                  .of(context)
+                  .subscription_plan_videos_month(
+                    plan.monthlyVideoAnalysisLimit,
+                  ),
       },
       {
         'icon': Icons.campaign_rounded,
         'label': plan.monthlyAdLimit == 0
             ? S.of(context).subscription_plan_no_ads
-            : S.of(context)
-                .subscription_plan_ads_month(plan.monthlyAdLimit),
+            : S.of(context).subscription_plan_ads_month(plan.monthlyAdLimit),
       },
       {
         'icon': plan.hasDetailedReports
@@ -534,10 +538,14 @@ class _PlanCard extends StatelessWidget {
         {
           'icon': Icons.calendar_today_rounded,
           'label': plan.durationDays <= 31
-              ? S.of(context)
-                  .subscription_plan_duration_month(plan.durationDays)
-              : S.of(context).subscription_plan_duration_year(
-                  (plan.durationDays / 30).round()),
+              ? S
+                    .of(context)
+                    .subscription_plan_duration_month(plan.durationDays)
+              : S
+                    .of(context)
+                    .subscription_plan_duration_year(
+                      (plan.durationDays / 30).round(),
+                    ),
         },
     ];
   }
@@ -629,8 +637,8 @@ class _PlanCard extends StatelessWidget {
                   plan.isFree
                       ? S.of(context).subscription_plan_forever
                       : plan.durationDays <= 31
-                          ? S.of(context).subscription_plan_per_month
-                          : S.of(context).subscription_plan_per_year,
+                      ? S.of(context).subscription_plan_per_month
+                      : S.of(context).subscription_plan_per_year,
                   style: TextStyle(
                     color: const Color(0xFF8099B0),
                     fontSize: 10.sp,
@@ -639,8 +647,7 @@ class _PlanCard extends StatelessWidget {
               ),
 
               // ── Description ──
-              if (plan.description != null &&
-                  plan.description!.isNotEmpty) ...[
+              if (plan.description != null && plan.description!.isNotEmpty) ...[
                 SizedBox(height: 8.h),
                 Center(
                   child: Text(
@@ -667,8 +674,7 @@ class _PlanCard extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(f['icon'] as IconData,
-                          size: 13.sp, color: _accent),
+                      Icon(f['icon'] as IconData, size: 13.sp, color: _accent),
                       SizedBox(width: 5.w),
                       Expanded(
                         child: Text(
@@ -697,8 +703,8 @@ class _PlanCard extends StatelessWidget {
                     color: isCurrentPlan
                         ? _accent
                         : isSelected
-                            ? _accent
-                            : Colors.transparent,
+                        ? _accent
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(8.r),
                     border: (isSelected || isCurrentPlan)
                         ? null

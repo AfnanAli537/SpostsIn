@@ -7,7 +7,6 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
-import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -28,14 +27,45 @@ class CourseCard extends StatelessWidget {
     required this.string,
   });
 
+  // ─── Enroll logic ───────────────────────────────────────────────────────────
+
+  Future<void> _handleEnroll(BuildContext context) async {
+    if (course.isFree) {
+      context.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
+      return;
+    }
+
+    // For paid courses: create a fresh PaymentBloc, show payment flow as
+    // a full-screen dialog, listen for result, then trigger enrollment.
+    final coursesBloc = context.read<CoursesBloc>();
+    final paymentBloc = getIt<PaymentBloc>();
+
+    // Show an invisible listener widget as a dialog that orchestrates payment
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: paymentBloc),
+          BlocProvider.value(value: coursesBloc),
+        ],
+        child: _PaymentOrchestrator(
+          courseId: course.id,
+          price: course.price,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double cardWidth = constraints.maxWidth;
-        final bool useHorizontalLayout = cardWidth > 400.w;
+        final bool useHorizontalLayout = constraints.maxWidth > 400.w;
 
         return GestureDetector(
           onTap: onTap,
@@ -202,7 +232,7 @@ class CourseCard extends StatelessWidget {
       ],
     );
 
-    // _buildBottomRow needs BuildContext for payment flow, so use Builder
+    // Builder needed so _buildBottomRow has access to context
     final bottomRow = Builder(
       builder: (context) => _buildBottomRow(context, theme),
     );
@@ -327,9 +357,7 @@ class CourseCard extends StatelessWidget {
             SizedBox(
               height: 30.h,
               child: ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () => _handleEnroll(context),
+                onPressed: isLoading ? null : () => _handleEnroll(context),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(
                       horizontal: 8.w, vertical: 0),
@@ -359,66 +387,39 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  // ─── Enroll logic ───────────────────────────────────────────────────────────
-
-  void _handleEnroll(BuildContext context) {
-    if (course.isFree) {
-      // Free → direct enrollment, no payment
-      context.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
-      return;
-    }
-
-    // Paid → open payment flow in a dialog that owns its own PaymentBloc
-    // and threads the CoursesBloc through so it can trigger enrollment
-    // after successful payment.
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => getIt<PaymentBloc>()),
-          BlocProvider.value(value: context.read<CoursesBloc>()),
-        ],
-        child: _CardPaymentFlow(
-          courseId: course.id,
-          price: course.price,
-        ),
-      ),
-    );
-  }
-
   String _formatProgress(num value) {
     if (value == value.toInt()) return value.toInt().toString();
     return value.toStringAsFixed(2);
   }
 }
 
-// ── Invisible payment orchestrator ───────────────────────────────────────────
-// Shown as a dialog so it has its own overlay and can be dismissed
-// independently. It immediately kicks off the payment flow and handles
-// the result.
+// ── Payment orchestrator ──────────────────────────────────────────────────────
+// Shown as a transparent, invisible dialog. Kicks off the payment flow
+// immediately, listens for the result, triggers enrollment, then closes.
 
-class _CardPaymentFlow extends StatefulWidget {
+class _PaymentOrchestrator extends StatefulWidget {
   final String courseId;
   final double price;
 
-  const _CardPaymentFlow({required this.courseId, required this.price});
+  const _PaymentOrchestrator({
+    required this.courseId,
+    required this.price,
+  });
 
   @override
-  State<_CardPaymentFlow> createState() => _CardPaymentFlowState();
+  State<_PaymentOrchestrator> createState() => _PaymentOrchestratorState();
 }
 
-class _CardPaymentFlowState extends State<_CardPaymentFlow> {
+class _PaymentOrchestratorState extends State<_PaymentOrchestrator> {
   @override
   void initState() {
     super.initState();
-    // Start the flow on the first frame so the dialog is fully mounted
     WidgetsBinding.instance.addPostFrameCallback((_) => _start());
   }
 
   Future<void> _start() async {
-    // Capture BEFORE the first await — this is the only safe moment
     final paymentBloc = context.read<PaymentBloc>();
+
     final initiated = await initiatePaymentFlow(
       context: context,
       paymentBloc: paymentBloc,
@@ -426,56 +427,40 @@ class _CardPaymentFlowState extends State<_CardPaymentFlow> {
       targetType: PaymentTargetType.course,
       price: widget.price,
     );
-    // User cancelled at method selection — close the wrapper dialog
-    if (!initiated && mounted) Navigator.of(context).pop();
+
+    // User cancelled at method selection — close this orchestrator
+    if (!initiated && mounted) {
+      Navigator.of(context).pop();
+    }
+    // If initiated: the BlocListener below handles the result
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        // ── Payment result ──────────────────────────────────────────────
-        BlocListener<PaymentBloc, PaymentState>(
-          listener: (context, state) {
-            // Credit card redirect — open WebView inside the dialog stack
-            if (state is PaymentRedirectReady) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => WebViewScreen(
-                    url: state.redirectUrl,
-                    title: 'Complete Payment',
-                  ),
-                ),
+    return BlocListener<PaymentBloc, PaymentState>(
+      listener: (context, state) {
+        if (state is ManualActivateSuccess || state is ProcessSuccessful) {
+          Navigator.of(context).pop(); // close orchestrator
+          Fluttertoast.showToast(
+            msg: 'Payment successful!',
+            backgroundColor: Colors.green,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
+          context.read<CoursesBloc>().add(
+                EnrollInCourse(courseId: widget.courseId),
               );
-              return;
-            }
-
-            if (state is ManualActivateSuccess ||
-                state is ProcessSuccessful) {
-              Navigator.of(context).pop(); // close the wrapper dialog
-              Fluttertoast.showToast(
-                msg: 'Payment successful! Enrollment confirmed.',
-                backgroundColor: Colors.green,
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.TOP,
-              );
-              context.read<CoursesBloc>().add(
-                    EnrollInCourse(courseId: widget.courseId),
-                  );
-            } else if (state is PaymentInitiateError) {
-              Navigator.of(context).pop();
-              Fluttertoast.showToast(
-                  msg: state.message, backgroundColor: Colors.red);
-            } else if (state is ManualActivateError) {
-              Navigator.of(context).pop();
-              Fluttertoast.showToast(
-                  msg: state.message, backgroundColor: Colors.red);
-            }
-          },
-        ),
-      ],
-      // Invisible — the actual UI is in FawryMobileScreen / VodafoneCashScreen
+        } else if (state is PaymentInitiateError) {
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(
+              msg: state.message, backgroundColor: Colors.red);
+        } else if (state is ManualActivateError) {
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(
+              msg: state.message, backgroundColor: Colors.red);
+        }
+      },
+      // Completely invisible — no UI
       child: const SizedBox.shrink(),
     );
   }

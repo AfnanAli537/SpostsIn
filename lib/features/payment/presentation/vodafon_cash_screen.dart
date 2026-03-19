@@ -7,9 +7,10 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
-import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
+/// On success: pops itself. The parent BlocListener handles success UX.
+/// No dialog is shown here.
 class VodafoneCashScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final PaymentTargetType targetType;
@@ -28,7 +29,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   final _mobileController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  bool _successHandled = false;
+  bool _popped = false;
 
   @override
   void dispose() {
@@ -48,6 +49,14 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
         );
   }
 
+  void _popOnce() {
+    if (_popped) return;
+    _popped = true;
+    if (mounted && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -58,59 +67,42 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
         if (state is PaymentInitiating || state is ManualActivating) {
           setState(() => _isLoading = true);
         } else {
-          setState(() => _isLoading = false);
+          if (mounted) setState(() => _isLoading = false);
         }
 
-        if (state is ManualActivateSuccess && !_successHandled) {
-          _successHandled = true;
-          // Pop this screen first so the CourseDetailScreen BlocListener
-          // can catch ManualActivateSuccess and trigger enrollment.
-          // Then show the success dialog on top of CourseDetailScreen.
-          Navigator.of(context).pop();
-          // Show dialog on the parent screen's context — use a short delay
-          // to let the pop animation complete before the dialog appears.
-          Future.delayed(const Duration(milliseconds: 300), () {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) => PaymentSuccessDialog(
-                transactionId: s.unKnown,
-                onDismissed: () {},
-              ),
-            );
-          });
+        if (state is ManualActivateSuccess || state is ProcessSuccessful) {
+          // Just pop — parent handles success UX
+          _popOnce();
         }
 
         if (state is PaymentInitiateError || state is ManualActivateError) {
           final msg = state is PaymentInitiateError
               ? (state as PaymentInitiateError).message
               : (state as ManualActivateError).message;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-              backgroundColor: Colors.red.shade700,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r)),
-              margin: EdgeInsets.all(12.w),
-            ),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(msg),
+                backgroundColor: Colors.red.shade700,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r)),
+                margin: EdgeInsets.all(12.w),
+              ),
+            );
+          }
         }
       },
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            onPressed: () {
-              context.read<PaymentBloc>().add(const FetchPlansEvent());
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
-          title: Text(
-            s.vodafone_appbar_title,
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
-          ),
+          title: Text(s.vodafone_appbar_title,
+              style:
+                  TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700)),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -133,28 +125,22 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                         children: [
                           _VodafoneCashIcon(),
                           SizedBox(height: 14.h),
-                          Text(
-                            s.vodafone_name,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22.sp,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'Arial',
-                            ),
-                          ),
+                          Text(s.vodafone_name,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22.sp,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Arial')),
                         ],
                       ),
                     ),
                   ),
                   SizedBox(height: 28.h),
-                  Text(s.vodafone_label,
-                      style: TextStyle(fontSize: 15.sp)),
+                  Text(s.vodafone_label, style: TextStyle(fontSize: 15.sp)),
                   SizedBox(height: 4.h),
-                  Text(
-                    s.vodafone_terms,
-                    style: TextStyle(
-                        fontSize: 13.sp, fontStyle: FontStyle.italic),
-                  ),
+                  Text(s.vodafone_terms,
+                      style: TextStyle(
+                          fontSize: 13.sp, fontStyle: FontStyle.italic)),
                   SizedBox(height: 20.h),
                   TextFormField(
                     controller: _mobileController,
@@ -170,8 +156,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                           horizontal: 16.w, vertical: 18.h),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
-                        borderSide:
-                            const BorderSide(color: Color(0xFFE60000)),
+                        borderSide: const BorderSide(
+                            color: Color(0xFFE60000)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
@@ -217,19 +203,14 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                               width: 22.w,
                               height: 22.w,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2.w,
-                                color: const Color(0xFFCCFF00),
-                              ),
-                            )
-                          : Text(
-                              s.vodafone_send_btn,
+                                  strokeWidth: 2.w,
+                                  color: const Color(0xFFCCFF00)))
+                          : Text(s.vodafone_send_btn,
                               style: TextStyle(
-                                color: const Color(0xFFCCFF00),
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
+                                  color: const Color(0xFFCCFF00),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.3)),
                     ),
                   ),
                   SizedBox(height: 24.h),

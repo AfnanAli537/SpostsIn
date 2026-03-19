@@ -7,16 +7,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
-import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// Shows the Fawry reference code the user needs to pay at any Fawry outlet.
+/// Shows the Fawry reference code.
 ///
-/// This screen intentionally stays open — the user needs to see/copy the
-/// code. It shows [PaymentSuccessDialog] when ManualActivateSuccess fires,
-/// but the dialog's [onDismissed] pops only itself; this screen then lets
-/// the caller (CourseDetailScreen / AdPaymentScreen) decide what to do next
-/// via the PaymentBloc state it is already listening to.
+/// On success: pops itself. The parent (CourseDetailScreen / AdPaymentScreen /
+/// SubscriptionScreen) owns its own BlocListener and handles showing the
+/// success dialog and next navigation.
+///
+/// No dialog is ever shown here — that avoids the stale-context overlay bug.
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
@@ -36,7 +35,7 @@ class FawryScreen extends StatefulWidget {
 class _FawryScreenState extends State<FawryScreen> {
   String? _referenceCode;
   bool _isLoading = false;
-  bool _successHandled = false; // prevent double-handling
+  bool _popped = false;
 
   @override
   void initState() {
@@ -62,11 +61,19 @@ class _FawryScreenState extends State<FawryScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.r)),
         margin: EdgeInsets.all(12.w),
       ),
     );
+  }
+
+  void _popOnce() {
+    if (_popped) return;
+    _popped = true;
+    if (mounted && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -84,42 +91,30 @@ class _FawryScreenState extends State<FawryScreen> {
             _referenceCode = state.referenceCode;
           });
         } else {
-          setState(() => _isLoading = false);
+          if (mounted) setState(() => _isLoading = false);
         }
 
-        // Show success dialog — but do NOT pop this screen.
-        // The parent BlocListener (in CourseDetailScreen / AdPaymentScreen)
-        // handles the navigation after success.
-        if (state is ManualActivateSuccess && !_successHandled) {
-          _successHandled = true;
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => PaymentSuccessDialog(
-              transactionId: s.unKnown,
-              onDismissed: () {
-                // Pop only the dialog — this screen stays open and the
-                // parent BlocListener will navigate appropriately.
-                // (CourseDetailScreen pops to show enrollment, etc.)
-              },
-            ),
-          );
+        if (state is ManualActivateSuccess || state is ProcessSuccessful) {
+          // Just pop — the parent BlocListener handles success UX
+          _popOnce();
         }
 
         if (state is PaymentInitiateError || state is ManualActivateError) {
           final msg = state is PaymentInitiateError
               ? (state as PaymentInitiateError).message
               : (state as ManualActivateError).message;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-              backgroundColor: Colors.red.shade700,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r)),
-              margin: EdgeInsets.all(12.w),
-            ),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(msg),
+                backgroundColor: Colors.red.shade700,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r)),
+                margin: EdgeInsets.all(12.w),
+              ),
+            );
+          }
         }
       },
       child: Scaffold(
@@ -142,7 +137,6 @@ class _FawryScreenState extends State<FawryScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20.h),
-                // ── Fawry branding ───────────────────────────────────────────
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
                   child: Container(
@@ -170,14 +164,10 @@ class _FawryScreenState extends State<FawryScreen> {
                 Text(s.fawry_screen_label,
                     style: TextStyle(fontSize: 15.sp)),
                 SizedBox(height: 4.h),
-                Text(
-                  s.fawry_screen_terms,
-                  style: TextStyle(
-                      fontSize: 13.sp, fontStyle: FontStyle.italic),
-                ),
+                Text(s.fawry_screen_terms,
+                    style: TextStyle(
+                        fontSize: 13.sp, fontStyle: FontStyle.italic)),
                 SizedBox(height: 24.h),
-
-                // ── Reference code / loading / error ─────────────────────────
                 if (_isLoading)
                   Container(
                     width: double.infinity,
@@ -219,10 +209,9 @@ class _FawryScreenState extends State<FawryScreen> {
                           s.fawry_screen_pay_instruction,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 13.5.sp,
-                            color: Colors.black54,
-                            height: 1.6,
-                          ),
+                              fontSize: 13.5.sp,
+                              color: Colors.black54,
+                              height: 1.6),
                         ),
                       ],
                     ),
@@ -240,33 +229,25 @@ class _FawryScreenState extends State<FawryScreen> {
                         Icon(Icons.error_outline,
                             color: Colors.red, size: 36.sp),
                         SizedBox(height: 10.h),
-                        Text(
-                          s.fawry_screen_failed_code,
-                          style: TextStyle(
-                              color: Colors.red, fontSize: 14.sp),
-                        ),
+                        Text(s.fawry_screen_failed_code,
+                            style: TextStyle(
+                                color: Colors.red, fontSize: 14.sp)),
                         SizedBox(height: 12.h),
                         TextButton(
                           onPressed: _initiatePayment,
-                          child: Text(
-                            s.fawry_screen_retry,
-                            style: TextStyle(
-                                color: theme.primary, fontSize: 14.sp),
-                          ),
+                          child: Text(s.fawry_screen_retry,
+                              style: TextStyle(
+                                  color: theme.primary, fontSize: 14.sp)),
                         ),
                       ],
                     ),
                   ),
-
                 const Spacer(),
-
-                // ── Copy button ───────────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton(
-                    onPressed:
-                        _referenceCode != null ? _copyCode : null,
+                    onPressed: _referenceCode != null ? _copyCode : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primary,
                       disabledBackgroundColor:
