@@ -82,6 +82,8 @@ class Endpoints {
   static const String toggleConnect =
       "/api/Social/connect"; //(post) takes the { "receiverId": "string" } in the request body and the connection now in pendding state so there is 3 states in totle (not connect, pending, connected)
   //payment
+  static const String search = "/api/Search/explore";
+  //payment
   static const String initiate = "/api/Payments/initiate";
   static const String showPlans = '/api/Payments/plans';
   static const String mySubscription = "/api/Payments/my-subscription";

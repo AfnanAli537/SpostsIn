@@ -109,14 +109,8 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
-    gh.lazySingleton<_i109.ISearchDataSource>(
-      () => _i1019.MockSearchDataSource(),
-    );
     gh.lazySingleton<_i414.SharedPref>(
       () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
-    );
-    gh.factory<_i514.SearchRepo>(
-      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
     );
     gh.lazySingleton<_i694.ApiClient>(
       () => appModule.apiClient(gh<_i414.SharedPref>()),
@@ -129,9 +123,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i423.PostsRepository>(
       () => _i833.PostsRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
-    );
-    gh.factory<_i803.SearchBloc>(
-      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
     gh.lazySingleton<_i802.PaymentInterface>(
       () => _i505.PaymentRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
@@ -184,6 +175,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i658.IAdsDataSource>(
       () => _i823.AdRemoteDataSource(gh<_i694.ApiClient>()),
     );
+    gh.lazySingleton<_i109.ISearchDataSource>(
+      () => _i1019.SearchDataSource(gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i592.ICourseDataSource>(
       () => _i8.CourseRemoteDataSource(gh<_i694.ApiClient>()),
     );
@@ -214,11 +208,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
     );
+    gh.factory<_i514.SearchRepo>(
+      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
+    );
     gh.factory<_i674.CourseRepository>(
       () => _i674.CourseRepository(gh<_i592.ICourseDataSource>()),
     );
     gh.factory<_i567.CoursesBloc>(
       () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i803.SearchBloc>(
+      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
     return this;
   }
