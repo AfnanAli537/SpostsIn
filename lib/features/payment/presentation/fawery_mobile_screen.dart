@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/fawray_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
@@ -10,7 +11,15 @@ import 'package:sports_in/generated/l10n.dart';
 class FawryMobileScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
 
-  const FawryMobileScreen({super.key, required this.plan});
+  /// Defaults to [PaymentTargetType.supscription] to keep backward
+  /// compatibility with the existing subscription flow.
+  final PaymentTargetType targetType;
+
+  const FawryMobileScreen({
+    super.key,
+    required this.plan,
+    this.targetType = PaymentTargetType.supscription,
+  });
 
   @override
   State<FawryMobileScreen> createState() => _FawryMobileScreenState();
@@ -34,7 +43,11 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<PaymentBloc>(),
-          child: FawryScreen(plan: widget.plan, mobileNumber: mobile),
+          child: FawryScreen(
+            plan: widget.plan,
+            mobileNumber: mobile,
+            targetType: widget.targetType, // ← forward targetType
+          ),
         ),
       ),
     );
@@ -53,11 +66,8 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
         ),
         title: Text(
           s.fawry_mobile_appbar_title,
-          style: TextStyle(
-            // color: Colors.black87,
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w700,
-          ),
+          style:
+              TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
       ),
@@ -85,48 +95,38 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Center(
-                          child: Icon(
-                            Icons.sync_rounded,
-                            size: 80.sp,
-                            color: const Color(0xFF0055A5),
-                          ),
+                          child: Icon(Icons.sync_rounded,
+                              size: 80.sp,
+                              color: const Color(0xFF0055A5)),
                         ),
                       ),
                     ),
                   ),
                 ),
-
                 SizedBox(height: 28.h),
-
-                Text(s.fawry_mobile_label, style: TextStyle(fontSize: 15.sp)),
+                Text(s.fawry_mobile_label,
+                    style: TextStyle(fontSize: 15.sp)),
                 SizedBox(height: 4.h),
                 Text(
                   s.fawry_mobile_terms,
                   style: TextStyle(
-                    fontSize: 13.sp,
-                    // color: Colors.black45,
-                    fontStyle: FontStyle.italic,
-                  ),
+                      fontSize: 13.sp, fontStyle: FontStyle.italic),
                 ),
                 SizedBox(height: 20.h),
                 TextFormField(
                   controller: _mobileController,
                   keyboardType: TextInputType.phone,
                   autofocus: true,
-                  onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
                   style: TextStyle(fontSize: 15.sp),
                   decoration: InputDecoration(
                     hintText: s.fawry_mobile_hint,
-                    hintStyle: TextStyle(color: theme.onError, fontSize: 14.sp),
-                    prefixIcon: Icon(
-                      Icons.phone_android,
-                      color: const Color(0xFFF5C400),
-                      size: 22.sp,
-                    ),
+                    hintStyle: TextStyle(
+                        color: theme.onError, fontSize: 14.sp),
+                    prefixIcon: Icon(Icons.phone_android,
+                        color: const Color(0xFFF5C400), size: 22.sp),
                     contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 18.h,
-                    ),
+                        horizontal: 16.w, vertical: 18.h),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r),
                       borderSide: BorderSide(color: theme.onSurface),
@@ -134,9 +134,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r),
                       borderSide: const BorderSide(
-                        color: Color(0xFFF5C400),
-                        width: 1.5,
-                      ),
+                          color: Color(0xFFF5C400), width: 1.5),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r),
@@ -145,9 +143,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r),
                       borderSide: const BorderSide(
-                        color: Colors.red,
-                        width: 1.5,
-                      ),
+                          color: Colors.red, width: 1.5),
                     ),
                   ),
                   validator: (v) {
@@ -161,9 +157,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                   },
                   onFieldSubmitted: (_) => _onConfirm(),
                 ),
-
                 const Spacer(),
-
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
@@ -172,14 +166,12 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
+                          borderRadius: BorderRadius.circular(10.r)),
                       elevation: 0,
                     ),
                     child: Text(
                       s.fawry_mobile_confirm_btn,
                       style: TextStyle(
-                        // color: theme.onPrimary,
                         color: const Color(0xFFF5C400),
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w700,

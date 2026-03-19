@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
+import 'package:sports_in/features/payment/data/enums/enums.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class CourseCard extends StatelessWidget {
@@ -11,7 +17,7 @@ class CourseCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-  final S string; 
+  final S string;
 
   const CourseCard({
     super.key,
@@ -19,7 +25,7 @@ class CourseCard extends StatelessWidget {
     required this.onTap,
     this.onEdit,
     this.onDelete,
-    required this.string, 
+    required this.string,
   });
 
   @override
@@ -65,10 +71,7 @@ class CourseCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-          child: _buildThumbnailImage(
-            height: 120.h,
-            width: double.infinity,
-          ),
+          child: _buildThumbnailImage(height: 120.h, width: double.infinity),
         ),
         Padding(
           padding: EdgeInsets.all(12.r),
@@ -82,11 +85,9 @@ class CourseCard extends StatelessWidget {
     return Row(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.horizontal(left: Radius.circular(12.r)),
-          child: _buildThumbnailImage(
-            width: 120.w,
-            height: double.infinity,
-          ),
+          borderRadius:
+              BorderRadius.horizontal(left: Radius.circular(12.r)),
+          child: _buildThumbnailImage(width: 120.w, height: double.infinity),
         ),
         Expanded(
           child: Padding(
@@ -98,20 +99,17 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  Widget _buildThumbnailImage({
-    required double? width,
-    required double? height,
-  }) {
+  Widget _buildThumbnailImage(
+      {required double? width, required double? height}) {
     if (course.thumbnailUrl == null || course.thumbnailUrl!.isEmpty) {
       return _buildPlaceholder(width: width, height: height);
     }
-
     return Image.network(
       course.thumbnailUrl!,
       width: width,
       height: height,
       fit: BoxFit.cover,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      frameBuilder: (_, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return child;
         return AnimatedOpacity(
           opacity: frame == null ? 0 : 1,
@@ -120,8 +118,8 @@ class CourseCard extends StatelessWidget {
           child: child,
         );
       },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+      loadingBuilder: (_, child, progress) {
+        if (progress == null) return child;
         return Container(
           color: Colors.grey[300],
           width: width,
@@ -132,34 +130,29 @@ class CourseCard extends StatelessWidget {
               height: 24.w,
               child: CircularProgressIndicator(
                 strokeWidth: 2.w,
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes!
                     : null,
               ),
             ),
           ),
         );
       },
-      errorBuilder: (context, error, stackTrace) =>
+      errorBuilder: (_, __, ___) =>
           _buildPlaceholder(width: width, height: height),
     );
   }
 
-  Widget _buildPlaceholder({
-    required double? width,
-    required double? height,
-  }) {
+  Widget _buildPlaceholder(
+      {required double? width, required double? height}) {
     return Container(
       width: width,
       height: height,
       color: Colors.grey[300],
       child: Center(
-        child: Icon(
-          Icons.image_not_supported,
-          size: 40.sp,
-          color: Colors.grey[600],
-        ),
+        child: Icon(Icons.image_not_supported,
+            size: 40.sp, color: Colors.grey[600]),
       ),
     );
   }
@@ -169,44 +162,34 @@ class CourseCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Title
         Text(
           course.title,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            fontSize: 16.sp,
-          ),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.bold, fontSize: 16.sp),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 4.h),
-
-        // Description
         if (course.description?.isNotEmpty == true)
           SizedBox(
             height: 12.sp * 1.6 * 2,
             child: Text(
               course.description!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 12.sp,
-                height: 1.5,
-              ),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(fontSize: 12.sp, height: 1.5),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
         SizedBox(height: 8.h),
-
-        // Author info
         _buildAuthorInfo(theme),
         SizedBox(height: 8.h),
-
-        // Progress bar (if enrolled)
         if (course.isEnrolled) ...[
           LinearProgressIndicator(
             value: course.progress / 100,
             backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(ColorManager.warning),
+            valueColor:
+                AlwaysStoppedAnimation<Color>(ColorManager.warning),
           ),
           SizedBox(height: 4.h),
           Text(
@@ -215,13 +198,14 @@ class CourseCard extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
         ],
-
-        // Stats row
         _buildStatsRow(theme),
       ],
     );
 
-    final bottomRow = _buildBottomRow(theme);
+    // _buildBottomRow needs BuildContext for payment flow, so use Builder
+    final bottomRow = Builder(
+      builder: (context) => _buildBottomRow(context, theme),
+    );
 
     if (isHorizontal) {
       return Column(
@@ -233,11 +217,7 @@ class CourseCard extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          topContent,
-          SizedBox(height: 8.h),
-          bottomRow,
-        ],
+        children: [topContent, SizedBox(height: 8.h), bottomRow],
       );
     }
   }
@@ -258,10 +238,8 @@ class CourseCard extends StatelessWidget {
         Expanded(
           child: Text(
             course.owner.fullName,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
-            ),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -275,21 +253,11 @@ class CourseCard extends StatelessWidget {
       spacing: 14.w,
       runSpacing: 4.h,
       children: [
-        _buildStatItem(
-          Icons.play_circle_outline,
-          string.lessonsCount(course.lessonsCount), 
-          theme,
-        ),
-        _buildStatItem(
-          Icons.access_time, 
-          course.formattedDuration, 
-          theme,
-        ),
-        _buildStatItem(
-          Icons.person,
-          string.enrolledCount(course.enrolledUsersCount), 
-          theme,
-        ),
+        _buildStatItem(Icons.play_circle_outline,
+            string.lessonsCount(course.lessonsCount), theme),
+        _buildStatItem(Icons.access_time, course.formattedDuration, theme),
+        _buildStatItem(Icons.person,
+            string.enrolledCount(course.enrolledUsersCount), theme),
       ],
     );
   }
@@ -300,18 +268,15 @@ class CourseCard extends StatelessWidget {
       children: [
         Icon(icon, size: 14.sp, color: theme.colorScheme.primary),
         SizedBox(width: 2.w),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(fontSize: 11.sp),
-        ),
+        Text(label,
+            style:
+                theme.textTheme.bodySmall?.copyWith(fontSize: 11.sp)),
       ],
     );
   }
 
-  Widget _buildBottomRow(ThemeData theme) {
-    if (course.isEnrolled) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildBottomRow(BuildContext context, ThemeData theme) {
+    if (course.isEnrolled) return const SizedBox.shrink();
 
     if (course.isOwner) {
       return Row(
@@ -324,7 +289,7 @@ class CourseCard extends StatelessWidget {
               onPressed: onEdit,
               padding: EdgeInsets.all(4.w),
               constraints: const BoxConstraints(),
-              tooltip: string.edit, 
+              tooltip: string.edit,
             ),
           if (onDelete != null)
             IconButton(
@@ -333,7 +298,7 @@ class CourseCard extends StatelessWidget {
               onPressed: onDelete,
               padding: EdgeInsets.all(4.w),
               constraints: const BoxConstraints(),
-              tooltip: string.delete, 
+              tooltip: string.delete,
             ),
         ],
       );
@@ -349,7 +314,9 @@ class CourseCard extends StatelessWidget {
           children: [
             Flexible(
               child: Text(
-                course.isFree ? string.free : '${course.price} ${string.egp}', 
+                course.isFree
+                    ? string.free
+                    : '${course.price} ${string.egp}',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: course.isFree ? Colors.green : null,
@@ -362,26 +329,28 @@ class CourseCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: isLoading
                     ? null
-                    : () {
-                        context.read<CoursesBloc>().add(
-                          EnrollInCourse(courseId: course.id),
-                        );
-                      },
+                    : () => _handleEnroll(context),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 8.w, vertical: 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   minimumSize: Size(70.w, 28.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6.r),
-                  ),
+                      borderRadius: BorderRadius.circular(6.r)),
                 ),
                 child: isLoading
                     ? SizedBox(
                         width: 16.w,
                         height: 16.w,
-                        child: const CircularProgressIndicator(strokeWidth: 2),
+                        child: const CircularProgressIndicator(
+                            strokeWidth: 2),
                       )
-                    : Text(string.enroll, style: TextStyle(fontSize: 12.sp, color: theme.colorScheme.onPrimary)), 
+                    : Text(
+                        string.enroll,
+                        style: TextStyle(
+                            fontSize: 12.sp,
+                            color: theme.colorScheme.onPrimary),
+                      ),
               ),
             ),
           ],
@@ -390,10 +359,121 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  String _formatProgress(num value) {
-    if (value == value.toInt()) {
-      return value.toInt().toString();
+  // ─── Enroll logic ───────────────────────────────────────────────────────────
+
+  void _handleEnroll(BuildContext context) {
+    if (course.isFree) {
+      // Free → direct enrollment, no payment
+      context.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
+      return;
     }
+
+    // Paid → open payment flow in a dialog that owns its own PaymentBloc
+    // and threads the CoursesBloc through so it can trigger enrollment
+    // after successful payment.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => getIt<PaymentBloc>()),
+          BlocProvider.value(value: context.read<CoursesBloc>()),
+        ],
+        child: _CardPaymentFlow(
+          courseId: course.id,
+          price: course.price,
+        ),
+      ),
+    );
+  }
+
+  String _formatProgress(num value) {
+    if (value == value.toInt()) return value.toInt().toString();
     return value.toStringAsFixed(2);
+  }
+}
+
+// ── Invisible payment orchestrator ───────────────────────────────────────────
+// Shown as a dialog so it has its own overlay and can be dismissed
+// independently. It immediately kicks off the payment flow and handles
+// the result.
+
+class _CardPaymentFlow extends StatefulWidget {
+  final String courseId;
+  final double price;
+
+  const _CardPaymentFlow({required this.courseId, required this.price});
+
+  @override
+  State<_CardPaymentFlow> createState() => _CardPaymentFlowState();
+}
+
+class _CardPaymentFlowState extends State<_CardPaymentFlow> {
+  @override
+  void initState() {
+    super.initState();
+    // Start the flow on the first frame so the dialog is fully mounted
+    WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+  }
+
+  Future<void> _start() async {
+    final initiated = await initiatePaymentFlow(
+      context: context,
+      targetId: widget.courseId,
+      targetType: PaymentTargetType.course,
+      price: widget.price,
+    );
+    // User cancelled at method selection — close the wrapper dialog
+    if (!initiated && mounted) Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [
+        // ── Payment result ──────────────────────────────────────────────
+        BlocListener<PaymentBloc, PaymentState>(
+          listener: (context, state) {
+            // Credit card redirect — open WebView inside the dialog stack
+            if (state is PaymentRedirectReady) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WebViewScreen(
+                    url: state.redirectUrl,
+                    title: 'Complete Payment',
+                  ),
+                ),
+              );
+              return;
+            }
+
+            if (state is ManualActivateSuccess ||
+                state is ProcessSuccessful) {
+              Navigator.of(context).pop(); // close the wrapper dialog
+              Fluttertoast.showToast(
+                msg: 'Payment successful! Enrollment confirmed.',
+                backgroundColor: Colors.green,
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.TOP,
+              );
+              context.read<CoursesBloc>().add(
+                    EnrollInCourse(courseId: widget.courseId),
+                  );
+            } else if (state is PaymentInitiateError) {
+              Navigator.of(context).pop();
+              Fluttertoast.showToast(
+                  msg: state.message, backgroundColor: Colors.red);
+            } else if (state is ManualActivateError) {
+              Navigator.of(context).pop();
+              Fluttertoast.showToast(
+                  msg: state.message, backgroundColor: Colors.red);
+            }
+          },
+        ),
+      ],
+      // Invisible — the actual UI is in FawryMobileScreen / VodafoneCashScreen
+      child: const SizedBox.shrink(),
+    );
   }
 }

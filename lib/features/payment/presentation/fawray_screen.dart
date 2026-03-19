@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
@@ -14,10 +15,15 @@ class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
 
+  /// Defaults to [PaymentTargetType.supscription] to keep backward
+  /// compatibility with the existing subscription flow.
+  final PaymentTargetType targetType;
+
   const FawryScreen({
     super.key,
     required this.plan,
     required this.mobileNumber,
+    this.targetType = PaymentTargetType.supscription,
   });
 
   @override
@@ -31,20 +37,16 @@ class _FawryScreenState extends State<FawryScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initiatePayment();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initiatePayment());
   }
 
   void _initiatePayment() {
-    context.read<PaymentBloc>().add(
-      InitiatePaymentEvent(
-        targetId: widget.plan.id,
-        targetType: PaymentTargetType.supscription,
-        method: PaymentMethod.fawryPay,
-        mobileNumber: widget.mobileNumber,
-      ),
-    );
+    context.read<PaymentBloc>().add(InitiatePaymentEvent(
+          targetId: widget.plan.id,
+          targetType: widget.targetType, // ← uses passed targetType
+          method: PaymentMethod.fawryPay,
+          mobileNumber: widget.mobileNumber,
+        ));
   }
 
   void _copyCode() {
@@ -57,8 +59,7 @@ class _FawryScreenState extends State<FawryScreen> {
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.r),
-        ),
+            borderRadius: BorderRadius.circular(10.r)),
         margin: EdgeInsets.all(12.w),
       ),
     );
@@ -89,7 +90,12 @@ class _FawryScreenState extends State<FawryScreen> {
               transactionId: s.unKnown,
               onDismissed: () {
                 context.read<PaymentBloc>().add(const FetchPlansEvent());
-                // Navigator.of(context).pop();
+                if (widget.targetType == PaymentTargetType.supscription) {
+                  Navigator.of(context).pushNamed(AppRoutes.subscription);
+                } else {
+                  // Ads / courses: pop back to home
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
               },
             ),
           );
@@ -105,8 +111,7 @@ class _FawryScreenState extends State<FawryScreen> {
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.r),
-              ),
+                  borderRadius: BorderRadius.circular(10.r)),
               margin: EdgeInsets.all(12.w),
             ),
           );
@@ -124,11 +129,8 @@ class _FawryScreenState extends State<FawryScreen> {
           ),
           title: Text(
             s.fawry_screen_appbar_title,
-            style: TextStyle(
-              // color: Colors.black87,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w700,
-            ),
+            style:
+                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
@@ -154,30 +156,23 @@ class _FawryScreenState extends State<FawryScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Center(
-                          child: Icon(
-                            Icons.sync_rounded,
-                            size: 80.sp,
-                            color: const Color(0xFF0055A5),
-                          ),
+                          child: Icon(Icons.sync_rounded,
+                              size: 80.sp,
+                              color: const Color(0xFF0055A5)),
                         ),
                       ),
                     ),
                   ),
                 ),
-
                 SizedBox(height: 28.h),
-
-                Text(s.fawry_screen_label, style: TextStyle(fontSize: 15.sp)),
+                Text(s.fawry_screen_label,
+                    style: TextStyle(fontSize: 15.sp)),
                 SizedBox(height: 4.h),
                 Text(
                   s.fawry_screen_terms,
                   style: TextStyle(
-                    fontSize: 13.sp,
-                    // color: Colors.black45,
-                    fontStyle: FontStyle.italic,
-                  ),
+                      fontSize: 13.sp, fontStyle: FontStyle.italic),
                 ),
-
                 SizedBox(height: 24.h),
                 if (_isLoading)
                   Container(
@@ -198,12 +193,9 @@ class _FawryScreenState extends State<FawryScreen> {
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(
-                      vertical: 28.h,
-                      horizontal: 20.w,
-                    ),
+                        vertical: 28.h, horizontal: 20.w),
                     decoration: BoxDecoration(
                       color: theme.onError,
-                      // color: const Color(0xFFF0F7D4),
                       borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Column(
@@ -241,15 +233,13 @@ class _FawryScreenState extends State<FawryScreen> {
                     ),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 36.sp,
-                        ),
+                        Icon(Icons.error_outline,
+                            color: Colors.red, size: 36.sp),
                         SizedBox(height: 10.h),
                         Text(
                           s.fawry_screen_failed_code,
-                          style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                          style: TextStyle(
+                              color: Colors.red, fontSize: 14.sp),
                         ),
                         SizedBox(height: 12.h),
                         TextButton(
@@ -257,29 +247,25 @@ class _FawryScreenState extends State<FawryScreen> {
                           child: Text(
                             s.fawry_screen_retry,
                             style: TextStyle(
-                              // color: const Color(0xFF1A2A3A),
-                              color: theme.primary,
-                              fontSize: 14.sp,
-                            ),
+                                color: theme.primary, fontSize: 14.sp),
                           ),
                         ),
                       ],
                     ),
                   ),
-
                 const Spacer(),
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton(
-                    onPressed: _referenceCode != null ? _copyCode : null,
+                    onPressed:
+                        _referenceCode != null ? _copyCode : null,
                     style: ElevatedButton.styleFrom(
-                      // backgroundColor: const Color(0xFF1A2A3A),
                       backgroundColor: theme.primary,
-                      disabledBackgroundColor: theme.primary.withOpacity(0.4),
+                      disabledBackgroundColor:
+                          theme.primary.withOpacity(0.4),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
+                          borderRadius: BorderRadius.circular(10.r)),
                       elevation: 0,
                     ),
                     child: Text(

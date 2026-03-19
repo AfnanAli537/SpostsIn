@@ -3,7 +3,7 @@ enum PaymentTargetType {
 
   course(1),
   supscription(2),
-  advertsment(3),
+  advertisement(3),
   videoAnalysis(4);
 
   const PaymentTargetType(this.value);

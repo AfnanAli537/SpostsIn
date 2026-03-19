@@ -14,7 +14,15 @@ import 'package:sports_in/generated/l10n.dart';
 class VodafoneCashScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
 
-  const VodafoneCashScreen({super.key, required this.plan});
+  /// Defaults to [PaymentTargetType.supscription] to keep backward
+  /// compatibility with the existing subscription flow.
+  final PaymentTargetType targetType;
+
+  const VodafoneCashScreen({
+    super.key,
+    required this.plan,
+    this.targetType = PaymentTargetType.supscription,
+  });
 
   @override
   State<VodafoneCashScreen> createState() => _VodafoneCashScreenState();
@@ -34,13 +42,13 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   void _onSendPayment() {
     if (!_formKey.currentState!.validate()) return;
     context.read<PaymentBloc>().add(
-      InitiatePaymentEvent(
-        targetId: widget.plan.id,
-        targetType: PaymentTargetType.supscription,
-        method: PaymentMethod.mobileWallet,
-        mobileNumber: _mobileController.text.trim(),
-      ),
-    );
+          InitiatePaymentEvent(
+            targetId: widget.plan.id,
+            targetType: widget.targetType, // ← uses passed targetType
+            method: PaymentMethod.mobileWallet,
+            mobileNumber: _mobileController.text.trim(),
+          ),
+        );
   }
 
   @override
@@ -63,11 +71,12 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
               transactionId: s.unKnown,
               onDismissed: () {
                 context.read<PaymentBloc>().add(const FetchPlansEvent());
-                // Navigator.of(context).pop();
-                 Navigator.of(context).pushNamed(
-                    AppRoutes.subscription,
-                
-                  ) ;
+                if (widget.targetType == PaymentTargetType.supscription) {
+                  Navigator.of(context).pushNamed(AppRoutes.subscription);
+                } else {
+                  // For ads / courses: pop all the way back to home
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
               },
             ),
           );
@@ -83,8 +92,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.r),
-              ),
+                  borderRadius: BorderRadius.circular(10.r)),
               margin: EdgeInsets.all(12.w),
             ),
           );
@@ -102,7 +110,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
           ),
           title: Text(
             s.vodafone_appbar_title,
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+            style:
+                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
@@ -139,45 +148,37 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 28.h),
-
-                  Text(s.vodafone_label, style: TextStyle(fontSize: 15.sp)),
+                  Text(s.vodafone_label,
+                      style: TextStyle(fontSize: 15.sp)),
                   SizedBox(height: 4.h),
                   Text(
                     s.vodafone_terms,
                     style: TextStyle(
-                      fontSize: 13.sp,
-                      // color: Colors.black45,
-                      fontStyle: FontStyle.italic,
-                    ),
+                        fontSize: 13.sp, fontStyle: FontStyle.italic),
                   ),
                   SizedBox(height: 20.h),
                   TextFormField(
                     controller: _mobileController,
-                    onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
                     keyboardType: TextInputType.phone,
-                    style: TextStyle(fontSize: 15.sp, color: Colors.black87),
+                    style: TextStyle(
+                        fontSize: 15.sp, color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: s.vodafone_hint,
                       hintStyle: TextStyle(
-                        color: theme.onError,
-                        fontSize: 14.sp,
-                      ),
+                          color: theme.onError, fontSize: 14.sp),
                       contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 18.h,
-                      ),
+                          horizontal: 16.w, vertical: 18.h),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
-                        borderSide: const BorderSide(color: Color(0xFFE60000)),
+                        borderSide:
+                            const BorderSide(color: Color(0xFFE60000)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
                         borderSide: const BorderSide(
-                          color: Color(0xFFE60000),
-                          width: 1.5,
-                        ),
+                            color: Color(0xFFE60000), width: 1.5),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
@@ -186,22 +187,20 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
                         borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 1.5,
-                        ),
+                            color: Colors.red, width: 1.5),
                       ),
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
                         return s.vodafone_validation_empty;
                       }
-                      if (!RegExp(r'^01[0125]\d{8}$').hasMatch(v.trim())) {
+                      if (!RegExp(r'^01[0125]\d{8}$')
+                          .hasMatch(v.trim())) {
                         return s.vodafone_validation_invalid;
                       }
                       return null;
                     },
                   ),
-
                   const Spacer(),
                   SizedBox(
                     width: double.infinity,
@@ -209,14 +208,11 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _onSendPayment,
                       style: ElevatedButton.styleFrom(
-                        // backgroundColor: const Color(0xFF1A2A3A),
                         backgroundColor: theme.primary,
                         disabledBackgroundColor:
-                            // const Color(0xFF1A2A3A).withOpacity(0.6),
                             theme.primary.withOpacity(0.6),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
+                            borderRadius: BorderRadius.circular(10.r)),
                         elevation: 0,
                       ),
                       child: _isLoading
@@ -285,11 +281,8 @@ class _VodafoneCashIcon extends StatelessWidget {
           Positioned(
             top: 2.h,
             right: 7.w,
-            child: Icon(
-              Icons.check_circle,
-              color: const Color(0xFFE60000),
-              size: 26.sp,
-            ),
+            child: Icon(Icons.check_circle,
+                color: const Color(0xFFE60000), size: 26.sp),
           ),
         ],
       ),
