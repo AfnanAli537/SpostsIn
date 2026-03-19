@@ -4,35 +4,33 @@ import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/fawery_mobile_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
-import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/payment/presentation/vodafon_cash_screen.dart';
 import 'package:sports_in/features/payment/presentation/widgets/payment_methods_dailog.dart';
 
-/// Shows the existing [PaymentMethodDialog], then navigates to the correct
-/// payment screen based on the chosen method.
+/// Shows the [PaymentMethodDialog], then navigates to the correct screen.
 ///
-/// • **Mobile Wallet** → [VodafoneCashScreen]
-/// • **Fawry Pay**     → [FawryMobileScreen] → [FawryScreen]
-/// • **Credit Card**   → fires [InitiatePaymentEvent]; the calling widget's
-///                       [BlocListener] must catch [PaymentRedirectReady]
-///                       and open [WebViewScreen] with the redirect URL.
+/// The caller must read [PaymentBloc] synchronously before calling this
+/// and pass it in — never call context.read inside an async gap.
 ///
-/// Returns `true` if a method was selected, `false` if the user cancelled.
+/// Credit card: fires [InitiatePaymentEvent] then returns immediately.
+/// The parent [BlocListener] must handle [PaymentRedirectReady] and open
+/// [WebViewScreen] with state.redirectUrl.
+///
+/// Mobile Wallet / Fawry: navigates to the respective screen and awaits.
+/// The parent [BlocListener] handles [ManualActivateSuccess].
 Future<bool> initiatePaymentFlow({
   required BuildContext context,
+  required PaymentBloc paymentBloc,
   required String targetId,
   required PaymentTargetType targetType,
   double price = 0,
 }) async {
-  // ── Step 1: pick method ─────────────────────────────────────────────────
+  // ── Step 1: method selection ────────────────────────────────────────────
   final method = await showPaymentMethodDialog(context);
   if (method == null) return false;
-
   if (!context.mounted) return false;
 
-  // ── Step 2: build synthetic plan with the CORRECT constructor ───────────
-  // FawryMobileScreen / VodafoneCashScreen expect a SubscriptionPlanModel.
-  // We build a minimal one — they only read plan.id and plan.price.
+  // ── Step 2: synthetic plan (FawryMobileScreen / VodafoneCashScreen need it)
   final syntheticPlan = SubscriptionPlanModel(
     id: targetId,
     name: '',
@@ -44,13 +42,13 @@ Future<bool> initiatePaymentFlow({
   );
 
   switch (method) {
-    // ── Mobile Wallet → VodafoneCashScreen ──────────────────────────────
+    // ── Mobile Wallet ────────────────────────────────────────────────────
     case PaymentMethod.mobileWallet:
       await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => BlocProvider.value(
-            value: context.read<PaymentBloc>(),
+            value: paymentBloc,
             child: VodafoneCashScreen(
               plan: syntheticPlan,
               targetType: targetType,
@@ -60,13 +58,13 @@ Future<bool> initiatePaymentFlow({
       );
       break;
 
-    // ── Fawry → FawryMobileScreen ──────────────────────────────────────
+    // ── Fawry ────────────────────────────────────────────────────────────
     case PaymentMethod.fawryPay:
       await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => BlocProvider.value(
-            value: context.read<PaymentBloc>(),
+            value: paymentBloc,
             child: FawryMobileScreen(
               plan: syntheticPlan,
               targetType: targetType,
@@ -76,14 +74,16 @@ Future<bool> initiatePaymentFlow({
       );
       break;
 
-    // ── Credit Card → fire event; BlocListener handles redirect URL ──────
+    // ── Credit Card ──────────────────────────────────────────────────────
+    // Fire the event directly. The parent BlocListener catches
+    // PaymentRedirectReady and opens WebViewScreen.
+    // No dialog here — the redirect happens almost immediately.
     case PaymentMethod.creditCard:
-      if (!context.mounted) return false;
-      context.read<PaymentBloc>().add(InitiatePaymentEvent(
-            targetId: targetId,
-            targetType: targetType,
-            method: PaymentMethod.creditCard,
-          ));
+      paymentBloc.add(InitiatePaymentEvent(
+        targetId: targetId,
+        targetType: targetType,
+        method: PaymentMethod.creditCard,
+      ));
       break;
   }
 

@@ -417,8 +417,11 @@ class _CardPaymentFlowState extends State<_CardPaymentFlow> {
   }
 
   Future<void> _start() async {
+    // Capture BEFORE the first await — this is the only safe moment
+    final paymentBloc = context.read<PaymentBloc>();
     final initiated = await initiatePaymentFlow(
       context: context,
+      paymentBloc: paymentBloc,
       targetId: widget.courseId,
       targetType: PaymentTargetType.course,
       price: widget.price,

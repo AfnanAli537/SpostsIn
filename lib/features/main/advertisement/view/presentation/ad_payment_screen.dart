@@ -79,10 +79,13 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
     }
   }
 
-  Future<void> _onPayNow() async {
+  Future<void> _onPayNow(BuildContext payContext) async {
     if (_resolvedAdId == null) return;
+    // Read BEFORE the async gap — this is the only safe moment
+    final paymentBloc = payContext.read<PaymentBloc>();
     await initiatePaymentFlow(
-      context: context,
+      context: payContext,
+      paymentBloc: paymentBloc,
       targetId: _resolvedAdId!,
       targetType: PaymentTargetType.advertisement,
       price: widget.price,
@@ -312,7 +315,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                           onPressed: _resolvedAdId != null &&
                                   !_isResolvingId &&
                                   !isProcessing
-                              ? _onPayNow
+                              ? () => _onPayNow(context)
                               : (){},
                         ),
                         SizedBox(height: 12.h),

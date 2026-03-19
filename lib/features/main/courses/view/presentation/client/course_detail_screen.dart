@@ -192,9 +192,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           msg: string.deletingLesson, backgroundColor: Colors.orange);
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
-          context
-              .read<CoursesBloc>()
-              .add(FetchCourseLessons(courseId: widget.courseId));
+          context.read<CoursesBloc>().add(
+                FetchCourseLessons(courseId: widget.courseId),
+              );
         }
       });
     }
@@ -212,24 +212,32 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       ),
     ).then((updated) {
       if (updated == true) {
-        context
-            .read<CoursesBloc>()
-            .add(FetchCourseLessons(courseId: widget.courseId));
+        context.read<CoursesBloc>().add(
+              FetchCourseLessons(courseId: widget.courseId),
+            );
       }
     });
   }
 
   // ─── Payment ───────────────────────────────────────────────────────────────
 
-  Future<void> _handleEnroll(CourseModel course) async {
+  /// [enrollContext] is the BlocBuilder's context — it is below PaymentBloc.
+  /// We read the bloc synchronously here before any async gap.
+  Future<void> _handleEnroll(
+      BuildContext enrollContext, CourseModel course) async {
     if (course.isFree) {
-      context
-          .read<CoursesBloc>()
-          .add(EnrollInCourse(courseId: course.id));
+      enrollContext.read<CoursesBloc>().add(
+            EnrollInCourse(courseId: course.id),
+          );
       return;
     }
+
+    // Read BEFORE the first await — the only safe moment
+    final paymentBloc = enrollContext.read<PaymentBloc>();
+
     await initiatePaymentFlow(
-      context: context,
+      context: enrollContext,
+      paymentBloc: paymentBloc,
       targetId: course.id,
       targetType: PaymentTargetType.course,
       price: course.price,
@@ -242,139 +250,140 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   Widget build(BuildContext context) {
     final string = S.of(context);
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => getIt<PaymentBloc>()),
-      ],
-      child: BlocListener<PaymentBloc, PaymentState>(
-        listener: (context, state) {
-          // ── Credit card: redirect to WebView ─────────────────────────
-          if (state is PaymentRedirectReady) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => WebViewScreen(
-                  url: state.redirectUrl,
-                  title: 'Complete Payment',
-                ),
-              ),
-            );
-          }
-          // ── Fawry / Mobile Wallet success ────────────────────────────
-          else if (state is ManualActivateSuccess ||
-              state is ProcessSuccessful) {
-            Fluttertoast.showToast(
-              msg: 'Payment successful! Enrolling you now...',
-              backgroundColor: Colors.green,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.TOP,
-            );
-            if (_course != null) {
-              context
-                  .read<CoursesBloc>()
-                  .add(EnrollInCourse(courseId: _course!.id));
-            }
-          }
-          // ── Errors ───────────────────────────────────────────────────
-          else if (state is PaymentInitiateError) {
-            Fluttertoast.showToast(
-                msg: state.message, backgroundColor: Colors.red);
-          } else if (state is ManualActivateError) {
-            Fluttertoast.showToast(
-                msg: state.message, backgroundColor: Colors.red);
-          }
-        },
-        child: BlocConsumer<CoursesBloc, CoursesState>(
-          listener: (context, state) {
-            if (state is EnrollmentSuccess) {
-              Fluttertoast.showToast(
-                  msg: string.enrolledSuccessfully,
-                  backgroundColor: Colors.green);
-              Navigator.pop(context, true);
-            } else if (state is CourseDeleted) {
-              Fluttertoast.showToast(
-                  msg: string.courseDeleted,
-                  backgroundColor: Colors.green);
-              Navigator.pop(context, true);
-            } else if (state is CoursesError) {
-              Fluttertoast.showToast(
-                  msg: state.message, backgroundColor: Colors.red);
-            }
-          },
-          buildWhen: (previous, current) =>
-              current is CourseDetailLoading ||
-              current is CourseDetailLoaded ||
-              current is LessonsLoaded ||
-              (current is CoursesError && previous is! CourseDetailLoaded),
-          builder: (context, state) {
-            if (_course == null && state is CourseDetailLoaded) {
-              _updateTabController(state.course);
-            }
-            if (state is LessonsLoaded &&
-                state.courseId == widget.courseId) {
-              if (state.lessons != _allLessons) {
-                _allLessons = List.from(state.lessons);
-              }
-            }
+    return BlocProvider<PaymentBloc>(
+      create: (_) => getIt<PaymentBloc>(),
+      child: Builder(
+        // Builder gives us a context that is BELOW BlocProvider<PaymentBloc>,
+        // so any context.read<PaymentBloc>() in the subtree will succeed.
+        builder: (paymentContext) {
+          return BlocListener<PaymentBloc, PaymentState>(
+            child: BlocConsumer<CoursesBloc, CoursesState>(
+              listener: (context, state) {
+                if (state is EnrollmentSuccess) {
+                  Fluttertoast.showToast(
+                      msg: string.enrolledSuccessfully,
+                      backgroundColor: Colors.green);
+                  // Pop back to CoursesTab with true so it reloads
+                  Navigator.pop(context, true);
+                } else if (state is CourseDeleted) {
+                  Fluttertoast.showToast(
+                      msg: string.courseDeleted,
+                      backgroundColor: Colors.green);
+                  Navigator.pop(context, true);
+                } else if (state is CoursesError) {
+                  Fluttertoast.showToast(
+                      msg: state.message, backgroundColor: Colors.red);
+                }
+              },
+              buildWhen: (previous, current) =>
+                  current is CourseDetailLoading ||
+                  current is CourseDetailLoaded ||
+                  current is LessonsLoaded ||
+                  (current is CoursesError &&
+                      previous is! CourseDetailLoaded),
+              builder: (context, state) {
+                if (_course == null && state is CourseDetailLoaded) {
+                  _updateTabController(state.course);
+                }
+                if (state is LessonsLoaded &&
+                    state.courseId == widget.courseId) {
+                  if (state.lessons != _allLessons) {
+                    _allLessons = List.from(state.lessons);
+                  }
+                }
 
-            final course = _course ??
-                (state is CourseDetailLoaded ? state.course : null);
+                final course = _course ??
+                    (state is CourseDetailLoaded ? state.course : null);
 
-            if (course == null) {
-              return Scaffold(
-                  appBar: AppBar(),
-                  body: const CourseDetailShimmer());
-            }
+                if (course == null) {
+                  return Scaffold(
+                      appBar: AppBar(),
+                      body: const CourseDetailShimmer());
+                }
 
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(course.title,
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-                actions: _buildAppBarActions(course, string),
-              ),
-              body: NestedScrollView(
-                headerSliverBuilder: (_, __) => [
-                  SliverToBoxAdapter(
-                    child: CourseHeader(
-                      currentPlayingLesson: _currentPlayingLesson,
-                      allLessons: _allLessons,
-                      courseId: widget.courseId,
-                      thumbnailUrl: course.thumbnailUrl,
-                      onBack: () => setState(
-                          () => _currentPlayingLesson = null),
-                      onNextLesson: (l) =>
-                          setState(() => _currentPlayingLesson = l),
-                      onPreviousLesson: (l) =>
-                          setState(() => _currentPlayingLesson = l),
-                    ),
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(course.title,
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    actions: _buildAppBarActions(course, string),
                   ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _SliverAppBarDelegate(
-                      TabBar(
-                        controller: _tabController,
-                        isScrollable: true,
-                        labelColor:
-                            Theme.of(context).colorScheme.primary,
-                        unselectedLabelColor: Colors.grey,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        tabs: _buildTabs(course, string),
+                  body: NestedScrollView(
+                    headerSliverBuilder: (_, __) => [
+                      SliverToBoxAdapter(
+                        child: CourseHeader(
+                          currentPlayingLesson: _currentPlayingLesson,
+                          allLessons: _allLessons,
+                          courseId: widget.courseId,
+                          thumbnailUrl: course.thumbnailUrl,
+                          onBack: () => setState(
+                              () => _currentPlayingLesson = null),
+                          onNextLesson: (l) =>
+                              setState(() => _currentPlayingLesson = l),
+                          onPreviousLesson: (l) =>
+                              setState(() => _currentPlayingLesson = l),
+                        ),
                       ),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _SliverAppBarDelegate(
+                          TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            labelColor:
+                                Theme.of(context).colorScheme.primary,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorSize: TabBarIndicatorSize.label,
+                            tabs: _buildTabs(course, string),
+                          ),
+                        ),
+                      ),
+                    ],
+                    body: TabBarView(
+                      controller: _tabController,
+                      children: _buildTabViews(course, string),
                     ),
                   ),
-                ],
-                body: TabBarView(
-                  controller: _tabController,
-                  children: _buildTabViews(course, string),
-                ),
-              ),
-              bottomNavigationBar:
-                  (!course.isOwner && !course.isEnrolled)
-                      ? _buildEnrollButton(course, string)
-                      : null,
-            );
-          },
-        ),
+                  // Pass paymentContext (below PaymentBloc) to the button
+                  bottomNavigationBar:
+                      (!course.isOwner && !course.isEnrolled)
+                          ? _buildEnrollButton(paymentContext, course, string)
+                          : null,
+                );
+              },
+            ),
+            listener: (context, state) {
+              // ── Credit card: open WebView for redirect ─────────────────
+              if (state is PaymentRedirectReady) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WebViewScreen(
+                      url: state.redirectUrl,
+                      title: 'Complete Payment',
+                    ),
+                  ),
+                );
+              }
+              // ── Wallet / Fawry success: trigger enrollment ────────────
+              else if (state is ManualActivateSuccess ||
+                  state is ProcessSuccessful) {
+                if (_course != null) {
+                  context.read<CoursesBloc>().add(
+                        EnrollInCourse(courseId: _course!.id),
+                      );
+                }
+              }
+              // ── Errors ────────────────────────────────────────────────
+              else if (state is PaymentInitiateError) {
+                Fluttertoast.showToast(
+                    msg: state.message, backgroundColor: Colors.red);
+              } else if (state is ManualActivateError) {
+                Fluttertoast.showToast(
+                    msg: state.message, backgroundColor: Colors.red);
+              }
+            },
+          );
+        },
       ),
     );
   }
@@ -488,11 +497,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     ];
   }
 
-  Widget _buildEnrollButton(CourseModel course, S string) {
+  /// [paymentContext] is from Builder — it is below BlocProvider<PaymentBloc>
+  Widget _buildEnrollButton(
+      BuildContext paymentContext, CourseModel course, S string) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(paymentContext).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -503,7 +514,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       ),
       child: SafeArea(
         child: BlocBuilder<CoursesBloc, CoursesState>(
-          builder: (context, state) {
+          builder: (_, state) {
             final isLoading = state is EnrollmentLoading;
             return CustomElevatedButton(
               text: course.isFree
@@ -511,8 +522,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   : string.enrollForPrice(
                       '${course.price} ${string.egp}'),
               isLoading: isLoading,
-              onPressed:
-                  isLoading ? () {} : () => _handleEnroll(course),
+              onPressed: isLoading
+                  ? () {}
+                  // Pass paymentContext so _handleEnroll can read PaymentBloc
+                  : () => _handleEnroll(paymentContext, course),
             );
           },
         ),

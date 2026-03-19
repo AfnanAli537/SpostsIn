@@ -4,19 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
+/// Shows the Fawry reference code the user needs to pay at any Fawry outlet.
+///
+/// This screen intentionally stays open — the user needs to see/copy the
+/// code. It shows [PaymentSuccessDialog] when ManualActivateSuccess fires,
+/// but the dialog's [onDismissed] pops only itself; this screen then lets
+/// the caller (CourseDetailScreen / AdPaymentScreen) decide what to do next
+/// via the PaymentBloc state it is already listening to.
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
-
-  /// Defaults to [PaymentTargetType.supscription] to keep backward
-  /// compatibility with the existing subscription flow.
   final PaymentTargetType targetType;
 
   const FawryScreen({
@@ -33,6 +36,7 @@ class FawryScreen extends StatefulWidget {
 class _FawryScreenState extends State<FawryScreen> {
   String? _referenceCode;
   bool _isLoading = false;
+  bool _successHandled = false; // prevent double-handling
 
   @override
   void initState() {
@@ -43,7 +47,7 @@ class _FawryScreenState extends State<FawryScreen> {
   void _initiatePayment() {
     context.read<PaymentBloc>().add(InitiatePaymentEvent(
           targetId: widget.plan.id,
-          targetType: widget.targetType, // ← uses passed targetType
+          targetType: widget.targetType,
           method: PaymentMethod.fawryPay,
           mobileNumber: widget.mobileNumber,
         ));
@@ -58,8 +62,8 @@ class _FawryScreenState extends State<FawryScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
         margin: EdgeInsets.all(12.w),
       ),
     );
@@ -69,6 +73,7 @@ class _FawryScreenState extends State<FawryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
     final s = S.of(context);
+
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
         if (state is PaymentInitiating || state is ManualActivating) {
@@ -82,20 +87,20 @@ class _FawryScreenState extends State<FawryScreen> {
           setState(() => _isLoading = false);
         }
 
-        if (state is ManualActivateSuccess) {
+        // Show success dialog — but do NOT pop this screen.
+        // The parent BlocListener (in CourseDetailScreen / AdPaymentScreen)
+        // handles the navigation after success.
+        if (state is ManualActivateSuccess && !_successHandled) {
+          _successHandled = true;
           showDialog(
             context: context,
             barrierDismissible: false,
             builder: (_) => PaymentSuccessDialog(
               transactionId: s.unKnown,
               onDismissed: () {
-                context.read<PaymentBloc>().add(const FetchPlansEvent());
-                if (widget.targetType == PaymentTargetType.supscription) {
-                  Navigator.of(context).pushNamed(AppRoutes.subscription);
-                } else {
-                  // Ads / courses: pop back to home
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
+                // Pop only the dialog — this screen stays open and the
+                // parent BlocListener will navigate appropriately.
+                // (CourseDetailScreen pops to show enrollment, etc.)
               },
             ),
           );
@@ -121,16 +126,12 @@ class _FawryScreenState extends State<FawryScreen> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            onPressed: () {
-              context.read<PaymentBloc>().add(const FetchPlansEvent());
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
           title: Text(
             s.fawry_screen_appbar_title,
-            style:
-                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
@@ -141,6 +142,7 @@ class _FawryScreenState extends State<FawryScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20.h),
+                // ── Fawry branding ───────────────────────────────────────────
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
                   child: Container(
@@ -174,6 +176,8 @@ class _FawryScreenState extends State<FawryScreen> {
                       fontSize: 13.sp, fontStyle: FontStyle.italic),
                 ),
                 SizedBox(height: 24.h),
+
+                // ── Reference code / loading / error ─────────────────────────
                 if (_isLoading)
                   Container(
                     width: double.infinity,
@@ -253,7 +257,10 @@ class _FawryScreenState extends State<FawryScreen> {
                       ],
                     ),
                   ),
+
                 const Spacer(),
+
+                // ── Copy button ───────────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,

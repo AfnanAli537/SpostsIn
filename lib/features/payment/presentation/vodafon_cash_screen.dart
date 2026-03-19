@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
@@ -13,9 +12,6 @@ import 'package:sports_in/generated/l10n.dart';
 
 class VodafoneCashScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
-
-  /// Defaults to [PaymentTargetType.supscription] to keep backward
-  /// compatibility with the existing subscription flow.
   final PaymentTargetType targetType;
 
   const VodafoneCashScreen({
@@ -32,6 +28,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   final _mobileController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _successHandled = false;
 
   @override
   void dispose() {
@@ -44,7 +41,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
     context.read<PaymentBloc>().add(
           InitiatePaymentEvent(
             targetId: widget.plan.id,
-            targetType: widget.targetType, // ← uses passed targetType
+            targetType: widget.targetType,
             method: PaymentMethod.mobileWallet,
             mobileNumber: _mobileController.text.trim(),
           ),
@@ -55,6 +52,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
     final s = S.of(context);
+
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
         if (state is PaymentInitiating || state is ManualActivating) {
@@ -63,23 +61,24 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
           setState(() => _isLoading = false);
         }
 
-        if (state is ManualActivateSuccess) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => PaymentSuccessDialog(
-              transactionId: s.unKnown,
-              onDismissed: () {
-                context.read<PaymentBloc>().add(const FetchPlansEvent());
-                if (widget.targetType == PaymentTargetType.supscription) {
-                  Navigator.of(context).pushNamed(AppRoutes.subscription);
-                } else {
-                  // For ads / courses: pop all the way back to home
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
-              },
-            ),
-          );
+        if (state is ManualActivateSuccess && !_successHandled) {
+          _successHandled = true;
+          // Pop this screen first so the CourseDetailScreen BlocListener
+          // can catch ManualActivateSuccess and trigger enrollment.
+          // Then show the success dialog on top of CourseDetailScreen.
+          Navigator.of(context).pop();
+          // Show dialog on the parent screen's context — use a short delay
+          // to let the pop animation complete before the dialog appears.
+          Future.delayed(const Duration(milliseconds: 300), () {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => PaymentSuccessDialog(
+                transactionId: s.unKnown,
+                onDismissed: () {},
+              ),
+            );
+          });
         }
 
         if (state is PaymentInitiateError || state is ManualActivateError) {
@@ -110,8 +109,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
           ),
           title: Text(
             s.vodafone_appbar_title,
-            style:
-                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
@@ -194,8 +192,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       if (v == null || v.trim().isEmpty) {
                         return s.vodafone_validation_empty;
                       }
-                      if (!RegExp(r'^01[0125]\d{8}$')
-                          .hasMatch(v.trim())) {
+                      if (!RegExp(r'^01[0125]\d{8}$').hasMatch(v.trim())) {
                         return s.vodafone_validation_invalid;
                       }
                       return null;
