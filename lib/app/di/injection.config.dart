@@ -82,6 +82,16 @@ import 'package:sports_in/features/main/search/data/repo/search_repo.dart'
     as _i514;
 import 'package:sports_in/features/main/search/view_model/search_bloc.dart'
     as _i803;
+import 'package:sports_in/features/notitification/data/data_source/notifi_data_source_impl.dart'
+    as _i577;
+import 'package:sports_in/features/notitification/data/interface/notifi_interface.dart'
+    as _i102;
+import 'package:sports_in/features/notitification/data/repo/notifi_repo.dart'
+    as _i62;
+import 'package:sports_in/features/notitification/data/service/notifaction_service.dart'
+    as _i700;
+import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart'
+    as _i987;
 import 'package:sports_in/features/register/data/data_sources/register_api_data_source.dart'
     as _i569;
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart'
@@ -100,6 +110,9 @@ extension GetItInjectableX on _i174.GetIt {
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => appModule.prefs,
       preResolve: true,
+    );
+    gh.lazySingleton<_i700.NotificationHubService>(
+      () => _i700.NotificationHubService(),
     );
     gh.lazySingleton<_i109.ISearchDataSource>(
       () => _i1019.MockSearchDataSource(),
@@ -148,6 +161,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i294.OpportunityReposatory>(
       () => _i294.OpportunityReposatory(gh<_i709.OpportunityInterface>()),
     );
+    gh.lazySingleton<_i102.NotificationRemoteDataSource>(
+      () => _i577.NotificationRemoteDataSourceImpl(
+        apiClient: gh<_i694.ApiClient>(),
+      ),
+    );
     gh.lazySingleton<_i65.IRegisterDataSource>(
       () => _i569.RegisterApiDataSource(gh<_i694.ApiClient>()),
     );
@@ -175,6 +193,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i752.ProfileRepo>(
       () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
     );
+    gh.lazySingleton<_i62.NotificationRepository>(
+      () => _i62.NotificationRepository(
+        remoteDataSource: gh<_i102.NotificationRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i277.AdsRepositoryImpl>(
       () => _i277.AdsRepositoryImpl(gh<_i658.IAdsDataSource>()),
     );
@@ -186,6 +209,10 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i45.PostsBloc>(
       () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
+    );
+    gh.factory<_i987.NotificationBloc>(
+      () =>
+          _i987.NotificationBloc(repository: gh<_i62.NotificationRepository>()),
     );
     gh.lazySingleton<_i707.ForgetPasswordRepo>(
       () => _i707.ForgetPasswordRepo(gh<_i705.IForgetPasswordDataSource>()),

@@ -124,4 +124,17 @@ static const String addAdComment       = '/api/Advertisements/{id}/comments';
 static const String getAdComments      = '/api/Advertisements/{id}/comments';
 static const String editAdComment      = '/api/Advertisements/comments/{commentId}';
 static const String deleteAdComment    = '/api/Advertisements/comments/{commentId}';
+
+
+
+// ── Notification ──────────────────────────────────────────────────────────────
+static const String getNotifications         = '/api/Notification';
+static const String getUnreadCount           = '/api/Notification/unread-count';
+static const String markNotificationAsRead   = '/api/Notification/{id}/read';
+static const String markAllNotificationsAsRead = '/api/Notification/read-all';
+
+
+
+
+
 }
