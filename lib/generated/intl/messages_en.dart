@@ -563,7 +563,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "fawry_screen_copied": MessageLookupByLibrary.simpleMessage(
       "Reference code copied to clipboard",
     ),
+    "fawry_screen_copied_btn": MessageLookupByLibrary.simpleMessage("Copied!"),
+    "fawry_screen_copied_reminder": MessageLookupByLibrary.simpleMessage(
+      "Code copied! Go to any Fawry outlet and pay using this code.",
+    ),
     "fawry_screen_copy_btn": MessageLookupByLibrary.simpleMessage("Copy Code"),
+    "fawry_screen_done_btn": MessageLookupByLibrary.simpleMessage("Done"),
     "fawry_screen_failed_code": MessageLookupByLibrary.simpleMessage(
       "Failed to generate reference code",
     ),

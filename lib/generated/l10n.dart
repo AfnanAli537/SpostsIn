@@ -5483,6 +5483,36 @@ class S {
     );
   }
 
+  /// `Code copied! Go to any Fawry outlet and pay using this code.`
+  String get fawry_screen_copied_reminder {
+    return Intl.message(
+      'Code copied! Go to any Fawry outlet and pay using this code.',
+      name: 'fawry_screen_copied_reminder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copied!`
+  String get fawry_screen_copied_btn {
+    return Intl.message(
+      'Copied!',
+      name: 'fawry_screen_copied_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Done`
+  String get fawry_screen_done_btn {
+    return Intl.message(
+      'Done',
+      name: 'fawry_screen_done_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Enter Card Details`
   String get vodafone_appbar_title {
     return Intl.message(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
@@ -11,13 +12,20 @@ import 'package:sports_in/features/payment/presentation/widgets/processing_dailo
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// Shows the Fawry reference code after payment initiation.
+/// Fawry reference code screen.
 ///
-/// BEHAVIOR (per requirements):
-/// - Shows a loading/processing overlay while initiating & activating.
-/// - Displays the reference code once received.
-/// - On [ManualActivateSuccess]: shows a success dialog ON THIS SCREEN.
-/// - Does NOT pop itself — the user must navigate back manually.
+/// Flow:
+///   1. On mount: immediately dispatches [InitiatePaymentEvent] → gets the
+///      Fawry reference code.
+///   2. Shows the reference code with a prominent Copy button.
+///   3. On [ManualActivateSuccess]: shows a success dialog ON THIS SCREEN.
+///      The user stays here (they may still need the code), closes dialog,
+///      then navigates back manually using the back arrow.
+///   4. Does NOT auto-pop at any point — the user controls when to leave.
+///
+/// UX improvement: after copying the code, a sticky bottom banner appears
+/// reminding the user to complete payment at any Fawry outlet and shows
+/// a "Done" button that pops the screen back (since they've copied the code).
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
@@ -37,11 +45,8 @@ class FawryScreen extends StatefulWidget {
 class _FawryScreenState extends State<FawryScreen> {
   String? _referenceCode;
   bool _isLoading = false;
-
-  /// Guards against showing the success dialog more than once.
+  bool _codeCopied = false;
   bool _successShown = false;
-
-  /// Guards against showing the processing dialog more than once.
   bool _isProcessingDialogOpen = false;
 
   @override
@@ -62,6 +67,7 @@ class _FawryScreenState extends State<FawryScreen> {
   void _copyCode() {
     if (_referenceCode == null) return;
     Clipboard.setData(ClipboardData(text: _referenceCode!));
+    setState(() => _codeCopied = true);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(S.of(context).fawry_screen_copied),
@@ -92,15 +98,17 @@ class _FawryScreenState extends State<FawryScreen> {
     }
   }
 
-  void _showSuccessDialog(String? transId) {
+  /// Shows the success dialog. User closes it manually and stays on screen.
+  void _showSuccessDialog() {
     if (_successShown || !mounted) return;
     _successShown = true;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => PaymentSuccessDialog(
-        transactionId: transId ?? S.of(context).unKnown,
-        // User stays on Fawry screen after dismissing — they close it themselves.
+        transactionId: S.of(context).unKnown,
+        // User stays on screen after dismissing — they may want to keep
+        // the reference code visible or copy it again.
         onDismissed: () {},
       ),
     );
@@ -113,7 +121,7 @@ class _FawryScreenState extends State<FawryScreen> {
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
-        // ── Loading states ──────────────────────────────────────────────────
+        // ── Loading ────────────────────────────────────────────────────────
         if (state is PaymentInitiating) {
           setState(() => _isLoading = true);
           _showProcessingDialog();
@@ -122,7 +130,7 @@ class _FawryScreenState extends State<FawryScreen> {
           _showProcessingDialog();
         }
 
-        // ── Reference code received ─────────────────────────────────────────
+        // ── Reference code ready ───────────────────────────────────────────
         if (state is PaymentInitiatedAwaitingActivation) {
           _dismissProcessingDialog();
           setState(() {
@@ -131,17 +139,14 @@ class _FawryScreenState extends State<FawryScreen> {
           });
         }
 
-        // ── SUCCESS: show dialog HERE, do NOT pop ───────────────────────────
+        // ── Success: show dialog, stay on screen ───────────────────────────
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
-          final txId = state is ManualActivateSuccess
-              ? (state as ManualActivateSuccess).message
-              : null;
-          _showSuccessDialog(txId);
+          _showSuccessDialog();
         }
 
-        // ── Errors ──────────────────────────────────────────────────────────
+        // ── Errors ─────────────────────────────────────────────────────────
         if (state is PaymentInitiateError || state is ManualActivateError) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
@@ -166,7 +171,10 @@ class _FawryScreenState extends State<FawryScreen> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.mainLayout,
+              (route) => false,
+            ),
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
           title: Text(
@@ -176,146 +184,244 @@ class _FawryScreenState extends State<FawryScreen> {
           centerTitle: true,
         ),
         body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.h),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: Container(
-                    width: double.infinity,
-                    height: 180.h,
-                    color: const Color(0xFFF5C400),
-                    child: Center(
-                      child: Container(
-                        width: 130.w,
-                        height: 130.w,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Icon(Icons.sync_rounded,
-                              size: 80.sp, color: const Color(0xFF0055A5)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 28.h),
-                Text(s.fawry_screen_label,
-                    style: TextStyle(fontSize: 15.sp)),
-                SizedBox(height: 4.h),
-                Text(s.fawry_screen_terms,
-                    style: TextStyle(
-                        fontSize: 13.sp, fontStyle: FontStyle.italic)),
-                SizedBox(height: 24.h),
-
-                // ── Reference code / loading / error widget ──────────────
-                if (_isLoading)
-                  Container(
-                    width: double.infinity,
-                    height: 120.h,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7D4),
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: const Color(0xFFF5C400),
-                        strokeWidth: 2.5.w,
-                      ),
-                    ),
-                  )
-                else if (_referenceCode != null)
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                        vertical: 28.h, horizontal: 20.w),
-                    decoration: BoxDecoration(
-                      color: theme.onError,
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          _referenceCode!,
-                          style: TextStyle(
-                            fontSize: 34.sp,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black87,
-                            letterSpacing: 1.5,
-                            fontStyle: FontStyle.italic,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      // ── Brand banner ───────────────────────────────────
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: Container(
+                          width: double.infinity,
+                          height: 180.h,
+                          color: const Color(0xFFF5C400),
+                          child: Center(
+                            child: Container(
+                              width: 130.w,
+                              height: 130.w,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Icon(Icons.sync_rounded,
+                                    size: 80.sp,
+                                    color: const Color(0xFF0055A5)),
+                              ),
+                            ),
                           ),
                         ),
-                        SizedBox(height: 12.h),
-                        Text(
-                          s.fawry_screen_pay_instruction,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 13.5.sp,
-                              color: Colors.black54,
-                              height: 1.6),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(24.w),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF3F3),
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(Icons.error_outline,
-                            color: Colors.red, size: 36.sp),
-                        SizedBox(height: 10.h),
-                        Text(s.fawry_screen_failed_code,
-                            style: TextStyle(
-                                color: Colors.red, fontSize: 14.sp)),
-                        SizedBox(height: 12.h),
-                        TextButton(
-                          onPressed: _initiatePayment,
-                          child: Text(s.fawry_screen_retry,
-                              style: TextStyle(
-                                  color: theme.primary, fontSize: 14.sp)),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56.h,
-                  child: ElevatedButton(
-                    onPressed: _referenceCode != null ? _copyCode : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.primary,
-                      disabledBackgroundColor: theme.primary.withOpacity(0.4),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r)),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      s.fawry_screen_copy_btn,
-                      style: TextStyle(
-                        color: const Color(0xFFCCFF00),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
                       ),
-                    ),
+                      SizedBox(height: 28.h),
+                      Text(s.fawry_screen_label,
+                          style: TextStyle(fontSize: 15.sp)),
+                      SizedBox(height: 4.h),
+                      Text(s.fawry_screen_terms,
+                          style: TextStyle(
+                              fontSize: 13.sp,
+                              fontStyle: FontStyle.italic)),
+                      SizedBox(height: 24.h),
+
+                      // ── Reference code / loading / error ───────────────
+                      if (_isLoading)
+                        Container(
+                          width: double.infinity,
+                          height: 120.h,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0F7D4),
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: const Color(0xFFF5C400),
+                              strokeWidth: 2.5.w,
+                            ),
+                          ),
+                        )
+                      else if (_referenceCode != null)
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 28.h, horizontal: 20.w),
+                          decoration: BoxDecoration(
+                            color: theme.onError,
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          child: Column(
+                            children: [
+                              // Code display
+                              Text(
+                                _referenceCode!,
+                                style: TextStyle(
+                                  fontSize: 34.sp,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black87,
+                                  letterSpacing: 1.5,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              SizedBox(height: 12.h),
+                              Text(
+                                s.fawry_screen_pay_instruction,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 13.5.sp,
+                                    color: Colors.black54,
+                                    height: 1.6),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(24.w),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF3F3),
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.error_outline,
+                                  color: Colors.red, size: 36.sp),
+                              SizedBox(height: 10.h),
+                              Text(s.fawry_screen_failed_code,
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 14.sp)),
+                              SizedBox(height: 12.h),
+                              TextButton(
+                                onPressed: _initiatePayment,
+                                child: Text(s.fawry_screen_retry,
+                                    style: TextStyle(
+                                        color: theme.primary,
+                                        fontSize: 14.sp)),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      SizedBox(height: 20.h),
+
+                      // ── "Copied" reminder banner ───────────────────────
+                      // Appears after the user copies the code to remind
+                      // them what to do next.
+                      if (_codeCopied && _referenceCode != null) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(14.w),
+                          decoration: BoxDecoration(
+                            color: theme.primary.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                                color: theme.primary.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.check_circle_outline,
+                                  color: theme.primary, size: 20.sp),
+                              SizedBox(width: 10.w),
+                              Expanded(
+                                child: Text(
+                                  // "Code copied! Go to any Fawry outlet and pay using this code."
+                                  s.fawry_screen_copied_reminder,
+                                  style: TextStyle(
+                                      fontSize: 13.sp,
+                                      color: theme.primary,
+                                      height: 1.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 16.h),
+                      ],
+
+                      SizedBox(height: 100.h), // space above bottom buttons
+                    ],
                   ),
                 ),
-                SizedBox(height: 24.h),
-              ],
-            ),
+              ),
+
+              // ── Bottom action area ─────────────────────────────────────
+              Padding(
+                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Copy button — always visible when code is available
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56.h,
+                      child: ElevatedButton.icon(
+                        onPressed:
+                            _referenceCode != null ? _copyCode : null,
+                        icon: Icon(
+                          _codeCopied
+                              ? Icons.check
+                              : Icons.copy_rounded,
+                          size: 18.sp,
+                          color: const Color(0xFFCCFF00),
+                        ),
+                        label: Text(
+                          _codeCopied
+                              ? s.fawry_screen_copied_btn
+                              : s.fawry_screen_copy_btn,
+                          style: TextStyle(
+                            color: const Color(0xFFCCFF00),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _codeCopied
+                              ? theme.primary.withOpacity(0.85)
+                              : theme.primary,
+                          disabledBackgroundColor:
+                              theme.primary.withOpacity(0.4),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(10.r)),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+
+                    // "Done" button — shown only after copying the code.
+                    // Lets the user exit the screen knowing they have the code.
+                    if (_codeCopied) ...[
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48.h,
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: theme.primary),
+                            foregroundColor: theme.primary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(10.r)),
+                          ),
+                          child: Text(
+                            s.fawry_screen_done_btn,
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

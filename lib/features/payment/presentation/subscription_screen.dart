@@ -18,16 +18,13 @@ import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.da
 import 'package:sports_in/generated/l10n.dart';
 
 class SubscriptionScreen extends StatefulWidget {
-  /// Controls whether the X close button is visible.
-  ///
-  /// Pass `true` when you want the user to be able to close/dismiss the screen
-  /// (e.g. when navigating from onboarding or a paywall prompt).
-  ///
-  /// Defaults to `false` (close button hidden — e.g. when opened from Settings
-  /// where the back arrow is already present).
+  /// When [showCloseButton] is `true`, an X button is shown in the top-right
+  /// corner so the user can dismiss the screen (e.g. from an onboarding
+  /// paywall). Defaults to `false` (X hidden — back arrow is enough when
+  /// opened from Settings).
   final bool showCloseButton;
 
-  const SubscriptionScreen({super.key, this.showCloseButton = false});
+  const SubscriptionScreen({super.key, this.showCloseButton = true});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -37,14 +34,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     with SingleTickerProviderStateMixin {
   SubscriptionPlanModel? _selectedPlan;
   late AnimationController _btnController;
+
+  /// Tracks whether we're showing the processing overlay so we never
+  /// open it twice and always close it correctly.
   bool _isProcessingDialogOpen = false;
+
   String? _transId;
   String? _currentPlanId;
 
-  // Cache plans in local state so they survive payment state changes.
+  // Cache plans locally so they survive payment-state churn.
   List<SubscriptionPlanModel> _cachedPlans = [];
   bool _isLoadingPlans = true;
   bool _isLoadingSubscription = true;
+
+  /// Guards the BlocListener against re-firing the same terminal state
+  /// (e.g. after the WebView pops back and the bloc still holds the old state).
+  String? _handledPaymentStateType;
 
   @override
   void initState() {
@@ -63,7 +68,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           .read<PaymentBloc>()
           .add(FetchMySubscriptionEvent(userId: userId));
     } else {
-      _isLoadingSubscription = false;
+      setState(() => _isLoadingSubscription = false);
     }
   }
 
@@ -72,6 +77,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     _btnController.dispose();
     super.dispose();
   }
+
+  // ── Processing dialog helpers ─────────────────────────────────────────────
 
   void _showProcessingDialog() {
     if (_isProcessingDialogOpen) return;
@@ -90,11 +97,19 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     }
   }
 
+  // ── Subscribe tap ─────────────────────────────────────────────────────────
+
   Future<void> _onSubscribeTap(List<SubscriptionPlanModel> plans) async {
     if (_selectedPlan == null) return;
+
+    // Always select the plan in the bloc before any payment action.
     context.read<PaymentBloc>().add(SelectPlanEvent(_selectedPlan!));
 
+    // Reset the guard so the listener reacts to a fresh payment attempt.
+    setState(() => _handledPaymentStateType = null);
+
     if (_selectedPlan!.isFree) {
+      // Free plan: initiate directly with credit card as a dummy method.
       context.read<PaymentBloc>().add(
             InitiatePaymentEvent(
               targetId: _selectedPlan!.id,
@@ -105,6 +120,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       return;
     }
 
+    // Paid plan: ask the user which payment method they want.
     final method = await showPaymentMethodDialog(context);
     if (method == null || !mounted) return;
 
@@ -119,6 +135,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             ),
           ),
         );
+
       case PaymentMethod.fawryPay:
         Navigator.push(
           context,
@@ -129,7 +146,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             ),
           ),
         );
+
       case PaymentMethod.creditCard:
+        // Dispatch the payment event — the BlocListener below will catch
+        // PaymentRedirectReady and push the WebViewScreen.
         context.read<PaymentBloc>().add(
               InitiatePaymentEvent(
                 targetId: _selectedPlan!.id,
@@ -140,13 +160,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     }
   }
 
+  // ── Build ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) async {
-        // ── Plans loaded → cache them ──────────────────────────────────────
+        // ── Plan fetching ──────────────────────────────────────────────────
         if (state is PlansLoaded) {
           setState(() {
             _cachedPlans = state.plans;
@@ -158,14 +180,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             }
           });
         }
-        if (state is PlansLoading) {
-          setState(() => _isLoadingPlans = true);
-        }
-        if (state is PlansError) {
-          setState(() => _isLoadingPlans = false);
-        }
+        if (state is PlansLoading) setState(() => _isLoadingPlans = true);
+        if (state is PlansError) setState(() => _isLoadingPlans = false);
 
-        // ── Current subscription loaded ─────────────────────────────────────
+        // ── Current subscription ───────────────────────────────────────────
         if (state is MySubscriptionLoaded) {
           setState(() {
             _currentPlanId = state.subscription.isValid
@@ -184,32 +202,54 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           });
         }
 
-        // ── Processing ─────────────────────────────────────────────────────
-        if (state is PaymentInitiating || state is ManualActivating) {
+        // ── Processing overlay ─────────────────────────────────────────────
+        // Show for credit card initiation only (Fawry/Vodafone handle their
+        // own overlays on their own screens).
+        if (state is PaymentInitiating) {
           _showProcessingDialog();
         }
 
-        // ── Credit card redirect → WebViewScreen ───────────────────────────
+        // ── CREDIT CARD: redirect to WebView ──────────────────────────────
         if (state is PaymentRedirectReady) {
+          final stateKey = state.runtimeType.toString() + state.redirectUrl;
+          if (stateKey == _handledPaymentStateType) return;
+          _handledPaymentStateType = stateKey;
+
           _dismissProcessingDialog();
           _transId = state.transactionId;
+
           await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => WebViewScreen(
                 url: state.redirectUrl,
-                title: S.of(context).completePayment,
+                title: s.completePayment,
               ),
             ),
           );
+
+          // After the user closes the WebView, refresh plans/subscription
+          // in case the payment completed.
           if (mounted) {
             context.read<PaymentBloc>().add(const FetchPlansEvent());
+            final userId = getIt<SharedPref>().getUserId();
+            if (userId != null) {
+              context
+                  .read<PaymentBloc>()
+                  .add(FetchMySubscriptionEvent(userId: userId));
+            }
           }
         }
 
-        // ── Free plan success → dialog then navigate to mainLayout ──────────
+        // ── FREE PLAN success (ProcessSuccessful) ─────────────────────────
+        // Show success dialog then navigate to main layout.
         if (state is ProcessSuccessful) {
+          final stateKey = state.runtimeType.toString();
+          if (stateKey == _handledPaymentStateType) return;
+          _handledPaymentStateType = stateKey;
+
           _dismissProcessingDialog();
+          if (!mounted) return;
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -227,14 +267,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           );
         }
 
-        // ── Manual success (Vodafone/Fawry handled on their own screens) ────
-        // SubscriptionScreen only needs to dismiss the processing dialog here;
-        // Fawry shows the dialog on itself, Vodafone shows it and then pops.
-        // If you want a fallback dialog for any edge case, uncomment below:
-        //
-        // if (state is ManualActivateSuccess) {
-        //   _dismissProcessingDialog();
-        // }
+        // ── FAWRY / VODAFONE success (ManualActivateSuccess) ──────────────
+        // Do NOT show a dialog here — Fawry shows it on its own screen and
+        // Vodafone shows it on its own screen then navigates away.
+        // We just dismiss the processing overlay (safety) and reset state.
+        if (state is ManualActivateSuccess) {
+          _dismissProcessingDialog();
+          // Reset guard so the next payment attempt is fresh.
+          setState(() => _handledPaymentStateType = null);
+        }
 
         // ── Errors ─────────────────────────────────────────────────────────
         if (state is PaymentInitiateError ||
@@ -246,16 +287,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               : state is ManualActivateError
                   ? (state as ManualActivateError).message
                   : (state as PlansError).message;
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.error_outline,
-                      color: Colors.white, size: 18),
-                  SizedBox(width: 8.w),
-                  Expanded(child: Text(message)),
-                ],
-              ),
+              content: Row(children: [
+                const Icon(Icons.error_outline,
+                    color: Colors.white, size: 18),
+                SizedBox(width: 8.w),
+                Expanded(child: Text(message)),
+              ]),
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -269,41 +309,63 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         backgroundColor: const Color(0xFF0D1B2A),
         body: Stack(
           children: [
-            // ── Hero image ────────────────────────────────────────────────
+            // ── Hero ────────────────────────────────────────────────────
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.38,
               width: double.infinity,
               child: const _HeroImage(),
             ),
 
-            // ── Main scrollable content ───────────────────────────────────
+            // ── Scrollable content ───────────────────────────────────────
             SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.30),
+                      height:
+                          MediaQuery.of(context).size.height * 0.30),
                   Container(
                     decoration: const BoxDecoration(
                       color: Color(0xFF0D1B2A),
                       borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(28),
-                      ),
+                          top: Radius.circular(28)),
                     ),
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
+                    padding:
+                        const EdgeInsets.fromLTRB(20, 28, 20, 32),
                     child: _buildBody(s),
                   ),
                 ],
               ),
             ),
 
-            // ── X close button — only shown when showCloseButton is true ──
+            // ── Back arrow (shown when opened from Settings) ─────────────
+            if (!widget.showCloseButton)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 12,
+                left: 16.w,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 34.w,
+                    height: 34.w,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.45),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.arrow_back,
+                        color: Colors.white, size: 18.sp),
+                  ),
+                ),
+              ),
+
+            // ── X close button (shown from onboarding / paywall) ──────────
             if (widget.showCloseButton)
               Positioned(
                 top: MediaQuery.of(context).padding.top + 12,
                 right: 16.w,
                 child: GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamedAndRemoveUntil(
+                  onTap: () =>
+                      Navigator.of(context).pushNamedAndRemoveUntil(
                     AppRoutes.mainLayout,
                     (route) => false,
                   ),
@@ -314,7 +376,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       color: Colors.black.withOpacity(0.45),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.close, color: Colors.white, size: 18.sp),
+                    child: Icon(Icons.close,
+                        color: Colors.white, size: 18.sp),
                   ),
                 ),
               ),
@@ -324,6 +387,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     );
   }
 
+  // ── Body ──────────────────────────────────────────────────────────────────
+
   Widget _buildBody(S s) {
     final isLoading = _isLoadingPlans || _isLoadingSubscription;
 
@@ -331,8 +396,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       return SizedBox(
         height: 300.h,
         child: const Center(
-          child: CircularProgressIndicator(color: Color(0xFF4CAF50)),
-        ),
+            child: CircularProgressIndicator(color: Color(0xFF4CAF50))),
       );
     }
 
@@ -360,15 +424,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           ),
         ),
         SizedBox(height: 28.h),
-
-        // ── Plan cards ──────────────────────────────────────────────────
         plans.isEmpty
             ? SizedBox(
                 height: 180.h,
                 child: const Center(
-                  child:
-                      CircularProgressIndicator(color: Color(0xFF4CAF50)),
-                ),
+                    child: CircularProgressIndicator(
+                        color: Color(0xFF4CAF50))),
               )
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -402,8 +463,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                 }).toList(),
               ),
         SizedBox(height: 28.h),
-
-        // ── Subscribe button ─────────────────────────────────────────────
         ScaleTransition(
           scale: _btnController,
           child: GestureDetector(
@@ -506,17 +565,14 @@ class _PlanCard extends StatelessWidget {
             ? S.of(context).subscription_plan_unlimited_videos
             : plan.monthlyVideoAnalysisLimit == 0
                 ? S.of(context).subscription_plan_no_videos
-                : S
-                    .of(context)
-                    .subscription_plan_videos_month(
-                        plan.monthlyVideoAnalysisLimit),
+                : S.of(context).subscription_plan_videos_month(
+                    plan.monthlyVideoAnalysisLimit),
       },
       {
         'icon': Icons.campaign_rounded,
         'label': plan.monthlyAdLimit == 0
             ? S.of(context).subscription_plan_no_ads
-            : S
-                .of(context)
+            : S.of(context)
                 .subscription_plan_ads_month(plan.monthlyAdLimit),
       },
       {
@@ -531,12 +587,10 @@ class _PlanCard extends StatelessWidget {
         {
           'icon': Icons.calendar_today_rounded,
           'label': plan.durationDays <= 31
-              ? S
-                  .of(context)
+              ? S.of(context)
                   .subscription_plan_duration_month(plan.durationDays)
               : S.of(context).subscription_plan_duration_year(
-                    (plan.durationDays / 30).round(),
-                  ),
+                  (plan.durationDays / 30).round()),
         },
     ];
   }
@@ -550,7 +604,6 @@ class _PlanCard extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Badge ────────────────────────────────────────────────────────
         if (badge != null)
           Container(
             margin: EdgeInsets.only(bottom: 6.h),
@@ -572,8 +625,6 @@ class _PlanCard extends StatelessWidget {
           )
         else
           SizedBox(height: 26.h),
-
-        // ── Card ─────────────────────────────────────────────────────────
         AnimatedContainer(
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOut,
@@ -692,7 +743,8 @@ class _PlanCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                     border: (isSelected || isCurrentPlan)
                         ? null
-                        : Border.all(color: _accent.withOpacity(0.5)),
+                        : Border.all(
+                            color: _accent.withOpacity(0.5)),
                   ),
                   child: Center(
                     child: Text(

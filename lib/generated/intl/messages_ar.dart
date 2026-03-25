@@ -531,7 +531,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "fawry_screen_copied": MessageLookupByLibrary.simpleMessage(
       "تم نسخ الكود المرجعي",
     ),
+    "fawry_screen_copied_btn": MessageLookupByLibrary.simpleMessage(
+      "تم النسخ!",
+    ),
+    "fawry_screen_copied_reminder": MessageLookupByLibrary.simpleMessage(
+      "تم نسخ الرمز! اذهب إلى أي منفذ فوري وادفع باستخدام هذا الرمز.",
+    ),
     "fawry_screen_copy_btn": MessageLookupByLibrary.simpleMessage("نسخ الكود"),
+    "fawry_screen_done_btn": MessageLookupByLibrary.simpleMessage("تم"),
     "fawry_screen_failed_code": MessageLookupByLibrary.simpleMessage(
       "فشل في توليد الكود المرجعي",
     ),

@@ -442,8 +442,13 @@
     }
   },
   "secondsAgo": "{count, plural, =1 {منذ ثانية} =2 {منذ ثانيتين} few {منذ {count} ثوانٍ} many {منذ {count} ثانية} other {منذ {count} ثانية}}",
-  "@secondsAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@secondsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "edit_achievement": "تعديل الإنجاز",
   "add_achievement_title": "إضافة إنجاز",
   "upload_photo_hint": "رفع صورة الإنجاز",
@@ -457,20 +462,19 @@
   "save_achievement_button": "حفظ الإنجاز",
   "please_select_date": "يرجى اختيار تاريخ",
   "achievement_added_success": "تم إضافة الإنجاز بنجاح",
-  "chooseMethod":"اختر طريقة للدفع",
+  "chooseMethod": "اختر طريقة للدفع",
   "processing_payment_title": "جارٍ معالجة الدفع...",
   "processing_payment_subtitle": "من فضلك لا تغلق التطبيق",
   "payment_success_title": "تمت عملية الدفع بنجاح!",
   "payment_success_subtitle": "اشتراكك أصبح نشطاً الآن.\nاستمتع بالوصول المميز! ",
   "payment_success_transaction_id": "رقم العملية: {id}",
- "fawry_mobile_appbar_title": "أدخل رقم الهاتف",
+  "fawry_mobile_appbar_title": "أدخل رقم الهاتف",
   "fawry_mobile_label": "أدخل رقم هاتف فوري",
   "fawry_mobile_terms": "بالمتابعة فإنك توافق على الشروط والأحكام",
   "fawry_mobile_hint": "رقم الهاتف (مثال: 010xxxxxxxx)",
   "fawry_mobile_confirm_btn": "متابعة إلى فوري",
   "fawry_mobile_validation_empty": "من فضلك أدخل رقم هاتفك",
   "fawry_mobile_validation_invalid": "أدخل رقم هاتف مصري صحيح",
-
   "fawry_screen_appbar_title": "كود فوري المرجعي",
   "fawry_screen_label": "أدخل بيانات الدفع",
   "fawry_screen_terms": "بالمتابعة فإنك توافق على الشروط والأحكام",
@@ -479,7 +483,9 @@
   "fawry_screen_retry": "إعادة المحاولة",
   "fawry_screen_copy_btn": "نسخ الكود",
   "fawry_screen_copied": "تم نسخ الكود المرجعي",
-
+  "fawry_screen_copied_reminder": "تم نسخ الرمز! اذهب إلى أي منفذ فوري وادفع باستخدام هذا الرمز.",
+  "fawry_screen_copied_btn": "تم النسخ!",
+  "fawry_screen_done_btn": "تم",
   "vodafone_appbar_title": "أدخل تفاصيل البطاقة",
   "vodafone_label": "أدخل بيانات الدفع",
   "vodafone_terms": "بالمتابعة فإنك توافق على الشروط والأحكام",
@@ -488,7 +494,6 @@
   "vodafone_validation_empty": "من فضلك أدخل رقم هاتفك",
   "vodafone_validation_invalid": "أدخل رقم هاتف مصري صحيح",
   "vodafone_name": "فودافون كاش",
-
   "subscription_title": "الوصول المميز",
   "subscription_subtitle": "طوّر لعبتك وحلّل أداءك بلا حدود",
   "subscription_btn": "اشترك الآن",
@@ -510,9 +515,7 @@
   "subscription_plan_no_ads": "بدون إعلانات",
   "subscription_plan_duration_month": "{count} يوم",
   "subscription_plan_duration_year": "{count} شهر",
-  "unKnown":"غير محدد",
-
-
+  "unKnown": "غير محدد",
   "achievement_updated_success": "تم تحديث الإنجاز بنجاح",
   "messageSent": "تم إرسال الرسالة بنجاح",
   "failedToSendMessage": "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.",
@@ -651,7 +654,6 @@
   "courseDeleted": "تم حذف الدورة",
   "enrollNow": "اشترك الآن",
   "enrollForPrice": "اشترك مقابل {price}",
-  
   "@deleteLessonConfirmation": {
     "placeholders": {
       "lessonTitle": {
@@ -673,11 +675,9 @@
   "noCoursesFoundFor": "لا توجد دورات لـ \"{searchTerm}\"",
   "percentComplete": "اكتمل {percentage}%",
   "lessonsProgress": "{completed} / {total} دروس",
-  
   "failedToPlayVideo": "فشل تشغيل الفيديو",
   "videoPlaybackError": "خطأ في تشغيل الفيديو",
   "unknownError": "خطأ غير معروف",
-  
   "@noCoursesFoundFor": {
     "placeholders": {
       "searchTerm": {
@@ -726,7 +726,6 @@
   "manageAchievement": "إدارة الإنجازات",
   "switchAccount": "تبديل الحساب",
   "addAccount": "إضافة حساب",
-
   "newConnectionRequests": "طلبات الاتصال الجديدة",
   "noConnectionRequests": "لا توجد طلبات اتصال",
   "noMoreRequests": "لا توجد المزيد من طلبات الاتصال",
@@ -754,7 +753,6 @@
   "weeklyBreakdown": "تفاصيل الأسبوع",
   "weeklyDetails": "التفاصيل الأسبوعية",
   "noDataForMonth": "لا توجد بيانات متاحة لشهر {month}",
-  
   "january": "يناير",
   "february": "فبراير",
   "march": "مارس",
@@ -767,7 +765,6 @@
   "october": "أكتوبر",
   "november": "نوفمبر",
   "december": "ديسمبر",
-  
   "@noDataForMonth": {
     "placeholders": {
       "month": {
@@ -785,7 +782,6 @@
   "engagement": "التفاعل",
   "averageCompletionRate": "متوسط نسبة الإكمال",
   "percentage": "{value}%",
-  
   "@percentage": {
     "placeholders": {
       "value": {
@@ -793,7 +789,6 @@
       }
     }
   },
-
   "completePayment": "إتمام الدفع",
   "adCreatedPendingPayment": "تم إنشاء الإعلان — في انتظار الدفع",
   "adSavedCompletePayment": "تم حفظ إعلانك. أكمل الدفع لتفعيله في الخلاصة.",
@@ -836,7 +831,6 @@
   "updateAd": "تحديث الإعلان",
   "tapToChangeMedia": "اضغط لتغيير الوسائط",
   "optional": "اختياري",
-  
   "@estimatedCost": {
     "placeholders": {
       "price": {
@@ -852,7 +846,6 @@
   "adDeactivated": "تم إلغاء تنشيط الإعلان",
   "noActiveAds": "لا توجد إعلانات نشطة",
   "noInactiveAds": "لا توجد إعلانات غير نشطة",
-  
   "viewAnalyticsDashboard": "عرض لوحة التحكم التحليلية",
   "analyticsOverview": "نظرة عامة تحليلية",
   "ads": "إعلانات",
@@ -860,7 +853,7 @@
   "clicks": "نقرات",
   "completion": "الإكمال",
   "failedToLoadPage": "فشل تحميل الصفحة",
-    "learnMore": "اعرف المزيد",
+  "learnMore": "اعرف المزيد",
   "sponsor": "راعي",
   "advertisement": "إعلان",
   "dashboard": "لوحة التحكم",
@@ -869,10 +862,8 @@
   "deactivateAdMessage": "لن يظهر هذا الإعلان في الخلاصة بعد الآن.",
   "activateAdMessage": "سيظهر هذا الإعلان في الخلاصة مرة أخرى.",
   "deleteAdConfirmation": "هل أنت متأكد من حذف هذا الإعلان؟",
-
   "adSavedAsDraft": "تم حفظ الإعلان كمسودة — لم ينشر",
   "completePaymentToActivate": "أكمل الدفع لتفعيل هذا الإعلان في الخلاصة.",
   "paymentComingSoon": "الدفع قريباً",
   "payNow": "ادفع الآن"
-  
 }
