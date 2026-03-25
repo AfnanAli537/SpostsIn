@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,6 +29,7 @@ import 'package:sports_in/generated/l10n.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;
+
   const CourseDetailScreen({super.key, required this.courseId});
 
   @override
@@ -40,7 +42,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   CourseModel? _course;
   List<LessonModel> _allLessons = [];
   LessonModel? _currentPlayingLesson;
-
   bool _isEditMode = false;
   bool _hasUnsavedChanges = false;
   File? _newThumbnail;
@@ -52,6 +53,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   /// Guards against BlocListener re-firing the same state after a
   /// dialog/route pops back (gray overlay prevention).
   String? _handledPaymentStateType;
+
+  /// True while we are waiting for [EnrollInCourse] to complete after payment.
+  /// When true, the [CoursesBloc] EnrollmentSuccess listener will NOT pop —
+  /// popping happens inside the success dialog's onDismissed instead.
+  // ignore: unused_field
+  bool _enrollingAfterPayment = false;
 
   @override
   void initState() {
@@ -86,6 +93,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _hasUnsavedChanges = false;
         _newThumbnail = null;
         _handledPaymentStateType = null;
+        _enrollingAfterPayment = false;
       });
       context.read<CoursesBloc>().add(
             FetchCourseDetail(courseId: widget.courseId),
@@ -212,8 +220,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<CoursesBloc>(),
-          child: EditLessonScreen(
-              lesson: lesson, courseId: widget.courseId),
+          child:
+              EditLessonScreen(lesson: lesson, courseId: widget.courseId),
         ),
       ),
     ).then((updated) {
@@ -225,7 +233,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     });
   }
 
-  // ─── Payment ───────────────────────────────────────────────────────────────
+  // ─── Payment ─────────────────────────────────────────────────────────────
 
   Future<void> _handleEnroll(
       BuildContext enrollContext, CourseModel course) async {
@@ -235,9 +243,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           .add(EnrollInCourse(courseId: course.id));
       return;
     }
-    // Reset guard for fresh payment attempt
-    setState(() => _handledPaymentStateType = null);
-    // Read bloc BEFORE any async gap
+
+    // Reset guards for a fresh payment attempt.
+    setState(() {
+      _handledPaymentStateType = null;
+      _enrollingAfterPayment = false;
+    });
+
     final paymentBloc = enrollContext.read<PaymentBloc>();
     await initiatePaymentFlow(
       context: enrollContext,
@@ -248,6 +260,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     );
   }
 
+  /// Called when [ManualActivateSuccess] or [ProcessSuccessful] fires.
+  ///
+  /// Shows a success dialog. In [onDismissed] we:
+  ///   1. Set [_enrollingAfterPayment] = true so the CoursesBloc listener
+  ///      knows NOT to pop immediately on EnrollmentSuccess.
+  ///   2. Dispatch [EnrollInCourse] so the backend records the enrollment.
+  ///   3. On [EnrollmentSuccess] the listener will pop (see below).
   void _showSuccessAndEnroll(BuildContext ctx, String courseId) {
     final s = S.of(ctx);
     showDialog(
@@ -256,8 +275,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       builder: (_) => PaymentSuccessDialog(
         transactionId: s.unKnown,
         onDismissed: () {
-          // Trigger enrollment after the success dialog dismisses
           if (mounted) {
+            // Mark that the next EnrollmentSuccess should pop the screen.
+            setState(() => _enrollingAfterPayment = true);
             ctx.read<CoursesBloc>().add(EnrollInCourse(courseId: courseId));
           }
         },
@@ -265,7 +285,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     );
   }
 
-  // ─── Build ─────────────────────────────────────────────────────────────────
+  // ─── Build ───────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -294,8 +314,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               } else if (state is ManualActivateSuccess ||
                   state is ProcessSuccessful) {
                 _handledPaymentStateType = stateType;
-                // Show success dialog HERE (not in Fawry/Vodafone screens)
-                // then trigger enrollment on dismiss
+                // Show success dialog, then enroll on dismiss.
                 if (_course != null) {
                   _showSuccessAndEnroll(context, _course!.id);
                 }
@@ -313,7 +332,20 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   Fluttertoast.showToast(
                       msg: string.enrolledSuccessfully,
                       backgroundColor: Colors.green);
-                  Navigator.pop(context, true);
+
+                  // KEY FIX:
+                  // If we reached here via the payment flow, pop NOW
+                  // (the success dialog has already been shown and dismissed).
+                  // If we reached here via free enrollment (direct tap),
+                  // _enrollingAfterPayment is false, so we also pop normally.
+                  //
+                  // In both cases we pop — the difference is that when
+                  // _enrollingAfterPayment is false the dialog was never shown,
+                  // and when it's true the dialog was already dismissed before
+                  // EnrollInCourse was dispatched, so there's no stale overlay.
+                  if (mounted) {
+                    Navigator.pop(context, true);
+                  }
                 } else if (state is CourseDeleted) {
                   Fluttertoast.showToast(
                       msg: string.courseDeleted,
@@ -334,6 +366,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 if (_course == null && state is CourseDetailLoaded) {
                   _updateTabController(state.course);
                 }
+
                 if (state is LessonsLoaded &&
                     state.courseId == widget.courseId) {
                   if (state.lessons != _allLessons) {
@@ -353,8 +386,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 return Scaffold(
                   appBar: AppBar(
                     title: Text(course.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
                     actions: _buildAppBarActions(course, string),
                   ),
                   body: NestedScrollView(
@@ -365,8 +397,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                           allLessons: _allLessons,
                           courseId: widget.courseId,
                           thumbnailUrl: course.thumbnailUrl,
-                          onBack: () => setState(
-                              () => _currentPlayingLesson = null),
+                          onBack: () =>
+                              setState(() => _currentPlayingLesson = null),
                           onNextLesson: (l) =>
                               setState(() => _currentPlayingLesson = l),
                           onPreviousLesson: (l) =>
@@ -413,8 +445,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       Tab(text: string.description),
     ];
     if (course.isOwner) {
-      tabs.addAll(
-          [Tab(text: string.enrolled), Tab(text: string.revenue)]);
+      tabs.addAll([Tab(text: string.enrolled), Tab(text: string.revenue)]);
     } else if (course.isEnrolled) {
       tabs.add(Tab(text: string.progress));
     }
@@ -431,8 +462,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         onRefresh: () => context.read<CoursesBloc>().add(
               FetchCourseLessons(courseId: widget.courseId),
             ),
-        onLessonTap: (l) =>
-            setState(() => _currentPlayingLesson = l),
+        onLessonTap: (l) => setState(() => _currentPlayingLesson = l),
         onUpdateLesson: _navigateToEditLesson,
         onDeleteLesson: (lesson) => _deleteLesson(lesson, string),
       ),
@@ -452,12 +482,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         onFieldChanged: _onFieldChanged,
       ),
     ];
+
     if (course.isOwner) {
       views.add(EnrolleesTab(courseId: course.id));
       views.add(RevenueTab(courseId: course.id));
     } else if (course.isEnrolled) {
       views.add(CourseProgressTab(course: course));
     }
+
     return views;
   }
 
@@ -499,8 +531,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             child: Row(children: [
               Icon(_isEditMode ? Icons.close : Icons.edit),
               SizedBox(width: 8.w),
-              Text(
-                  _isEditMode ? string.cancelEdit : string.editCourse),
+              Text(_isEditMode ? string.cancelEdit : string.editCourse),
             ]),
           ),
           PopupMenuItem(
@@ -538,8 +569,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             return CustomElevatedButton(
               text: course.isFree
                   ? string.enrollNow
-                  : string.enrollForPrice(
-                      '${course.price} ${string.egp}'),
+                  : string.enrollForPrice('${course.price} ${string.egp}'),
               isLoading: isLoading,
               onPressed: isLoading
                   ? () {}
@@ -569,10 +599,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
+
   _SliverAppBarDelegate(this._tabBar);
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
+
   @override
   double get maxExtent => _tabBar.preferredSize.height;
 

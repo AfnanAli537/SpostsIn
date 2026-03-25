@@ -7,15 +7,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// Shows the Fawry reference code.
+/// Shows the Fawry reference code after payment initiation.
 ///
-/// On success: pops itself. The parent (CourseDetailScreen / AdPaymentScreen /
-/// SubscriptionScreen) owns its own BlocListener and handles showing the
-/// success dialog and next navigation.
-///
-/// No dialog is ever shown here — that avoids the stale-context overlay bug.
+/// BEHAVIOR (per requirements):
+/// - Shows a loading/processing overlay while initiating & activating.
+/// - Displays the reference code once received.
+/// - On [ManualActivateSuccess]: shows a success dialog ON THIS SCREEN.
+/// - Does NOT pop itself — the user must navigate back manually.
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
@@ -35,7 +37,12 @@ class FawryScreen extends StatefulWidget {
 class _FawryScreenState extends State<FawryScreen> {
   String? _referenceCode;
   bool _isLoading = false;
-  bool _popped = false;
+
+  /// Guards against showing the success dialog more than once.
+  bool _successShown = false;
+
+  /// Guards against showing the processing dialog more than once.
+  bool _isProcessingDialogOpen = false;
 
   @override
   void initState() {
@@ -61,19 +68,42 @@ class _FawryScreenState extends State<FawryScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
         margin: EdgeInsets.all(12.w),
       ),
     );
   }
 
-  void _popOnce() {
-    if (_popped) return;
-    _popped = true;
-    if (mounted && Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
     }
+  }
+
+  void _showSuccessDialog(String? transId) {
+    if (_successShown || !mounted) return;
+    _successShown = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PaymentSuccessDialog(
+        transactionId: transId ?? S.of(context).unKnown,
+        // User stays on Fawry screen after dismissing — they close it themselves.
+        onDismissed: () {},
+      ),
+    );
   }
 
   @override
@@ -83,23 +113,38 @@ class _FawryScreenState extends State<FawryScreen> {
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
-        if (state is PaymentInitiating || state is ManualActivating) {
+        // ── Loading states ──────────────────────────────────────────────────
+        if (state is PaymentInitiating) {
           setState(() => _isLoading = true);
-        } else if (state is PaymentInitiatedAwaitingActivation) {
+          _showProcessingDialog();
+        } else if (state is ManualActivating) {
+          setState(() => _isLoading = true);
+          _showProcessingDialog();
+        }
+
+        // ── Reference code received ─────────────────────────────────────────
+        if (state is PaymentInitiatedAwaitingActivation) {
+          _dismissProcessingDialog();
           setState(() {
             _isLoading = false;
             _referenceCode = state.referenceCode;
           });
-        } else {
-          if (mounted) setState(() => _isLoading = false);
         }
 
+        // ── SUCCESS: show dialog HERE, do NOT pop ───────────────────────────
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
-          // Just pop — the parent BlocListener handles success UX
-          _popOnce();
+          _dismissProcessingDialog();
+          if (mounted) setState(() => _isLoading = false);
+          final txId = state is ManualActivateSuccess
+              ? (state as ManualActivateSuccess).message
+              : null;
+          _showSuccessDialog(txId);
         }
 
+        // ── Errors ──────────────────────────────────────────────────────────
         if (state is PaymentInitiateError || state is ManualActivateError) {
+          _dismissProcessingDialog();
+          if (mounted) setState(() => _isLoading = false);
           final msg = state is PaymentInitiateError
               ? (state as PaymentInitiateError).message
               : (state as ManualActivateError).message;
@@ -153,8 +198,7 @@ class _FawryScreenState extends State<FawryScreen> {
                         ),
                         child: Center(
                           child: Icon(Icons.sync_rounded,
-                              size: 80.sp,
-                              color: const Color(0xFF0055A5)),
+                              size: 80.sp, color: const Color(0xFF0055A5)),
                         ),
                       ),
                     ),
@@ -168,6 +212,8 @@ class _FawryScreenState extends State<FawryScreen> {
                     style: TextStyle(
                         fontSize: 13.sp, fontStyle: FontStyle.italic)),
                 SizedBox(height: 24.h),
+
+                // ── Reference code / loading / error widget ──────────────
                 if (_isLoading)
                   Container(
                     width: double.infinity,
@@ -242,6 +288,7 @@ class _FawryScreenState extends State<FawryScreen> {
                       ],
                     ),
                   ),
+
                 const Spacer(),
                 SizedBox(
                   width: double.infinity,
@@ -250,8 +297,7 @@ class _FawryScreenState extends State<FawryScreen> {
                     onPressed: _referenceCode != null ? _copyCode : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primary,
-                      disabledBackgroundColor:
-                          theme.primary.withOpacity(0.4),
+                      disabledBackgroundColor: theme.primary.withOpacity(0.4),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.r)),
                       elevation: 0,

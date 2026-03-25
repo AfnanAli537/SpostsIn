@@ -433,40 +433,40 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 ],
               ),
 
-              // ── Price display ──────────────────────────────────────────────
-              if (_startDate != null && _endDate != null)
-                Padding(
-                  padding: EdgeInsets.only(top: 12.h),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16.w, vertical: 12.h),
-                    decoration: BoxDecoration(
-                      color: theme.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.monetization_on_outlined,
-                            color: theme.primary),
-                        SizedBox(width: 8.w),
-                        Text(
-                          strings.estimatedCost(
-                            _calculatePrice(strings).toStringAsFixed(0),
-                          ),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: theme.primary,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(strings.pricePerDay('5'),
-                            style: TextStyle(
-                                fontSize: 12.sp, color: Colors.grey[600])),
-                      ],
-                    ),
-                  ),
-                ),
+              // // ── Price display ──────────────────────────────────────────────
+              // if (_startDate != null && _endDate != null)
+              //   Padding(
+              //     padding: EdgeInsets.only(top: 12.h),
+              //     child: Container(
+              //       padding: EdgeInsets.symmetric(
+              //           horizontal: 16.w, vertical: 12.h),
+              //       decoration: BoxDecoration(
+              //         color: theme.primary.withOpacity(0.08),
+              //         borderRadius: BorderRadius.circular(10.r),
+              //       ),
+              //       child: Row(
+              //         children: [
+              //           Icon(Icons.monetization_on_outlined,
+              //               color: theme.primary),
+              //           SizedBox(width: 8.w),
+              //           Text(
+              //             strings.estimatedCost(
+              //               _calculatePrice(strings).toStringAsFixed(0),
+              //             ),
+              //             style: TextStyle(
+              //               fontSize: 14.sp,
+              //               fontWeight: FontWeight.w600,
+              //               color: theme.primary,
+              //             ),
+              //           ),
+              //           SizedBox(width: 4.w),
+              //           Text(strings.pricePerDay('5'),
+              //               style: TextStyle(
+              //                   fontSize: 12.sp, color: Colors.grey[600])),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
               SizedBox(height: 20.h),
 
               // ── Action URL ─────────────────────────────────────────────────

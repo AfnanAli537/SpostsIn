@@ -1,4 +1,5 @@
 // ignore_for_file: unnecessary_cast
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,12 +18,16 @@ import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.da
 import 'package:sports_in/generated/l10n.dart';
 
 class SubscriptionScreen extends StatefulWidget {
-  /// When true (default), the X close button is hidden.
-  /// Pass false when navigating here from outside settings (e.g. onboarding)
-  /// so the button is shown.
-  final bool hideCloseButton;
+  /// Controls whether the X close button is visible.
+  ///
+  /// Pass `true` when you want the user to be able to close/dismiss the screen
+  /// (e.g. when navigating from onboarding or a paywall prompt).
+  ///
+  /// Defaults to `false` (close button hidden — e.g. when opened from Settings
+  /// where the back arrow is already present).
+  final bool showCloseButton;
 
-  const SubscriptionScreen({super.key, this.hideCloseButton = false});
+  const SubscriptionScreen({super.key, this.showCloseButton = false});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -36,7 +41,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   String? _transId;
   String? _currentPlanId;
 
-  // ── FIX: cache plans in local state so they survive state changes ──
+  // Cache plans in local state so they survive payment state changes.
   List<SubscriptionPlanModel> _cachedPlans = [];
   bool _isLoadingPlans = true;
   bool _isLoadingSubscription = true;
@@ -54,9 +59,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     context.read<PaymentBloc>().add(const FetchPlansEvent());
     final userId = getIt<SharedPref>().getUserId();
     if (userId != null) {
-      context.read<PaymentBloc>().add(FetchMySubscriptionEvent(userId: userId));
+      context
+          .read<PaymentBloc>()
+          .add(FetchMySubscriptionEvent(userId: userId));
     } else {
-      // No user id → no subscription to fetch, stop that spinner immediately
       _isLoadingSubscription = false;
     }
   }
@@ -86,17 +92,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
   Future<void> _onSubscribeTap(List<SubscriptionPlanModel> plans) async {
     if (_selectedPlan == null) return;
-
     context.read<PaymentBloc>().add(SelectPlanEvent(_selectedPlan!));
 
     if (_selectedPlan!.isFree) {
       context.read<PaymentBloc>().add(
-        InitiatePaymentEvent(
-          targetId: _selectedPlan!.id,
-          targetType: PaymentTargetType.supscription,
-          method: PaymentMethod.creditCard,
-        ),
-      );
+            InitiatePaymentEvent(
+              targetId: _selectedPlan!.id,
+              targetType: PaymentTargetType.supscription,
+              method: PaymentMethod.creditCard,
+            ),
+          );
       return;
     }
 
@@ -114,7 +119,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             ),
           ),
         );
-
       case PaymentMethod.fawryPay:
         Navigator.push(
           context,
@@ -125,15 +129,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             ),
           ),
         );
-
       case PaymentMethod.creditCard:
         context.read<PaymentBloc>().add(
-          InitiatePaymentEvent(
-            targetId: _selectedPlan!.id,
-            targetType: PaymentTargetType.supscription,
-            method: PaymentMethod.creditCard,
-          ),
-        );
+              InitiatePaymentEvent(
+                targetId: _selectedPlan!.id,
+                targetType: PaymentTargetType.supscription,
+                method: PaymentMethod.creditCard,
+              ),
+            );
     }
   }
 
@@ -143,7 +146,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) async {
-        // ── Plans loaded → cache them ──
+        // ── Plans loaded → cache them ──────────────────────────────────────
         if (state is PlansLoaded) {
           setState(() {
             _cachedPlans = state.plans;
@@ -155,16 +158,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             }
           });
         }
-
         if (state is PlansLoading) {
           setState(() => _isLoadingPlans = true);
         }
-
         if (state is PlansError) {
           setState(() => _isLoadingPlans = false);
         }
 
-        // ── Current subscription loaded ──
+        // ── Current subscription loaded ─────────────────────────────────────
         if (state is MySubscriptionLoaded) {
           setState(() {
             _currentPlanId = state.subscription.isValid
@@ -173,11 +174,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             _isLoadingSubscription = false;
           });
         }
-
         if (state is MySubscriptionLoading) {
           setState(() => _isLoadingSubscription = true);
         }
-
         if (state is NoActiveSubscription) {
           setState(() {
             _currentPlanId = null;
@@ -185,12 +184,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           });
         }
 
-        // ── Processing ──
+        // ── Processing ─────────────────────────────────────────────────────
         if (state is PaymentInitiating || state is ManualActivating) {
           _showProcessingDialog();
         }
 
-        // ── Credit card redirect → WebViewScreen ──
+        // ── Credit card redirect → WebViewScreen ───────────────────────────
         if (state is PaymentRedirectReady) {
           _dismissProcessingDialog();
           _transId = state.transactionId;
@@ -203,13 +202,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               ),
             ),
           );
-          // Refresh plans when user returns from WebView
           if (mounted) {
             context.read<PaymentBloc>().add(const FetchPlansEvent());
           }
         }
 
-        // ── Free plan success → dialog then navigate to mainLayout ──
+        // ── Free plan success → dialog then navigate to mainLayout ──────────
         if (state is ProcessSuccessful) {
           _dismissProcessingDialog();
           showDialog(
@@ -229,20 +227,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           );
         }
 
-        // ── Manual success (Vodafone/Fawry) → dialog only ──
-        if (state is ManualActivateSuccess) {
-          _dismissProcessingDialog();
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => PaymentSuccessDialog(
-              transactionId: _transId ?? s.unKnown,
-              onDismissed: () {},
-            ),
-          );
-        }
+        // ── Manual success (Vodafone/Fawry handled on their own screens) ────
+        // SubscriptionScreen only needs to dismiss the processing dialog here;
+        // Fawry shows the dialog on itself, Vodafone shows it and then pops.
+        // If you want a fallback dialog for any edge case, uncomment below:
+        //
+        // if (state is ManualActivateSuccess) {
+        //   _dismissProcessingDialog();
+        // }
 
-        // ── Errors ──
+        // ── Errors ─────────────────────────────────────────────────────────
         if (state is PaymentInitiateError ||
             state is ManualActivateError ||
             state is PlansError) {
@@ -250,18 +244,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           final message = state is PaymentInitiateError
               ? (state as PaymentInitiateError).message
               : state is ManualActivateError
-              ? (state as ManualActivateError).message
-              : (state as PlansError).message;
-
+                  ? (state as ManualActivateError).message
+                  : (state as PlansError).message;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+                  const Icon(Icons.error_outline,
+                      color: Colors.white, size: 18),
                   SizedBox(width: 8.w),
                   Expanded(child: Text(message)),
                 ],
@@ -269,8 +259,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.r),
-              ),
+                  borderRadius: BorderRadius.circular(10.r)),
               margin: EdgeInsets.all(12.w),
             ),
           );
@@ -280,19 +269,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         backgroundColor: const Color(0xFF0D1B2A),
         body: Stack(
           children: [
-            // ── Hero image ──
+            // ── Hero image ────────────────────────────────────────────────
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.38,
               width: double.infinity,
               child: const _HeroImage(),
             ),
 
-            // ── Main scrollable content ──
+            // ── Main scrollable content ───────────────────────────────────
             SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.30),
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.30),
                   Container(
                     decoration: const BoxDecoration(
                       color: Color(0xFF0D1B2A),
@@ -307,8 +297,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
               ),
             ),
 
-            // ── X close button (hidden when hideCloseButton is true) ──
-            if (!widget.hideCloseButton)
+            // ── X close button — only shown when showCloseButton is true ──
+            if (widget.showCloseButton)
               Positioned(
                 top: MediaQuery.of(context).padding.top + 12,
                 right: 16.w,
@@ -335,7 +325,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   }
 
   Widget _buildBody(S s) {
-    // Show spinner only while BOTH loads are still in progress
     final isLoading = _isLoadingPlans || _isLoadingSubscription;
 
     if (isLoading && _cachedPlans.isEmpty) {
@@ -347,7 +336,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       );
     }
 
-    // Use cached plans — they survive any subsequent state changes
     final plans = _cachedPlans;
 
     return Column(
@@ -373,28 +361,33 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         ),
         SizedBox(height: 28.h),
 
-        // ── Plan cards ──
+        // ── Plan cards ──────────────────────────────────────────────────
         plans.isEmpty
             ? SizedBox(
                 height: 180.h,
                 child: const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF4CAF50)),
+                  child:
+                      CircularProgressIndicator(color: Color(0xFF4CAF50)),
                 ),
               )
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: plans.asMap().entries.map((entry) {
                   final plan = entry.value;
-                  final isMiddle = entry.key == 1 && plans.length >= 3;
+                  final isMiddle =
+                      entry.key == 1 && plans.length >= 3;
                   final isSelected = _selectedPlan?.id == plan.id;
                   return Expanded(
                     flex: isMiddle ? 12 : 10,
                     child: GestureDetector(
-                      onTap: () => setState(() => _selectedPlan = plan),
+                      onTap: () =>
+                          setState(() => _selectedPlan = plan),
                       child: Padding(
                         padding: EdgeInsets.only(
                           left: entry.key == 0 ? 0 : 5.w,
-                          right: entry.key == plans.length - 1 ? 0 : 5.w,
+                          right: entry.key == plans.length - 1
+                              ? 0
+                              : 5.w,
                         ),
                         child: _PlanCard(
                           plan: plan,
@@ -408,10 +401,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   );
                 }).toList(),
               ),
-
         SizedBox(height: 28.h),
 
-        // ── Subscribe button ──
+        // ── Subscribe button ─────────────────────────────────────────────
         ScaleTransition(
           scale: _btnController,
           child: GestureDetector(
@@ -452,7 +444,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             ),
           ),
         ),
-
         SizedBox(height: 16.h),
         Text(
           s.subscription_renewal_note,
@@ -470,8 +461,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 }
 
 // ─────────────────────────────────────────────
-//  PLAN CARD
+// PLAN CARD
 // ─────────────────────────────────────────────
+
 class _PlanCard extends StatelessWidget {
   final SubscriptionPlanModel plan;
   final bool isSelected;
@@ -513,18 +505,19 @@ class _PlanCard extends StatelessWidget {
         'label': plan.monthlyVideoAnalysisLimit == -1
             ? S.of(context).subscription_plan_unlimited_videos
             : plan.monthlyVideoAnalysisLimit == 0
-            ? S.of(context).subscription_plan_no_videos
-            : S
-                  .of(context)
-                  .subscription_plan_videos_month(
-                    plan.monthlyVideoAnalysisLimit,
-                  ),
+                ? S.of(context).subscription_plan_no_videos
+                : S
+                    .of(context)
+                    .subscription_plan_videos_month(
+                        plan.monthlyVideoAnalysisLimit),
       },
       {
         'icon': Icons.campaign_rounded,
         'label': plan.monthlyAdLimit == 0
             ? S.of(context).subscription_plan_no_ads
-            : S.of(context).subscription_plan_ads_month(plan.monthlyAdLimit),
+            : S
+                .of(context)
+                .subscription_plan_ads_month(plan.monthlyAdLimit),
       },
       {
         'icon': plan.hasDetailedReports
@@ -539,13 +532,11 @@ class _PlanCard extends StatelessWidget {
           'icon': Icons.calendar_today_rounded,
           'label': plan.durationDays <= 31
               ? S
-                    .of(context)
-                    .subscription_plan_duration_month(plan.durationDays)
-              : S
-                    .of(context)
-                    .subscription_plan_duration_year(
-                      (plan.durationDays / 30).round(),
-                    ),
+                  .of(context)
+                  .subscription_plan_duration_month(plan.durationDays)
+              : S.of(context).subscription_plan_duration_year(
+                    (plan.durationDays / 30).round(),
+                  ),
         },
     ];
   }
@@ -559,11 +550,12 @@ class _PlanCard extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Badge ──
+        // ── Badge ────────────────────────────────────────────────────────
         if (badge != null)
           Container(
             margin: EdgeInsets.only(bottom: 6.h),
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+            padding:
+                EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
             decoration: BoxDecoration(
               color: _accent,
               borderRadius: BorderRadius.circular(20.r),
@@ -581,7 +573,7 @@ class _PlanCard extends StatelessWidget {
         else
           SizedBox(height: 26.h),
 
-        // ── Card ──
+        // ── Card ─────────────────────────────────────────────────────────
         AnimatedContainer(
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOut,
@@ -602,11 +594,11 @@ class _PlanCard extends StatelessWidget {
                   ]
                 : [],
           ),
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
+          padding:
+              EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Plan name ──
               Center(
                 child: Text(
                   plan.name,
@@ -618,11 +610,11 @@ class _PlanCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 6.h),
-
-              // ── Price ──
               Center(
                 child: Text(
-                  plan.price == 0 ? '0' : plan.price.toStringAsFixed(0),
+                  plan.price == 0
+                      ? '0'
+                      : plan.price.toStringAsFixed(0),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 28.sp,
@@ -630,24 +622,21 @@ class _PlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // ── Duration label ──
               Center(
                 child: Text(
                   plan.isFree
                       ? S.of(context).subscription_plan_forever
                       : plan.durationDays <= 31
-                      ? S.of(context).subscription_plan_per_month
-                      : S.of(context).subscription_plan_per_year,
+                          ? S.of(context).subscription_plan_per_month
+                          : S.of(context).subscription_plan_per_year,
                   style: TextStyle(
                     color: const Color(0xFF8099B0),
                     fontSize: 10.sp,
                   ),
                 ),
               ),
-
-              // ── Description ──
-              if (plan.description != null && plan.description!.isNotEmpty) ...[
+              if (plan.description != null &&
+                  plan.description!.isNotEmpty) ...[
                 SizedBox(height: 8.h),
                 Center(
                   child: Text(
@@ -662,19 +651,17 @@ class _PlanCard extends StatelessWidget {
                   ),
                 ),
               ],
-
               SizedBox(height: 10.h),
               Divider(color: Colors.white.withOpacity(0.1), height: 1),
               SizedBox(height: 10.h),
-
-              // ── Features ──
               ...features.map(
                 (f) => Padding(
                   padding: EdgeInsets.only(bottom: 6.h),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(f['icon'] as IconData, size: 13.sp, color: _accent),
+                      Icon(f['icon'] as IconData,
+                          size: 13.sp, color: _accent),
                       SizedBox(width: 5.w),
                       Expanded(
                         child: Text(
@@ -690,10 +677,7 @@ class _PlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: 14.h),
-
-              // ── Select / Current button ──
               SizedBox(
                 width: double.infinity,
                 child: AnimatedContainer(
@@ -703,8 +687,8 @@ class _PlanCard extends StatelessWidget {
                     color: isCurrentPlan
                         ? _accent
                         : isSelected
-                        ? _accent
-                        : Colors.transparent,
+                            ? _accent
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(8.r),
                     border: (isSelected || isCurrentPlan)
                         ? null
@@ -735,8 +719,9 @@ class _PlanCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-//  HERO IMAGE
+// HERO IMAGE
 // ─────────────────────────────────────────────
+
 class _HeroImage extends StatelessWidget {
   const _HeroImage();
 

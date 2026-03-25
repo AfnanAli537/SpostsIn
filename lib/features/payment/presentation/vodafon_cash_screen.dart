@@ -7,10 +7,12 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// On success: pops itself. The parent BlocListener handles success UX.
-/// No dialog is shown here.
+/// On success: shows a success dialog, then pops this screen on dismiss.
+/// The processing overlay is shown while payment is in progress.
 class VodafoneCashScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final PaymentTargetType targetType;
@@ -29,7 +31,12 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   final _mobileController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  bool _popped = false;
+
+  /// Guards against showing the processing dialog more than once.
+  bool _isProcessingDialogOpen = false;
+
+  /// Guards against showing the success dialog more than once.
+  bool _successShown = false;
 
   @override
   void dispose() {
@@ -49,12 +56,39 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
         );
   }
 
-  void _popOnce() {
-    if (_popped) return;
-    _popped = true;
-    if (mounted && Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
     }
+  }
+
+  void _showSuccessAndPop() {
+    if (_successShown || !mounted) return;
+    _successShown = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PaymentSuccessDialog(
+        transactionId: S.of(context).unKnown,
+        onDismissed: () {
+          // Pop the Vodafone screen after the user dismisses the dialog.
+          if (mounted && Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -64,18 +98,23 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
+        // ── Loading states ──────────────────────────────────────────────────
         if (state is PaymentInitiating || state is ManualActivating) {
           setState(() => _isLoading = true);
-        } else {
-          if (mounted) setState(() => _isLoading = false);
+          _showProcessingDialog();
         }
 
+        // ── SUCCESS: show dialog then pop ───────────────────────────────────
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
-          // Just pop — parent handles success UX
-          _popOnce();
+          _dismissProcessingDialog();
+          if (mounted) setState(() => _isLoading = false);
+          _showSuccessAndPop();
         }
 
+        // ── Errors ──────────────────────────────────────────────────────────
         if (state is PaymentInitiateError || state is ManualActivateError) {
+          _dismissProcessingDialog();
+          if (mounted) setState(() => _isLoading = false);
           final msg = state is PaymentInitiateError
               ? (state as PaymentInitiateError).message
               : (state as ManualActivateError).message;
@@ -146,18 +185,17 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                     controller: _mobileController,
                     onTapOutside: (_) => FocusScope.of(context).unfocus(),
                     keyboardType: TextInputType.phone,
-                    style: TextStyle(
-                        fontSize: 15.sp, color: Colors.black87),
+                    style: TextStyle(fontSize: 15.sp, color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: s.vodafone_hint,
-                      hintStyle: TextStyle(
-                          color: theme.onError, fontSize: 14.sp),
+                      hintStyle:
+                          TextStyle(color: theme.onError, fontSize: 14.sp),
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: 16.w, vertical: 18.h),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
-                        borderSide: const BorderSide(
-                            color: Color(0xFFE60000)),
+                        borderSide:
+                            const BorderSide(color: Color(0xFFE60000)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
@@ -170,8 +208,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
-                        borderSide: const BorderSide(
-                            color: Colors.red, width: 1.5),
+                        borderSide:
+                            const BorderSide(color: Colors.red, width: 1.5),
                       ),
                     ),
                     validator: (v) {
