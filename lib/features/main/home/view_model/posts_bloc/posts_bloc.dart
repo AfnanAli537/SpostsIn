@@ -19,6 +19,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
   PostsBloc({required this.postRepo}) : super(PostsInitial()) {
     on<FetchPosts>(_onFetchPosts);
+    on<FetchSinglePost>(_onFetchSinglePost);
     on<FetchUserPosts>(_onFetchUserPosts);
     on<LikePost>(_onLikePost);
     on<UploadPost>(_onUploadPost);
@@ -89,7 +90,18 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       _isFetching = false;
     }
   }
-
+Future<void> _onFetchSinglePost(
+  FetchSinglePost event,
+  Emitter<PostsState> emit,
+) async {
+  emit(PostsLoading());
+  try {
+    final post = await postRepo.getPostById(postId: event.postId);
+    emit(SinglePostLoaded(post: post));
+  } catch (e) {
+    emit(PostsError( e.toString()));
+  }
+}
   Future<void> _onFetchUserPosts(
     FetchUserPosts event,
     Emitter<PostsState> emit,
@@ -116,7 +128,17 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       emit(PostsError('Failed to fetch user posts: ${e is ApiException ? e.message : e.toString()}'));
     }
   }
-
+// Future<void> _onFetchSinglePost(
+//   FetchSinglePost event,
+//   Emitter<PostsState> emit,
+// ) async {
+//   emit(PostsLoading());
+//   final result = await postRepo.getPostById(event.postId);
+//   result.fold(
+//     (error) => emit(PostsError( error.message)),
+//     (post) => emit(SinglePostLoaded(post: post)),
+//   );
+// }
   Future<void> _onLikePost(LikePost event, Emitter<PostsState> emit) async {
     final currentState = state;
     if (currentState is! PostsLoaded) return;

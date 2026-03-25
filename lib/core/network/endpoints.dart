@@ -17,7 +17,8 @@ class Endpoints {
   static const String deletePost = '/api/Posts/{id}';
   static const String postToggleVisibility =
       '/api/Posts/{id}/toggle-visibility';
-
+ 
+static const String getPostById = '/api/Posts/{id}';
   static const String putLike = "/api/Posts/{id}/like";
   static const String putComment = "/api/Posts/{id}/comment";
   static const String getLikes = "/api/Posts/{id}/likes";

@@ -103,7 +103,28 @@ class PostsRemoteDataSourceImpl implements PostsRepository {
       rethrow;
     }
   }
-
+@override
+Future<PostModel> getPostById({required String postId}) async {
+  try {
+    final url = Endpoints.getPostById.replaceFirst('{id}', postId);
+    final response = await apiClient.get(url);
+ 
+    log('getPostById status: ${response.statusCode}');
+    log('getPostById data: ${response.data}');
+ 
+    if (response.statusCode == 200) {
+      return PostModel.fromJson(response.data as Map<String, dynamic>);
+    }
+ 
+    throw ApiErrorHandler.handleDioError(_badResponse(response));
+  } on DioException catch (e) {
+    log('Dio Error getPostById: ${e.message}');
+    throw ApiErrorHandler.handleDioError(e);
+  } catch (e) {
+    log('Unknown Error getPostById: $e');
+    rethrow;
+  }
+}
   @override
   Future<Map<String, dynamic>> getLikes({
     required String postId,

@@ -32,6 +32,7 @@ import 'package:sports_in/features/main/profile/view/presentation/edit_profile_r
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
+import 'package:sports_in/features/notitification/presentation/post_detail_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
 import 'package:sports_in/features/register/view/presentation/registration_otp/registration_otp_screen.dart';
@@ -186,6 +187,11 @@ case AppRoutes.mainLayout:
       ],
       child: const CustomBottomNav(),
     ),
+  );
+  case AppRoutes.postDetail:
+  final postId = settings.arguments as String;
+  return CupertinoPageRoute(
+    builder: (_) => PostDetailScreen(postId: postId),
   );
       // ── Profile ─────────────────────────────────────────────────────────────
       case AppRoutes.userProfile:
