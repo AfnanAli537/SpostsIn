@@ -53,8 +53,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   late TextEditingController _descriptionController;
   late TextEditingController _priceController;
   bool _isFreeEdit = false;
+  String? _transId;
+  bool _isManualActivationHandled = false; 
 
-  // Processing dialog state — same guard pattern as SubscriptionScreen
+  // Processing dialog state — same pattern as AdPaymentScreen
   bool _isProcessingDialogOpen = false;
   String? _handledPaymentStateType;
 
@@ -115,7 +117,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
   }
 
-  // ── Processing dialog helpers (same as SubscriptionScreen) ────────────────
+  // ── Processing dialog helpers (same as AdPaymentScreen) ────────────────
 
   void _showProcessingDialog() {
     if (_isProcessingDialogOpen) return;
@@ -251,7 +253,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       return;
     }
 
-    // Reset guard for a fresh payment attempt — same as SubscriptionScreen
+    // Reset guard for a fresh payment attempt — same as AdPaymentScreen
     setState(() => _handledPaymentStateType = null);
 
     final paymentBloc = enrollContext.read<PaymentBloc>();
@@ -282,7 +284,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             listener: (ctx, state) {
               // ── Processing overlay for credit card initiation only ──────
               // Fawry and Vodafone manage their own processing dialogs
-              // internally, just like in the subscription flow.
+              // internally, just like in the ad payment flow.
               if (state is PaymentInitiating) {
                 _showProcessingDialog();
               }
@@ -295,6 +297,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 _handledPaymentStateType = stateKey;
 
                 _dismissProcessingDialog();
+                _transId = state.transactionId;
+
                 Navigator.push(
                   ctx,
                   MaterialPageRoute(
@@ -308,7 +312,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
               // ── Free course success (ProcessSuccessful) ────────────────
               // Show success dialog, then trigger enrollment, then navigate
-              // back. This mirrors how SubscriptionScreen handles free plans.
+              // back. This mirrors how AdPaymentScreen handles free/redirect.
               if (state is ProcessSuccessful) {
                 final stateKey = state.runtimeType.toString();
                 if (stateKey == _handledPaymentStateType) return;
@@ -322,7 +326,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   context: ctx,
                   barrierDismissible: false,
                   builder: (_) => PaymentSuccessDialog(
-                    transactionId: string.unKnown,
+                    transactionId: _transId ?? string.unKnown,
                     onDismissed: () {
                       if (mounted) {
                         ctx
@@ -334,11 +338,22 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 );
               }
 
-              // ── ManualActivateSuccess: do NOTHING here ─────────────────
-              // Fawry and Vodafone screens handle their own success dialogs
-              // and navigate to mainLayout themselves — exactly like the
-              // subscription flow. The parent must not interfere.
-              // (Same as SubscriptionScreen which also ignores this state.)
+              // ── FAWRY / VODAFONE success (ManualActivateSuccess) ──────────────
+              // Do NOT show a dialog here — Fawry shows it on its own screen and
+              // Vodafone shows it on its own screen then navigates away.
+              // We just dismiss the processing overlay (safety) and reset state.
+              if (state is ManualActivateSuccess && !_isManualActivationHandled) {
+                _isManualActivationHandled = true;
+                _dismissProcessingDialog();
+                // Reset guard so the next payment attempt is fresh.
+                setState(() => _handledPaymentStateType = null);
+                // Trigger enrollment after successful payment
+                if (mounted && _course != null) {
+                  ctx
+                      .read<CoursesBloc>()
+                      .add(EnrollInCourse(courseId: _course!.id));
+                }
+              }
 
               // ── Errors ─────────────────────────────────────────────────
               if (state is PaymentInitiateError) {

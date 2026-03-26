@@ -37,7 +37,6 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
   String? _resolveError;
   String? _transId;
 
-
   // Processing dialog guard + de-dupe — same pattern as SubscriptionScreen
   bool _isProcessingDialogOpen = false;
   String? _handledPaymentStateType;
@@ -106,6 +105,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
   Future<void> _onPayNow(BuildContext payContext) async {
     if (_resolvedAdId == null) return;
 
+    // Reset the guard so the listener reacts to a fresh payment attempt.
     setState(() => _handledPaymentStateType = null);
 
     final paymentBloc = payContext.read<PaymentBloc>();
@@ -171,7 +171,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                   context: ctx,
                   barrierDismissible: false,
                   builder: (_) => PaymentSuccessDialog(
-                    transactionId:  _transId ?? strings.unKnown,
+                    transactionId: _transId ?? strings.unKnown,
                     onDismissed: () {
                       if (mounted) {
                         Navigator.of(ctx).pushNamedAndRemoveUntil(
@@ -184,10 +184,15 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                 );
               }
 
-              // ── ManualActivateSuccess: do NOTHING here ─────────────────
-              // Fawry and Vodafone screens show their own success dialogs
-              // and navigate to mainLayout themselves — same as the
-              // subscription flow. This parent must not interfere.
+              // ── FAWRY / VODAFONE success (ManualActivateSuccess) ──────────────
+              // Do NOT show a dialog here — Fawry shows it on its own screen and
+              // Vodafone shows it on its own screen then navigates away.
+              // We just dismiss the processing overlay (safety) and reset state.
+              if (state is ManualActivateSuccess) {
+                _dismissProcessingDialog();
+                // Reset guard so the next payment attempt is fresh.
+                setState(() => _handledPaymentStateType = null);
+              }
 
               // ── Errors ────────────────────────────────────────────────
               if (state is PaymentInitiateError) {
