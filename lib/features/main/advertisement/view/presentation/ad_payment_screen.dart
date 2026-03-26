@@ -1,15 +1,19 @@
+// ignore_for_file: unnecessary_cast
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -31,6 +35,11 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
   String? _resolvedAdId;
   bool _isResolvingId = false;
   String? _resolveError;
+  String? _transId;
+
+
+  // Processing dialog guard + de-dupe — same pattern as SubscriptionScreen
+  bool _isProcessingDialogOpen = false;
   String? _handledPaymentStateType;
 
   @override
@@ -73,9 +82,32 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
     }
   }
 
+  // ── Processing dialog helpers (same as SubscriptionScreen) ────────────────
+
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
+    }
+  }
+
+  // ── Pay now ───────────────────────────────────────────────────────────────
+
   Future<void> _onPayNow(BuildContext payContext) async {
     if (_resolvedAdId == null) return;
+
     setState(() => _handledPaymentStateType = null);
+
     final paymentBloc = payContext.read<PaymentBloc>();
     await initiatePaymentFlow(
       context: payContext,
@@ -84,7 +116,11 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
       targetType: PaymentTargetType.advertisement,
       price: widget.price,
     );
+    // Fawry/Vodafone sub-screens have managed their own dialogs and navigated
+    // to mainLayout by the time this await returns. Nothing more to do.
   }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +132,24 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
       child: Builder(
         builder: (payContext) {
           return BlocListener<PaymentBloc, PaymentState>(
-            listener: (context, state) {
-              final stateType = state.runtimeType.toString();
-              if (stateType == _handledPaymentStateType) return;
+            listener: (ctx, state) {
+              // ── Processing overlay for credit card initiation only ────
+              // Fawry and Vodafone handle their own processing dialogs.
+              if (state is PaymentInitiating) {
+                _showProcessingDialog();
+              }
 
+              // ── Credit card: redirect to WebView ──────────────────────
               if (state is PaymentRedirectReady) {
-                _handledPaymentStateType = stateType;
+                final stateKey =
+                    state.runtimeType.toString() + state.redirectUrl;
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
+
+                _dismissProcessingDialog();
+                _transId = state.transactionId;
                 Navigator.push(
-                  context,
+                  ctx,
                   MaterialPageRoute(
                     builder: (_) => WebViewScreen(
                       url: state.redirectUrl,
@@ -111,44 +157,60 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                     ),
                   ),
                 );
-              } else if (state is ManualActivateSuccess ||
-                  state is ProcessSuccessful) {
-                _handledPaymentStateType = stateType;
-                // Show success dialog then pop to home
+              }
+
+              // ── Free / direct success (ProcessSuccessful) ─────────────
+              if (state is ProcessSuccessful) {
+                final stateKey = state.runtimeType.toString();
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
+
+                _dismissProcessingDialog();
+                if (!mounted) return;
                 showDialog(
-                  context: context,
+                  context: ctx,
                   barrierDismissible: false,
                   builder: (_) => PaymentSuccessDialog(
-                    transactionId: strings.unKnown,
+                    transactionId:  _transId ?? strings.unKnown,
                     onDismissed: () {
                       if (mounted) {
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
+                        Navigator.of(ctx).pushNamedAndRemoveUntil(
+                          AppRoutes.mainLayout,
+                          (route) => false,
+                        );
                       }
                     },
                   ),
                 );
-              } else if (state is PaymentInitiateError) {
+              }
+
+              // ── ManualActivateSuccess: do NOTHING here ─────────────────
+              // Fawry and Vodafone screens show their own success dialogs
+              // and navigate to mainLayout themselves — same as the
+              // subscription flow. This parent must not interfere.
+
+              // ── Errors ────────────────────────────────────────────────
+              if (state is PaymentInitiateError) {
+                _dismissProcessingDialog();
                 Fluttertoast.showToast(
                     msg: state.message, backgroundColor: Colors.red);
-              } else if (state is ManualActivateError) {
+              }
+              if (state is ManualActivateError) {
+                _dismissProcessingDialog();
                 Fluttertoast.showToast(
                     msg: state.message, backgroundColor: Colors.red);
               }
             },
             child: BlocBuilder<PaymentBloc, PaymentState>(
-              builder: (context, paymentState) {
-                final isProcessing =
-                    paymentState is PaymentInitiating ||
-                        paymentState is ManualActivating;
+              builder: (ctx, paymentState) {
+                final isProcessing = paymentState is PaymentInitiating;
 
                 return Scaffold(
                   appBar: AppBar(
                     elevation: 0,
                     leading: IconButton(
-                      icon: Icon(Icons.arrow_back,
-                          color: theme.onSurface),
-                      onPressed: () => Navigator.of(context)
+                      icon: Icon(Icons.arrow_back, color: theme.onSurface),
+                      onPressed: () => Navigator.of(ctx)
                           .popUntil((route) => route.isFirst),
                     ),
                     title: Text(
@@ -167,19 +229,17 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // ── Summary card ───────────────────────────────
+                          // ── Summary card ─────────────────────────────────
                           Container(
                             width: double.infinity,
                             padding: EdgeInsets.all(20.w),
                             decoration: BoxDecoration(
                               color: theme.surface,
                               borderRadius: BorderRadius.circular(16.r),
-                              border:
-                                  Border.all(color: Colors.grey[300]!),
+                              border: Border.all(color: Colors.grey[300]!),
                               boxShadow: [
                                 BoxShadow(
-                                  color:
-                                      Colors.grey.withOpacity(0.08),
+                                  color: Colors.grey.withOpacity(0.08),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -221,8 +281,8 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                                             fontSize: 15.sp,
                                             color: Colors.grey[600])),
                                     Text(
-                                      strings.priceEGP(widget.price
-                                          .toStringAsFixed(0)),
+                                      strings.priceEGP(
+                                          widget.price.toStringAsFixed(0)),
                                       style: GoogleFonts.poppins(
                                         fontSize: 22.sp,
                                         fontWeight: FontWeight.w700,
@@ -233,8 +293,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                                 ),
                                 SizedBox(height: 6.h),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(strings.pricePerDay('5'),
                                         style: TextStyle(
@@ -247,7 +306,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                           ),
                           SizedBox(height: 20.h),
 
-                          // ── Resolution status ──────────────────────────
+                          // ── Resolution status ─────────────────────────────
                           if (_isResolvingId)
                             Row(
                               children: [
@@ -255,8 +314,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                                   width: 16.w,
                                   height: 16.w,
                                   child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: theme.primary),
+                                      strokeWidth: 2, color: theme.primary),
                                 ),
                                 SizedBox(width: 10.w),
                                 Text('Preparing payment...',
@@ -265,15 +323,13 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                                         color: Colors.grey[600])),
                               ],
                             ),
-
                           if (_resolveError != null)
                             Container(
                               padding: EdgeInsets.all(12.w),
                               decoration: BoxDecoration(
                                 color: Colors.red.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(8.r),
-                                border: Border.all(
-                                    color: Colors.red[300]!),
+                                border: Border.all(color: Colors.red[300]!),
                               ),
                               child: Row(
                                 children: [
@@ -308,7 +364,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
 
                           const Spacer(),
 
-                          // ── Pay Now ────────────────────────────────────
+                          // ── Pay Now ───────────────────────────────────────
                           CustomElevatedButton(
                             text: isProcessing
                                 ? 'Processing...'
@@ -317,32 +373,28 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                             enabled: _resolvedAdId != null &&
                                 !_isResolvingId &&
                                 !isProcessing,
-                            onPressed: _resolvedAdId != null &&
+                            onPressed: (_resolvedAdId != null &&
                                     !_isResolvingId &&
-                                    !isProcessing
-                                ? () => _onPayNow(context)
+                                    !isProcessing)
+                                ? () => _onPayNow(ctx)
                                 : () {},
                           ),
                           SizedBox(height: 12.h),
 
-                          // ── Pay Later ──────────────────────────────────
+                          // ── Pay Later ─────────────────────────────────────
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton(
                               onPressed: isProcessing
                                   ? null
-                                  : () => Navigator.of(context)
-                                      .popUntil(
-                                          (route) => route.isFirst),
+                                  : () => Navigator.of(ctx)
+                                      .popUntil((route) => route.isFirst),
                               style: OutlinedButton.styleFrom(
-                                side:
-                                    BorderSide(color: theme.primary),
+                                side: BorderSide(color: theme.primary),
                                 foregroundColor: theme.primary,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 14.h),
+                                padding: EdgeInsets.symmetric(vertical: 14.h),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(12.r)),
+                                    borderRadius: BorderRadius.circular(12.r)),
                               ),
                               child: Text(
                                 strings.payLaterDraft,

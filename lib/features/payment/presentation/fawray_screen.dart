@@ -12,20 +12,25 @@ import 'package:sports_in/features/payment/presentation/widgets/processing_dailo
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// Fawry reference code screen.
+/// Fawry reference-code screen.
 ///
-/// Flow:
-///   1. On mount: immediately dispatches [InitiatePaymentEvent] → gets the
-///      Fawry reference code.
-///   2. Shows the reference code with a prominent Copy button.
-///   3. On [ManualActivateSuccess]: shows a success dialog ON THIS SCREEN.
-///      The user stays here (they may still need the code), closes dialog,
-///      then navigates back manually using the back arrow.
-///   4. Does NOT auto-pop at any point — the user controls when to leave.
+/// State flow (now that the bloc no longer auto-dispatches ManualActivate):
 ///
-/// UX improvement: after copying the code, a sticky bottom banner appears
-/// reminding the user to complete payment at any Fawry outlet and shows
-/// a "Done" button that pops the screen back (since they've copied the code).
+///   [InitiatePaymentEvent dispatched on mount]
+///       ↓
+///   PaymentInitiating  → show processing overlay
+///       ↓
+///   PaymentInitiatedAwaitingActivation
+///       → dismiss overlay, display reference code
+///       → THIS SCREEN dispatches ManualActivateEvent (manual-payment mode)
+///       ↓
+///   ManualActivating   → show processing overlay again
+///       ↓
+///   ManualActivateSuccess
+///       → dismiss overlay, show success dialog
+///       → user stays on screen (they may need the code); back arrow → home
+///
+/// Back arrow and "Done" button both navigate to [AppRoutes.mainLayout].
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
@@ -44,6 +49,7 @@ class FawryScreen extends StatefulWidget {
 
 class _FawryScreenState extends State<FawryScreen> {
   String? _referenceCode;
+  String? _pendingTxId; // stored so we can dispatch ManualActivate
   bool _isLoading = false;
   bool _codeCopied = false;
   bool _successShown = false;
@@ -52,8 +58,11 @@ class _FawryScreenState extends State<FawryScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initiatePayment());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _initiatePayment());
   }
+
+  // ── Payment actions ────────────────────────────────────────────────────────
 
   void _initiatePayment() {
     context.read<PaymentBloc>().add(InitiatePaymentEvent(
@@ -62,6 +71,14 @@ class _FawryScreenState extends State<FawryScreen> {
           method: PaymentMethod.fawryPay,
           mobileNumber: widget.mobileNumber,
         ));
+  }
+
+  /// Dispatched by THIS screen once [PaymentInitiatedAwaitingActivation]
+  /// is received and the reference code is displayed.
+  void _triggerManualActivation(String txId) {
+    context
+        .read<PaymentBloc>()
+        .add(ManualActivateEvent(orderId: txId));
   }
 
   void _copyCode() {
@@ -74,12 +91,14 @@ class _FawryScreenState extends State<FawryScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.r)),
         margin: EdgeInsets.all(12.w),
       ),
     );
   }
+
+  // ── Dialog helpers ─────────────────────────────────────────────────────────
 
   void _showProcessingDialog() {
     if (_isProcessingDialogOpen) return;
@@ -98,7 +117,6 @@ class _FawryScreenState extends State<FawryScreen> {
     }
   }
 
-  /// Shows the success dialog. User closes it manually and stays on screen.
   void _showSuccessDialog() {
     if (_successShown || !mounted) return;
     _successShown = true;
@@ -106,13 +124,22 @@ class _FawryScreenState extends State<FawryScreen> {
       context: context,
       barrierDismissible: false,
       builder: (_) => PaymentSuccessDialog(
-        transactionId: S.of(context).unKnown,
-        // User stays on screen after dismissing — they may want to keep
-        // the reference code visible or copy it again.
+        transactionId: _pendingTxId ?? S.of(context).unKnown,
+        // Stays on screen so the user can keep the reference code visible.
         onDismissed: () {},
       ),
     );
   }
+
+  void _goHome() {
+    if (!mounted) return;
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.mainLayout,
+      (route) => false,
+    );
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -121,32 +148,40 @@ class _FawryScreenState extends State<FawryScreen> {
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
-        // ── Loading ────────────────────────────────────────────────────────
+        // ── 1. Initiating payment ────────────────────────────────────────
         if (state is PaymentInitiating) {
-          setState(() => _isLoading = true);
-          _showProcessingDialog();
-        } else if (state is ManualActivating) {
           setState(() => _isLoading = true);
           _showProcessingDialog();
         }
 
-        // ── Reference code ready ───────────────────────────────────────────
+        // ── 2. Reference code received → show it, then trigger activation ─
         if (state is PaymentInitiatedAwaitingActivation) {
           _dismissProcessingDialog();
           setState(() {
             _isLoading = false;
             _referenceCode = state.referenceCode;
+            _pendingTxId = state.transactionId;
           });
+          // Now that the code is on screen, trigger manual activation.
+          // In real production you'd wait for actual payment confirmation;
+          // in manual-test mode we activate immediately.
+          _triggerManualActivation(state.transactionId);
         }
 
-        // ── Success: show dialog, stay on screen ───────────────────────────
+        // ── 3. Activating ────────────────────────────────────────────────
+        if (state is ManualActivating) {
+          setState(() => _isLoading = true);
+          _showProcessingDialog();
+        }
+
+        // ── 4. Success ───────────────────────────────────────────────────
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
           _showSuccessDialog();
         }
 
-        // ── Errors ─────────────────────────────────────────────────────────
+        // ── 5. Errors ────────────────────────────────────────────────────
         if (state is PaymentInitiateError || state is ManualActivateError) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
@@ -171,21 +206,21 @@ class _FawryScreenState extends State<FawryScreen> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoutes.mainLayout,
-              (route) => false,
-            ),
+            // Back arrow clears the stack → main layout
+            onPressed: _goHome,
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
           title: Text(
             s.fawry_screen_appbar_title,
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+            style:
+                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
         body: SafeArea(
           child: Column(
             children: [
+              // ── Scrollable content ───────────────────────────────────
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -193,7 +228,8 @@ class _FawryScreenState extends State<FawryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20.h),
-                      // ── Brand banner ───────────────────────────────────
+
+                      // Brand banner
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12.r),
                         child: Container(
@@ -217,6 +253,7 @@ class _FawryScreenState extends State<FawryScreen> {
                           ),
                         ),
                       ),
+
                       SizedBox(height: 28.h),
                       Text(s.fawry_screen_label,
                           style: TextStyle(fontSize: 15.sp)),
@@ -227,7 +264,7 @@ class _FawryScreenState extends State<FawryScreen> {
                               fontStyle: FontStyle.italic)),
                       SizedBox(height: 24.h),
 
-                      // ── Reference code / loading / error ───────────────
+                      // ── Reference code / spinner / error ──────────────
                       if (_isLoading)
                         Container(
                           width: double.infinity,
@@ -254,7 +291,6 @@ class _FawryScreenState extends State<FawryScreen> {
                           ),
                           child: Column(
                             children: [
-                              // Code display
                               Text(
                                 _referenceCode!,
                                 style: TextStyle(
@@ -308,9 +344,7 @@ class _FawryScreenState extends State<FawryScreen> {
 
                       SizedBox(height: 20.h),
 
-                      // ── "Copied" reminder banner ───────────────────────
-                      // Appears after the user copies the code to remind
-                      // them what to do next.
+                      // ── Post-copy reminder banner ──────────────────────
                       if (_codeCopied && _referenceCode != null) ...[
                         Container(
                           width: double.infinity,
@@ -328,7 +362,6 @@ class _FawryScreenState extends State<FawryScreen> {
                               SizedBox(width: 10.w),
                               Expanded(
                                 child: Text(
-                                  // "Code copied! Go to any Fawry outlet and pay using this code."
                                   s.fawry_screen_copied_reminder,
                                   style: TextStyle(
                                       fontSize: 13.sp,
@@ -342,25 +375,26 @@ class _FawryScreenState extends State<FawryScreen> {
                         SizedBox(height: 16.h),
                       ],
 
-                      SizedBox(height: 100.h), // space above bottom buttons
+                      SizedBox(height: 80.h),
                     ],
                   ),
                 ),
               ),
 
-              // ── Bottom action area ─────────────────────────────────────
+              // ── Bottom action buttons ──────────────────────────────────
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Copy button — always visible when code is available
+                    // Copy button
                     SizedBox(
                       width: double.infinity,
                       height: 56.h,
                       child: ElevatedButton.icon(
-                        onPressed:
-                            _referenceCode != null ? _copyCode : null,
+                        onPressed: _referenceCode != null
+                            ? _copyCode
+                            : null,
                         icon: Icon(
                           _codeCopied
                               ? Icons.check
@@ -393,15 +427,14 @@ class _FawryScreenState extends State<FawryScreen> {
                       ),
                     ),
 
-                    // "Done" button — shown only after copying the code.
-                    // Lets the user exit the screen knowing they have the code.
+                    // "Done" button — appears after copying
                     if (_codeCopied) ...[
                       SizedBox(height: 10.h),
                       SizedBox(
                         width: double.infinity,
                         height: 48.h,
                         child: OutlinedButton(
-                          onPressed: () => Navigator.of(context).pop(),
+                          onPressed: _goHome,
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: theme.primary),
                             foregroundColor: theme.primary,

@@ -1,11 +1,13 @@
-import 'dart:io';
+// ignore_for_file: unnecessary_cast
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -24,6 +26,7 @@ import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -42,6 +45,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   CourseModel? _course;
   List<LessonModel> _allLessons = [];
   LessonModel? _currentPlayingLesson;
+
   bool _isEditMode = false;
   bool _hasUnsavedChanges = false;
   File? _newThumbnail;
@@ -50,22 +54,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   late TextEditingController _priceController;
   bool _isFreeEdit = false;
 
-  /// Guards against BlocListener re-firing the same state after a
-  /// dialog/route pops back (gray overlay prevention).
+  // Processing dialog state — same guard pattern as SubscriptionScreen
+  bool _isProcessingDialogOpen = false;
   String? _handledPaymentStateType;
-
-  /// True while we are waiting for [EnrollInCourse] to complete after payment.
-  /// When true, the [CoursesBloc] EnrollmentSuccess listener will NOT pop —
-  /// popping happens inside the success dialog's onDismissed instead.
-  // ignore: unused_field
-  bool _enrollingAfterPayment = false;
 
   @override
   void initState() {
     super.initState();
-    context.read<CoursesBloc>().add(
-          FetchCourseDetail(courseId: widget.courseId),
-        );
+    context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     _tabController = TabController(length: 2, vsync: this);
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
@@ -93,11 +89,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _hasUnsavedChanges = false;
         _newThumbnail = null;
         _handledPaymentStateType = null;
-        _enrollingAfterPayment = false;
       });
-      context.read<CoursesBloc>().add(
-            FetchCourseDetail(courseId: widget.courseId),
-          );
+      context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     }
   }
 
@@ -119,10 +112,29 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       _tabController = TabController(length: length, vsync: this);
     }
     _course = course;
-    context.read<CoursesBloc>().add(
-          FetchCourseLessons(courseId: widget.courseId),
-        );
+    context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
   }
+
+  // ── Processing dialog helpers (same as SubscriptionScreen) ────────────────
+
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
+    }
+  }
+
+  // ── Edit mode helpers ──────────────────────────────────────────────────────
 
   void _enterEditMode(CourseModel course) {
     setState(() {
@@ -172,8 +184,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         return;
       }
     }
-    final newPrice =
-        _isFreeEdit ? 0.0 : double.parse(_priceController.text);
+    final newPrice = _isFreeEdit ? 0.0 : double.parse(_priceController.text);
     context.read<CoursesBloc>().add(UpdateCourse(
           courseId: course.id,
           title: _titleController.text.trim(),
@@ -206,9 +217,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           msg: string.deletingLesson, backgroundColor: Colors.orange);
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
-          context.read<CoursesBloc>().add(
-                FetchCourseLessons(courseId: widget.courseId),
-              );
+          context
+              .read<CoursesBloc>()
+              .add(FetchCourseLessons(courseId: widget.courseId));
         }
       });
     }
@@ -220,35 +231,28 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<CoursesBloc>(),
-          child:
-              EditLessonScreen(lesson: lesson, courseId: widget.courseId),
+          child: EditLessonScreen(lesson: lesson, courseId: widget.courseId),
         ),
       ),
     ).then((updated) {
       if (updated == true) {
-        context.read<CoursesBloc>().add(
-              FetchCourseLessons(courseId: widget.courseId),
-            );
+        context
+            .read<CoursesBloc>()
+            .add(FetchCourseLessons(courseId: widget.courseId));
       }
     });
   }
 
-  // ─── Payment ─────────────────────────────────────────────────────────────
+  // ── Payment ────────────────────────────────────────────────────────────────
 
-  Future<void> _handleEnroll(
-      BuildContext enrollContext, CourseModel course) async {
+  Future<void> _handleEnroll(BuildContext enrollContext, CourseModel course) async {
     if (course.isFree) {
-      enrollContext
-          .read<CoursesBloc>()
-          .add(EnrollInCourse(courseId: course.id));
+      enrollContext.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
       return;
     }
 
-    // Reset guards for a fresh payment attempt.
-    setState(() {
-      _handledPaymentStateType = null;
-      _enrollingAfterPayment = false;
-    });
+    // Reset guard for a fresh payment attempt — same as SubscriptionScreen
+    setState(() => _handledPaymentStateType = null);
 
     final paymentBloc = enrollContext.read<PaymentBloc>();
     await initiatePaymentFlow(
@@ -258,34 +262,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       targetType: PaymentTargetType.course,
       price: course.price,
     );
+    // initiatePaymentFlow awaits the showGeneralDialog, so by the time
+    // we're back here Fawry/Vodafone screens have already handled their
+    // own dialogs and navigation. Nothing more to do for those methods.
+    // Credit card redirect is handled by the BlocListener below.
   }
 
-  /// Called when [ManualActivateSuccess] or [ProcessSuccessful] fires.
-  ///
-  /// Shows a success dialog. In [onDismissed] we:
-  ///   1. Set [_enrollingAfterPayment] = true so the CoursesBloc listener
-  ///      knows NOT to pop immediately on EnrollmentSuccess.
-  ///   2. Dispatch [EnrollInCourse] so the backend records the enrollment.
-  ///   3. On [EnrollmentSuccess] the listener will pop (see below).
-  void _showSuccessAndEnroll(BuildContext ctx, String courseId) {
-    final s = S.of(ctx);
-    showDialog(
-      context: ctx,
-      barrierDismissible: false,
-      builder: (_) => PaymentSuccessDialog(
-        transactionId: s.unKnown,
-        onDismissed: () {
-          if (mounted) {
-            // Mark that the next EnrollmentSuccess should pop the screen.
-            setState(() => _enrollingAfterPayment = true);
-            ctx.read<CoursesBloc>().add(EnrollInCourse(courseId: courseId));
-          }
-        },
-      ),
-    );
-  }
-
-  // ─── Build ───────────────────────────────────────────────────────────────
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -296,61 +279,94 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       child: Builder(
         builder: (paymentContext) {
           return BlocListener<PaymentBloc, PaymentState>(
-            listener: (context, state) {
-              final stateType = state.runtimeType.toString();
-              if (stateType == _handledPaymentStateType) return;
+            listener: (ctx, state) {
+              // ── Processing overlay for credit card initiation only ──────
+              // Fawry and Vodafone manage their own processing dialogs
+              // internally, just like in the subscription flow.
+              if (state is PaymentInitiating) {
+                _showProcessingDialog();
+              }
 
+              // ── Credit card: redirect to WebView ──────────────────────
               if (state is PaymentRedirectReady) {
-                _handledPaymentStateType = stateType;
+                final stateKey =
+                    state.runtimeType.toString() + state.redirectUrl;
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
+
+                _dismissProcessingDialog();
                 Navigator.push(
-                  context,
+                  ctx,
                   MaterialPageRoute(
                     builder: (_) => WebViewScreen(
                       url: state.redirectUrl,
-                      title: 'Complete Payment',
+                      title: string.completePayment,
                     ),
                   ),
                 );
-              } else if (state is ManualActivateSuccess ||
-                  state is ProcessSuccessful) {
-                _handledPaymentStateType = stateType;
-                // Show success dialog, then enroll on dismiss.
-                if (_course != null) {
-                  _showSuccessAndEnroll(context, _course!.id);
-                }
-              } else if (state is PaymentInitiateError) {
+              }
+
+              // ── Free course success (ProcessSuccessful) ────────────────
+              // Show success dialog, then trigger enrollment, then navigate
+              // back. This mirrors how SubscriptionScreen handles free plans.
+              if (state is ProcessSuccessful) {
+                final stateKey = state.runtimeType.toString();
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
+
+                _dismissProcessingDialog();
+                if (!mounted || _course == null) return;
+
+                final courseId = _course!.id;
+                showDialog(
+                  context: ctx,
+                  barrierDismissible: false,
+                  builder: (_) => PaymentSuccessDialog(
+                    transactionId: string.unKnown,
+                    onDismissed: () {
+                      if (mounted) {
+                        ctx
+                            .read<CoursesBloc>()
+                            .add(EnrollInCourse(courseId: courseId));
+                      }
+                    },
+                  ),
+                );
+              }
+
+              // ── ManualActivateSuccess: do NOTHING here ─────────────────
+              // Fawry and Vodafone screens handle their own success dialogs
+              // and navigate to mainLayout themselves — exactly like the
+              // subscription flow. The parent must not interfere.
+              // (Same as SubscriptionScreen which also ignores this state.)
+
+              // ── Errors ─────────────────────────────────────────────────
+              if (state is PaymentInitiateError) {
+                _dismissProcessingDialog();
                 Fluttertoast.showToast(
                     msg: state.message, backgroundColor: Colors.red);
-              } else if (state is ManualActivateError) {
+              }
+              if (state is ManualActivateError) {
+                _dismissProcessingDialog();
                 Fluttertoast.showToast(
                     msg: state.message, backgroundColor: Colors.red);
               }
             },
             child: BlocConsumer<CoursesBloc, CoursesState>(
-              listener: (context, state) {
+              listener: (ctx, state) {
                 if (state is EnrollmentSuccess) {
                   Fluttertoast.showToast(
                       msg: string.enrolledSuccessfully,
                       backgroundColor: Colors.green);
-
-                  // KEY FIX:
-                  // If we reached here via the payment flow, pop NOW
-                  // (the success dialog has already been shown and dismissed).
-                  // If we reached here via free enrollment (direct tap),
-                  // _enrollingAfterPayment is false, so we also pop normally.
-                  //
-                  // In both cases we pop — the difference is that when
-                  // _enrollingAfterPayment is false the dialog was never shown,
-                  // and when it's true the dialog was already dismissed before
-                  // EnrollInCourse was dispatched, so there's no stale overlay.
-                  if (mounted) {
-                    Navigator.pop(context, true);
-                  }
+                  Navigator.of(ctx).pushNamedAndRemoveUntil(
+                    AppRoutes.mainLayout,
+                    (route) => false,
+                  );
                 } else if (state is CourseDeleted) {
                   Fluttertoast.showToast(
                       msg: string.courseDeleted,
                       backgroundColor: Colors.green);
-                  Navigator.pop(context, true);
+                  Navigator.pop(ctx, true);
                 } else if (state is CoursesError) {
                   Fluttertoast.showToast(
                       msg: state.message, backgroundColor: Colors.red);
@@ -360,13 +376,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   current is CourseDetailLoading ||
                   current is CourseDetailLoaded ||
                   current is LessonsLoaded ||
-                  (current is CoursesError &&
-                      previous is! CourseDetailLoaded),
-              builder: (context, state) {
+                  (current is CoursesError && previous is! CourseDetailLoaded),
+              builder: (ctx, state) {
                 if (_course == null && state is CourseDetailLoaded) {
                   _updateTabController(state.course);
                 }
-
                 if (state is LessonsLoaded &&
                     state.courseId == widget.courseId) {
                   if (state.lessons != _allLessons) {
@@ -379,8 +393,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
                 if (course == null) {
                   return Scaffold(
-                      appBar: AppBar(),
-                      body: const CourseDetailShimmer());
+                    appBar: AppBar(),
+                    body: const CourseDetailShimmer(),
+                  );
                 }
 
                 return Scaffold(
@@ -411,8 +426,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                           TabBar(
                             controller: _tabController,
                             isScrollable: true,
-                            labelColor:
-                                Theme.of(context).colorScheme.primary,
+                            labelColor: Theme.of(ctx).colorScheme.primary,
                             unselectedLabelColor: Colors.grey,
                             indicatorSize: TabBarIndicatorSize.label,
                             tabs: _buildTabs(course, string),
@@ -425,11 +439,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                       children: _buildTabViews(course, string),
                     ),
                   ),
-                  bottomNavigationBar:
-                      (!course.isOwner && !course.isEnrolled)
-                          ? _buildEnrollButton(
-                              paymentContext, course, string)
-                          : null,
+                  bottomNavigationBar: (!course.isOwner && !course.isEnrolled)
+                      ? _buildEnrollButton(paymentContext, course, string)
+                      : null,
                 );
               },
             ),
@@ -459,9 +471,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         lessons: _allLessons,
         currentPlayingLesson: _currentPlayingLesson,
         isEditMode: _isEditMode,
-        onRefresh: () => context.read<CoursesBloc>().add(
-              FetchCourseLessons(courseId: widget.courseId),
-            ),
+        onRefresh: () => context
+            .read<CoursesBloc>()
+            .add(FetchCourseLessons(courseId: widget.courseId)),
         onLessonTap: (l) => setState(() => _currentPlayingLesson = l),
         onUpdateLesson: _navigateToEditLesson,
         onDeleteLesson: (lesson) => _deleteLesson(lesson, string),
@@ -482,14 +494,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         onFieldChanged: _onFieldChanged,
       ),
     ];
-
     if (course.isOwner) {
       views.add(EnrolleesTab(courseId: course.id));
       views.add(RevenueTab(courseId: course.id));
     } else if (course.isEnrolled) {
       views.add(CourseProgressTab(course: course));
     }
-
     return views;
   }
 
@@ -539,8 +549,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             child: Row(children: [
               const Icon(Icons.delete, color: Colors.red),
               SizedBox(width: 8.w),
-              Text(string.delete,
-                  style: const TextStyle(color: Colors.red)),
+              Text(string.delete, style: const TextStyle(color: Colors.red)),
             ]),
           ),
         ],
@@ -556,10 +565,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         color: Theme.of(paymentContext).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, -2)),
         ],
       ),
       child: SafeArea(
@@ -586,9 +594,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       context: context,
       title: string.deleteCourse,
       message: string.deleteCourseConfirmation,
-      onConfirm: () => context
-          .read<CoursesBloc>()
-          .add(DeleteCourse(courseId: courseId)),
+      onConfirm: () =>
+          context.read<CoursesBloc>().add(DeleteCourse(courseId: courseId)),
       confirmText: string.delete,
       cancelText: string.cancel,
       icon: Icons.delete_outline,

@@ -14,12 +14,21 @@ import 'package:sports_in/generated/l10n.dart';
 
 /// Vodafone Cash payment screen.
 ///
-/// Flow:
-///   1. User enters mobile number → taps Send.
-///   2. Processing overlay while payment initiates & activates.
-///   3. On success → show [PaymentSuccessDialog] → on dismiss navigate to
-///      [AppRoutes.mainLayout] (clears the whole stack).
-///   4. On error → snackbar, user can retry.
+/// State flow:
+///
+///   [User enters mobile and taps Send]
+///   InitiatePaymentEvent dispatched
+///       ↓
+///   PaymentInitiating  → processing overlay
+///       ↓
+///   PaymentInitiatedAwaitingActivation
+///       → THIS SCREEN dispatches ManualActivateEvent
+///       ↓
+///   ManualActivating   → processing overlay
+///       ↓
+///   ManualActivateSuccess
+///       → dismiss overlay, show [PaymentSuccessDialog]
+///       → on dismiss → navigate to [AppRoutes.mainLayout]
 class VodafoneCashScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final PaymentTargetType targetType;
@@ -47,6 +56,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
     super.dispose();
   }
 
+  // ── Payment actions ────────────────────────────────────────────────────────
+
   void _onSendPayment() {
     if (!_formKey.currentState!.validate()) return;
     context.read<PaymentBloc>().add(
@@ -58,6 +69,12 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
           ),
         );
   }
+
+  void _triggerManualActivation(String txId) {
+    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId));
+  }
+
+  // ── Dialog helpers ─────────────────────────────────────────────────────────
 
   void _showProcessingDialog() {
     if (_isProcessingDialogOpen) return;
@@ -96,6 +113,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
     );
   }
 
+  // ── Build ──────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -103,17 +122,33 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
 
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
-        if (state is PaymentInitiating || state is ManualActivating) {
+        // ── 1. Initiating ────────────────────────────────────────────────
+        if (state is PaymentInitiating) {
           setState(() => _isLoading = true);
           _showProcessingDialog();
         }
 
+        // ── 2. Awaiting activation → trigger it now ──────────────────────
+        if (state is PaymentInitiatedAwaitingActivation) {
+          // For Vodafone there's no reference code to show, so we
+          // immediately proceed to manual activation.
+          _triggerManualActivation(state.transactionId);
+        }
+
+        // ── 3. Activating ────────────────────────────────────────────────
+        if (state is ManualActivating) {
+          setState(() => _isLoading = true);
+          _showProcessingDialog();
+        }
+
+        // ── 4. Success ───────────────────────────────────────────────────
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
           _showSuccessAndGoHome();
         }
 
+        // ── 5. Errors ────────────────────────────────────────────────────
         if (state is PaymentInitiateError || state is ManualActivateError) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
@@ -142,8 +177,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
           title: Text(s.vodafone_appbar_title,
-              style:
-                  TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700)),
+              style: TextStyle(
+                  fontSize: 20.sp, fontWeight: FontWeight.w700)),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -155,7 +190,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 20.h),
-                  // ── Brand banner ──────────────────────────────────────
+
+                  // Brand banner
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
                     child: Container(
@@ -177,6 +213,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       ),
                     ),
                   ),
+
                   SizedBox(height: 28.h),
                   Text(s.vodafone_label,
                       style: TextStyle(fontSize: 15.sp)),
@@ -186,7 +223,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                           fontSize: 13.sp,
                           fontStyle: FontStyle.italic)),
                   SizedBox(height: 20.h),
-                  // ── Phone field ───────────────────────────────────────
+
+                  // Phone field
                   TextFormField(
                     controller: _mobileController,
                     onTapOutside: (_) =>
@@ -232,8 +270,10 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       return null;
                     },
                   ),
+
                   const Spacer(),
-                  // ── Send button ───────────────────────────────────────
+
+                  // Send button
                   SizedBox(
                     width: double.infinity,
                     height: 56.h,
@@ -254,8 +294,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                               height: 22.w,
                               child: CircularProgressIndicator(
                                   strokeWidth: 2.w,
-                                  color:
-                                      const Color(0xFFCCFF00)))
+                                  color: const Color(0xFFCCFF00)))
                           : Text(s.vodafone_send_btn,
                               style: TextStyle(
                                   color: const Color(0xFFCCFF00),

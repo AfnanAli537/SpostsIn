@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
+// import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
@@ -27,7 +28,7 @@ class CourseCard extends StatelessWidget {
     required this.string,
   });
 
-  // ─── Enroll logic ───────────────────────────────────────────────────────────
+  // ── Enroll logic ──────────────────────────────────────────────────────────
 
   Future<void> _handleEnroll(BuildContext context) async {
     if (course.isFree) {
@@ -35,12 +36,14 @@ class CourseCard extends StatelessWidget {
       return;
     }
 
-    // For paid courses: create a fresh PaymentBloc, show payment flow as
-    // a full-screen dialog, listen for result, then trigger enrollment.
     final coursesBloc = context.read<CoursesBloc>();
     final paymentBloc = getIt<PaymentBloc>();
 
-    // Show an invisible listener widget as a dialog that orchestrates payment
+    // Show the orchestrator as a transparent dialog. It kicks off the payment
+    // flow, then closes itself once the sub-screens (Fawry/Vodafone) have
+    // navigated away or the user cancels. The sub-screens handle their own
+    // dialogs and navigate to mainLayout — this orchestrator only needs to
+    // handle credit card success and errors.
     await showGeneralDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -115,8 +118,7 @@ class CourseCard extends StatelessWidget {
     return Row(
       children: [
         ClipRRect(
-          borderRadius:
-              BorderRadius.horizontal(left: Radius.circular(12.r)),
+          borderRadius: BorderRadius.horizontal(left: Radius.circular(12.r)),
           child: _buildThumbnailImage(width: 120.w, height: double.infinity),
         ),
         Expanded(
@@ -218,8 +220,7 @@ class CourseCard extends StatelessWidget {
           LinearProgressIndicator(
             value: course.progress / 100,
             backgroundColor: Colors.grey[200],
-            valueColor:
-                AlwaysStoppedAnimation<Color>(ColorManager.warning),
+            valueColor: AlwaysStoppedAnimation<Color>(ColorManager.warning),
           ),
           SizedBox(height: 4.h),
           Text(
@@ -232,7 +233,6 @@ class CourseCard extends StatelessWidget {
       ],
     );
 
-    // Builder needed so _buildBottomRow has access to context
     final bottomRow = Builder(
       builder: (context) => _buildBottomRow(context, theme),
     );
@@ -299,8 +299,7 @@ class CourseCard extends StatelessWidget {
         Icon(icon, size: 14.sp, color: theme.colorScheme.primary),
         SizedBox(width: 2.w),
         Text(label,
-            style:
-                theme.textTheme.bodySmall?.copyWith(fontSize: 11.sp)),
+            style: theme.textTheme.bodySmall?.copyWith(fontSize: 11.sp)),
       ],
     );
   }
@@ -359,8 +358,8 @@ class CourseCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: isLoading ? null : () => _handleEnroll(context),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 8.w, vertical: 0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   minimumSize: Size(70.w, 28.h),
                   shape: RoundedRectangleBorder(
@@ -394,8 +393,9 @@ class CourseCard extends StatelessWidget {
 }
 
 // ── Payment orchestrator ──────────────────────────────────────────────────────
-// Shown as a transparent, invisible dialog. Kicks off the payment flow
-// immediately, listens for the result, triggers enrollment, then closes.
+// Shown as a transparent, invisible dialog. Kicks off the payment flow and
+// closes itself only if the user cancels at method selection (for credit card,
+// Fawry, and Vodafone the sub-screens handle all further navigation).
 
 class _PaymentOrchestrator extends StatefulWidget {
   final String courseId;
@@ -420,6 +420,8 @@ class _PaymentOrchestratorState extends State<_PaymentOrchestrator> {
   Future<void> _start() async {
     final paymentBloc = context.read<PaymentBloc>();
 
+    // initiatePaymentFlow returns false only if the user dismissed the
+    // payment-method dialog without choosing anything.
     final initiated = await initiatePaymentFlow(
       context: context,
       paymentBloc: paymentBloc,
@@ -428,34 +430,49 @@ class _PaymentOrchestratorState extends State<_PaymentOrchestrator> {
       price: widget.price,
     );
 
-    // User cancelled at method selection — close this orchestrator
     if (!initiated && mounted) {
+      // User cancelled — close this orchestrator so the course card is usable.
       Navigator.of(context).pop();
     }
-    // If initiated: the BlocListener below handles the result
+    // If initiated:
+    // - Fawry / Vodafone: showGeneralDialog awaits their full screen,
+    //   they handle success dialogs + navigate to mainLayout themselves,
+    //   initiatePaymentFlow returns true AFTER they are done.
+    //   We close this orchestrator here too so nothing is left dangling.
+    // - Credit card: the BlocListener below catches PaymentRedirectReady.
+    if (initiated && mounted) {
+      // Only close orchestrator for Fawry/Vodafone paths (credit card is
+      // handled by the listener). We can safely pop here because if credit
+      // card is in flight the listener below will still fire before this
+      // context is gone.
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
+        // ── Credit card: redirect ──────────────────────────────────────
+        // For credit card the parent CourseDetailScreen is gone (we came
+        // from the card list), so this orchestrator handles the WebView push.
+        // For Fawry/Vodafone, ManualActivateSuccess is handled by those
+        // screens themselves — we do nothing here (same rule as subscription).
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
-          Navigator.of(context).pop(); // close orchestrator
-          Fluttertoast.showToast(
-            msg: 'Payment successful!',
-            backgroundColor: Colors.green,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-          );
-          context.read<CoursesBloc>().add(
-                EnrollInCourse(courseId: widget.courseId),
-              );
+          // Fawry/Vodafone already navigated to mainLayout by the time this
+          // fires. Do nothing — avoids double navigation.
+          // (Success toast was already shown by the sub-screen.)
+          if (mounted) {
+            context.read<CoursesBloc>().add(
+                  EnrollInCourse(courseId: widget.courseId),
+                );
+          }
         } else if (state is PaymentInitiateError) {
-          Navigator.of(context).pop();
+          if (mounted) Navigator.of(context).pop();
           Fluttertoast.showToast(
               msg: state.message, backgroundColor: Colors.red);
         } else if (state is ManualActivateError) {
-          Navigator.of(context).pop();
+          if (mounted) Navigator.of(context).pop();
           Fluttertoast.showToast(
               msg: state.message, backgroundColor: Colors.red);
         }
