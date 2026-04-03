@@ -3,12 +3,16 @@
 // import 'package:sports_in/features/main/home/view/presentation/home_screen.dart';
 // import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:get_it/get_it.dart';
 // import 'package:sports_in/core/constants/assets_manager.dart';
 // import 'package:sports_in/core/widgets/app_drawer.dart';
 // import 'package:sports_in/features/main/profile/view/presentation/my_profile_screen.dart';
 // import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 // import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
 // import 'package:sports_in/features/main/search/view/presentation/search_screen.dart';
+// import 'package:sports_in/features/notitification/data/service/notifaction_service.dart';
+// import 'package:sports_in/features/notitification/presentation/notifi_screen.dart';
+// import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 
 // class CustomBottomNav extends StatefulWidget {
 //   const CustomBottomNav({super.key});
@@ -29,13 +33,43 @@
 //   ];
 
 //   @override
-//   void initState() {
+//   void initState(){
 //     super.initState();
+//     _initSignalR();
+//     // ── SignalR: pipe real-time notifications into the Bloc ──────────────────
+//     GetIt.I<NotificationHubService>().onReceiveNotification = (notification) {
+//       context.read<NotificationBloc>().add(
+//             RealtimeNotificationReceivedEvent(notification: notification),
+//           );
+//     };
+
+//     // ── Fetch unread count on app start ──────────────────────────────────────
+//     context.read<NotificationBloc>().add(const GetUnreadCountEvent());
+
 //     context.read<ProfileBloc>().add(LoadMyProfile());
 //   }
+// Future<void> _initSignalR() async {
+//   final hub = GetIt.I<NotificationHubService>();
 
+//   await hub.connect();
+
+//   hub.onReceiveNotification = (notification) {
+//     if (!mounted) return;
+
+//     context.read<NotificationBloc>().add(
+//       RealtimeNotificationReceivedEvent(notification: notification),
+//     );
+//   };
+// }
 //   void _onItemTapped(int index) {
 //     setState(() => _currentIndex = index);
+//   }
+
+//   void _openNotifications() {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(builder: (_) => const NotificationScreen()),
+//     );
 //   }
 
 //   Widget _buildNavItem(IconData icon, int index) {
@@ -74,6 +108,57 @@
 //           ),
 //         ),
 //       ),
+//     );
+//   }
+
+//   // ─── Bell icon with unread badge ──────────────────────────────────────────
+//   Widget _buildNotificationBell() {
+//     return BlocBuilder<NotificationBloc, NotificationState>(
+//       buildWhen: (prev, curr) =>
+//           curr is NotificationsLoaded || curr is UnreadCountLoaded,
+//       builder: (context, state) {
+//         int unread = 0;
+//         if (state is NotificationsLoaded) unread = state.unreadCount;
+//         if (state is UnreadCountLoaded) unread = state.count;
+
+//         return IconButton(
+//           onPressed: _openNotifications,
+//           icon: Stack(
+//             clipBehavior: Clip.none,
+//             children: [
+//               Icon(
+//                 Icons.notifications_outlined,
+//                 color: Theme.of(context).colorScheme.onSurface,
+//               ),
+//               if (unread > 0)
+//                 Positioned(
+//                   top: -4,
+//                   right: -4,
+//                   child: Container(
+//                     padding: const EdgeInsets.all(3),
+//                     decoration: const BoxDecoration(
+//                       color: Color(0xFF3DBE6C),
+//                       shape: BoxShape.circle,
+//                     ),
+//                     constraints: const BoxConstraints(
+//                       minWidth: 16,
+//                       minHeight: 16,
+//                     ),
+//                     child: Text(
+//                       unread > 99 ? '99+' : '$unread',
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 9,
+//                         fontWeight: FontWeight.w700,
+//                       ),
+//                       textAlign: TextAlign.center,
+//                     ),
+//                   ),
+//                 ),
+//             ],
+//           ),
+//         );
+//       },
 //     );
 //   }
 
@@ -117,15 +202,8 @@
 //                 ],
 //               ),
 //               actions: [
-//                 IconButton(
-//                   icon: Icon(
-//                     Icons.notifications_outlined,
-//                     color: theme.colorScheme.onSurface,
-//                   ),
-//                   onPressed: () {
-                    
-//                   },
-//                 ),
+//                 // ── Bell with badge ──────────────────────────────────────────
+//                 _buildNotificationBell(),
 //               ],
 //             ),
 //           ];
@@ -209,17 +287,44 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   void initState() {
     super.initState();
 
-    // ── SignalR: pipe real-time notifications into the Bloc ──────────────────
-    GetIt.I<NotificationHubService>().onReceiveNotification = (notification) {
+    // FIX: Register the callback BEFORE calling connect(), so no notifications
+    // are missed if the connection resolves very quickly.
+    final hub = GetIt.I<NotificationHubService>();
+
+    hub.onReceiveNotification = (notification) {
+      if (!mounted) return;
       context.read<NotificationBloc>().add(
             RealtimeNotificationReceivedEvent(notification: notification),
           );
     };
 
-    // ── Fetch unread count on app start ──────────────────────────────────────
-    context.read<NotificationBloc>().add(const GetUnreadCountEvent());
+    hub.onConnectionStateChanged = (state) {
+      if (!mounted) return;
+      debugPrint('🔌 SignalR state: $state');
+    };
 
+    // Now connect — callback is already in place
+    _initSignalR(hub);
+
+    // Fetch unread count on app start
+    context.read<NotificationBloc>().add(const GetUnreadCountEvent());
     context.read<ProfileBloc>().add(LoadMyProfile());
+  }
+
+  Future<void> _initSignalR(NotificationHubService hub) async {
+    try {
+      await hub.connect();
+    } catch (e) {
+      // connect() already handles retries internally — just log here
+      debugPrint('❌ Initial SignalR connect error: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    // Optional: disconnect when the nav shell is disposed (e.g. on logout)
+    // GetIt.I<NotificationHubService>().disconnect();
+    super.dispose();
   }
 
   void _onItemTapped(int index) {
@@ -363,7 +468,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
                 ],
               ),
               actions: [
-                // ── Bell with badge ──────────────────────────────────────────
                 _buildNotificationBell(),
               ],
             ),

@@ -1,18 +1,55 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:get_it/get_it.dart';
+// import 'package:sports_in/app/di/injection.dart';
+// import 'package:sports_in/app/routes/app_routes.dart';
+// import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+// import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
+// import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+// import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart';
+// import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_event.dart';
 // import 'package:sports_in/features/notitification/data/model/notifi_model.dart';
 // import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
+
+// // ─── Navigation routing maps ───────────────────────────────────────────────────
+// // relatedEntityId = senderId (navigate to their profile)
+// const _profileTypes = {
+//   'ConnectionRequest',
+//   'ConnectionAccepted',
+//   'Follow',
+//   'GroupInvitation',
+// };
+// // relatedEntityId = postId
+// const _postTypes = {'PostLike', 'PostComment', 'AdLike'};
+// // relatedEntityId = opportunityId
+// const _opportunityTypes = {
+//   'OpportunityNew',
+//   'OpportunityApplied',
+//   'OpportunityAccepted',
+//   'OpportunityRejected',
+// };
+// // Types that show Accept/Reject buttons instead of navigating on tap
+// const _connectionTypes = {'ConnectionRequest', 'GroupInvitation'};
 
 // class NotificationScreen extends StatelessWidget {
 //   const NotificationScreen({super.key});
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return BlocProvider(
-//       create: (_) => GetIt.I<NotificationBloc>()
-//         ..add(const GetNotificationsEvent())
-//         ..add(const GetUnreadCountEvent()),
+//     // FIX 1: Use MultiBlocProvider to provide BOTH blocs above _NotificationView.
+//     // Previously only NotificationBloc was provided, causing ProviderNotFoundException
+//     // when _NotificationView tried to read ConnectionsBloc.
+//     return MultiBlocProvider(
+//       providers: [
+//         BlocProvider(
+//           create: (_) => GetIt.I<NotificationBloc>()
+//             ..add(const GetNotificationsEvent())
+//             ..add(const GetUnreadCountEvent()),
+//         ),
+//         BlocProvider(
+//           create: (_) => GetIt.I<ConnectionsBloc>(),
+//         ),
+//       ],
 //       child: const _NotificationView(),
 //     );
 //   }
@@ -20,25 +57,23 @@
 
 // class _NotificationView extends StatefulWidget {
 //   const _NotificationView();
-
 //   @override
 //   State<_NotificationView> createState() => _NotificationViewState();
 // }
 
 // class _NotificationViewState extends State<_NotificationView> {
 //   final ScrollController _scrollController = ScrollController();
-//   String? _activeCategory; // null = Recent
+//   String? _activeCategory;
+
+//   static const _primaryGreen = Color(0xFF3DBE6C);
+//   static const _bgColor = Color(0xFFF7F8FA);
 
 //   static const _categories = [
-//     {'label': 'Recent', 'value': null},
+//     {'label': 'Recent', 'value': 'recent'},
 //     {'label': 'Requests', 'value': 'requests'},
 //     {'label': 'Reactions', 'value': 'reactions'},
 //     {'label': 'Opportunities', 'value': 'opportunities'},
 //   ];
-
-//   // ─── Category color helpers ────────────────────────────────────────────────
-//   static const _primaryGreen = Color(0xFF3DBE6C);
-//   static const _bgColor = Color(0xFFF7F8FA);
 
 //   @override
 //   void initState() {
@@ -61,25 +96,61 @@
 
 //   void _switchCategory(String? value) {
 //     setState(() => _activeCategory = value);
-//     context.read<NotificationBloc>().add(
-//           GetNotificationsEvent(category: value),
-//         );
+//     context
+//         .read<NotificationBloc>()
+//         .add(GetNotificationsEvent(category: value));
 //   }
 
-//   // ─── Group notifications by date ──────────────────────────────────────────
+//   // ─── Smart navigation ──────────────────────────────────────────────────────
+//   void _navigate(NotificationModel n) {
+//     final id = n.relatedEntityId;
+//     if (id == null) return;
+//     if (_profileTypes.contains(n.type)) {
+//       Navigator.pushNamed(context, AppRoutes.userProfile, arguments: id);
+//     } else if (_postTypes.contains(n.type)) {
+//       Navigator.pushNamed(context, AppRoutes.postDetail, arguments: id);
+//     } else if (_opportunityTypes.contains(n.type)) {
+//       // Navigator.pushNamed(context, AppRoutes.opportunityDetail, arguments: id);
+//             Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                 builder: (_) => BlocProvider(
+//                   create: (_) => OpportunityBloc(
+//                     opportunityRepo: getIt<OpportunityReposatory>(),
+//                   ),
+//                   child: OpportunityDetailsPage(
+//                     opportunityId: id,
+//                     isOwner: true,
+//                   ),
+//                 ),
+//               ),
+//             );
+          
+//     }
+//   }
+
+//   void _markAndNavigate(NotificationModel n) {
+//     // FIX 2: Only attempt to mark as read if not already read.
+//     // The 404 error occurred when trying to mark a notification that the server
+//     // could not find. We still navigate regardless of the outcome.
+//     if (!n.isRead) {
+//       context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
+//     }
+//     _navigate(n);
+//   }
+
+//   // ─── Helpers ───────────────────────────────────────────────────────────────
 //   Map<String, List<NotificationModel>> _groupByDate(
 //       List<NotificationModel> items) {
 //     final now = DateTime.now();
 //     final today = DateTime(now.year, now.month, now.day);
 //     final yesterday = today.subtract(const Duration(days: 1));
-
-//     final Map<String, List<NotificationModel>> grouped = {};
+//     final grouped = <String, List<NotificationModel>>{};
 //     for (final n in items) {
 //       final d = DateTime(n.createdAt.year, n.createdAt.month, n.createdAt.day);
-//       String label;
+//       final String label;
 //       if (d == today) {
-//         label =
-//             'Today, ${_monthName(d.month)} ${d.day}';
+//         label = 'Today, ${_monthName(d.month)} ${d.day}';
 //       } else if (d == yesterday) {
 //         label = 'Yesterday';
 //       } else {
@@ -91,8 +162,19 @@
 //   }
 
 //   String _monthName(int m) => const [
-//         '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-//         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+//         '',
+//         'Jan',
+//         'Feb',
+//         'Mar',
+//         'Apr',
+//         'May',
+//         'Jun',
+//         'Jul',
+//         'Aug',
+//         'Sep',
+//         'Oct',
+//         'Nov',
+//         'Dec'
 //       ][m];
 
 //   String _timeAgo(DateTime dt) {
@@ -102,52 +184,45 @@
 //     return '${diff.inDays}d';
 //   }
 
-//   // ─── Icon & color per notification type ───────────────────────────────────
-//   Color _typeColor(String type) {
-//     return switch (type) {
-//       'OpportunityNew' || 'OpportunityAccepted' => const Color(0xFF3DBE6C),
-//       'OpportunityRejected' => const Color(0xFFE05C5C),
-//       'PostLike' || 'AdLike' => const Color(0xFFFF7043),
-//       'PostComment' => const Color(0xFF42A5F5),
-//       'ConnectionRequest' || 'ConnectionAccepted' => const Color(0xFF7E57C2),
-//       'Follow' => const Color(0xFFEC407A),
-//       'GroupInvitation' => const Color(0xFF26C6DA),
-//       _ => const Color(0xFF90A4AE),
-//     };
-//   }
+//   Color _typeColor(String type) => switch (type) {
+//         'OpportunityNew' || 'OpportunityAccepted' => const Color(0xFF3DBE6C),
+//         'OpportunityRejected' => const Color(0xFFE05C5C),
+//         'PostLike' || 'AdLike' => const Color(0xFFFF7043),
+//         'PostComment' => const Color(0xFF42A5F5),
+//         'ConnectionRequest' || 'ConnectionAccepted' => const Color(0xFF7E57C2),
+//         'Follow' => const Color(0xFFEC407A),
+//         'GroupInvitation' => const Color(0xFF26C6DA),
+//         _ => const Color(0xFF90A4AE),
+//       };
 
-//   IconData _typeIcon(String type) {
-//     return switch (type) {
-//       'OpportunityNew' => Icons.work_outline_rounded,
-//       'OpportunityAccepted' => Icons.check_circle_outline_rounded,
-//       'OpportunityRejected' => Icons.cancel_outlined,
-//       'OpportunityApplied' => Icons.send_rounded,
-//       'PostLike' || 'AdLike' => Icons.favorite_border_rounded,
-//       'PostComment' => Icons.chat_bubble_outline_rounded,
-//       'ConnectionRequest' => Icons.person_add_alt_1_outlined,
-//       'ConnectionAccepted' => Icons.people_outline_rounded,
-//       'Follow' => Icons.person_outline_rounded,
-//       'GroupInvitation' => Icons.group_add_outlined,
-//       _ => Icons.notifications_none_rounded,
-//     };
-//   }
+//   IconData _typeIcon(String type) => switch (type) {
+//         'OpportunityNew' => Icons.work_outline_rounded,
+//         'OpportunityAccepted' => Icons.check_circle_outline_rounded,
+//         'OpportunityRejected' => Icons.cancel_outlined,
+//         'OpportunityApplied' => Icons.send_rounded,
+//         'PostLike' || 'AdLike' => Icons.favorite_border_rounded,
+//         'PostComment' => Icons.chat_bubble_outline_rounded,
+//         'ConnectionRequest' => Icons.person_add_alt_1_outlined,
+//         'ConnectionAccepted' => Icons.people_outline_rounded,
+//         'Follow' => Icons.person_outline_rounded,
+//         'GroupInvitation' => Icons.group_add_outlined,
+//         _ => Icons.notifications_none_rounded,
+//       };
 
+//   // ─────────────────────────────────────────────────────────────────────────
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       backgroundColor: _bgColor,
-//       appBar: _buildAppBar(context),
-//       body: Column(
-//         children: [
-//           _buildCategoryBar(),
-//           Expanded(child: _buildBody()),
-//         ],
-//       ),
+//       appBar: _buildAppBar(),
+//       body: Column(children: [
+//         _buildCategoryBar(),
+//         Expanded(child: _buildBody()),
+//       ]),
 //     );
 //   }
 
-//   // ─── AppBar ────────────────────────────────────────────────────────────────
-//   PreferredSizeWidget _buildAppBar(BuildContext context) {
+//   PreferredSizeWidget _buildAppBar() {
 //     return AppBar(
 //       backgroundColor: Colors.white,
 //       elevation: 0,
@@ -157,35 +232,30 @@
 //             size: 18, color: Colors.black87),
 //         onPressed: () => Navigator.pop(context),
 //       ),
-//       title: const Text(
-//         'Notification',
-//         style: TextStyle(
-//           color: Colors.black87,
-//           fontWeight: FontWeight.w700,
-//           fontSize: 18,
-//         ),
-//       ),
+//       title: const Text('Notification',
+//           style: TextStyle(
+//               color: Colors.black87,
+//               fontWeight: FontWeight.w700,
+//               fontSize: 18)),
 //       actions: [
 //         BlocBuilder<NotificationBloc, NotificationState>(
 //           buildWhen: (_, s) => s is NotificationsLoaded,
 //           builder: (context, state) {
-//             final count = state is NotificationsLoaded ? state.unreadCount : 0;
+//             final count =
+//                 state is NotificationsLoaded ? state.unreadCount : 0;
 //             if (count == 0) return const SizedBox.shrink();
 //             return Container(
 //               margin: const EdgeInsets.only(right: 16),
 //               padding:
 //                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
 //               decoration: BoxDecoration(
-//                 color: _primaryGreen,
-//                 borderRadius: BorderRadius.circular(20),
-//               ),
-//               child: Text(
-//                 '$count new',
-//                 style: const TextStyle(
-//                     color: Colors.white,
-//                     fontSize: 12,
-//                     fontWeight: FontWeight.w600),
-//               ),
+//                   color: _primaryGreen,
+//                   borderRadius: BorderRadius.circular(20)),
+//               child: Text('$count new',
+//                   style: const TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 12,
+//                       fontWeight: FontWeight.w600)),
 //             );
 //           },
 //         ),
@@ -193,7 +263,6 @@
 //     );
 //   }
 
-//   // ─── Category Filter Bar ───────────────────────────────────────────────────
 //   Widget _buildCategoryBar() {
 //     return Container(
 //       color: Colors.white,
@@ -214,15 +283,12 @@
 //                   color: isActive ? _primaryGreen : const Color(0xFFF0F0F0),
 //                   borderRadius: BorderRadius.circular(20),
 //                 ),
-//                 child: Text(
-//                   cat['label'] as String,
-//                   style: TextStyle(
-//                     color: isActive ? Colors.white : Colors.black54,
-//                     fontWeight:
-//                         isActive ? FontWeight.w600 : FontWeight.w500,
-//                     fontSize: 13,
-//                   ),
-//                 ),
+//                 child: Text(cat['label'] as String,
+//                     style: TextStyle(
+//                         color: isActive ? Colors.white : Colors.black54,
+//                         fontWeight:
+//                             isActive ? FontWeight.w600 : FontWeight.w500,
+//                         fontSize: 13)),
 //               ),
 //             );
 //           }).toList(),
@@ -231,54 +297,38 @@
 //     );
 //   }
 
-//   // ─── Body ──────────────────────────────────────────────────────────────────
 //   Widget _buildBody() {
 //     return BlocConsumer<NotificationBloc, NotificationState>(
 //       listener: (context, state) {
 //         if (state is NotificationsError) {
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             SnackBar(
+//           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
 //               content: Text(state.message),
 //               backgroundColor: Colors.redAccent,
-//               behavior: SnackBarBehavior.floating,
-//             ),
-//           );
+//               behavior: SnackBarBehavior.floating));
 //         }
 //       },
 //       builder: (context, state) {
 //         if (state is NotificationsLoading) {
 //           return const Center(
-//             child: CircularProgressIndicator(color: _primaryGreen),
-//           );
+//               child: CircularProgressIndicator(color: _primaryGreen));
 //         }
-
 //         if (state is NotificationsLoaded) {
-//           if (state.notifications.isEmpty) {
-//             return _buildEmpty();
-//           }
+//           if (state.notifications.isEmpty) return _buildEmpty();
 //           return _buildList(state);
 //         }
-
-//         if (state is NotificationsError) {
-//           return _buildError(state.message);
-//         }
-
+//         if (state is NotificationsError) return _buildError(state.message);
 //         return const SizedBox.shrink();
 //       },
 //     );
 //   }
 
-//   // ─── Notification List ─────────────────────────────────────────────────────
 //   Widget _buildList(NotificationsLoaded state) {
 //     final grouped = _groupByDate(state.notifications);
-
 //     return RefreshIndicator(
 //       color: _primaryGreen,
-//       onRefresh: () async {
-//         context.read<NotificationBloc>().add(
-//               GetNotificationsEvent(category: _activeCategory),
-//             );
-//       },
+//       onRefresh: () async => context.read<NotificationBloc>().add(
+//             GetNotificationsEvent(category: _activeCategory),
+//           ),
 //       child: ListView.builder(
 //         controller: _scrollController,
 //         padding: const EdgeInsets.only(top: 8, bottom: 24),
@@ -288,19 +338,16 @@
 //             return const Padding(
 //               padding: EdgeInsets.all(16),
 //               child: Center(
-//                 child: CircularProgressIndicator(color: _primaryGreen),
-//               ),
+//                   child: CircularProgressIndicator(color: _primaryGreen)),
 //             );
 //           }
-
 //           final dateLabel = grouped.keys.elementAt(index);
 //           final items = grouped[dateLabel]!;
-
 //           return Column(
 //             crossAxisAlignment: CrossAxisAlignment.start,
 //             children: [
 //               _buildDateHeader(dateLabel, items),
-//               ...items.map((n) => _buildNotificationTile(n)),
+//               ...items.map(_buildNotificationTile),
 //             ],
 //           );
 //         },
@@ -308,7 +355,6 @@
 //     );
 //   }
 
-//   // ─── Date Header ──────────────────────────────────────────────────────────
 //   Widget _buildDateHeader(String label, List<NotificationModel> items) {
 //     final hasUnread = items.any((n) => !n.isRead);
 //     return Padding(
@@ -316,45 +362,149 @@
 //       child: Row(
 //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //         children: [
-//           Text(
-//             label,
-//             style: const TextStyle(
-//               color: Colors.black87,
-//               fontWeight: FontWeight.w700,
-//               fontSize: 14,
-//             ),
-//           ),
+//           Text(label,
+//               style: const TextStyle(
+//                   color: Colors.black87,
+//                   fontWeight: FontWeight.w700,
+//                   fontSize: 14)),
 //           if (hasUnread)
 //             GestureDetector(
 //               onTap: () => context
 //                   .read<NotificationBloc>()
 //                   .add(const MarkAllAsReadEvent()),
-//               child: const Text(
-//                 'Mark all as read',
-//                 style: TextStyle(
-//                   color: _primaryGreen,
-//                   fontSize: 12,
-//                   fontWeight: FontWeight.w600,
-//                 ),
-//               ),
+//               child: const Text('Mark all as read',
+//                   style: TextStyle(
+//                       color: _primaryGreen,
+//                       fontSize: 12,
+//                       fontWeight: FontWeight.w600)),
 //             ),
 //         ],
 //       ),
 //     );
 //   }
 
-//   // ─── Notification Tile ─────────────────────────────────────────────────────
+//   // ─── Tile Router ───────────────────────────────────────────────────────────
 //   Widget _buildNotificationTile(NotificationModel n) {
-//     final color = _typeColor(n.type);
-//     final icon = _typeIcon(n.type);
-//     final isInvitation = n.type == 'GroupInvitation';
+//     return _connectionTypes.contains(n.type)
+//         ? _ConnectionTile(
+//             n: n,
+//             timeAgo: _timeAgo(n.createdAt),
+//             color: _typeColor(n.type),
+//             icon: _typeIcon(n.type),
+//             onCardTap: () => _markAndNavigate(n),
+//             onMarkRead: () {
+//               // FIX 2 applied here too: only mark as read if currently unread
+//               if (!n.isRead) {
+//                 context
+//                     .read<NotificationBloc>()
+//                     .add(MarkAsReadEvent(id: n.id));
+//               }
+//             },
+//             onAccept: () {
+//               // FIX 2: Only dispatch MarkAsReadEvent if not already read
+//               if (!n.isRead) {
+//                 context
+//                     .read<NotificationBloc>()
+//                     .add(MarkAsReadEvent(id: n.id));
+//               }
+//               // ConnectionsBloc is now properly provided via MultiBlocProvider
+//               context.read<ConnectionsBloc>().add(
+//                     RespondToRequest(
+//                         senderId: n.senderId!, status: 'Accepted'),
+//                   );
+//             },
+//             onReject: () {
+//               // FIX 2: Only dispatch MarkAsReadEvent if not already read
+//               if (!n.isRead) {
+//                 context
+//                     .read<NotificationBloc>()
+//                     .add(MarkAsReadEvent(id: n.id));
+//               }
+//               // ConnectionsBloc is now properly provided via MultiBlocProvider
+//               context.read<ConnectionsBloc>().add(
+//                     RespondToRequest(
+//                         senderId: n.senderId!, status: 'Rejected'),
+//                   );
+//             },
+//           )
+//         : _DefaultTile(
+//             n: n,
+//             timeAgo: _timeAgo(n.createdAt),
+//             color: _typeColor(n.type),
+//             icon: _typeIcon(n.type),
+//             onTap: () => _markAndNavigate(n),
+//           );
+//   }
 
+//   // ─── Empty / Error ─────────────────────────────────────────────────────────
+//   Widget _buildEmpty() {
+//     return Center(
+//       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+//         Container(
+//           padding: const EdgeInsets.all(24),
+//           decoration: BoxDecoration(
+//               color: _primaryGreen.withOpacity(0.08), shape: BoxShape.circle),
+//           child: const Icon(Icons.notifications_off_outlined,
+//               size: 48, color: _primaryGreen),
+//         ),
+//         const SizedBox(height: 16),
+//         const Text('No notifications yet',
+//             style: TextStyle(
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.w600,
+//                 color: Colors.black54)),
+//         const SizedBox(height: 6),
+//         const Text("You're all caught up!",
+//             style: TextStyle(fontSize: 13, color: Colors.black38)),
+//       ]),
+//     );
+//   }
+
+//   Widget _buildError(String message) {
+//     return Center(
+//       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+//         const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.black26),
+//         const SizedBox(height: 12),
+//         Text(message,
+//             style: const TextStyle(color: Colors.black45, fontSize: 13)),
+//         const SizedBox(height: 16),
+//         ElevatedButton(
+//           style: ElevatedButton.styleFrom(
+//               backgroundColor: _primaryGreen,
+//               shape: RoundedRectangleBorder(
+//                   borderRadius: BorderRadius.circular(10))),
+//           onPressed: () => context.read<NotificationBloc>().add(
+//                 GetNotificationsEvent(category: _activeCategory),
+//               ),
+//           child: const Text('Retry', style: TextStyle(color: Colors.white)),
+//         ),
+//       ]),
+//     );
+//   }
+// }
+
+// // ─────────────────────────────────────────────────────────────────────────────
+// // Default Tile — navigates to post / opportunity / profile on tap
+// // ─────────────────────────────────────────────────────────────────────────────
+// class _DefaultTile extends StatelessWidget {
+//   final NotificationModel n;
+//   final String timeAgo;
+//   final Color color;
+//   final IconData icon;
+//   final VoidCallback onTap;
+
+//   const _DefaultTile({
+//     required this.n,
+//     required this.timeAgo,
+//     required this.color,
+//     required this.icon,
+//     required this.onTap,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
 //     return GestureDetector(
-//       onTap: () {
-//         if (!n.isRead) {
-//           context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
-//         }
-//       },
+//       onTap: onTap,
 //       child: AnimatedContainer(
 //         duration: const Duration(milliseconds: 300),
 //         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -362,14 +512,12 @@
 //           color: n.isRead ? Colors.white : color.withOpacity(0.06),
 //           borderRadius: BorderRadius.circular(14),
 //           border: Border.all(
-//             color: n.isRead ? Colors.transparent : color.withOpacity(0.2),
-//           ),
+//               color: n.isRead ? Colors.transparent : color.withOpacity(0.2)),
 //           boxShadow: [
 //             BoxShadow(
-//               color: Colors.black.withOpacity(0.04),
-//               blurRadius: 8,
-//               offset: const Offset(0, 2),
-//             ),
+//                 color: Colors.black.withOpacity(0.04),
+//                 blurRadius: 8,
+//                 offset: const Offset(0, 2))
 //           ],
 //         ),
 //         child: Padding(
@@ -377,72 +525,192 @@
 //           child: Row(
 //             crossAxisAlignment: CrossAxisAlignment.start,
 //             children: [
-//               // Avatar / Icon
-//               _buildAvatar(n, color, icon),
+//               _Avatar(n: n, color: color, icon: icon),
 //               const SizedBox(width: 12),
-//               // Content
 //               Expanded(
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
-//                     Row(
-//                       children: [
-//                         Expanded(
-//                           child: Text(
-//                             n.title,
-//                             style: TextStyle(
-//                               fontWeight: n.isRead
-//                                   ? FontWeight.w500
-//                                   : FontWeight.w700,
-//                               fontSize: 14,
-//                               color: Colors.black87,
-//                             ),
-//                           ),
+//                     Row(children: [
+//                       Expanded(
+//                         child: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             if (n.senderName != null)
+//                               Text(n.senderName!,
+//                                   style: TextStyle(
+//                                       fontWeight: n.isRead
+//                                           ? FontWeight.w600
+//                                           : FontWeight.w700,
+//                                       fontSize: 13,
+//                                       color: Colors.black87)),
+//                             Text(n.title,
+//                                 style: TextStyle(
+//                                     fontWeight: n.isRead
+//                                         ? FontWeight.w400
+//                                         : FontWeight.w600,
+//                                     fontSize: 13,
+//                                     color: Colors.black54)),
+//                           ],
 //                         ),
-//                         Text(
-//                           _timeAgo(n.createdAt),
-//                           style: const TextStyle(
-//                               fontSize: 11, color: Colors.black38),
-//                         ),
-//                       ],
-//                     ),
-//                     const SizedBox(height: 3),
-//                     Text(
-//                       n.body,
-//                       style: const TextStyle(
-//                           fontSize: 12,
-//                           color: Colors.black54,
-//                           height: 1.4),
-//                       maxLines: 2,
-//                       overflow: TextOverflow.ellipsis,
-//                     ),
-//                     // Action buttons for GroupInvitation
-//                     if (isInvitation) ...[
-//                       const SizedBox(height: 8),
-//                       Row(
-//                         children: [
-//                           _actionButton('Accept', _primaryGreen, Colors.white),
-//                           const SizedBox(width: 8),
-//                           _actionButton(
-//                               'Reject', const Color(0xFFFFEBEE), Colors.red),
-//                         ],
 //                       ),
-//                     ],
+//                       Text(timeAgo,
+//                           style: const TextStyle(
+//                               fontSize: 11, color: Colors.black38)),
+//                     ]),
+//                     const SizedBox(height: 3),
+//                     Text(n.body,
+//                         style: const TextStyle(
+//                             fontSize: 12, color: Colors.black54, height: 1.4),
+//                         maxLines: 2,
+//                         overflow: TextOverflow.ellipsis),
 //                   ],
 //                 ),
 //               ),
-//               // Unread dot
 //               if (!n.isRead)
 //                 Padding(
 //                   padding: const EdgeInsets.only(left: 6, top: 4),
 //                   child: Container(
-//                     width: 8,
-//                     height: 8,
-//                     decoration: BoxDecoration(
-//                       color: color,
-//                       shape: BoxShape.circle,
-//                     ),
-//                   ),
+//                       width: 8,
+//                       height: 8,
+//                       decoration: BoxDecoration(
+//                           color: color, shape: BoxShape.circle)),
+//                 ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ─────────────────────────────────────────────────────────────────────────────
+// // Connection Tile — Accept / Reject buttons + navigate to sender profile
+// // Converted to StatefulWidget so buttons can show loading/done state
+// // ─────────────────────────────────────────────────────────────────────────────
+// class _ConnectionTile extends StatefulWidget {
+//   final NotificationModel n;
+//   final String timeAgo;
+//   final Color color;
+//   final IconData icon;
+//   final VoidCallback onCardTap;
+//   final VoidCallback onMarkRead;
+//   final VoidCallback onAccept;
+//   final VoidCallback onReject;
+
+//   const _ConnectionTile({
+//     required this.n,
+//     required this.timeAgo,
+//     required this.color,
+//     required this.icon,
+//     required this.onCardTap,
+//     required this.onMarkRead,
+//     required this.onAccept,
+//     required this.onReject,
+//   });
+
+//   @override
+//   State<_ConnectionTile> createState() => _ConnectionTileState();
+// }
+
+// class _ConnectionTileState extends State<_ConnectionTile> {
+//   static const _primaryGreen = Color(0xFF3DBE6C);
+
+//   // null = idle, 'Accepted' = accepted, 'Rejected' = rejected, 'loading' = in progress
+//   String? _actionStatus;
+
+//   void _handleAccept() {
+//     if (_actionStatus != null) return; // prevent double tap
+//     setState(() => _actionStatus = 'loading_accept');
+//     widget.onAccept();
+//     // Optimistically show accepted state immediately
+//     Future.delayed(const Duration(milliseconds: 300), () {
+//       if (mounted) setState(() => _actionStatus = 'Accepted');
+//     });
+//   }
+
+//   void _handleReject() {
+//     if (_actionStatus != null) return; // prevent double tap
+//     setState(() => _actionStatus = 'loading_reject');
+//     widget.onReject();
+//     // Optimistically show rejected state immediately
+//     Future.delayed(const Duration(milliseconds: 300), () {
+//       if (mounted) setState(() => _actionStatus = 'Rejected');
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final n = widget.n;
+//     final color = widget.color;
+
+//     return GestureDetector(
+//       onTap: widget.onCardTap,
+//       child: AnimatedContainer(
+//         duration: const Duration(milliseconds: 300),
+//         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+//         decoration: BoxDecoration(
+//           color: n.isRead ? Colors.white : color.withOpacity(0.06),
+//           borderRadius: BorderRadius.circular(14),
+//           border: Border.all(
+//               color: n.isRead ? Colors.transparent : color.withOpacity(0.2)),
+//           boxShadow: [
+//             BoxShadow(
+//                 color: Colors.black.withOpacity(0.04),
+//                 blurRadius: 8,
+//                 offset: const Offset(0, 2))
+//           ],
+//         ),
+//         child: Padding(
+//           padding: const EdgeInsets.all(12),
+//           child: Row(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               _Avatar(n: n, color: color, icon: widget.icon),
+//               const SizedBox(width: 12),
+//               Expanded(
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     // Name + time
+//                     Row(children: [
+//                       Expanded(
+//                         child: Text(
+//                           n.senderName ?? n.title,
+//                           style: TextStyle(
+//                               fontWeight: n.isRead
+//                                   ? FontWeight.w600
+//                                   : FontWeight.w700,
+//                               fontSize: 14,
+//                               color: Colors.black87),
+//                           maxLines: 1,
+//                           overflow: TextOverflow.ellipsis,
+//                         ),
+//                       ),
+//                       Text(widget.timeAgo,
+//                           style: const TextStyle(
+//                               fontSize: 11, color: Colors.black38)),
+//                     ]),
+//                     const SizedBox(height: 3),
+//                     Text(n.body,
+//                         style: const TextStyle(
+//                             fontSize: 12, color: Colors.black54, height: 1.4),
+//                         maxLines: 2,
+//                         overflow: TextOverflow.ellipsis),
+//                     const SizedBox(height: 10),
+//                     // ── Action area ──────────────────────────────────────
+//                     _buildActionArea(),
+//                   ],
+//                 ),
+//               ),
+//               if (!n.isRead)
+//                 Padding(
+//                   padding: const EdgeInsets.only(left: 6, top: 4),
+//                   child: Container(
+//                       width: 8,
+//                       height: 8,
+//                       decoration: BoxDecoration(
+//                           color: color, shape: BoxShape.circle)),
 //                 ),
 //             ],
 //           ),
@@ -451,98 +719,131 @@
 //     );
 //   }
 
-//   Widget _buildAvatar(NotificationModel n, Color color, IconData icon) {
-//     return Stack(
-//       children: [
-//         CircleAvatar(
-//           radius: 24,
-//           backgroundColor: color.withOpacity(0.12),
-//           backgroundImage:
-//               n.senderImage != null ? NetworkImage(n.senderImage!) : null,
-//           child: n.senderImage == null
-//               ? Icon(icon, color: color, size: 22)
-//               : null,
+//   Widget _buildActionArea() {
+//     // Already responded — show a status chip instead of buttons
+//     if (_actionStatus == 'Accepted') {
+//       return _StatusChip(
+//         label: 'Request Accepted',
+//         icon: Icons.check_circle_rounded,
+//         color: _primaryGreen,
+//       );
+//     }
+//     if (_actionStatus == 'Rejected') {
+//       return _StatusChip(
+//         label: 'Request Declined',
+//         icon: Icons.cancel_rounded,
+//         color: Colors.red,
+//       );
+//     }
+
+//     // Loading states — disable buttons and show spinner inside the active one
+//     final isLoadingAccept = _actionStatus == 'loading_accept';
+//     final isLoadingReject = _actionStatus == 'loading_reject';
+
+//     return Row(children: [
+//       Expanded(
+//         child: FilledButton(
+//           onPressed: (isLoadingAccept || isLoadingReject) ? null : _handleAccept,
+//           style: FilledButton.styleFrom(
+//             backgroundColor: _primaryGreen,
+//             disabledBackgroundColor: _primaryGreen.withOpacity(0.6),
+//             padding: const EdgeInsets.symmetric(vertical: 10),
+//             shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(8)),
+//           ),
+//           child: isLoadingAccept
+//               ? const SizedBox(
+//                   width: 16,
+//                   height: 16,
+//                   child: CircularProgressIndicator(
+//                       strokeWidth: 2, color: Colors.white))
+//               : const Text('Accept',
+//                   style:
+//                       TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
 //         ),
-//       ],
-//     );
+//       ),
+//       const SizedBox(width: 10),
+//       Expanded(
+//         child: OutlinedButton(
+//           onPressed: (isLoadingAccept || isLoadingReject) ? null : _handleReject,
+//           style: OutlinedButton.styleFrom(
+//             foregroundColor: Colors.red,
+//             disabledForegroundColor: Colors.red.withOpacity(0.4),
+//             side: BorderSide(
+//                 color: (isLoadingAccept || isLoadingReject)
+//                     ? const Color(0xFFFFCDD2).withOpacity(0.4)
+//                     : const Color(0xFFFFCDD2)),
+//             padding: const EdgeInsets.symmetric(vertical: 10),
+//             shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(8)),
+//           ),
+//           child: isLoadingReject
+//               ? const SizedBox(
+//                   width: 16,
+//                   height: 16,
+//                   child: CircularProgressIndicator(
+//                       strokeWidth: 2, color: Colors.red))
+//               : const Text('Reject',
+//                   style:
+//                       TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+//         ),
+//       ),
+//     ]);
 //   }
+// }
 
-//   Widget _actionButton(String label, Color bg, Color textColor) {
+// // ─── Small status chip shown after Accept / Reject ────────────────────────────
+// class _StatusChip extends StatelessWidget {
+//   final String label;
+//   final IconData icon;
+//   final Color color;
+
+//   const _StatusChip({
+//     required this.label,
+//     required this.icon,
+//     required this.color,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
 //     return Container(
-//       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+//       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
 //       decoration: BoxDecoration(
-//         color: bg,
+//         color: color.withOpacity(0.08),
 //         borderRadius: BorderRadius.circular(8),
+//         border: Border.all(color: color.withOpacity(0.2)),
 //       ),
-//       child: Text(
-//         label,
-//         style: TextStyle(
-//             color: textColor, fontSize: 12, fontWeight: FontWeight.w600),
-//       ),
-//     );
-//   }
-
-//   // ─── Empty State ───────────────────────────────────────────────────────────
-//   Widget _buildEmpty() {
-//     return Center(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
+//       child: Row(
+//         mainAxisSize: MainAxisSize.min,
 //         children: [
-//           Container(
-//             padding: const EdgeInsets.all(24),
-//             decoration: BoxDecoration(
-//               color: _primaryGreen.withOpacity(0.08),
-//               shape: BoxShape.circle,
-//             ),
-//             child: const Icon(
-//               Icons.notifications_off_outlined,
-//               size: 48,
-//               color: _primaryGreen,
-//             ),
-//           ),
-//           const SizedBox(height: 16),
-//           const Text(
-//             'No notifications yet',
-//             style: TextStyle(
-//                 fontSize: 16,
-//                 fontWeight: FontWeight.w600,
-//                 color: Colors.black54),
-//           ),
-//           const SizedBox(height: 6),
-//           const Text(
-//             "You're all caught up!",
-//             style: TextStyle(fontSize: 13, color: Colors.black38),
-//           ),
+//           Icon(icon, color: color, size: 16),
+//           const SizedBox(width: 6),
+//           Text(label,
+//               style: TextStyle(
+//                   color: color,
+//                   fontSize: 12,
+//                   fontWeight: FontWeight.w600)),
 //         ],
 //       ),
 //     );
 //   }
+// }
 
-//   // ─── Error State ───────────────────────────────────────────────────────────
-//   Widget _buildError(String message) {
-//     return Center(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.black26),
-//           const SizedBox(height: 12),
-//           Text(message,
-//               style: const TextStyle(color: Colors.black45, fontSize: 13)),
-//           const SizedBox(height: 16),
-//           ElevatedButton(
-//             style: ElevatedButton.styleFrom(
-//               backgroundColor: _primaryGreen,
-//               shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(10)),
-//             ),
-//             onPressed: () => context.read<NotificationBloc>().add(
-//                   GetNotificationsEvent(category: _activeCategory),
-//                 ),
-//             child: const Text('Retry',
-//                 style: TextStyle(color: Colors.white)),
-//           ),
-//         ],
-//       ),
+// // ─── Shared avatar widget ──────────────────────────────────────────────────────
+// class _Avatar extends StatelessWidget {
+//   final NotificationModel n;
+//   final Color color;
+//   final IconData icon;
+//   const _Avatar({required this.n, required this.color, required this.icon});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return CircleAvatar(
+//       radius: 24,
+//       backgroundColor: color.withOpacity(0.12),
+//       backgroundImage:
+//           n.senderImage != null ? NetworkImage(n.senderImage!) : null,
+//       child: n.senderImage == null ? Icon(icon, color: color, size: 22) : null,
 //     );
 //   }
 // }
@@ -550,44 +851,33 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
+import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_event.dart';
 import 'package:sports_in/features/notitification/data/model/notifi_model.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 
 // ─── Navigation routing maps ───────────────────────────────────────────────────
-// relatedEntityId = senderId (navigate to their profile)
 const _profileTypes = {
   'ConnectionRequest',
   'ConnectionAccepted',
   'Follow',
   'GroupInvitation',
 };
-// relatedEntityId = postId
 const _postTypes = {'PostLike', 'PostComment', 'AdLike'};
-// relatedEntityId = opportunityId
 const _opportunityTypes = {
   'OpportunityNew',
   'OpportunityApplied',
   'OpportunityAccepted',
   'OpportunityRejected',
 };
-// Types that show Accept/Reject buttons instead of navigating on tap
 const _connectionTypes = {'ConnectionRequest', 'GroupInvitation'};
 
 class NotificationScreen extends StatelessWidget {
@@ -595,17 +885,27 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  return  BlocProvider(
-      create: (_) => GetIt.I<NotificationBloc>()
-        ..add(const GetNotificationsEvent())
-        ..add(const GetUnreadCountEvent()),
+    // ─── ROOT FIX ─────────────────────────────────────────────────────────────
+    // Use BlocProvider.value to REUSE the NotificationBloc that already lives
+    // in CustomBottomNav (where SignalR pushes RealtimeNotificationReceivedEvent).
+    //
+    // The old code used GetIt.I<NotificationBloc>() which created a BRAND NEW
+    // isolated instance that never received any SignalR events — so real-time
+    // notifications never appeared in the screen even though the hub was working.
+    //
+    // BlocProvider.value wires this screen into the SAME instance, so every
+    // event dispatched from the hub callback immediately rebuilds this screen.
+    final parentBloc = context.read<NotificationBloc>()
+      ..add(const GetNotificationsEvent())
+      ..add(const GetUnreadCountEvent());
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: parentBloc), // reuse — do NOT create new
+        BlocProvider(create: (_) => GetIt.I<ConnectionsBloc>()),
+      ],
       child: const _NotificationView(),
     );
-    // return BlocProvider.value(
-    //   value: context.read<NotificationBloc>()
-    //     ..add(const GetNotificationsEvent()),
-    //   child: const _NotificationView(),
-    // );
   }
 }
 
@@ -623,7 +923,7 @@ class _NotificationViewState extends State<_NotificationView> {
   static const _bgColor = Color(0xFFF7F8FA);
 
   static const _categories = [
-    {'label': 'Recent', 'value': null},
+    {'label': 'Recent', 'value': 'recent'},
     {'label': 'Requests', 'value': 'requests'},
     {'label': 'Reactions', 'value': 'reactions'},
     {'label': 'Opportunities', 'value': 'opportunities'},
@@ -662,7 +962,17 @@ class _NotificationViewState extends State<_NotificationView> {
     } else if (_postTypes.contains(n.type)) {
       Navigator.pushNamed(context, AppRoutes.postDetail, arguments: id);
     } else if (_opportunityTypes.contains(n.type)) {
-      Navigator.pushNamed(context, AppRoutes.opportunityDetail, arguments: id);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => OpportunityBloc(
+              opportunityRepo: getIt<OpportunityReposatory>(),
+            ),
+            child: OpportunityDetailsPage(opportunityId: id, isOwner: true),
+          ),
+        ),
+      );
     }
   }
 
@@ -732,7 +1042,6 @@ class _NotificationViewState extends State<_NotificationView> {
         _ => Icons.notifications_none_rounded,
       };
 
-  // ─────────────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -769,8 +1078,7 @@ class _NotificationViewState extends State<_NotificationView> {
             if (count == 0) return const SizedBox.shrink();
             return Container(
               margin: const EdgeInsets.only(right: 16),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                   color: _primaryGreen,
                   borderRadius: BorderRadius.circular(20)),
@@ -860,8 +1168,8 @@ class _NotificationViewState extends State<_NotificationView> {
           if (index == grouped.length) {
             return const Padding(
               padding: EdgeInsets.all(16),
-              child:
-                  Center(child: CircularProgressIndicator(color: _primaryGreen)),
+              child: Center(
+                  child: CircularProgressIndicator(color: _primaryGreen)),
             );
           }
           final dateLabel = grouped.keys.elementAt(index);
@@ -906,7 +1214,6 @@ class _NotificationViewState extends State<_NotificationView> {
     );
   }
 
-  // ─── Tile Router ───────────────────────────────────────────────────────────
   Widget _buildNotificationTile(NotificationModel n) {
     return _connectionTypes.contains(n.type)
         ? _ConnectionTile(
@@ -915,19 +1222,26 @@ class _NotificationViewState extends State<_NotificationView> {
             color: _typeColor(n.type),
             icon: _typeIcon(n.type),
             onCardTap: () => _markAndNavigate(n),
-            onMarkRead: () => context
-                .read<NotificationBloc>()
-                .add(MarkAsReadEvent(id: n.id)),
-            // Plug in your ConnectionsBloc events here
+            onMarkRead: () {
+              if (!n.isRead) {
+                context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
+              }
+            },
             onAccept: () {
-              context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
-              // TODO: context.read<ConnectionsBloc>().add(
-              //   RespondToRequest(senderId: n.senderId!, status: 'Accepted'));
+              if (!n.isRead) {
+                context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
+              }
+              context.read<ConnectionsBloc>().add(
+                    RespondToRequest(senderId: n.senderId!, status: 'Accepted'),
+                  );
             },
             onReject: () {
-              context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
-              // TODO: context.read<ConnectionsBloc>().add(
-              //   RespondToRequest(senderId: n.senderId!, status: 'Rejected'));
+              if (!n.isRead) {
+                context.read<NotificationBloc>().add(MarkAsReadEvent(id: n.id));
+              }
+              context.read<ConnectionsBloc>().add(
+                    RespondToRequest(senderId: n.senderId!, status: 'Rejected'),
+                  );
             },
           )
         : _DefaultTile(
@@ -939,7 +1253,6 @@ class _NotificationViewState extends State<_NotificationView> {
           );
   }
 
-  // ─── Empty / Error ─────────────────────────────────────────────────────────
   Widget _buildEmpty() {
     return Center(
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -979,8 +1292,7 @@ class _NotificationViewState extends State<_NotificationView> {
           onPressed: () => context.read<NotificationBloc>().add(
                 GetNotificationsEvent(category: _activeCategory),
               ),
-          child:
-              const Text('Retry', style: TextStyle(color: Colors.white)),
+          child: const Text('Retry', style: TextStyle(color: Colors.white)),
         ),
       ]),
     );
@@ -988,7 +1300,7 @@ class _NotificationViewState extends State<_NotificationView> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Default Tile — navigates to post / opportunity / profile on tap
+// Default Tile
 // ─────────────────────────────────────────────────────────────────────────────
 class _DefaultTile extends StatelessWidget {
   final NotificationModel n;
@@ -1089,9 +1401,9 @@ class _DefaultTile extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Connection Tile — Accept / Reject buttons + navigate to sender profile
+// Connection Tile — stateful for loading/done feedback
 // ─────────────────────────────────────────────────────────────────────────────
-class _ConnectionTile extends StatelessWidget {
+class _ConnectionTile extends StatefulWidget {
   final NotificationModel n;
   final String timeAgo;
   final Color color;
@@ -1100,8 +1412,6 @@ class _ConnectionTile extends StatelessWidget {
   final VoidCallback onMarkRead;
   final VoidCallback onAccept;
   final VoidCallback onReject;
-
-  static const _primaryGreen = Color(0xFF3DBE6C);
 
   const _ConnectionTile({
     required this.n,
@@ -1115,9 +1425,38 @@ class _ConnectionTile extends StatelessWidget {
   });
 
   @override
+  State<_ConnectionTile> createState() => _ConnectionTileState();
+}
+
+class _ConnectionTileState extends State<_ConnectionTile> {
+  static const _primaryGreen = Color(0xFF3DBE6C);
+  String? _actionStatus;
+
+  void _handleAccept() {
+    if (_actionStatus != null) return;
+    setState(() => _actionStatus = 'loading_accept');
+    widget.onAccept();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _actionStatus = 'Accepted');
+    });
+  }
+
+  void _handleReject() {
+    if (_actionStatus != null) return;
+    setState(() => _actionStatus = 'loading_reject');
+    widget.onReject();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _actionStatus = 'Rejected');
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final n = widget.n;
+    final color = widget.color;
+
     return GestureDetector(
-      onTap: onCardTap,
+      onTap: widget.onCardTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -1138,28 +1477,26 @@ class _ConnectionTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _Avatar(n: n, color: color, icon: icon),
+              _Avatar(n: n, color: color, icon: widget.icon),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Name + time
                     Row(children: [
                       Expanded(
                         child: Text(
                           n.senderName ?? n.title,
                           style: TextStyle(
-                              fontWeight: n.isRead
-                                  ? FontWeight.w600
-                                  : FontWeight.w700,
+                              fontWeight:
+                                  n.isRead ? FontWeight.w600 : FontWeight.w700,
                               fontSize: 14,
                               color: Colors.black87),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Text(timeAgo,
+                      Text(widget.timeAgo,
                           style: const TextStyle(
                               fontSize: 11, color: Colors.black38)),
                     ]),
@@ -1170,39 +1507,7 @@ class _ConnectionTile extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 10),
-                    // Accept / Reject
-                    Row(children: [
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: onAccept,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: _primaryGreen,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          child: const Text('Accept',
-                              style: TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w600)),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: onReject,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            side: const BorderSide(color: Color(0xFFFFCDD2)),
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          child: const Text('Reject',
-                              style: TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w600)),
-                        ),
-                      ),
-                    ]),
+                    _buildActionArea(),
                   ],
                 ),
               ),
@@ -1221,9 +1526,116 @@ class _ConnectionTile extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildActionArea() {
+    if (_actionStatus == 'Accepted') {
+      return const _StatusChip(
+        label: 'Request Accepted',
+        icon: Icons.check_circle_rounded,
+        color: _primaryGreen,
+      );
+    }
+    if (_actionStatus == 'Rejected') {
+      return const _StatusChip(
+        label: 'Request Declined',
+        icon: Icons.cancel_rounded,
+        color: Colors.red,
+      );
+    }
+
+    final isLoadingAccept = _actionStatus == 'loading_accept';
+    final isLoadingReject = _actionStatus == 'loading_reject';
+
+    return Row(children: [
+      Expanded(
+        child: FilledButton(
+          onPressed:
+              (isLoadingAccept || isLoadingReject) ? null : _handleAccept,
+          style: FilledButton.styleFrom(
+            backgroundColor: _primaryGreen,
+            disabledBackgroundColor: _primaryGreen.withOpacity(0.6),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          child: isLoadingAccept
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white))
+              : const Text('Accept',
+                  style:
+                      TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        ),
+      ),
+      const SizedBox(width: 10),
+      Expanded(
+        child: OutlinedButton(
+          onPressed:
+              (isLoadingAccept || isLoadingReject) ? null : _handleReject,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.red,
+            disabledForegroundColor: Colors.red.withOpacity(0.4),
+            side: BorderSide(
+                color: (isLoadingAccept || isLoadingReject)
+                    ? const Color(0xFFFFCDD2).withOpacity(0.4)
+                    : const Color(0xFFFFCDD2)),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          child: isLoadingReject
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.red))
+              : const Text('Reject',
+                  style:
+                      TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        ),
+      ),
+    ]);
+  }
 }
 
-// ─── Shared avatar widget ──────────────────────────────────────────────────────
+// ─── Status chip ──────────────────────────────────────────────────────────────
+class _StatusChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  const _StatusChip({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 6),
+          Text(label,
+              style: TextStyle(
+                  color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Shared avatar ────────────────────────────────────────────────────────────
 class _Avatar extends StatelessWidget {
   final NotificationModel n;
   final Color color;
