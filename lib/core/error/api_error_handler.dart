@@ -7,7 +7,7 @@ class ApiException implements Exception {
   final String message;
   final String? key;
 
-  ApiException({required this.message,  this.key});
+  ApiException({required this.message, this.key});
 
   @override
   String toString() => message;
@@ -82,15 +82,24 @@ class ApiErrorHandler {
 
   static String _keyForStatus(int? statusCode) {
     switch (statusCode) {
-      case 400: return StringKeys.badRequest;
-      case 401: return StringKeys.unauthorized;
-      case 403: return StringKeys.forbidden;
-      case 404: return StringKeys.resourceNotFound;
-      case 409: return StringKeys.conflict;
-      case 422: return StringKeys.validationError;
-      case 500: return StringKeys.serverError;
-      case 503: return StringKeys.serviceUnavailable;
-      default:  return StringKeys.unexpectedError;
+      case 400:
+        return StringKeys.badRequest;
+      case 401:
+        return StringKeys.unauthorized;
+      case 403:
+        return StringKeys.forbidden;
+      case 404:
+        return StringKeys.resourceNotFound;
+      case 409:
+        return StringKeys.conflict;
+      case 422:
+        return StringKeys.validationError;
+      case 500:
+        return StringKeys.serverError;
+      case 503:
+        return StringKeys.serviceUnavailable;
+      default:
+        return StringKeys.unexpectedError;
     }
   }
 }
