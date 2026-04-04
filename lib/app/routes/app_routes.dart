@@ -38,4 +38,7 @@ abstract class AppRoutes {
   // ── Advertisements ────────────────────────────────────────────────────────
   static const String createAdScreen = '/create-ad';
   static const String myAdsScreen    = '/my-ads';
+
+  static const String postDetail        = '/post-detail';
+static const String opportunityDetail = '/opportunity-detail';
 }

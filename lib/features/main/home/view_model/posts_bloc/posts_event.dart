@@ -103,3 +103,12 @@ class FetchAllPosts extends PostsEvent {
     required this.size,
   });
 }
+// في الـ events
+class FetchSinglePost extends PostsEvent {
+  final String postId;
+  const FetchSinglePost({required this.postId});
+
+  @override
+  List<Object> get props => [postId];
+}
+

@@ -12,7 +12,9 @@ abstract class PostsRepository {
   });
 
   Future<void> likePost({required String postId});
-  
+   
+Future<PostModel> getPostById({required String postId});
+ 
   Future<void> addComment({required String postId, required String text});
   
   Future<void> uploadPost({

@@ -5,9 +5,9 @@ import 'package:sports_in/core/constants/strings_keys.dart';
 
 class ApiException implements Exception {
   final String message;
-  final String key;
+  final String? key;
 
-  ApiException({required this.message, required this.key});
+  ApiException({required this.message,  this.key});
 
   @override
   String toString() => message;

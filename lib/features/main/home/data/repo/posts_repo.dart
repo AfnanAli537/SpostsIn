@@ -15,6 +15,11 @@ class PostsRepositoryImpl {
   }) {
     return repo.getAllPosts(pageNumber: pageNumber, pageSize: pageSize);
   }
+  Future<PostModel> getPostById({required String postId}) {
+  return repo.getPostById(postId: postId);
+}
+ 
+ 
 
   Future<List<PostModel>> getUserPosts({
     required String userId,

@@ -32,6 +32,8 @@ import 'package:sports_in/features/main/profile/view/presentation/edit_profile_r
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
+import 'package:sports_in/features/notitification/presentation/post_detail_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/features/payment/presentation/subscription_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
@@ -175,15 +177,35 @@ abstract class RoutesManager {
         );
 
       // ── Main ────────────────────────────────────────────────────────────────
-      case AppRoutes.mainLayout:
-        return CupertinoPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) =>
-                PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
-            child: CustomBottomNav(),
-          ),
-        );
+      // case AppRoutes.mainLayout:
+      //   return CupertinoPageRoute(
+      //     builder: (_) => BlocProvider(
+      //       create: (_) =>
+      //           PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+      //       child: CustomBottomNav(),
+      //     ),
+      //   );
 
+case AppRoutes.mainLayout:
+  return CupertinoPageRoute(
+    builder: (_) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<NotificationBloc>()
+            ..add(const GetUnreadCountEvent()),
+        ),
+      ],
+      child: const CustomBottomNav(),
+    ),
+  );
+  case AppRoutes.postDetail:
+  final postId = settings.arguments as String;
+  return CupertinoPageRoute(
+    builder: (_) => PostDetailScreen(postId: postId),
+  );
       // ── Profile ─────────────────────────────────────────────────────────────
       case AppRoutes.userProfile:
         final userId = settings.arguments as String;

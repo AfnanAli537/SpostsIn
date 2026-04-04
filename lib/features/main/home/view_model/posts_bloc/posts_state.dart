@@ -65,3 +65,12 @@ class PostsLoadingMore extends PostsState {
   @override
   List<Object?> get props => [currentPosts];
 }
+
+// في الـ states
+class SinglePostLoaded extends PostsState {
+  final PostModel post;
+  const SinglePostLoaded({required this.post});
+
+  @override
+  List<Object> get props => [post];
+}
