@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart';
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
+import 'package:sports_in/features/main/chat/presentation/view/messages_view.dart';
 import 'package:sports_in/features/main/home/view/presentation/home_screen.dart';
 import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +33,11 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   final List<Widget> _pages = [
     const HomePage(),
     const SearchScreen(),
-    const Center(child: Text("Messages")),
+    BlocProvider<ChatBloc>(
+      create: (_) =>
+          ChatBloc(repo: getIt<ChatRepository>(), hub: getIt<ChatHubService>()),
+      child: const MessagesView(),
+    ),
     const MyProfileScreen(),
   ];
 

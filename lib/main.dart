@@ -10,7 +10,7 @@ import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profil
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-
+  // await ChatInit.init(); // opens Hive boxes
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

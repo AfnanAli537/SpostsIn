@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
 import 'package:sports_in/features/auth_session/view/about_screen.dart';
 import 'package:sports_in/features/auth_session/view/account_switcher_screen.dart';
 import 'package:sports_in/features/auth_session/view/contact_us_screen.dart';
@@ -14,6 +15,10 @@ import 'package:sports_in/features/forget_password/view/presentation/verify_emai
 import 'package:sports_in/features/forget_password/view/presentation/otp_screen.dart';
 import 'package:sports_in/features/forget_password/view/presentation/reset_password.dart';
 import 'package:sports_in/features/forget_password/view_model/forget_password_bloc/forget_password_bloc.dart';
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart';
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
+import 'package:sports_in/features/main/chat/presentation/view/chat_view.dart';
 import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/create_add_screen.dart';
@@ -217,8 +222,7 @@ case AppRoutes.mainLayout:
         final args = settings.arguments as PostModel;
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) =>
-                PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+            create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
             child: UpdatePostScreen(post: args),
           ),
         );
@@ -232,6 +236,19 @@ case AppRoutes.mainLayout:
               opportunityRepo: getIt<OpportunityReposatory>(),
             ),
             child: UpdateOpportunityScreen(opportunityId: opportunityId),
+          ),
+        );
+      case AppRoutes.chatView:
+        final args = settings.arguments as Map<String, dynamic>;
+        final chat = args['chat'] as ChatModel;
+        final currentUserId = args['currentUserId'] as String;
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => ChatBloc(
+              repo: getIt<ChatRepository>(),
+              hub: getIt<ChatHubService>(),
+            ),
+            child: ChatView(chat: chat, currentUserId: currentUserId),
           ),
         );
 

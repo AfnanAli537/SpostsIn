@@ -32,6 +32,14 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart'
+    as _i860;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source_impl.dart'
+    as _i183;
+
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
+    as _i679;
 import 'package:sports_in/features/main/advertisement/data/data_sources/ad_remote_data_source.dart'
     as _i823;
 import 'package:sports_in/features/main/advertisement/data/interface/i_ads_data_source.dart'
@@ -111,6 +119,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
+    gh.lazySingleton<_i679.ChatHubService>(() => _i679.ChatHubService());
     gh.lazySingleton<_i700.NotificationHubService>(
       () => _i700.NotificationHubService(),
     );
@@ -137,6 +146,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i803.SearchBloc>(
       () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
+    );
+    gh.lazySingleton<_i860.ChatRemoteDataSource>(
+      () => _i183.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
@@ -175,6 +187,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i257.LoginRepo>(
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
+    );
+    gh.lazySingleton<_i503.ChatRepository>(
+      () => _i503.ChatRepository(
+        remoteDataSource: gh<_i860.ChatRemoteDataSource>(),
+      ),
     );
     gh.factory<_i1047.OpportunityBloc>(
       () => _i1047.OpportunityBloc(

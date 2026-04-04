@@ -138,4 +138,19 @@ static const String markAllNotificationsAsRead = '/api/Notification/read-all';
 
 
 
+
+
+//chat 
+static const String getAllChats ="/api/Chat/list";
+static const String getContacts ="/api/Chat/contacts";
+static const String chatSearch ="/api/Chat/search";
+static const String sendMessage ="/api/Chat/send";
+static const String getAllMessages ="/api/Chat/history";
+static const String createGroup ="/api/Chat/group/create";
+static const String editMessage ="/api/Chat/message/edit/{id}";
+static const String deleteMessage ="/api/Chat/message/delete/{id}";
+
+
+
+
 }
