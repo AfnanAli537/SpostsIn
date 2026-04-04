@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,11 +11,19 @@ import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_comments_sheet.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_dashboard_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_likes_sheet.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/ad_payment_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/advertisement/view_model/likes_bloc/likes_bloc.dart';
 import 'package:sports_in/features/main/home/view/widgets/full_screen_image.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'package:visibility_detector/visibility_detector.dart';
+
+/// Minimum visible fraction (50%) before we start counting view time.
+const double _kVisibleThreshold = 0.5;
+
+/// Seconds of view time required to count the ad as "watched".
+const double _kWatchedThreshold = 3.0;
 
 class AdWidget extends StatefulWidget {
   final AdModel ad;
@@ -33,13 +42,27 @@ class AdWidget extends StatefulWidget {
 }
 
 class _AdWidgetState extends State<AdWidget> {
+  // ── Media ───────────────────────────────────────────────────────────────────
   BetterPlayerController? _videoController;
   bool _isVideo = false;
   bool _isInitializing = false;
   String? _videoError;
+
+  // ── Engagement ──────────────────────────────────────────────────────────────
   late bool _isLiked;
   late int _likesCount;
   late int _commentsCount;
+
+  // ── Progress tracking (non-owner only) ─────────────────────────────────────
+  Timer? _viewTimer;
+  double _watchedSeconds = 0;
+  bool _isWatched = false;
+  bool _isVisible = false;
+
+  double _zoomScale = 1.0;
+
+  static const Duration _reportInterval = Duration(seconds: 5);
+  DateTime? _lastReported;
 
   bool get _hasActionLink =>
       widget.ad.actionUrl != null && widget.ad.actionUrl!.isNotEmpty;
@@ -47,7 +70,7 @@ class _AdWidgetState extends State<AdWidget> {
   String get _actionLabel =>
       (widget.ad.actionText != null && widget.ad.actionText!.isNotEmpty)
           ? widget.ad.actionText!
-          : 'Learn More';
+          : S.of(context).learnMore;
 
   @override
   void initState() {
@@ -73,7 +96,7 @@ class _AdWidgetState extends State<AdWidget> {
     }
   }
 
-  // ─── Media ─────────────────────────────────────────────────────────────────
+  // ─── Media init ────────────────────────────────────────────────────────────
 
   Future<void> _initializeMedia() async {
     final url = widget.ad.mediaUrl;
@@ -105,7 +128,7 @@ class _AdWidgetState extends State<AdWidget> {
         if (mounted) {
           setState(() {
             _isInitializing = false;
-            _videoError = 'Failed to load video';
+            _videoError = S.of(context).failedToLoadVideo;
           });
         }
       }
@@ -113,9 +136,52 @@ class _AdWidgetState extends State<AdWidget> {
   }
 
   bool _checkIfVideo(String url) {
-    const videoExts = ['.mp4', '.mov', '.avi', '.mkv', '.webm', '.m3u8'];
-    return videoExts.any((ext) => url.toLowerCase().contains(ext)) ||
+    const exts = ['.mp4', '.mov', '.avi', '.mkv', '.webm', '.m3u8'];
+    return exts.any((e) => url.toLowerCase().contains(e)) ||
         url.toLowerCase().contains('cloudinary.com/video');
+  }
+
+  // ─── Progress tracking ─────────────────────────────────────────────────────
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (widget.isCurrentUser) return;
+
+    final nowVisible = info.visibleFraction >= _kVisibleThreshold;
+
+    if (nowVisible && !_isVisible) {
+      _isVisible = true;
+      _viewTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        _watchedSeconds += 1;
+        if (!_isWatched && _watchedSeconds >= _kWatchedThreshold) {
+          _isWatched = true;
+        }
+        _maybeReport();
+      });
+    } else if (!nowVisible && _isVisible) {
+      _isVisible = false;
+      _viewTimer?.cancel();
+      _viewTimer = null;
+      _sendProgress();
+    }
+  }
+
+  void _maybeReport() {
+    final now = DateTime.now();
+    if (_lastReported == null ||
+        now.difference(_lastReported!) >= _reportInterval) {
+      _lastReported = now;
+      _sendProgress();
+    }
+  }
+
+  void _sendProgress() {
+    if (!mounted) return;
+    context.read<AdsBloc>().add(SendAdProgress(
+          adId: widget.ad.id,
+          watchedTime: _watchedSeconds,
+          isWatched: _isWatched,
+          zoomScale: _zoomScale,
+        ));
   }
 
   // ─── Actions ───────────────────────────────────────────────────────────────
@@ -134,32 +200,32 @@ class _AdWidgetState extends State<AdWidget> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => WebViewScreen(
-          url: widget.ad.actionUrl!,
-          title: _actionLabel,
-        ),
+        builder: (_) =>
+            WebViewScreen(url: widget.ad.actionUrl!, title: _actionLabel),
       ),
     );
   }
 
   void _navigateToAuthorProfile() {
     if (widget.ad.author == null) return;
-    Navigator.pushNamed(
-      context,
-      AppRoutes.userProfile,
-      arguments: widget.ad.author!.userId,
-    );
+    Navigator.pushNamed(context, AppRoutes.userProfile,
+        arguments: widget.ad.author!.userId);
   }
 
   void _openFullScreenImage() {
     final url = widget.ad.mediaUrl;
     if (url == null || url.isEmpty || _isVideo) return;
+
+    setState(() => _zoomScale = 2.0);
+    _sendProgress();
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => FullScreenImageViewer(imageUrl: url),
-      ),
-    );
+          builder: (_) => FullScreenImageViewer(imageUrl: url)),
+    ).then((_) {
+      setState(() => _zoomScale = 1.0);
+    });
   }
 
   void _openDashboard() {
@@ -174,12 +240,25 @@ class _AdWidgetState extends State<AdWidget> {
     );
   }
 
+  // ── Navigate to AdPaymentScreen exactly as it is pushed elsewhere ──────────
+  void _navigateToPayment() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdPaymentScreen(
+          adId: widget.ad.id,
+          price: widget.ad.price,
+        ),
+      ),
+    );
+  }
+
   void _showDeleteConfirmation() {
     final strings = S.of(context);
     ConfirmationDialog.show(
       context: context,
       title: strings.delete,
-      message: 'Are you sure you want to delete this advertisement?',
+      message: strings.deleteAdConfirmation,
       onConfirm: () {
         context.read<AdsBloc>().add(DeleteAd(adId: widget.ad.id));
         widget.onDeleted?.call();
@@ -190,25 +269,36 @@ class _AdWidgetState extends State<AdWidget> {
   }
 
   void _showToggleConfirmation() {
+    final strings = S.of(context);
     final isActive = widget.ad.isActive;
     ConfirmationDialog.show(
       context: context,
-      title: isActive ? 'Deactivate Ad' : 'Activate Ad',
+      title: isActive ? strings.deactivateAd : strings.activateAd,
       message: isActive
-          ? 'This ad will no longer appear in the feed.'
-          : 'This ad will appear in the feed again.',
+          ? strings.deactivateAdMessage
+          : strings.activateAdMessage,
       onConfirm: () =>
           context.read<AdsBloc>().add(ToggleAdStatus(adId: widget.ad.id)),
-      confirmText: isActive ? 'Deactivate' : 'Activate',
+      confirmText: isActive ? strings.deactivate : strings.activate,
     );
   }
 
   @override
   void dispose() {
+    _viewTimer?.cancel();
+    if (!widget.isCurrentUser && _watchedSeconds > 0) {
+      getIt<AdsRepositoryImpl>().sendAdProgress(
+        adId: widget.ad.id,
+        watchedTime: _watchedSeconds,
+        isWatched: _isWatched,
+        zoomScale: _zoomScale,
+      );
+    }
     _videoController?.dispose();
     super.dispose();
   }
 
+  // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -216,15 +306,17 @@ class _AdWidgetState extends State<AdWidget> {
     final strings = S.of(context);
     final author = widget.ad.author;
 
-    return Card(
+    Widget card = Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Header ──────────────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -246,7 +338,7 @@ class _AdWidgetState extends State<AdWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            author?.fullName ?? 'Sponsor',
+                            author?.fullName ?? strings.sponsor,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -259,11 +351,9 @@ class _AdWidgetState extends State<AdWidget> {
                                   size: 12.sp, color: Colors.grey[500]),
                               SizedBox(width: 4.w),
                               Text(
-                                'Advertisement',
+                                strings.advertisement,
                                 style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.grey[500],
-                                ),
+                                    fontSize: 12.sp, color: Colors.grey[500]),
                               ),
                             ],
                           ),
@@ -273,29 +363,26 @@ class _AdWidgetState extends State<AdWidget> {
                   ),
                 ),
 
+                // Three-dot menu — owner only
                 if (widget.isCurrentUser)
                   PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: theme.onSurface),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
+                        borderRadius: BorderRadius.circular(12.r)),
                     onSelected: (value) {
                       switch (value) {
                         case 'dashboard':
                           _openDashboard();
                           break;
                         case 'edit':
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.createAdScreen,
-                            arguments: widget.ad,
-                          );
+                          Navigator.pushNamed(context, AppRoutes.createAdScreen,
+                              arguments: widget.ad);
                           break;
                         case 'toggle':
                           _showToggleConfirmation();
                           break;
-                          case 'pay':
-                          (){};
+                        case 'pay':
+                          _navigateToPayment(); // ← wired up
                           break;
                         case 'delete':
                           _showDeleteConfirmation();
@@ -309,7 +396,7 @@ class _AdWidgetState extends State<AdWidget> {
                           Icon(Icons.analytics_outlined,
                               size: 20.sp, color: theme.primary),
                           SizedBox(width: 8.w),
-                          Text('Dashboard',
+                          Text(strings.dashboard,
                               style: TextStyle(color: theme.primary)),
                         ]),
                       ),
@@ -320,29 +407,32 @@ class _AdWidgetState extends State<AdWidget> {
                           SizedBox(width: 8.w),
                           Text(strings.edit),
                         ]),
-                      ), widget.ad.isPaid?
-                      PopupMenuItem(
-                        value: 'toggle',
-                        child: Row(children: [
-                          Icon(
-                            widget.ad.isActive
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            size: 20.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(widget.ad.isActive
-                              ? strings.deactivate
-                              : strings.activate),
-                        ]),
-                      ):PopupMenuItem(
-                        value: 'pay',
-                        child: Row(children: [
-                          Icon(Icons.payment, size: 20.sp),
-                          SizedBox(width: 8.w),
-                          Text(strings.pay),
-                        ]),
                       ),
+                      if (widget.ad.isPaid)
+                        PopupMenuItem(
+                          value: 'toggle',
+                          child: Row(children: [
+                            Icon(
+                              widget.ad.isActive
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              size: 20.sp,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(widget.ad.isActive
+                                ? strings.deactivate
+                                : strings.activate),
+                          ]),
+                        )
+                      else
+                        PopupMenuItem(
+                          value: 'pay',
+                          child: Row(children: [
+                            Icon(Icons.payment, size: 20.sp),
+                            SizedBox(width: 8.w),
+                            Text(strings.pay),
+                          ]),
+                        ),
                       PopupMenuItem(
                         value: 'delete',
                         child: Row(children: [
@@ -360,27 +450,28 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
-            Text(
-              widget.ad.title,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: theme.onSurface,
-              ),
-            ),
+            // ── Title ───────────────────────────────────────────────────
+            Text(widget.ad.title,
+                style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: theme.onSurface)),
             SizedBox(height: 6.h),
 
+            // ── Description ─────────────────────────────────────────────
             Text(
               widget.ad.description,
               style: TextStyle(
-                fontSize: 14.sp,
-                height: 1.4,
-                color: theme.onSurface,
-              ),
+                  fontSize: 14.sp, height: 1.4, color: theme.onSurface),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
 
+            // ── Unpaid banner (owner only) ───────────────────────────────
+            if (widget.isCurrentUser && !widget.ad.isPaid)
+              _buildUnpaidBanner(theme, strings),
+
+            // ── Media ───────────────────────────────────────────────────
             if (widget.ad.mediaUrl != null && widget.ad.mediaUrl!.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(top: 12.h),
@@ -415,12 +506,11 @@ class _AdWidgetState extends State<AdWidget> {
                               child: Text(
                                 _hasActionLink
                                     ? _actionLabel
-                                    : 'Advertisement',
+                                    : strings.advertisement,
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                    color: Colors.white,
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -442,6 +532,7 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
+            // ── Standalone CTA (no media) ────────────────────────────────
             if (_hasActionLink &&
                 (widget.ad.mediaUrl == null || widget.ad.mediaUrl!.isEmpty))
               Padding(
@@ -456,13 +547,13 @@ class _AdWidgetState extends State<AdWidget> {
                       side: BorderSide(color: theme.primary),
                       foregroundColor: theme.primary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
+                          borderRadius: BorderRadius.circular(8.r)),
                     ),
                   ),
                 ),
               ),
 
+            // ── Like & Comment ───────────────────────────────────────────
             Row(
               children: [
                 _buildActionButton(
@@ -475,8 +566,8 @@ class _AdWidgetState extends State<AdWidget> {
                       context: context,
                       isScrollControlled: true,
                       builder: (_) => BlocProvider(
-                        create: (_) =>
-                            AdLikesBloc(adsRepo: getIt<AdsRepositoryImpl>()),
+                        create: (_) => AdLikesBloc(
+                            adsRepo: getIt<AdsRepositoryImpl>()),
                         child: AdLikesSheet(adId: widget.ad.id),
                       ),
                     );
@@ -500,6 +591,84 @@ class _AdWidgetState extends State<AdWidget> {
                   },
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (!widget.isCurrentUser) {
+      card = VisibilityDetector(
+        key: Key('ad_visibility_${widget.ad.id}'),
+        onVisibilityChanged: _onVisibilityChanged,
+        child: card,
+      );
+    }
+
+    return card;
+  }
+
+  // ─── Unpaid banner ─────────────────────────────────────────────────────────
+
+  Widget _buildUnpaidBanner(ColorScheme theme, S strings) {
+    return Padding(
+      padding: EdgeInsets.only(top: 12.h),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF3E0),
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: const Color(0xFFFFB300), width: 1.2),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(6.w),
+              decoration: const BoxDecoration(
+                  color: Color(0xFFFFB300), shape: BoxShape.circle),
+              child: Icon(Icons.attach_money_rounded,
+                  color: Colors.white, size: 16.sp),
+            ),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    strings.adSavedAsDraft,
+                    style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF7B4F00)),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    strings.completePaymentToActivate,
+                    style: TextStyle(
+                        fontSize: 11.sp,
+                        color: const Color(0xFF9E6900),
+                        height: 1.3),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 8.w),
+            OutlinedButton(
+              onPressed: _navigateToPayment, // ← wired up
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFFFB300),
+                side: const BorderSide(color: Color(0xFFFFB300)),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r)),
+              ),
+              child: Text(strings.payNow,
+                  style: TextStyle(
+                      fontSize: 12.sp, fontWeight: FontWeight.w600)),
             ),
           ],
         ),

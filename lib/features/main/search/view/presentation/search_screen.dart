@@ -1,15 +1,23 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
+import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/search_result_model.dart';
 import '../../view_model/search_bloc.dart';
 import '../../view_model/search_event.dart';
-import '../../view_model/search_state.dart';
 import 'search_results_screen.dart';
+
+const _sportOptions = [
+  (id: 1, label: 'football'),
+  (id: 2, label: 'basketball'),
+  (id: 3, label: 'volleyball'),
+  (id: 4, label: 'handball'),
+  (id: 5, label: 'teakwando'),
+  (id: 6, label: 'gymnastics'),
+];
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -17,7 +25,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<SearchBloc>()..add(LoadFilterOptions()),
+      create: (context) => getIt<SearchBloc>(),
       child: const _SearchView(),
     );
   }
@@ -32,25 +40,28 @@ class _SearchView extends StatefulWidget {
 
 class _SearchViewState extends State<_SearchView> {
   final _searchController = TextEditingController();
-  final _searchFocusNode = FocusNode();
-  final _positionFocusNode = FocusNode();
-  final _typeOfPlayFocusNode = FocusNode();
-  
-  // Filter values
+  final _positionController = TextEditingController();
+
   double _minAge = 18;
-  double _maxAge = 50;
+  double _maxAge = 99;
   String? _selectedLocation;
+  String? _selectedSportLabel;
   String? _selectedPosition;
-  String? _selectedTypeOfPlay;
-  String? _selectedLevel;
   UserType? _selectedUserType;
+
+  int? get _selectedSportTypeId {
+    if (_selectedSportLabel == null) return null;
+    final strings = S.of(context);
+    final sportNameOptions = RegisterLists.sportNameOptions(strings);
+    final index = sportNameOptions.indexOf(_selectedSportLabel!);
+    if (index == -1) return null;
+    return _sportOptions[index].id;
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _searchFocusNode.dispose();
-    _positionFocusNode.dispose();
-    _typeOfPlayFocusNode.dispose();
+    _positionController.dispose();
     super.dispose();
   }
 
@@ -59,9 +70,8 @@ class _SearchViewState extends State<_SearchView> {
       minAge: _minAge.toInt(),
       maxAge: _maxAge.toInt(),
       location: _selectedLocation,
-      position: _selectedPosition,
-      typeOfPlay: _selectedTypeOfPlay,
-      level: _selectedLevel,
+      sportTypeId: _selectedSportTypeId,
+      position: _selectedPosition?.isEmpty == true ? null : _selectedPosition,
       userType: _selectedUserType,
     );
 
@@ -71,7 +81,7 @@ class _SearchViewState extends State<_SearchView> {
         builder: (_) => BlocProvider.value(
           value: context.read<SearchBloc>()
             ..add(SearchWithFilters(
-              query: _searchController.text,
+              query: _searchController.text.trim(),
               filters: filters,
             )),
           child: const SearchResultsScreen(),
@@ -84,350 +94,173 @@ class _SearchViewState extends State<_SearchView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final strings = S.of(context);
+    final locationOptions = RegisterLists.locationOptions(strings);
+    final sportOptions = RegisterLists.sportNameOptions(strings);
+    final hasPositions = RegisterLists.sportHasPositions(_selectedSportLabel);
+    final positionOptions = RegisterLists.positionOptions(strings, _selectedSportLabel);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      // appBar: AppBar(
-      //   backgroundColor: theme.appBarTheme.backgroundColor,
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-      //     onPressed: () => Navigator.pop(context),
-      //   ),
-      //   title: Text(
-      //     strings.search ?? 'Search',
-      //     style: theme.textTheme.titleLarge?.copyWith(
-      //       fontWeight: FontWeight.bold,
-      //     ),
-      //   ),
-      //   centerTitle: true,
-      //   actions: [
-      //     IconButton(
-      //       icon: Icon(Icons.notifications_outlined, color: theme.iconTheme.color),
-      //       onPressed: () {},
-      //     ),
-      //   ],
-      // ),
       body: GestureDetector(
-        onTap: () {
-          // Unfocus any focused text field when tapping outside
-          FocusScope.of(context).unfocus();
-        },
+        onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(16.r, 16.r, 16.r, 100.h), // Added bottom padding for nav bar
+          padding: EdgeInsets.fromLTRB(16.r, 16.r, 16.r, 100.h),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search Bar
-            TextField(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              textInputAction: TextInputAction.search,
-              onSubmitted: (_) {
-                FocusScope.of(context).unfocus();
-                _performSearch();
-              },
-              decoration: InputDecoration(
-                hintText: strings.search,
-                prefixIcon: Icon(Icons.search, size: 20.sp),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.tune, size: 20.sp),
-                  onPressed: () {}, // Could show filter sheet
-                ),
-                filled: true,
-                fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                border: OutlineInputBorder(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Search bar ──────────────────────────────────────────
+              Container(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide.none,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 12.h,
+                child: TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                  onSubmitted: (_) {
+                    FocusScope.of(context).unfocus();
+                    _performSearch();
+                  },
+                  decoration: InputDecoration(
+                    hintText: strings.search,
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16.sp),
+                    prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.grey[600]),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {});
+                            },
+                          )
+                        : Icon(Icons.tune, color: Colors.grey[600]),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 14.h,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 24.h),
+              SizedBox(height: 24.h),
 
-            // // Filter Section
-            // _buildFilterHeader(theme, strings),
-            // SizedBox(height: 16.h),
-
-            // Age Range
-            _buildSectionLabel('Age', theme),
-            Row(
-              children: [
-                Text(
-                  '${_minAge.toInt()}',
-                  style: theme.textTheme.bodyMedium,
-                ),
-                Expanded(
-                  child: RangeSlider(
-                    values: RangeValues(_minAge, _maxAge),
-                    min: 18,
-                    max: 50,
-                    divisions: 32,
-                    labels: RangeLabels(
-                      _minAge.toInt().toString(),
-                      _maxAge.toInt().toString(),
-                    ),
-                    onChanged: (values) {
-                      setState(() {
+              // ── Age range ───────────────────────────────────────────
+              _buildSectionLabel('Age', theme),
+              Row(
+                children: [
+                  Text('${_minAge.toInt()}', style: theme.textTheme.bodyMedium),
+                  Expanded(
+                    child: RangeSlider(
+                      values: RangeValues(_minAge, _maxAge),
+                      min: 18,
+                      max: 99,
+                      divisions: 81,
+                      labels: RangeLabels(
+                        _minAge.toInt().toString(),
+                        _maxAge.toInt().toString(),
+                      ),
+                      onChanged: (values) => setState(() {
                         _minAge = values.start;
                         _maxAge = values.end;
-                      });
-                    },
+                      }),
+                    ),
                   ),
-                ),
-                Text(
-                  '${_maxAge.toInt()}',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
-            ),
-            SizedBox(height: 16.h),
+                  Text('${_maxAge.toInt()}', style: theme.textTheme.bodyMedium),
+                ],
+              ),
+              SizedBox(height: 16.h),
 
-            // Location Dropdown
-            _buildSectionLabel('Location', theme),
-            BlocBuilder<SearchBloc, SearchState>(
-              builder: (context, state) {
-                List<String> locations = [];
-                if (state is FilterOptionsLoaded) {
-                  locations = state.locations;
-                }
-                return _buildDropdown(
-                  value: _selectedLocation,
-                  hint: 'Cairo',
-                  items: locations,
-                  onChanged: (value) {
-                    setState(() => _selectedLocation = value);
-                  },
-                  theme: theme,
-                );
-              },
-            ),
-            SizedBox(height: 16.h),
+              // ── Location ────────────────────────────────────────────
+              AppDropdownOverlay(
+                labelText: 'Location',
+                value: _selectedLocation,
+                options: locationOptions,
+                borderColor: theme.colorScheme.outline.withOpacity(0.4),
+                onChanged: (val) => setState(() => _selectedLocation = val),
+              ),
+              SizedBox(height: 16.h),
 
-            // Position
-            _buildSectionLabel('Position', theme),
-            BlocBuilder<SearchBloc, SearchState>(
-              builder: (context, state) {
-                List<String> positions = [];
-                if (state is FilterOptionsLoaded) {
-                  positions = state.positions;
-                }
-                return _buildTextField(
-                  value: _selectedPosition,
-                  hint: 'Forward',
-                  onChanged: (value) {
-                    setState(() => _selectedPosition = value);
-                  },
-                  theme: theme,
-                  focusNode: _positionFocusNode,
-                );
-              },
-            ),
-            SizedBox(height: 16.h),
-
-            // Type of play
-            _buildSectionLabel('Type of play', theme),
-            BlocBuilder<SearchBloc, SearchState>(
-              builder: (context, state) {
-                List<String> types = [];
-                if (state is FilterOptionsLoaded) {
-                  types = state.typesOfPlay;
-                }
-                return _buildTextField(
-                  value: _selectedTypeOfPlay,
-                  hint: 'Football',
-                  onChanged: (value) {
-                    setState(() => _selectedTypeOfPlay = value);
-                  },
-                  theme: theme,
-                  focusNode: _typeOfPlayFocusNode,
-                );
-              },
-            ),
-            SizedBox(height: 16.h),
-
-            // Level
-            _buildSectionLabel('Level', theme),
-            _buildLevelButtons(theme),
-            SizedBox(height: 16.h),
-
-            // Type of user
-            _buildSectionLabel('Type of user', theme),
-            _buildDropdown(
-              value: _selectedUserType?.name,
-              hint: 'Select type',
-              items: UserType.values.map((e) => e.name).toList(),
-              onChanged: (value) {
-                setState(() {
+              // ── User type ───────────────────────────────────────────
+              AppDropdownOverlay(
+                labelText: 'Type of user',
+                value: _selectedUserType?.label,
+                options: UserType.values.map((e) => e.label).toList(),
+                borderColor: theme.colorScheme.outline.withOpacity(0.4),
+                onChanged: (label) => setState(() {
                   _selectedUserType = UserType.values.firstWhere(
-                    (e) => e.name == value,
-                    orElse: () => UserType.athlete,
+                    (e) => e.label == label,
                   );
-                });
-              },
-              theme: theme,
-            ),
-            SizedBox(height: 32.h),
+                }),
+              ),
+              SizedBox(height: 16.h),
 
-            // Search Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _performSearch,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1B2B39),
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
+              // ── Sport type ──────────────────────────────────────────
+              AppDropdownOverlay(
+                labelText: 'Sport',
+                value: _selectedSportLabel,
+                options: sportOptions,
+                borderColor: theme.colorScheme.outline.withOpacity(0.4),
+                onChanged: (val) => setState(() {
+                  _selectedSportLabel = val;
+                  _selectedPosition = null;
+                  _positionController.clear();
+                }),
+              ),
+              SizedBox(height: 16.h),
+
+              // ── Position (only for team sports) ─────────────────────
+              if (hasPositions) ...[
+                AppDropdownOverlay(
+                  labelText: 'Position',
+                  value: _selectedPosition,
+                  options: positionOptions,
+                  borderColor: theme.colorScheme.outline.withOpacity(0.4),
+                  onChanged: (val) => setState(() => _selectedPosition = val),
                 ),
-                child: Text(
-                  strings.search,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
+                SizedBox(height: 16.h),
+              ],
+
+              // ── Search button ───────────────────────────────────────
+              SizedBox(height: 16.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _performSearch,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1B2B39),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: Text(
+                    strings.search,
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
-
-  // Widget _buildFilterHeader(ThemeData theme, S strings) {
-  //   return Row(
-  //     children: [
-  //       IconButton(
-  //         icon: Icon(Icons.arrow_back_ios, size: 20.sp),
-  //         onPressed: () {},
-  //         padding: EdgeInsets.zero,
-  //         constraints: const BoxConstraints(),
-  //       ),
-  //       SizedBox(width: 8.w),
-  //       Text(
-  //         'Filter',
-  //         style: theme.textTheme.titleMedium?.copyWith(
-  //           fontWeight: FontWeight.bold,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildSectionLabel(String label, ThemeData theme) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: Text(
         label,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
-    );
-  }
-
-  Widget _buildDropdown({
-    required String? value,
-    required String hint,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-    required ThemeData theme,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          hint: Text(hint),
-          isExpanded: true,
-          items: items.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String? value,
-    required String hint,
-    required ValueChanged<String> onChanged,
-    required ThemeData theme,
-    FocusNode? focusNode,
-  }) {
-    return TextField(
-      controller: TextEditingController(text: value),
-      focusNode: focusNode,
-      textInputAction: TextInputAction.done,
-      onSubmitted: (_) => FocusScope.of(context).unfocus(),
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 16.w,
-          vertical: 12.h,
-        ),
-      ),
-      onChanged: onChanged,
-    );
-  }
-
-  Widget _buildLevelButtons(ThemeData theme) {
-    final levels = ['Beginner', 'Intermediate', 'Advanced'];
-    
-    return Wrap(
-      spacing: 8.w,
-      runSpacing: 8.h,
-      children: levels.map((level) {
-        final isSelected = _selectedLevel == level;
-        return ChoiceChip(
-          label: Text(level),
-          selected: isSelected,
-          onSelected: (selected) {
-            setState(() {
-              _selectedLevel = selected ? level : null;
-            });
-          },
-          selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-          backgroundColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-          labelStyle: TextStyle(
-            color: isSelected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            fontSize: 13.sp, // Smaller font size
-          ),
-          labelPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0),
-          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
-          side: BorderSide(
-            color: isSelected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.outline.withOpacity(0.2),
-          ),
-        );
-      }).toList(),
     );
   }
 }

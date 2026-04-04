@@ -1,10 +1,17 @@
+// ignore_for_file: unnecessary_cast
+
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/course_description_tab.dart';
 import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/course_lessons_tab.dart';
@@ -17,11 +24,15 @@ import 'package:sports_in/features/main/courses/view/widgets/course_header.dart'
 import 'package:sports_in/features/main/courses/view/widgets/inline_edit_dialog.dart';
 import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/features/payment/data/enums/enums.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'dart:io';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;
+
   const CourseDetailScreen({super.key, required this.courseId});
 
   @override
@@ -42,13 +53,17 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   late TextEditingController _descriptionController;
   late TextEditingController _priceController;
   bool _isFreeEdit = false;
+  String? _transId;
+  bool _isManualActivationHandled = false; 
+
+  // Processing dialog state — same pattern as AdPaymentScreen
+  bool _isProcessingDialogOpen = false;
+  String? _handledPaymentStateType;
 
   @override
   void initState() {
     super.initState();
-    context.read<CoursesBloc>().add(
-      FetchCourseDetail(courseId: widget.courseId),
-    );
+    context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     _tabController = TabController(length: 2, vsync: this);
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
@@ -75,10 +90,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         _isEditMode = false;
         _hasUnsavedChanges = false;
         _newThumbnail = null;
+        _handledPaymentStateType = null;
       });
-      context.read<CoursesBloc>().add(
-        FetchCourseDetail(courseId: widget.courseId),
-      );
+      context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     }
   }
 
@@ -87,7 +101,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       _allLessons = [];
       _currentPlayingLesson = null;
     }
-
     if (_course == null ||
         _course!.isOwner != course.isOwner ||
         _course!.isEnrolled != course.isEnrolled) {
@@ -95,16 +108,35 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       int length = 2;
       if (course.isOwner) {
         length = 4;
-      } else if (course.isEnrolled)
-      { length = 3;}
+      } else if (course.isEnrolled) {
+        length = 3;
+      }
       _tabController = TabController(length: length, vsync: this);
     }
-
     _course = course;
-    context.read<CoursesBloc>().add(
-      FetchCourseLessons(courseId: widget.courseId),
-    );
+    context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
   }
+
+  // ── Processing dialog helpers (same as AdPaymentScreen) ────────────────
+
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
+    }
+  }
+
+  // ── Edit mode helpers ──────────────────────────────────────────────────────
 
   void _enterEditMode(CourseModel course) {
     setState(() {
@@ -143,41 +175,33 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   Future<void> _saveAllChanges(CourseModel course, S string) async {
     if (_titleController.text.trim().isEmpty) {
       Fluttertoast.showToast(
-        msg: string.titleCannotBeEmpty,
-        backgroundColor: Colors.orange,
-      );
+          msg: string.titleCannotBeEmpty, backgroundColor: Colors.orange);
       return;
     }
     if (!_isFreeEdit) {
       final price = double.tryParse(_priceController.text);
       if (price == null || price < 0) {
         Fluttertoast.showToast(
-          msg: string.invalidPrice,
-          backgroundColor: Colors.orange,
-        );
+            msg: string.invalidPrice, backgroundColor: Colors.orange);
         return;
       }
     }
     final newPrice = _isFreeEdit ? 0.0 : double.parse(_priceController.text);
-    context.read<CoursesBloc>().add(
-      UpdateCourse(
-        courseId: course.id,
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        price: newPrice,
-        sportTypeId: course.sportTypeId,
-        thumbnail: _newThumbnail?.path ?? course.thumbnailUrl ?? '',
-      ),
-    );
+    context.read<CoursesBloc>().add(UpdateCourse(
+          courseId: course.id,
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          price: newPrice,
+          sportTypeId: course.sportTypeId,
+          thumbnail: _newThumbnail?.path ?? course.thumbnailUrl ?? '',
+        ));
     setState(() {
       _isEditMode = false;
       _hasUnsavedChanges = false;
       _newThumbnail = null;
     });
     Fluttertoast.showToast(
-      msg: string.savingChanges,
-      backgroundColor: Colors.blue,
-    );
+        msg: string.savingChanges, backgroundColor: Colors.blue);
   }
 
   Future<void> _deleteLesson(LessonModel lesson, S string) async {
@@ -189,18 +213,15 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       confirmText: string.delete,
       isDestructive: true,
     );
-
     if (confirmed) {
       context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
       Fluttertoast.showToast(
-        msg: string.deletingLesson,
-        backgroundColor: Colors.orange,
-      );
+          msg: string.deletingLesson, backgroundColor: Colors.orange);
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
-          context.read<CoursesBloc>().add(
-            FetchCourseLessons(courseId: widget.courseId),
-          );
+          context
+              .read<CoursesBloc>()
+              .add(FetchCourseLessons(courseId: widget.courseId));
         }
       });
     }
@@ -217,112 +238,231 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       ),
     ).then((updated) {
       if (updated == true) {
-        context.read<CoursesBloc>().add(
-          FetchCourseLessons(courseId: widget.courseId),
-        );
+        context
+            .read<CoursesBloc>()
+            .add(FetchCourseLessons(courseId: widget.courseId));
       }
     });
   }
 
+  // ── Payment ────────────────────────────────────────────────────────────────
+
+  Future<void> _handleEnroll(BuildContext enrollContext, CourseModel course) async {
+    if (course.isFree) {
+      enrollContext.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
+      return;
+    }
+
+    // Reset guard for a fresh payment attempt — same as AdPaymentScreen
+    setState(() => _handledPaymentStateType = null);
+
+    final paymentBloc = enrollContext.read<PaymentBloc>();
+    await initiatePaymentFlow(
+      context: enrollContext,
+      paymentBloc: paymentBloc,
+      targetId: course.id,
+      targetType: PaymentTargetType.course,
+      price: course.price,
+    );
+    // initiatePaymentFlow awaits the showGeneralDialog, so by the time
+    // we're back here Fawry/Vodafone screens have already handled their
+    // own dialogs and navigation. Nothing more to do for those methods.
+    // Credit card redirect is handled by the BlocListener below.
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
-    
-    return BlocConsumer<CoursesBloc, CoursesState>(
-      listener: (context, state) {
-        if (state is EnrollmentSuccess) {
-          Fluttertoast.showToast(
-            msg: string.enrolledSuccessfully,
-            backgroundColor: Colors.green,
-          );
-          Navigator.pop(context, true);
-        } else if (state is CourseDeleted) {
-          Fluttertoast.showToast(
-            msg: string.courseDeleted,
-            backgroundColor: Colors.green,
-          );
-          Navigator.pop(context, true);
-        } else if (state is CoursesError) {
-          Fluttertoast.showToast(
-            msg: state.message,
-            backgroundColor: Colors.red,
-          );
-        }
-      },
-      buildWhen: (previous, current) {
-        return current is CourseDetailLoading ||
-            current is CourseDetailLoaded ||
-            current is LessonsLoaded ||
-            (current is CoursesError && previous is! CourseDetailLoaded);
-      },
-      builder: (context, state) {
-        if (_course == null && state is CourseDetailLoaded) {
-          _updateTabController(state.course);
-        }
-        if (state is LessonsLoaded && state.courseId == widget.courseId) {
-          if (state.lessons != _allLessons) {
-            _allLessons = List.from(state.lessons);
-          }
-        }
 
-        final course =
-            _course ?? (state is CourseDetailLoaded ? state.course : null);
+    return BlocProvider<PaymentBloc>(
+      create: (_) => getIt<PaymentBloc>(),
+      child: Builder(
+        builder: (paymentContext) {
+          return BlocListener<PaymentBloc, PaymentState>(
+            listener: (ctx, state) {
+              // ── Processing overlay for credit card initiation only ──────
+              // Fawry and Vodafone manage their own processing dialogs
+              // internally, just like in the ad payment flow.
+              if (state is PaymentInitiating) {
+                _showProcessingDialog();
+              }
 
-        if (course == null) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: const CourseDetailShimmer(),
-          );
-        }
+              // ── Credit card: redirect to WebView ──────────────────────
+              if (state is PaymentRedirectReady) {
+                final stateKey =
+                    state.runtimeType.toString() + state.redirectUrl;
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              course.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            actions: _buildAppBarActions(course, string),
-          ),
-          body: NestedScrollView(
-            headerSliverBuilder: (_, __) => [
-              SliverToBoxAdapter(
-                child: CourseHeader(
-                  currentPlayingLesson: _currentPlayingLesson,
-                  allLessons: _allLessons,
-                  courseId: widget.courseId,
-                  thumbnailUrl: course.thumbnailUrl,
-                  onBack: () => setState(() => _currentPlayingLesson = null),
-                  onNextLesson: (l) =>
-                      setState(() => _currentPlayingLesson = l),
-                  onPreviousLesson: (l) =>
-                      setState(() => _currentPlayingLesson = l),
-                ),
-              ),
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _SliverAppBarDelegate(
-                  TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    labelColor: Theme.of(context).colorScheme.primary,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    tabs: _buildTabs(course, string),
+                _dismissProcessingDialog();
+                _transId = state.transactionId;
+
+                Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => WebViewScreen(
+                      url: state.redirectUrl,
+                      title: string.completePayment,
+                    ),
                   ),
-                ),
-              ),
-            ],
-            body: TabBarView(
-              controller: _tabController,
-              children: _buildTabViews(course, string),
+                );
+              }
+
+              // ── Free course success (ProcessSuccessful) ────────────────
+              // Show success dialog, then trigger enrollment, then navigate
+              // back. This mirrors how AdPaymentScreen handles free/redirect.
+              if (state is ProcessSuccessful) {
+                final stateKey = state.runtimeType.toString();
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
+
+                _dismissProcessingDialog();
+                if (!mounted || _course == null) return;
+
+                final courseId = _course!.id;
+                showDialog(
+                  context: ctx,
+                  barrierDismissible: false,
+                  builder: (_) => PaymentSuccessDialog(
+                    transactionId: _transId ?? string.unKnown,
+                    onDismissed: () {
+                      if (mounted) {
+                        ctx
+                            .read<CoursesBloc>()
+                            .add(EnrollInCourse(courseId: courseId));
+                      }
+                    },
+                  ),
+                );
+              }
+
+              // ── FAWRY / VODAFONE success (ManualActivateSuccess) ──────────────
+              // Do NOT show a dialog here — Fawry shows it on its own screen and
+              // Vodafone shows it on its own screen then navigates away.
+              // We just dismiss the processing overlay (safety) and reset state.
+              if (state is ManualActivateSuccess && !_isManualActivationHandled) {
+                _isManualActivationHandled = true;
+                _dismissProcessingDialog();
+                // Reset guard so the next payment attempt is fresh.
+                setState(() => _handledPaymentStateType = null);
+                // Trigger enrollment after successful payment
+                if (mounted && _course != null) {
+                  ctx
+                      .read<CoursesBloc>()
+                      .add(EnrollInCourse(courseId: _course!.id));
+                }
+              }
+
+              // ── Errors ─────────────────────────────────────────────────
+              if (state is PaymentInitiateError) {
+                _dismissProcessingDialog();
+                Fluttertoast.showToast(
+                    msg: state.message, backgroundColor: Colors.red);
+              }
+              if (state is ManualActivateError) {
+                _dismissProcessingDialog();
+                Fluttertoast.showToast(
+                    msg: state.message, backgroundColor: Colors.red);
+              }
+            },
+            child: BlocConsumer<CoursesBloc, CoursesState>(
+              listener: (ctx, state) {
+                if (state is EnrollmentSuccess) {
+                  Fluttertoast.showToast(
+                      msg: string.enrolledSuccessfully,
+                      backgroundColor: Colors.green);
+                  Navigator.of(ctx).pushNamedAndRemoveUntil(
+                    AppRoutes.mainLayout,
+                    (route) => false,
+                  );
+                } else if (state is CourseDeleted) {
+                  Fluttertoast.showToast(
+                      msg: string.courseDeleted,
+                      backgroundColor: Colors.green);
+                  Navigator.pop(ctx, true);
+                } else if (state is CoursesError) {
+                  Fluttertoast.showToast(
+                      msg: state.message, backgroundColor: Colors.red);
+                }
+              },
+              buildWhen: (previous, current) =>
+                  current is CourseDetailLoading ||
+                  current is CourseDetailLoaded ||
+                  current is LessonsLoaded ||
+                  (current is CoursesError && previous is! CourseDetailLoaded),
+              builder: (ctx, state) {
+                if (_course == null && state is CourseDetailLoaded) {
+                  _updateTabController(state.course);
+                }
+                if (state is LessonsLoaded &&
+                    state.courseId == widget.courseId) {
+                  if (state.lessons != _allLessons) {
+                    _allLessons = List.from(state.lessons);
+                  }
+                }
+
+                final course = _course ??
+                    (state is CourseDetailLoaded ? state.course : null);
+
+                if (course == null) {
+                  return Scaffold(
+                    appBar: AppBar(),
+                    body: const CourseDetailShimmer(),
+                  );
+                }
+
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(course.title,
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    actions: _buildAppBarActions(course, string),
+                  ),
+                  body: NestedScrollView(
+                    headerSliverBuilder: (_, __) => [
+                      SliverToBoxAdapter(
+                        child: CourseHeader(
+                          currentPlayingLesson: _currentPlayingLesson,
+                          allLessons: _allLessons,
+                          courseId: widget.courseId,
+                          thumbnailUrl: course.thumbnailUrl,
+                          onBack: () =>
+                              setState(() => _currentPlayingLesson = null),
+                          onNextLesson: (l) =>
+                              setState(() => _currentPlayingLesson = l),
+                          onPreviousLesson: (l) =>
+                              setState(() => _currentPlayingLesson = l),
+                        ),
+                      ),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _SliverAppBarDelegate(
+                          TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            labelColor: Theme.of(ctx).colorScheme.primary,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorSize: TabBarIndicatorSize.label,
+                            tabs: _buildTabs(course, string),
+                          ),
+                        ),
+                      ),
+                    ],
+                    body: TabBarView(
+                      controller: _tabController,
+                      children: _buildTabViews(course, string),
+                    ),
+                  ),
+                  bottomNavigationBar: (!course.isOwner && !course.isEnrolled)
+                      ? _buildEnrollButton(paymentContext, course, string)
+                      : null,
+                );
+              },
             ),
-          ),
-          bottomNavigationBar: (!course.isOwner && !course.isEnrolled)
-              ? _buildEnrollButton(course, string)
-              : null,
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -338,7 +478,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     }
     return tabs;
   }
-  
+
   List<Widget> _buildTabViews(CourseModel course, S string) {
     final views = <Widget>[
       CourseLessonsTab(
@@ -346,9 +486,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         lessons: _allLessons,
         currentPlayingLesson: _currentPlayingLesson,
         isEditMode: _isEditMode,
-        onRefresh: () => context.read<CoursesBloc>().add(
-              FetchCourseLessons(courseId: widget.courseId),
-            ),
+        onRefresh: () => context
+            .read<CoursesBloc>()
+            .add(FetchCourseLessons(courseId: widget.courseId)),
         onLessonTap: (l) => setState(() => _currentPlayingLesson = l),
         onUpdateLesson: _navigateToEditLesson,
         onDeleteLesson: (lesson) => _deleteLesson(lesson, string),
@@ -377,7 +517,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     }
     return views;
   }
-  
+
   List<Widget> _buildAppBarActions(CourseModel course, S string) {
     if (!course.isOwner) return [];
     return [
@@ -432,22 +572,22 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     ];
   }
 
-  Widget _buildEnrollButton(CourseModel course, S string) {
+  Widget _buildEnrollButton(
+      BuildContext paymentContext, CourseModel course, S string) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(paymentContext).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, -2)),
         ],
       ),
       child: SafeArea(
         child: BlocBuilder<CoursesBloc, CoursesState>(
-          builder: (context, state) {
+          builder: (_, state) {
             final isLoading = state is EnrollmentLoading;
             return CustomElevatedButton(
               text: course.isFree
@@ -455,10 +595,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   : string.enrollForPrice('${course.price} ${string.egp}'),
               isLoading: isLoading,
               onPressed: isLoading
-                  ? (){}
-                  : () => context.read<CoursesBloc>().add(
-                        EnrollInCourse(courseId: course.id),
-                      ),
+                  ? () {}
+                  : () => _handleEnroll(paymentContext, course),
             );
           },
         ),
@@ -483,19 +621,18 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
+
   _SliverAppBarDelegate(this._tabBar);
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
+
   @override
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
   Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) =>
+          BuildContext context, double shrinkOffset, bool overlapsContent) =>
       Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: _tabBar,

@@ -51,8 +51,8 @@ class ConnectButton extends StatelessWidget {
         break;
       case ConnectionButtonState.pending:
         label = pendingText;
-        foreground = theme.colorScheme.onSurfaceVariant;
-        borderColor = theme.colorScheme.outline;
+        foreground = theme.colorScheme.onError;
+        borderColor = theme.colorScheme.onError;
         bgColor = theme.colorScheme.surfaceVariant.withOpacity(0.4);
         break;
       case ConnectionButtonState.accepted:

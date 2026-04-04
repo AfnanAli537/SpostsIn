@@ -91,19 +91,25 @@ class CoursesTabState extends State<CoursesTab>
       });
     }
     context.read<CoursesBloc>()
-      ..add(FetchEnrolledCourses(
-          page: 1,
-          size: 10,
-          searchTerm: searchTerm,
-          sportTypeId: _selectedSportTypeId,
-          isRefresh: true))
-      ..add(FetchAvailableCourses(
+      ..add(
+        FetchEnrolledCourses(
           page: 1,
           size: 10,
           searchTerm: searchTerm,
           sportTypeId: _selectedSportTypeId,
           isRefresh: true,
-          source: _source));
+        ),
+      )
+      ..add(
+        FetchAvailableCourses(
+          page: 1,
+          size: 10,
+          searchTerm: searchTerm,
+          sportTypeId: _selectedSportTypeId,
+          isRefresh: true,
+          source: _source,
+        ),
+      );
   }
 
   void _onSearchChanged() {
@@ -127,23 +133,30 @@ class CoursesTabState extends State<CoursesTab>
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(strings.selectSport,
-              style:
-                  TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600)),
+          title: Text(
+            strings.selectSport,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: _sportTypes.entries.map((entry) {
                 return ListTile(
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 4.h,
+                  ),
                   title: Card(
                     elevation: 6,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                          horizontal: 14.w, vertical: 10.h),
-                      child: Text(_getLocalizedSportName(entry.key, strings),
-                          style: TextStyle(fontSize: 14.sp)),
+                        horizontal: 14.w,
+                        vertical: 10.h,
+                      ),
+                      child: Text(
+                        _getLocalizedSportName(entry.key, strings),
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
                     ),
                   ),
                   onTap: () {
@@ -223,13 +236,14 @@ class CoursesTabState extends State<CoursesTab>
                 onChanged: (_) {},
                 decoration: InputDecoration(
                   hintText: string.search,
-                  hintStyle:
-                      TextStyle(color: Colors.grey[400], fontSize: 16.sp),
+                  hintStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 16.sp,
+                  ),
                   prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon:
-                              Icon(Icons.clear, color: Colors.grey[600]),
+                          icon: Icon(Icons.clear, color: Colors.grey[600]),
                           onPressed: () {
                             _searchController.clear();
                             _onSearchChanged();
@@ -238,7 +252,9 @@ class CoursesTabState extends State<CoursesTab>
                       : Icon(Icons.tune, color: Colors.grey[600]),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16.w, vertical: 14.h),
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
                 ),
               ),
             ),
@@ -253,8 +269,7 @@ class CoursesTabState extends State<CoursesTab>
                 children: [
                   _buildFilterChip(
                     label: _selectedSportName != null
-                        ? _getLocalizedSportName(
-                            _selectedSportName!, string)
+                        ? _getLocalizedSportName(_selectedSportName!, string)
                         : string.sport,
                     isSelected: _selectedSportTypeId != null,
                     onTap: _showFilterDialog,
@@ -316,11 +331,13 @@ class CoursesTabState extends State<CoursesTab>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon ?? Icons.tune,
-                size: 18.sp,
-                color: isSelected
-                    ? Theme.of(context).colorScheme.surface
-                    : Theme.of(context).colorScheme.onSurface),
+            Icon(
+              icon ?? Icons.tune,
+              size: 18.sp,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.surface
+                  : Theme.of(context).colorScheme.onSurface,
+            ),
             SizedBox(width: 6.w),
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 120.w),
@@ -361,16 +378,19 @@ class CoursesTabState extends State<CoursesTab>
             Text(
               string.oopsSomethingWentWrong,
               style: GoogleFonts.poppins(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800]),
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
+              ),
             ),
             SizedBox(height: 8.h),
             Text(
               message,
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
-                  fontSize: 14.sp, color: Colors.grey[600]),
+                fontSize: 14.sp,
+                color: Colors.grey[600],
+              ),
             ),
             SizedBox(height: 24.h),
             ElevatedButton.icon(
@@ -408,8 +428,10 @@ class CoursesTabState extends State<CoursesTab>
             children: [
               Icon(Icons.search_off, size: 64.sp, color: Colors.grey[400]),
               SizedBox(height: 16.h),
-              Text(string.noCoursesFoundFor(_searchController.text),
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                string.noCoursesFoundFor(_searchController.text),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ],
           ),
         ),
@@ -421,45 +443,56 @@ class CoursesTabState extends State<CoursesTab>
         if (_availableCourses.isNotEmpty) ...[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-            child: Text('${string.available} (${_availableCourses.length})',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            child: Text(
+              '${string.available} (${_availableCourses.length})',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
-          ..._availableCourses.map((c) => CourseCard(
+          ..._availableCourses.map(
+            (c) => CourseCard(
               course: c,
               onTap: () => _navigateToCourseDetail(c.id),
-              string: string)),
+              string: string,
+            ),
+          ),
         ],
         if (_enrolledCourses.isNotEmpty) ...[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-            child: Text('${string.enrolled} (${_enrolledCourses.length})',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            child: Text(
+              '${string.enrolled} (${_enrolledCourses.length})',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
-          ..._enrolledCourses.map((c) => CourseCard(
+          ..._enrolledCourses.map(
+            (c) => CourseCard(
               course: c,
               onTap: () => _navigateToCourseDetail(c.id),
-              string: string)),
+              string: string,
+            ),
+          ),
         ],
       ],
     );
   }
 
   // ----- Continue watching -----
-  Widget _buildContinueWatchingSection(
-      {required S string, required ColorScheme theme}) {
+  Widget _buildContinueWatchingSection({
+    required S string,
+    required ColorScheme theme,
+  }) {
     if (_isLoadingEnrolled || _enrolledCourses.isEmpty) {
       return const SizedBox.shrink();
     }
-    final inProgress = _enrolledCourses
-        .where((c) => c.progress > 0 && c.progress < 100)
-        .toList()
-      ..sort((a, b) => b.progress.compareTo(a.progress));
+    final inProgress =
+        _enrolledCourses
+            .where((c) => c.progress > 0 && c.progress < 100)
+            .toList()
+          ..sort((a, b) => b.progress.compareTo(a.progress));
     if (inProgress.isEmpty) return const SizedBox.shrink();
 
     return Column(
@@ -467,11 +500,12 @@ class CoursesTabState extends State<CoursesTab>
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
-          child: Text(string.continueWatching,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold)),
+          child: Text(
+            string.continueWatching,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -483,8 +517,10 @@ class CoursesTabState extends State<CoursesTab>
   }
 
   // ----- New courses -----
-  Widget _buildNewCoursesSection(
-      {required S string, required ColorScheme theme}) {
+  Widget _buildNewCoursesSection({
+    required S string,
+    required ColorScheme theme,
+  }) {
     // Error state
     if (_availableError != null && !_isLoadingAvailable) {
       return _buildErrorWidget(
@@ -500,8 +536,10 @@ class CoursesTabState extends State<CoursesTab>
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Text(string.newCourses,
-                style: Theme.of(context).textTheme.titleLarge),
+            child: Text(
+              string.newCourses,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
           SizedBox(height: 8.h),
           const CoursesListShimmer(),
@@ -520,11 +558,12 @@ class CoursesTabState extends State<CoursesTab>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(string.newCourses,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                string.newCourses,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
               if (_availableCourses.length > 3)
                 TextButton(
                   onPressed: () =>
@@ -545,9 +584,10 @@ class CoursesTabState extends State<CoursesTab>
               width: 300.w,
               margin: EdgeInsets.only(right: 16.w),
               child: CourseCard(
-                  course: display[i],
-                  onTap: () => _navigateToCourseDetail(display[i].id),
-                  string: string),
+                course: display[i],
+                onTap: () => _navigateToCourseDetail(display[i].id),
+                string: string,
+              ),
             ),
           ),
         ),
@@ -557,8 +597,10 @@ class CoursesTabState extends State<CoursesTab>
   }
 
   // ----- Enrolled courses -----
-  Widget _buildEnrolledCoursesSection(
-      {required S string, required ColorScheme theme}) {
+  Widget _buildEnrolledCoursesSection({
+    required S string,
+    required ColorScheme theme,
+  }) {
     // Error state
     if (_enrolledError != null && !_isLoadingEnrolled) {
       return _buildErrorWidget(
@@ -574,8 +616,10 @@ class CoursesTabState extends State<CoursesTab>
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Text(string.enrolledCourses,
-                style: Theme.of(context).textTheme.titleLarge),
+            child: Text(
+              string.enrolledCourses,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
           SizedBox(height: 8.h),
           const CoursesListShimmer(),
@@ -594,11 +638,12 @@ class CoursesTabState extends State<CoursesTab>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(string.enrolledCourses,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                string.enrolledCourses,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
               if (_enrolledCourses.length > 3)
                 TextButton(
                   onPressed: () =>
@@ -619,9 +664,10 @@ class CoursesTabState extends State<CoursesTab>
               width: 300.w,
               margin: EdgeInsets.only(right: 16.w),
               child: CourseCard(
-                  course: display[i],
-                  onTap: () => _navigateToCourseDetail(display[i].id),
-                  string: string),
+                course: display[i],
+                onTap: () => _navigateToCourseDetail(display[i].id),
+                string: string,
+              ),
             ),
           ),
         ),
@@ -632,7 +678,10 @@ class CoursesTabState extends State<CoursesTab>
 
   // ----- Continue watching card -----
   Widget _buildLastViewedCard(
-      BuildContext context, CourseModel course, S string) {
+    BuildContext context,
+    CourseModel course,
+    S string,
+  ) {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => _navigateToCourseDetail(course.id),
@@ -642,72 +691,90 @@ class CoursesTabState extends State<CoursesTab>
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 4))
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(16.r)),
-              child: Stack(children: [
-                Image.network(course.thumbnailUrl ?? '',
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+              child: Stack(
+                children: [
+                  Image.network(
+                    course.thumbnailUrl ?? '',
                     height: 180.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
-                        height: 180.h,
-                        color: Colors.grey[300],
-                        child: Center(
-                            child: Icon(Icons.image_not_supported,
-                                size: 48.sp)))),
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.black.withOpacity(0.3),
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.all(16.r),
-                        decoration: const BoxDecoration(
-                            color: Color.fromARGB(205, 255, 255, 255),
-                            shape: BoxShape.circle),
-                        child: Icon(Icons.play_arrow,
-                            size: 32.sp, color: Colors.black),
+                      height: 180.h,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: Icon(Icons.image_not_supported, size: 48.sp),
                       ),
                     ),
                   ),
-                ),
-              ]),
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.3),
+                      child: Center(
+                        child: Container(
+                          padding: EdgeInsets.all(16.r),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(205, 255, 255, 255),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 32.sp,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(16.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(course.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onPrimary),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    course.title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   SizedBox(height: 12.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                          string.percentComplete(
-                              course.progress.toStringAsFixed(0)),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onPrimary)),
+                        string.percentComplete(
+                          course.progress.toStringAsFixed(0),
+                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                      ),
                       Text(
-                          string.lessonsProgress(
-                              '${((course.progress) / 100 * course.lessonsCount).ceil()}',
-                              '${course.lessonsCount}'),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimary)),
+                        string.lessonsProgress(
+                          '${((course.progress) / 100 * course.lessonsCount).ceil()}',
+                          '${course.lessonsCount}',
+                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 8.h),
@@ -715,7 +782,8 @@ class CoursesTabState extends State<CoursesTab>
                     value: course.progress / 100,
                     backgroundColor: Colors.grey[200],
                     valueColor: AlwaysStoppedAnimation<Color>(
-                        ColorManager.warning),
+                      ColorManager.warning,
+                    ),
                     minHeight: 6.h,
                   ),
                 ],
@@ -727,8 +795,24 @@ class CoursesTabState extends State<CoursesTab>
     );
   }
 
+  // void _navigateToCourseDetail(String courseId) async {
+  //   final enrolled = await Navigator.push<bool>(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (_) => BlocProvider.value(
+  //         value: context.read<CoursesBloc>(),
+  //         child: CourseDetailScreen(courseId: courseId),
+  //       ),
+  //     ),
+  //   );
+  //   if (enrolled == true) _refreshData();
+  // }
+  /// Place this in CoursesTab to replace the existing _navigateToCourseDetail.
+  /// The key fix: always call _refreshData() when we return from course detail,
+  /// regardless of whether enrollment happened — this covers the case where
+  /// BlocListener missed events while the detail route was on top.
   void _navigateToCourseDetail(String courseId) async {
-    final enrolled = await Navigator.push<bool>(
+    await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
@@ -737,13 +821,16 @@ class CoursesTabState extends State<CoursesTab>
         ),
       ),
     );
-    if (enrolled == true) _refreshData();
+    // Always refresh when returning — enrollment may have happened,
+    // or the bloc state may be stale from events missed while routed away.
+    if (mounted) _refreshData();
   }
 
   void _navigateToCourseList(CourseListType type) {
-    Navigator.pushNamed(context, AppRoutes.courseList, arguments: {
-      'listType': type,
-      'coursesBloc': context.read<CoursesBloc>(),
-    });
+    Navigator.pushNamed(
+      context,
+      AppRoutes.courseList,
+      arguments: {'listType': type, 'coursesBloc': context.read<CoursesBloc>()},
+    );
   }
 }

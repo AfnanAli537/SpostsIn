@@ -1,9 +1,20 @@
+// ignore_for_file: unnecessary_cast
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/app/di/injection.dart';
+// import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/features/payment/data/enums/enums.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class CourseCard extends StatelessWidget {
@@ -11,7 +22,7 @@ class CourseCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-  final S string; 
+  final S string;
 
   const CourseCard({
     super.key,
@@ -19,8 +30,39 @@ class CourseCard extends StatelessWidget {
     required this.onTap,
     this.onEdit,
     this.onDelete,
-    required this.string, 
+    required this.string,
   });
+
+  // ── Enroll logic ──────────────────────────────────────────────────────────
+
+  Future<void> _handleEnroll(BuildContext context) async {
+    if (course.isFree) {
+      context.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
+      return;
+    }
+
+    final coursesBloc = context.read<CoursesBloc>();
+    final paymentBloc = getIt<PaymentBloc>();
+
+    // Show the orchestrator as a transparent dialog
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: paymentBloc),
+          BlocProvider.value(value: coursesBloc),
+        ],
+        child: _PaymentOrchestrator(
+          courseId: course.id,
+          price: course.price,
+          courseTitle: course.title,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +70,7 @@ class CourseCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double cardWidth = constraints.maxWidth;
-        final bool useHorizontalLayout = cardWidth > 400.w;
+        final bool useHorizontalLayout = constraints.maxWidth > 400.w;
 
         return GestureDetector(
           onTap: onTap,
@@ -65,10 +106,7 @@ class CourseCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-          child: _buildThumbnailImage(
-            height: 120.h,
-            width: double.infinity,
-          ),
+          child: _buildThumbnailImage(height: 120.h, width: double.infinity),
         ),
         Padding(
           padding: EdgeInsets.all(12.r),
@@ -83,10 +121,7 @@ class CourseCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.horizontal(left: Radius.circular(12.r)),
-          child: _buildThumbnailImage(
-            width: 120.w,
-            height: double.infinity,
-          ),
+          child: _buildThumbnailImage(width: 120.w, height: double.infinity),
         ),
         Expanded(
           child: Padding(
@@ -105,13 +140,12 @@ class CourseCard extends StatelessWidget {
     if (course.thumbnailUrl == null || course.thumbnailUrl!.isEmpty) {
       return _buildPlaceholder(width: width, height: height);
     }
-
     return Image.network(
       course.thumbnailUrl!,
       width: width,
       height: height,
       fit: BoxFit.cover,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      frameBuilder: (_, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return child;
         return AnimatedOpacity(
           opacity: frame == null ? 0 : 1,
@@ -120,8 +154,8 @@ class CourseCard extends StatelessWidget {
           child: child,
         );
       },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+      loadingBuilder: (_, child, progress) {
+        if (progress == null) return child;
         return Container(
           color: Colors.grey[300],
           width: width,
@@ -132,24 +166,21 @@ class CourseCard extends StatelessWidget {
               height: 24.w,
               child: CircularProgressIndicator(
                 strokeWidth: 2.w,
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                          progress.expectedTotalBytes!
                     : null,
               ),
             ),
           ),
         );
       },
-      errorBuilder: (context, error, stackTrace) =>
+      errorBuilder: (_, __, ___) =>
           _buildPlaceholder(width: width, height: height),
     );
   }
 
-  Widget _buildPlaceholder({
-    required double? width,
-    required double? height,
-  }) {
+  Widget _buildPlaceholder({required double? width, required double? height}) {
     return Container(
       width: width,
       height: height,
@@ -169,7 +200,6 @@ class CourseCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Title
         Text(
           course.title,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -180,8 +210,6 @@ class CourseCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 4.h),
-
-        // Description
         if (course.description?.isNotEmpty == true)
           SizedBox(
             height: 12.sp * 1.6 * 2,
@@ -196,12 +224,8 @@ class CourseCard extends StatelessWidget {
             ),
           ),
         SizedBox(height: 8.h),
-
-        // Author info
         _buildAuthorInfo(theme),
         SizedBox(height: 8.h),
-
-        // Progress bar (if enrolled)
         if (course.isEnrolled) ...[
           LinearProgressIndicator(
             value: course.progress / 100,
@@ -215,13 +239,13 @@ class CourseCard extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
         ],
-
-        // Stats row
         _buildStatsRow(theme),
       ],
     );
 
-    final bottomRow = _buildBottomRow(theme);
+    final bottomRow = Builder(
+      builder: (context) => _buildBottomRow(context, theme),
+    );
 
     if (isHorizontal) {
       return Column(
@@ -277,17 +301,13 @@ class CourseCard extends StatelessWidget {
       children: [
         _buildStatItem(
           Icons.play_circle_outline,
-          string.lessonsCount(course.lessonsCount), 
+          string.lessonsCount(course.lessonsCount),
           theme,
         ),
-        _buildStatItem(
-          Icons.access_time, 
-          course.formattedDuration, 
-          theme,
-        ),
+        _buildStatItem(Icons.access_time, course.formattedDuration, theme),
         _buildStatItem(
           Icons.person,
-          string.enrolledCount(course.enrolledUsersCount), 
+          string.enrolledCount(course.enrolledUsersCount),
           theme,
         ),
       ],
@@ -308,10 +328,8 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomRow(ThemeData theme) {
-    if (course.isEnrolled) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildBottomRow(BuildContext context, ThemeData theme) {
+    if (course.isEnrolled) return const SizedBox.shrink();
 
     if (course.isOwner) {
       return Row(
@@ -324,7 +342,7 @@ class CourseCard extends StatelessWidget {
               onPressed: onEdit,
               padding: EdgeInsets.all(4.w),
               constraints: const BoxConstraints(),
-              tooltip: string.edit, 
+              tooltip: string.edit,
             ),
           if (onDelete != null)
             IconButton(
@@ -333,7 +351,7 @@ class CourseCard extends StatelessWidget {
               onPressed: onDelete,
               padding: EdgeInsets.all(4.w),
               constraints: const BoxConstraints(),
-              tooltip: string.delete, 
+              tooltip: string.delete,
             ),
         ],
       );
@@ -349,7 +367,7 @@ class CourseCard extends StatelessWidget {
           children: [
             Flexible(
               child: Text(
-                course.isFree ? string.free : '${course.price} ${string.egp}', 
+                course.isFree ? string.free : '${course.price} ${string.egp}',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: course.isFree ? Colors.green : null,
@@ -360,13 +378,7 @@ class CourseCard extends StatelessWidget {
             SizedBox(
               height: 30.h,
               child: ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        context.read<CoursesBloc>().add(
-                          EnrollInCourse(courseId: course.id),
-                        );
-                      },
+                onPressed: isLoading ? null : () => _handleEnroll(context),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -381,7 +393,13 @@ class CourseCard extends StatelessWidget {
                         height: 16.w,
                         child: const CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(string.enroll, style: TextStyle(fontSize: 12.sp, color: theme.colorScheme.onPrimary)), 
+                    : Text(
+                        string.enroll,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -391,9 +409,188 @@ class CourseCard extends StatelessWidget {
   }
 
   String _formatProgress(num value) {
-    if (value == value.toInt()) {
-      return value.toInt().toString();
-    }
+    if (value == value.toInt()) return value.toInt().toString();
     return value.toStringAsFixed(2);
+  }
+}
+
+// ── Payment orchestrator ──────────────────────────────────────────────────────
+// Shown as a transparent, invisible dialog. Kicks off the payment flow and
+// closes itself only when payment flow completes or user cancels.
+
+class _PaymentOrchestrator extends StatefulWidget {
+  final String courseId;
+  final double price;
+  final String courseTitle;
+
+  const _PaymentOrchestrator({
+    required this.courseId,
+    required this.price,
+    required this.courseTitle,
+  });
+
+  @override
+  State<_PaymentOrchestrator> createState() => _PaymentOrchestratorState();
+}
+
+class _PaymentOrchestratorState extends State<_PaymentOrchestrator> {
+  bool _isProcessingDialogOpen = false;
+  String? _handledPaymentStateType;
+  String? _transId;
+  bool _isManualActivationHandled = false; 
+
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+  }
+
+  Future<void> _start() async {
+    final paymentBloc = context.read<PaymentBloc>();
+
+    // Reset guard for fresh payment attempt
+    setState(() => _handledPaymentStateType = null);
+
+    // initiatePaymentFlow returns false only if the user dismissed the
+    // payment-method dialog without choosing anything.
+    final initiated = await initiatePaymentFlow(
+      context: context,
+      paymentBloc: paymentBloc,
+      targetId: widget.courseId,
+      targetType: PaymentTargetType.course,
+      price: widget.price,
+    );
+
+    if (!initiated && mounted) {
+      // User cancelled — close this orchestrator so the course card is usable.
+      Navigator.of(context).pop();
+    }
+    // If initiated:
+    // - Fawry / Vodafone: showGeneralDialog awaits their full screen,
+    //   they handle success dialogs + navigate to mainLayout themselves,
+    //   initiatePaymentFlow returns true AFTER they are done.
+    //   We close this orchestrator here too so nothing is left dangling.
+    // - Credit card: the BlocListener below catches PaymentRedirectReady.
+    if (initiated && mounted) {
+      // Only close orchestrator for Fawry/Vodafone paths (credit card is
+      // handled by the listener). We can safely pop here because if credit
+      // card is in flight the listener below will still fire before this
+      // context is gone.
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = S.of(context);
+
+    return BlocListener<PaymentBloc, PaymentState>(
+      listener: (context, state) {
+        // ── Processing overlay for credit card initiation ────────────────
+        if (state is PaymentInitiating) {
+          _showProcessingDialog();
+        }
+
+        // ── Credit card: redirect to WebView ─────────────────────────────
+        if (state is PaymentRedirectReady) {
+          final stateKey = state.runtimeType.toString() + state.redirectUrl;
+          if (stateKey == _handledPaymentStateType) return;
+          _handledPaymentStateType = stateKey;
+
+          _dismissProcessingDialog();
+          _transId = state.transactionId;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WebViewScreen(
+                url: state.redirectUrl,
+                title: strings.completePayment,
+              ),
+            ),
+          );
+        }
+
+        // ── Free course success (ProcessSuccessful) ──────────────────────
+        if (state is ProcessSuccessful) {
+          final stateKey = state.runtimeType.toString();
+          if (stateKey == _handledPaymentStateType) return;
+          _handledPaymentStateType = stateKey;
+
+          _dismissProcessingDialog();
+          if (!mounted) return;
+
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => PaymentSuccessDialog(
+              transactionId: _transId ?? strings.unKnown,
+              onDismissed: () {
+                if (mounted) {
+                  context.read<CoursesBloc>().add(
+                    EnrollInCourse(courseId: widget.courseId),
+                  );
+                  Navigator.of(context).pop(); // Close orchestrator after success
+                }
+              },
+            ),
+          );
+        }
+
+        // ── FAWRY / VODAFONE success (ManualActivateSuccess) ─────────────
+        // Do NOT show a dialog here — Fawry shows it on its own screen and
+        // Vodafone shows it on its own screen then navigates away.
+        // We just dismiss the processing overlay (safety) and trigger enrollment.
+        if (state is ManualActivateSuccess && !_isManualActivationHandled) {
+                _isManualActivationHandled = true;
+
+          _dismissProcessingDialog();
+          // Reset guard so the next payment attempt is fresh.
+          setState(() => _handledPaymentStateType = null);
+          // Trigger enrollment after successful payment
+          if (mounted) {
+            context.read<CoursesBloc>().add(
+              EnrollInCourse(courseId: widget.courseId),
+            );
+          }
+        }
+
+        // ── Errors ───────────────────────────────────────────────────────
+        if (state is PaymentInitiateError) {
+          _dismissProcessingDialog();
+          if (mounted) Navigator.of(context).pop();
+          Fluttertoast.showToast(
+            msg: state.message,
+            backgroundColor: Colors.red,
+          );
+        }
+        if (state is ManualActivateError) {
+          _dismissProcessingDialog();
+          if (mounted) Navigator.of(context).pop();
+          Fluttertoast.showToast(
+            msg: state.message,
+            backgroundColor: Colors.red,
+          );
+        }
+      },
+      // Completely invisible — no UI
+      child: const SizedBox.shrink(),
+    );
   }
 }

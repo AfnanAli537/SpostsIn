@@ -121,7 +121,7 @@ class InlineEditDialog {
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   autofocus: !isCurrentlyFree,
                   decoration: InputDecoration(
-                    labelText: string.priceEGP,
+                    labelText: string.priceEGPtxt,
                     prefixIcon: const Icon(Icons.attach_money),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),

@@ -250,6 +250,10 @@
   "achievementUpdated": "تم تحديث الإنجاز بنجاح",
   "deleteachievementconfirmation": "هل أنت متأكد أنك تريد حذف هذا الإنجاز؟",
   "deleteachievement": "حذف الإنجاز",
+  "update": "تحديث",
+  "delete": "حذف",
+  "title": "العنوان",
+  "description": "الوصف",
   "date": "التاريخ",
   "analyzedVideosReports": "تقارير الفيديو المحللة",
   "interests": "الاهتمامات",
@@ -290,13 +294,11 @@
   "noCommentsYet": "لا توجد تعليقات بعد",
   "retry": "إعادة المحاولة",
   "edit": "تعديل",
-  "delete": "حذف",
   "deleteComment": "حذف التعليق",
   "deleteCommentConfirmation": "هل أنت متأكد من حذف هذا التعليق؟",
   "editingComment": "جاري تعديل التعليق",
   "editYourComment": "عدّل تعليقك...",
   "addAComment": "أضف تعليقاً...",
-  "update": "تحديث",
   "post": "نشر",
   "error": "خطأ",
   "loadingUserData": "جاري تحميل بيانات المستخدم...",
@@ -319,9 +321,7 @@
   "uploadContent": "رفع محتوى",
   "uploadImageOrVideo": "ارفع صورة أو فيديو",
   "maximumFileSize": "الحد الأقصى لحجم الملف 200 ميجابايت",
-  "title": "العنوان",
   "enterYourTitle": "أدخل عنوانك.",
-  "description": "الوصف",
   "enterYourDescription": "أدخل وصفك...",
   "pleaseFillAllFields": "يرجى ملء جميع الحقول",
   "createPost": "إنشاء منشور",
@@ -462,6 +462,60 @@
   "save_achievement_button": "حفظ الإنجاز",
   "please_select_date": "يرجى اختيار تاريخ",
   "achievement_added_success": "تم إضافة الإنجاز بنجاح",
+  "chooseMethod": "اختر طريقة للدفع",
+  "processing_payment_title": "جارٍ معالجة الدفع...",
+  "processing_payment_subtitle": "من فضلك لا تغلق التطبيق",
+  "payment_success_title": "تمت عملية الدفع بنجاح!",
+  "payment_success_subtitle": "اشتراكك أصبح نشطاً الآن.\nاستمتع بالوصول المميز! ",
+  "payment_success_transaction_id": "رقم العملية: {id}",
+  "fawry_mobile_appbar_title": "أدخل رقم الهاتف",
+  "fawry_mobile_label": "أدخل رقم هاتف فوري",
+  "fawry_mobile_terms": "بالمتابعة فإنك توافق على الشروط والأحكام",
+  "fawry_mobile_hint": "رقم الهاتف (مثال: 010xxxxxxxx)",
+  "fawry_mobile_confirm_btn": "متابعة إلى فوري",
+  "fawry_mobile_validation_empty": "من فضلك أدخل رقم هاتفك",
+  "fawry_mobile_validation_invalid": "أدخل رقم هاتف مصري صحيح",
+  "fawry_screen_appbar_title": "كود فوري المرجعي",
+  "fawry_screen_label": "أدخل بيانات الدفع",
+  "fawry_screen_terms": "بالمتابعة فإنك توافق على الشروط والأحكام",
+  "fawry_screen_pay_instruction": "ادفع في أي نقطة فوري باستخدام هذا الكود\nخلال 24 ساعة",
+  "fawry_screen_failed_code": "فشل في توليد الكود المرجعي",
+  "fawry_screen_retry": "إعادة المحاولة",
+  "fawry_screen_copy_btn": "نسخ الكود",
+  "fawry_screen_copied": "تم نسخ الكود المرجعي",
+  "fawry_screen_copied_reminder": "تم نسخ الرمز! اذهب إلى أي منفذ فوري وادفع باستخدام هذا الرمز.",
+  "fawry_screen_copied_btn": "تم النسخ!",
+  "fawry_screen_done_btn": "تم",
+  "vodafone_appbar_title": "أدخل تفاصيل البطاقة",
+  "vodafone_label": "أدخل بيانات الدفع",
+  "vodafone_terms": "بالمتابعة فإنك توافق على الشروط والأحكام",
+  "vodafone_hint": "رقم الهاتف (مثال: 010xxxxxxxx)",
+  "vodafone_send_btn": "إرسال طلب الدفع",
+  "vodafone_validation_empty": "من فضلك أدخل رقم هاتفك",
+  "vodafone_validation_invalid": "أدخل رقم هاتف مصري صحيح",
+  "vodafone_name": "فودافون كاش",
+  "subscription_title": "الوصول المميز",
+  "subscription_subtitle": "طوّر لعبتك وحلّل أداءك بلا حدود",
+  "subscription_btn": "اشترك الآن",
+  "subscription_renewal_note": "هذا اشتراك يتجدد تلقائياً.\nيمكنك الإلغاء في أي وقت من الإعدادات.",
+  "subscription_retry": "إعادة المحاولة",
+  "subscription_plan_popular": "الأكثر شيوعاً",
+  "subscription_plan_best_value": "الأفضل قيمة",
+  "subscription_plan_forever": "للأبد",
+  "subscription_plan_per_month": "/ شهر",
+  "subscription_plan_per_year": "/ سنة",
+  "subscription_plan_current": "الخطة الحالية",
+  "subscription_plan_select": "اختر الآن",
+  "subscription_plan_unlimited_videos": "فيديوهات غير محدودة",
+  "subscription_plan_videos_month": "{count} فيديو / شهر",
+  "subscription_plan_ads_month": "{count} إعلان / شهر",
+  "subscription_plan_detailed_reports": "تقارير مفصّلة",
+  "subscription_plan_basic_stats": "إحصائيات أساسية",
+  "subscription_plan_no_videos": "بدون فيديوهات",
+  "subscription_plan_no_ads": "بدون إعلانات",
+  "subscription_plan_duration_month": "{count} يوم",
+  "subscription_plan_duration_year": "{count} شهر",
+  "unKnown": "غير محدد",
   "achievement_updated_success": "تم تحديث الإنجاز بنجاح",
   "messageSent": "تم إرسال الرسالة بنجاح",
   "failedToSendMessage": "فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.",
@@ -494,7 +548,7 @@
   },
   "editPrice": "تعديل السعر",
   "freeCourse": "دورة مجانية",
-  "priceEGP": "السعر (جنيه)",
+  "priceEGPtxt": "السعر (جنيه)",
   "priceRequired": "السعر مطلوب",
   "invalidPrice": "سعر غير صالح",
   "lessonNumber": "{number} درس",
@@ -600,7 +654,6 @@
   "courseDeleted": "تم حذف الدورة",
   "enrollNow": "اشترك الآن",
   "enrollForPrice": "اشترك مقابل {price}",
-  
   "@deleteLessonConfirmation": {
     "placeholders": {
       "lessonTitle": {
@@ -622,11 +675,9 @@
   "noCoursesFoundFor": "لا توجد دورات لـ \"{searchTerm}\"",
   "percentComplete": "اكتمل {percentage}%",
   "lessonsProgress": "{completed} / {total} دروس",
-  
   "failedToPlayVideo": "فشل تشغيل الفيديو",
   "videoPlaybackError": "خطأ في تشغيل الفيديو",
   "unknownError": "خطأ غير معروف",
-  
   "@noCoursesFoundFor": {
     "placeholders": {
       "searchTerm": {
@@ -675,7 +726,6 @@
   "manageAchievement": "إدارة الإنجازات",
   "switchAccount": "تبديل الحساب",
   "addAccount": "إضافة حساب",
-
   "newConnectionRequests": "طلبات الاتصال الجديدة",
   "noConnectionRequests": "لا توجد طلبات اتصال",
   "noMoreRequests": "لا توجد المزيد من طلبات الاتصال",
@@ -703,7 +753,6 @@
   "weeklyBreakdown": "تفاصيل الأسبوع",
   "weeklyDetails": "التفاصيل الأسبوعية",
   "noDataForMonth": "لا توجد بيانات متاحة لشهر {month}",
-  
   "january": "يناير",
   "february": "فبراير",
   "march": "مارس",
@@ -716,13 +765,105 @@
   "october": "أكتوبر",
   "november": "نوفمبر",
   "december": "ديسمبر",
-  
   "@noDataForMonth": {
     "placeholders": {
       "month": {
         "type": "String"
       }
     }
-  }
-  
+  },
+  "advertisements": "إعلانات",
+  "adDashboard": "لوحة تحكم الإعلانات",
+  "overviewAllAds": "نظرة عامة — جميع الإعلانات",
+  "performanceOverview": "نظرة عامة على الأداء",
+  "totalAds": "إجمالي الإعلانات",
+  "totalViews": "إجمالي المشاهدات",
+  "totalClicks": "إجمالي النقرات",
+  "engagement": "التفاعل",
+  "averageCompletionRate": "متوسط نسبة الإكمال",
+  "percentage": "{value}%",
+  "@percentage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "completePayment": "إتمام الدفع",
+  "adCreatedPendingPayment": "تم إنشاء الإعلان — في انتظار الدفع",
+  "adSavedCompletePayment": "تم حفظ إعلانك. أكمل الدفع لتفعيله في الخلاصة.",
+  "totalAmount": "المبلغ الإجمالي",
+  "pricePerDay": "({price} جنيه في اليوم)",
+  "paymentIntegrationComingSoon": "تكامل الدفع قريباً. يمكنك الدفع لاحقاً من لوحة تحكم إعلاناتك.",
+  "payNowComingSoon": "ادفع الآن (قريباً)",
+  "payLaterDraft": "ادفع لاحقاً (سيتم حفظ الإعلان كمسودة)",
+  "priceEGP": "{price} جنيه",
+  "@priceEGP": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@pricePerDay": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "adPublished": "تم نشر الإعلان!",
+  "adPublishedDescription": "إعلانك أصبح نشطاً الآن وسيظهر في الخلاصة لجمهورك المستهدف.",
+  "backToHome": "العودة للرئيسية",
+  "editAdvertisement": "تعديل الإعلان",
+  "adUpdatedSuccessfully": "تم تحديث الإعلان بنجاح",
+  "enterAdTitle": "أدخل عنوان الإعلان",
+  "enterAdDescription": "أدخل وصف الإعلان",
+  "targetAudience": "الجمهور المستهدف",
+  "whoShouldSeeThisAd": "من يجب أن يرى هذا الإعلان؟",
+  "campaignDurationRequired": "مدة الحملة *",
+  "startDate": "تاريخ البدء",
+  "estimatedCost": "التكلفة التقديرية: {price} جنيه",
+  "actionUrlOptional": "رابط الإجراء (اختياري)",
+  "urlPlaceholder": "https://...",
+  "ctaButtonTextOptional": "نص زر الإجراء (اختياري)",
+  "ctaPlaceholder": "مثال: اعرف المزيد, اشتر الآن",
+  "updateAd": "تحديث الإعلان",
+  "tapToChangeMedia": "اضغط لتغيير الوسائط",
+  "optional": "اختياري",
+  "@estimatedCost": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "myAdvertisements": "إعلاناتي",
+  "inactiveDraft": "غير نشط / مسودة",
+  "active": "نشط",
+  "adDeletedSuccessfully": "تم حذف الإعلان بنجاح",
+  "adActivated": "تم تنشيط الإعلان",
+  "adDeactivated": "تم إلغاء تنشيط الإعلان",
+  "noActiveAds": "لا توجد إعلانات نشطة",
+  "noInactiveAds": "لا توجد إعلانات غير نشطة",
+  "viewAnalyticsDashboard": "عرض لوحة التحكم التحليلية",
+  "analyticsOverview": "نظرة عامة تحليلية",
+  "ads": "إعلانات",
+  "views": "مشاهدات",
+  "clicks": "نقرات",
+  "completion": "الإكمال",
+  "failedToLoadPage": "فشل تحميل الصفحة",
+  "learnMore": "اعرف المزيد",
+  "sponsor": "راعي",
+  "advertisement": "إعلان",
+  "dashboard": "لوحة التحكم",
+  "deactivateAd": "إلغاء تنشيط الإعلان",
+  "activateAd": "تنشيط الإعلان",
+  "deactivateAdMessage": "لن يظهر هذا الإعلان في الخلاصة بعد الآن.",
+  "activateAdMessage": "سيظهر هذا الإعلان في الخلاصة مرة أخرى.",
+  "deleteAdConfirmation": "هل أنت متأكد من حذف هذا الإعلان؟",
+  "adSavedAsDraft": "تم حفظ الإعلان كمسودة — لم ينشر",
+  "completePaymentToActivate": "أكمل الدفع لتفعيل هذا الإعلان في الخلاصة.",
+  "paymentComingSoon": "الدفع قريباً",
+  "payNow": "ادفع الآن"
 }

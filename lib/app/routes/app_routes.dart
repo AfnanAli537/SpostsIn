@@ -26,6 +26,8 @@ abstract class AppRoutes {
 }
   static const String courseList = '/course-list';
   static const String opportunityEditScreen = '/opportunity-edit';
+  
+  static const String subscription = '/subscription';
 
   static const String settings = '/settings';
   static const String contactUs = '/contact-us';

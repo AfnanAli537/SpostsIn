@@ -42,9 +42,10 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
 
   DateTime? _startDate;
   DateTime? _endDate;
-
-  /// Selected audience labels e.g. ['Player', 'Coach']
   List<String> _selectedAudienceLabels = [];
+
+  /// Guards so the localization-dependent pre-fill only runs once.
+  bool _localizedInitDone = false;
 
   bool get _isEditing => widget.existingAd != null;
 
@@ -54,9 +55,12 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       widget.existingAd?.mediaUrl != null &&
       widget.existingAd!.mediaUrl!.isNotEmpty;
 
+  // ─── Lifecycle ─────────────────────────────────────────────────────────────
+
   @override
   void initState() {
     super.initState();
+    // Safe: only set fields that don't need localization.
     if (_isEditing) {
       final ad = widget.existingAd!;
       _titleController.text = ad.title;
@@ -66,9 +70,20 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       _startDate = ad.startDate;
       _endDate = ad.endDate;
       _sportNotifier.value = EnumMapper.sportIdToLabel(ad.sportTypeId);
-      // Convert the existing int list → display labels for the checkbox widget
+      // _selectedAudienceLabels needs S.of(context) → done in didChangeDependencies
+    }
+  }
+
+  /// didChangeDependencies is called after initState AND whenever an inherited
+  /// widget (including Localizations) changes. S.of(context) is safe here.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_localizedInitDone && _isEditing) {
+      _localizedInitDone = true;
       _selectedAudienceLabels = TargetAudienceMapper.idsToLabels(
-        ad.targetAudiences,
+        widget.existingAd!.targetAudiences,
+        S.of(context),
       );
     }
   }
@@ -87,8 +102,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
 
   DateTime _buildStartDateTime(DateTime pickedDay) {
     final now = DateTime.now();
-    final isToday =
-        pickedDay.year == now.year &&
+    final isToday = pickedDay.year == now.year &&
         pickedDay.month == now.month &&
         pickedDay.day == now.day;
     return isToday
@@ -100,8 +114,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     if (_startDate == null) {
       return DateTime(pickedDay.year, pickedDay.month, pickedDay.day);
     }
-    final isSameDay =
-        pickedDay.year == _startDate!.year &&
+    final isSameDay = pickedDay.year == _startDate!.year &&
         pickedDay.month == _startDate!.month &&
         pickedDay.day == _startDate!.day;
     return isSameDay
@@ -109,7 +122,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
         : DateTime(pickedDay.year, pickedDay.month, pickedDay.day);
   }
 
-  double _calculatePrice() {
+  double _calculatePrice(S strings) {
     if (_startDate == null || _endDate == null) return 0;
     final days = _endDate!.difference(_startDate!).inDays;
     return (days < 1 ? 1 : days) * 5.0;
@@ -150,34 +163,29 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     if (vid != null) setState(() => _selectedFile = File(vid.path));
   }
 
-  void _showPickerOptions() {
+  void _showPickerOptions(S strings) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
       builder: (_) => Container(
         padding: EdgeInsets.all(20.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(
-                Icons.image,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: const Text('Pick Image'),
+              leading: Icon(Icons.image,
+                  color: Theme.of(context).colorScheme.primary),
+              title: Text(strings.pickImage),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage();
               },
             ),
             ListTile(
-              leading: Icon(
-                Icons.video_library,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: const Text('Pick Video'),
+              leading: Icon(Icons.video_library,
+                  color: Theme.of(context).colorScheme.primary),
+              title: Text(strings.pickVideo),
               onTap: () {
                 Navigator.pop(context);
                 _pickVideo();
@@ -192,10 +200,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
   // ─── Error helper ──────────────────────────────────────────────────────────
 
   Future<void> _showError(String message) async {
-    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
-      context,
-      message,
-    );
+    final msg =
+        await TranslateErrorHelper.translateErrorKeyAsync(context, message);
     Fluttertoast.showToast(
       msg: msg,
       backgroundColor: Colors.red,
@@ -206,7 +212,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
 
   // ─── Submit ────────────────────────────────────────────────────────────────
 
-  void _submit() {
+  void _submit(S strings) {
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
 
@@ -216,7 +222,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
         _startDate == null ||
         _endDate == null) {
       Fluttertoast.showToast(
-        msg: S.of(context).pleaseFillAllFields,
+        msg: strings.pleaseFillAllFields,
         backgroundColor: Colors.orange,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
@@ -225,48 +231,45 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     }
 
     final sportId = EnumMapper.getSportId(
-      EnumMapper.fromLabel(EnumMapper.sportLabels(), _sportNotifier.value!) ??
-          EnumMapper.sportLabels().keys.first,
-    );
+          EnumMapper.fromLabel(
+                EnumMapper.sportLabels(),
+                _sportNotifier.value!,
+              ) ??
+              EnumMapper.sportLabels().keys.first,
+        );
 
-    final price = _calculatePrice();
-
-    // Convert selected audience labels → list of ints for the API
-    final audienceIds = (TargetAudienceMapper.labelsToIds(
-      _selectedAudienceLabels,
-    )..sort());
+    final price = _calculatePrice(strings);
+    final audienceIds =
+        TargetAudienceMapper.labelsToIds(_selectedAudienceLabels, strings)
+          ..sort();
 
     if (_isEditing) {
-      context.read<AdsBloc>().add(
-        UpdateAd(
-          adId: widget.existingAd!.id,
-          title: title,
-          description: description,
-          mediaFilePath: _selectedFile?.path,
-          price: price,
-          actionUrl: _actionUrlController.text.trim(),
-          actionText: _actionTextController.text.trim(),
-          startDate: _startDate!,
-          endDate: _endDate!,
-          sportTypeId: sportId,
-          targetAudiences: audienceIds,
-        ),
-      );
+      context.read<AdsBloc>().add(UpdateAd(
+            adId: widget.existingAd!.id,
+            title: title,
+            description: description,
+            mediaFilePath: _selectedFile?.path,
+            price: price,
+            actionUrl: _actionUrlController.text.trim(),
+            actionText: _actionTextController.text.trim(),
+            startDate: _startDate!,
+            endDate: _endDate!,
+            sportTypeId: sportId,
+            targetAudiences: audienceIds,
+          ));
     } else {
-      context.read<AdsBloc>().add(
-        CreateAd(
-          title: title,
-          description: description,
-          mediaFilePath: _selectedFile?.path,
-          price: price,
-          actionUrl: _actionUrlController.text.trim(),
-          actionText: _actionTextController.text.trim(),
-          startDate: _startDate!,
-          endDate: _endDate!,
-          sportTypeId: sportId,
-          targetAudiences: audienceIds,
-        ),
-      );
+      context.read<AdsBloc>().add(CreateAd(
+            title: title,
+            description: description,
+            mediaFilePath: _selectedFile?.path,
+            price: price,
+            actionUrl: _actionUrlController.text.trim(),
+            actionText: _actionTextController.text.trim(),
+            startDate: _startDate!,
+            endDate: _endDate!,
+            sportTypeId: sportId,
+            targetAudiences: audienceIds,
+          ));
     }
   }
 
@@ -297,7 +300,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 builder: (_) => BlocProvider.value(
                   value: context.read<AdsBloc>(),
                   child: AdPaymentScreen(
-                    price: _calculatePrice(),
+                    price: _calculatePrice(strings),
                     adId: state.adId,
                   ),
                 ),
@@ -306,7 +309,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
           }
         } else if (state is AdUpdated) {
           Fluttertoast.showToast(
-            msg: 'Advertisement updated successfully',
+            msg: strings.adUpdatedSuccessfully,
             backgroundColor: Colors.green,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
@@ -324,7 +327,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            _isEditing ? 'Edit Advertisement' : 'Create Advertisement',
+            _isEditing ? strings.editAdvertisement : strings.createAdvertisement,
             style: TextStyle(
               color: theme.onSurface,
               fontSize: 18.sp,
@@ -338,8 +341,9 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ── Media picker ───────────────────────────────────────────────
               GestureDetector(
-                onTap: _showPickerOptions,
+                onTap: () => _showPickerOptions(strings),
                 child: DottedBorder(
                   options: RoundedRectDottedBorderOptions(
                     color: Colors.grey[400]!,
@@ -353,30 +357,32 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                       height: 200.h,
                       width: double.infinity,
                       color: theme.surface,
-                      child: _buildMediaPreview(theme),
+                      child: _buildMediaPreview(theme, strings),
                     ),
                   ),
                 ),
               ),
               SizedBox(height: 24.h),
 
-              _sectionLabel('Title *'),
+              // ── Title ──────────────────────────────────────────────────────
+              _sectionLabel(strings.titleRequired),
               SizedBox(height: 8.h),
               AuthTextField(
-                controller: _titleController,
-                label: 'Enter ad title',
-              ),
+                  controller: _titleController, 
+                  label: strings.enterAdTitle),
               SizedBox(height: 20.h),
 
-              _sectionLabel('Description *'),
+              // ── Description ────────────────────────────────────────────────
+              _sectionLabel(strings.descriptionRequired),
               SizedBox(height: 8.h),
               AuthTextField(
                 controller: _descriptionController,
-                label: 'Enter ad description',
+                label: strings.enterAdDescription,
                 maxLines: 4,
               ),
               SizedBox(height: 20.h),
 
+              // ── Sport ──────────────────────────────────────────────────────
               ValueListenableBuilder<String?>(
                 valueListenable: _sportNotifier,
                 builder: (_, sport, __) => AppDropdownOverlay(
@@ -389,106 +395,106 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
               SizedBox(height: 20.h),
 
-              _sectionLabel('Target Audience'),
+              // ── Target Audience ────────────────────────────────────────────
+              _sectionLabel(strings.targetAudience),
               SizedBox(height: 8.h),
               CheckboxDropdownOverlay(
-                labelText: 'Who should see this ad?',
+                labelText: strings.whoShouldSeeThisAd,
                 value: _selectedAudienceLabels,
-                options: TargetAudienceMapper.allLabels(),
+                options: TargetAudienceMapper.allLabels(strings),
                 onChanged: (selected) {
                   setState(() => _selectedAudienceLabels = selected);
                 },
               ),
               SizedBox(height: 20.h),
 
-              _sectionLabel('Campaign Duration *'),
+              // ── Date range ─────────────────────────────────────────────────
+              _sectionLabel(strings.campaignDurationRequired),
               SizedBox(height: 8.h),
               Row(
                 children: [
                   Expanded(
                     child: _DatePickerTile(
-                      label: 'Start Date',
+                      label: strings.startDate,
                       date: _startDate,
                       onTap: () => _pickDate(isStart: true),
+                      strings: strings,
                     ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
                     child: _DatePickerTile(
-                      label: 'End Date',
+                      label: strings.endDate,
                       date: _endDate,
                       onTap: () => _pickDate(isStart: false),
+                      strings: strings,
                     ),
                   ),
                 ],
               ),
 
-              if (_startDate != null && _endDate != null)
-                Padding(
-                  padding: EdgeInsets.only(top: 12.h),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 12.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.monetization_on_outlined,
-                          color: theme.primary,
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          'Estimated cost: ${_calculatePrice().toStringAsFixed(0)} EGP',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: theme.primary,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '(5 EGP/day)',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              // // ── Price display ──────────────────────────────────────────────
+              // if (_startDate != null && _endDate != null)
+              //   Padding(
+              //     padding: EdgeInsets.only(top: 12.h),
+              //     child: Container(
+              //       padding: EdgeInsets.symmetric(
+              //           horizontal: 16.w, vertical: 12.h),
+              //       decoration: BoxDecoration(
+              //         color: theme.primary.withOpacity(0.08),
+              //         borderRadius: BorderRadius.circular(10.r),
+              //       ),
+              //       child: Row(
+              //         children: [
+              //           Icon(Icons.monetization_on_outlined,
+              //               color: theme.primary),
+              //           SizedBox(width: 8.w),
+              //           Text(
+              //             strings.estimatedCost(
+              //               _calculatePrice(strings).toStringAsFixed(0),
+              //             ),
+              //             style: TextStyle(
+              //               fontSize: 14.sp,
+              //               fontWeight: FontWeight.w600,
+              //               color: theme.primary,
+              //             ),
+              //           ),
+              //           SizedBox(width: 4.w),
+              //           Text(strings.pricePerDay('5'),
+              //               style: TextStyle(
+              //                   fontSize: 12.sp, color: Colors.grey[600])),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
               SizedBox(height: 20.h),
 
-              _sectionLabel('Action URL (optional)'),
+              // ── Action URL ─────────────────────────────────────────────────
+              _sectionLabel(strings.actionUrlOptional),
               SizedBox(height: 8.h),
               AuthTextField(
-                controller: _actionUrlController,
-                label: 'https://...',
-              ),
+                  controller: _actionUrlController, 
+                  label: strings.urlPlaceholder),
               SizedBox(height: 20.h),
 
-              _sectionLabel('CTA Button Text (optional)'),
+              // ── CTA text ───────────────────────────────────────────────────
+              _sectionLabel(strings.ctaButtonTextOptional),
               SizedBox(height: 8.h),
               AuthTextField(
                 controller: _actionTextController,
-                label: 'e.g. Learn More, Buy Now',
+                label: strings.ctaPlaceholder,
               ),
               SizedBox(height: 40.h),
 
+              // ── Submit ─────────────────────────────────────────────────────
               BlocBuilder<AdsBloc, AdsState>(
                 builder: (_, state) {
                   final isLoading = state is AdsLoaded && state.isUploading;
                   return CustomElevatedButton(
-                    text: _isEditing ? 'Update Ad' : 'Continue',
+                    text: _isEditing ? strings.updateAd : strings.continueText,
                     isLoading: isLoading,
-                    enabled:
-                        true,
-                    onPressed: _submit,
+                    enabled: true,
+                    onPressed: () => _submit(strings),
                   );
                 },
               ),
@@ -502,16 +508,14 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
 
   // ─── Media preview ─────────────────────────────────────────────────────────
 
-  Widget _buildMediaPreview(ColorScheme theme) {
+  Widget _buildMediaPreview(ColorScheme theme, S strings) {
     if (_selectedFile != null) {
       return Stack(
         children: [
-          Image.file(
-            _selectedFile!,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
+          Image.file(_selectedFile!,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover),
           _clearMediaButton(),
         ],
       );
@@ -533,13 +537,13 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                   child: CircularProgressIndicator(
                     value: progress.expectedTotalBytes != null
                         ? progress.cumulativeBytesLoaded /
-                              progress.expectedTotalBytes!
+                            progress.expectedTotalBytes!
                         : null,
                   ),
                 ),
               );
             },
-            errorBuilder: (_, __, ___) => _emptyMediaPlaceholder(),
+            errorBuilder: (_, __, ___) => _emptyMediaPlaceholder(strings),
           ),
           Positioned(
             bottom: 0,
@@ -549,13 +553,12 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               padding: EdgeInsets.symmetric(vertical: 6.h),
               color: Colors.black45,
               child: Text(
-                'Tap to change media',
+                strings.tapToChangeMedia,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ),
@@ -564,7 +567,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
       );
     }
 
-    return _emptyMediaPlaceholder();
+    return _emptyMediaPlaceholder(strings);
   }
 
   Widget _clearMediaButton() {
@@ -576,34 +579,28 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
         child: Container(
           padding: EdgeInsets.all(4.w),
           decoration: const BoxDecoration(
-            color: Colors.black54,
-            shape: BoxShape.circle,
-          ),
+              color: Colors.black54, shape: BoxShape.circle),
           child: Icon(Icons.close, color: Colors.white, size: 20.sp),
         ),
       ),
     );
   }
 
-  Widget _emptyMediaPlaceholder() {
+  Widget _emptyMediaPlaceholder(S strings) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.cloud_upload_outlined, size: 60.sp, color: Colors.grey[600]),
+        Icon(Icons.cloud_upload_outlined,
+            size: 60.sp, color: Colors.grey[600]),
         SizedBox(height: 12.h),
-        Text(
-          'Upload Image or Video',
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(strings.uploadImageOrVideo,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500)),
         SizedBox(height: 4.h),
-        Text(
-          'Optional',
-          style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
-        ),
+        Text(strings.optional,
+            style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
       ],
     );
   }
@@ -626,11 +623,13 @@ class _DatePickerTile extends StatelessWidget {
   final String label;
   final DateTime? date;
   final VoidCallback onTap;
+  final S strings;
 
   const _DatePickerTile({
     required this.label,
     required this.date,
     required this.onTap,
+    required this.strings,
   });
 
   @override
@@ -647,23 +646,18 @@ class _DatePickerTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
-            ),
+            Text(label,
+                style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
             SizedBox(height: 4.h),
             Row(
               children: [
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: 16.sp,
-                  color: theme.primary,
-                ),
+                Icon(Icons.calendar_today_outlined,
+                    size: 16.sp, color: theme.primary),
                 SizedBox(width: 6.w),
                 Text(
                   date != null
                       ? '${date!.day}/${date!.month}/${date!.year}'
-                      : 'Select',
+                      : strings.select,
                   style: TextStyle(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w500,

@@ -201,7 +201,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
       drawer: const AppDrawer(),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
+          return[
             SliverAppBar(
               backgroundColor: theme.colorScheme.surface,
               elevation: 0,

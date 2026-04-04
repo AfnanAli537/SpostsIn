@@ -100,6 +100,14 @@ import 'package:sports_in/features/notitification/data/service/notifaction_servi
     as _i700;
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart'
     as _i987;
+import 'package:sports_in/features/payment/data/data_source/payment_remote_data_source.dart'
+    as _i505;
+import 'package:sports_in/features/payment/data/interface/payment_interface.dart'
+    as _i802;
+import 'package:sports_in/features/payment/data/repo/payment_repo.dart'
+    as _i221;
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart'
+    as _i971;
 import 'package:sports_in/features/register/data/data_sources/register_api_data_source.dart'
     as _i569;
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart'
@@ -123,14 +131,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i700.NotificationHubService>(
       () => _i700.NotificationHubService(),
     );
-    gh.lazySingleton<_i109.ISearchDataSource>(
-      () => _i1019.MockSearchDataSource(),
-    );
     gh.lazySingleton<_i414.SharedPref>(
       () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
-    );
-    gh.factory<_i514.SearchRepo>(
-      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
     );
     gh.lazySingleton<_i694.ApiClient>(
       () => appModule.apiClient(gh<_i414.SharedPref>()),
@@ -144,8 +146,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i423.PostsRepository>(
       () => _i833.PostsRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
-    gh.factory<_i803.SearchBloc>(
-      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
+    gh.lazySingleton<_i802.PaymentInterface>(
+      () => _i505.PaymentRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i860.ChatRemoteDataSource>(
       () => _i183.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
@@ -192,6 +194,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i503.ChatRepository(
         remoteDataSource: gh<_i860.ChatRemoteDataSource>(),
       ),
+    gh.lazySingleton<_i221.PaymentRepository>(
+      () =>
+          _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
+    );
+    gh.factory<_i971.PaymentBloc>(
+      () => _i971.PaymentBloc(repository: gh<_i221.PaymentRepository>()),
     );
     gh.factory<_i1047.OpportunityBloc>(
       () => _i1047.OpportunityBloc(
@@ -200,6 +208,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i658.IAdsDataSource>(
       () => _i823.AdRemoteDataSource(gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i109.ISearchDataSource>(
+      () => _i1019.SearchDataSource(gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i592.ICourseDataSource>(
       () => _i8.CourseRemoteDataSource(gh<_i694.ApiClient>()),
@@ -240,11 +251,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
     );
+    gh.factory<_i514.SearchRepo>(
+      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
+    );
     gh.factory<_i674.CourseRepository>(
       () => _i674.CourseRepository(gh<_i592.ICourseDataSource>()),
     );
     gh.factory<_i567.CoursesBloc>(
       () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i803.SearchBloc>(
+      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
     return this;
   }
