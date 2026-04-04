@@ -1,3 +1,4 @@
+import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/features/main/home/data/model/author_model.dart';
 
 class PostModel {
@@ -6,6 +7,7 @@ class PostModel {
   final String description;
   final bool isActive;
   final String? mediaUrl;
+  final String sportType;
   final DateTime createdAt;
   final AuthorModel author;
   int likesCount;
@@ -18,6 +20,7 @@ class PostModel {
     required this.description,
     required this.isActive,
     required this.mediaUrl,
+    required this.sportType,
     required this.createdAt,
     required this.author,
     required this.likesCount,
@@ -32,6 +35,7 @@ class PostModel {
       description: json['description'],
       isActive: json['isActive'],
       mediaUrl: json['mediaUrl'],
+      sportType: EnumMapper.sportIdToLabel(json['sportTypeId'])!,
       createdAt: DateTime.parse(json['createdAt']),
       author: AuthorModel.fromJson(json['author']),
       likesCount: json['likesCount'],
@@ -46,6 +50,7 @@ class PostModel {
         'description': description,
         'isActive': isActive,
         'mediaUrl': mediaUrl,
+        'sportType': sportType,
         'createdAt': createdAt.toIso8601String(),
         'author': author.toJson(),
         'likesCount': likesCount,
@@ -64,6 +69,7 @@ class PostModel {
       description: description,
       isActive: isActive,
       mediaUrl: mediaUrl,
+      sportType: sportType,
       createdAt: createdAt,
       author: author,
       likesCount: likesCount ?? this.likesCount,

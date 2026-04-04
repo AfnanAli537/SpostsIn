@@ -12,6 +12,7 @@
   "email": "Email",
   "password": "Password",
   "confirmPassword": "Confirm Password",
+  "account": "Account",
   "notHaveAccount": "Don't have an account?",
   "alreadyHaveAccount": "Already have an account?",
   "createYourAccount": "Create your Account",
@@ -259,9 +260,14 @@
   "postDeleteed": "Post deleted successfully",
   "postUpdated": "Post updated successfully",
   "opportunities": "Opportunities",
+  "myOpportunities": "Opportunities",
+  "archiveOpportunities": "Archive Opportunities",
+  "publicOpportunities": "Public Opportunities",
   "noOpportunities": "No Opportunities",
   "courses": "Courses",
+  "noCourses": "No Courses",
   "achievements": "Achievements",
+  "noAchievements": "No Achievements",
   "achievement": "Achievement",
   "addAchievement": "Added New Achievement",
   "achievementDeleted": "Achievement deleted successfully",
@@ -300,6 +306,14 @@
   "deletePost": "Delete Post",
   "deletePostConfirmation": "Are you sure you want to delete this post?",
   "postDeleted": "Post deleted successfully!",
+  "archivePost": "Archive Post",
+  "archivePosts": "Archive Posts",
+  "publicPosts": "Public Posts",
+  "postArchived": "Post archived successfully!",
+  "archivePostConfirmation": "this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?",
+  "restorePost": "Restore Post",
+  "postRestored": "Post restored successfully!",
+  "restorePostConfirmation": "this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?",
   "postDeleteFailed": "Failed to delete post. Please try again.",
   "commentAddedSuccessfully": "Comment added successfully",
   "commentUpdatedSuccessfully": "Comment updated successfully",
@@ -324,8 +338,11 @@
   "guest": "Guest",
   "happyToSeeYouToday": "Happy to see you today",
   "latestPosts": "Latest posts",
+  "latestCourses": "Latest Courses",
   "oopsSomethingWentWrong": "Oops! Something went wrong",
   "noPostsYet": "No posts yet",
+  "noArchivedPosts": "No archived posts",
+  "noPostsAvailable": "No posts available",
   "likes": "Likes",
   "noLikesYet": "No likes yet",
   "beTheFirstToCreatePost": "Be the first to create a post!",
@@ -350,6 +367,11 @@
   "failedToLoadVideo": "Failed to load video",
   "analyzeVideoComingSoon": "Analyze video feature coming soon",
   "analyzeVideo": "Analyze Video",
+  "archive": "Archive",
+  "activate": "Activate",
+  "pay": "Pay",
+  "deactivate": "Deactivate",
+  "restore": "Restore",
   "seeOriginal": "See Original",
   "translate": "Translate",
   "forYou": "forYou",
@@ -383,6 +405,7 @@
   "reject": "Reject",
   "uploadAnImage": "Upload an Image",
   "tapToSelectFromGallery": "Tap to select from gallery",
+  "tapToChange": "Tap to Change",
   "enterYourRequirements": "Enter Requirements (one per line)...",
   "selectEndDate": "Select End Date",
   "upload": "Upload",
@@ -464,5 +487,271 @@
   "save_achievement_button": "Save Achievement",
   "please_select_date": "Please select a date",
   "achievement_added_success": "Achievement added successfully",
-  "achievement_updated_success": "Achievement updated successfully"
+  "achievement_updated_success": "Achievement updated successfully",
+  "messageSent": "Message sent successfully",
+  "failedToSendMessage": "Failed to send message. Please try again.",
+  "free": "FREE",
+  "egp": "EGP",
+  "enroll": "Enroll",
+  "lessonsCount": "{count} lessons",
+  "@lessonsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "enrolledCount": "{count} enrolled",
+  "@enrolledCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completePercentage": "{percentage}% complete",
+  "@completePercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "editPrice": "Edit Price",
+  "freeCourse": "Free Course",
+  "priceEGP": "Price (EGP)",
+  "priceRequired": "Price is required",
+  "invalidPrice": "Invalid price",
+  "lessonNumber": "{number} Lesson",
+  "@lessonNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "Completed",
+  "playing": "Playing",
+  "showDescription": "Show Description",
+  "hideDescription": "Hide Description",
+  "watched": "Watched",
+  "percentageWatched": "{percentage}% watched",
+  "@percentageWatched": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "createCourse": "Create Course",
+  "uploadCourseThumbnail": "Upload Course Thumbnail",
+  "courseThumbnail": "Course Thumbnail",
+  "courseTitleHint": "Course Title",
+  "enterCourseTitleHint": "Course Title",
+  "courseDescriptionHint": "Course Description",
+  "enterCourseDescriptionHint": "Enter Course Description",
+  "noDescriptionAvailable": "No description available",
+  "price": "Price",
+  "enterPriceHint": "Enter price (0 for free)",
+  "pleaseEnterPrice": "Please enter a price",
+  "courseCreatedSuccess": "Course created successfully",
+  "addLesson": "Add Lesson",
+  "addLessonQuestion": "Would you like to add a lesson to this course now?",
+  "addLater": "Add Later",
+  "addNow": "Add Now",
+  "error_picking_image": "Error picking image. Please try again.",
+  "select_sport_error": "Please select a sport",
+  "editLesson": "Edit Lesson",
+  "lessonTitle": "Lesson Title",
+  "enterLessonTitleHint": "Enter lesson title",
+  "enterDescriptionHint": "Enter description",
+  "titleRequired": "Title is required",
+  "descriptionRequired": "Description is required",
+  "lessonOrder": "Lesson order: {order}",
+  "@lessonOrder": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    }
+  },
+  "duration": "Duration: {duration}",
+  "@duration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "updateLesson": "Update Lesson",
+  "newVideoWillBeUploaded": "New video will be uploaded",
+  "video": "Video",
+  "changeVideo": "Change Video",
+  "replaceVideo": "Replace Video",
+  "extractingDuration": "Extracting duration...",
+  "newVideoSelected": "New video selected",
+  "currentVideo": "Current video",
+  "updatingLesson": "Updating lesson...",
+  "file_size_exceeds_limit": "File size exceeds 500MB",
+  "error_picking_video": "Error picking video. Please try again.",
+  "failed_to_read_video_duration": "Failed to read video duration",
+  "uploadLesson": "Upload Lesson",
+  "uploadVideo": "Upload Video",
+  "maxFileSize": "Max 500MB",
+  "notDetected": "Not detected",
+  "lessonOrderAndDuration": "Lesson order: {order} • Duration: {duration}",
+  "@lessonOrderAndDuration": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "lessons": "Lessons",
+  "revenue": "Revenue",
+  "editCourse": "Edit Course",
+  "cancelEdit": "Cancel Edit",
+  "deleteCourse": "Delete Course",
+  "deleteLesson": "Delete Lesson",
+  "deleteLessonConfirmation": "Are you sure you want to delete \"{lessonTitle}\"? This action cannot be undone.",
+  "deleteCourseConfirmation": "Are you sure you want to delete this course?",
+  "titleCannotBeEmpty": "Title cannot be empty",
+  "savingChanges": "Saving changes...",
+  "deletingLesson": "Deleting lesson...",
+  "enrolledSuccessfully": "Enrolled successfully",
+  "courseDeleted": "Course deleted",
+  "enrollNow": "Enroll Now",
+  "enrollForPrice": "Enroll for {price}",
+  
+  "@deleteLessonConfirmation": {
+    "placeholders": {
+      "lessonTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "@enrollForPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "Available",
+  "newCourses": "New Courses",
+  "continueWatching": "Continue Watching",
+  "showMore": "Show More",
+  "noCoursesFoundFor": "No courses found for \"{searchTerm}\"",
+  "percentComplete": "{percentage}% Complete",
+  "lessonsProgress": "{completed} / {total} Lessons",
+  
+  "failedToPlayVideo": "Failed to play video",
+  "videoPlaybackError": "Video Playback Error",
+  "unknownError": "Unknown error",
+  
+  "@noCoursesFoundFor": {
+    "placeholders": {
+      "searchTerm": {
+        "type": "String"
+      }
+    }
+  },
+  "@percentComplete": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "@lessonsProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "availableCourses": "Available Courses",
+  "noAvailableCourses": "No Available Courses",
+  "enrolledCourses": "Enrolled Courses",
+  "myCourses": "My Courses",
+  "noCoursesFound": "No courses found",
+  "noResultsForCriteria": "No results for your criteria",
+  "tryAdjustingSearch": "Try adjusting your search or filter",
+  "pleaseSelectVideo": "Please select a video",
+  "invalidVideoDuration": "Invalid video duration. Please select another video.",
+  "uploadingInBackground": "Uploading lesson in background...",
+  "uploadWillContinue": "Upload will continue in background",
+  "personalInfo": "Personal Information",
+  "subscription": "Subscription",
+  "activities": "Activities",
+  "userType": "User Type",
+  "changePassword": "Change Password",
+  "manageSubscription": "Manage Subscription",
+  "managePosts": "Manage Posts",
+  "manageOpportunities": "Manage Opportunities",
+  "manageCourse": "Manage Course",
+  "manageVideoAnalysis": "Manage Video Analysis People",
+  "manageAdvertisement": "Manage Advertisement",
+  "manageAchievement": "Manage Achievement",
+  "switchAccount": "Switch Account",
+  "addAccount": "Add Account",
+
+  "lessonOrderSaved": "Lesson order saved",
+  "noLessonsAvailable": "No lessons available",
+  "tapToAddFirstLesson": "Tap the + button to add your first lesson",
+  "courseProgress": "Course Progress",
+  "timeSpent": "Time Spent",
+  "noEnrolleesYet": "No enrollees yet",
+  "enrolleesWillAppear": "Enrolled students will appear here",
+  "totalEnrolled": "Total Enrolled",
+  "avgProgress": "Avg Progress",
+  "progress": "Progress",
+  "enrolled": "Enrolled",
+  "close": "Close",
+  "remove": "Remove",
+  "pending": "Pending",
+
+  "newConnectionRequests": "New Connection Requests",
+  "noConnectionRequests": "No Connection Requests",
+  "noMoreRequests": "No More Requests",
+  "myContacts": "My Contacts",
+  "noContactsYet": "No contacts yet",
+  "wantsToConnect": "Wants to connect with you",
+  "online": "Online",
+
+  "month": "Month",
+  "year": "Year",
+  "allTimeRevenue": "All-Time Revenue",
+  "weeklyBreakdown": "Weekly Breakdown",
+  "weeklyDetails": "Weekly Details",
+  "noDataForMonth": "No data available for {month}",
+  
+  "january": "January",
+  "february": "February",
+  "march": "March",
+  "april": "April",
+  "may": "May",
+  "june": "June",
+  "july": "July",
+  "august": "August",
+  "september": "September",
+  "october": "October",
+  "november": "November",
+  "december": "December",
+  
+  "@noDataForMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  }
+
 }

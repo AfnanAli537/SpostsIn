@@ -129,17 +129,26 @@ class DeleteOpportunity extends OpportunityEvent {
   @override
   List<Object?> get props => [opportunityId];
 }
+class LoadMoreMyOpportunities extends OpportunityEvent {
+  final bool showActive;
+  const LoadMoreMyOpportunities({required this.showActive});
+}
+
+class ToggleOpportunityVisibility extends OpportunityEvent {
+  final String opportunityId;
+  const ToggleOpportunityVisibility({required this.opportunityId});
+}
+
 class FetchMyOpportunities extends OpportunityEvent {
   final bool showActive;
   final int page;
   final int pageSize;
+  final bool isRefresh;  // new
 
   const FetchMyOpportunities({
-    this.showActive = true,
+    required this.showActive,
     this.page = 1,
     this.pageSize = 10,
+    this.isRefresh = false,
   });
-
-  @override
-  List<Object?> get props => [showActive, page, pageSize];
 }

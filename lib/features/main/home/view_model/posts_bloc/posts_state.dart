@@ -55,6 +55,8 @@ class PostUpdateSuccess extends PostsState {}
 
 class PostDeleteSuccess extends PostsState {}
 
+class PostArchivedSuccess extends PostsState {}
+
 class PostsLoadingMore extends PostsState {
   final List<PostModel> currentPosts;
 
@@ -62,4 +64,13 @@ class PostsLoadingMore extends PostsState {
 
   @override
   List<Object?> get props => [currentPosts];
+}
+
+// في الـ states
+class SinglePostLoaded extends PostsState {
+  final PostModel post;
+  const SinglePostLoaded({required this.post});
+
+  @override
+  List<Object> get props => [post];
 }

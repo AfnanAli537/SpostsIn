@@ -24,7 +24,7 @@ class SearchResultsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          strings.searchResults ?? 'Search Results',
+          strings.searchResults,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -115,14 +115,14 @@ class SearchResultsScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          strings.noResultsFound ?? 'No results found',
+                          strings.noResultsFound,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          strings.tryDifferentSearch ?? 'Try a different search',
+                          strings.tryDifferentSearch,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -153,7 +153,7 @@ class SearchResultsScreen extends StatelessWidget {
 
                 return Center(
                   child: Text(
-                    strings.startSearching ?? 'Start searching',
+                    strings.startSearching,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

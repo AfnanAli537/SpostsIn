@@ -14,7 +14,7 @@ import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/widgets/comment_shimmer.dart';
 import 'package:sports_in/features/main/home/view_model/comment_bloc/comment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:shimmer/shimmer.dart';
+// import 'package:shimmer/shimmer.dart';
 
 class CommentsBottomSheet extends StatelessWidget {
   final String postId;
@@ -76,15 +76,17 @@ class _CommentsBottomSheetContentState
       if (state is CommentsLoaded && state.hasNextPage) {
         if (state is! CommentsLoadingMore) {
           context.read<CommentsBloc>().add(
-                FetchComments(postId: widget.postId),
-              );
+            FetchComments(postId: widget.postId),
+          );
         }
       }
     }
   }
+
   void _navigateToUserProfile(BuildContext context, String userId) {
     Navigator.pushNamed(context, AppRoutes.userProfile, arguments: userId);
   }
+
   @override
   void dispose() {
     _commentController.dispose();
@@ -92,6 +94,7 @@ class _CommentsBottomSheetContentState
     _scrollController.dispose();
     super.dispose();
   }
+
   Future<void> _showError(BuildContext context, String message) async {
     final msg = await TranslateErrorHelper.translateErrorKeyAsync(
       context,
@@ -104,10 +107,11 @@ class _CommentsBottomSheetContentState
       gravity: ToastGravity.TOP,
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final strings = S.of(context);
-    final theme= Theme.of(context).colorScheme;
+    final theme = Theme.of(context).colorScheme;
 
     return BlocListener<CommentsBloc, CommentsState>(
       listenWhen: (previous, current) {
@@ -153,12 +157,7 @@ class _CommentsBottomSheetContentState
               break;
           }
         } else if (state is CommentsError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showError(context, state.message);
         }
       },
       child: DraggableScrollableSheet(
@@ -171,7 +170,9 @@ class _CommentsBottomSheetContentState
             width: double.infinity,
             decoration: BoxDecoration(
               color: theme.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
             child: Column(
               children: [
@@ -192,7 +193,9 @@ class _CommentsBottomSheetContentState
                         ? state.totalCount
                         : 0;
                     return Text(
-                      count > 0 ? '${strings.comments} ($count)' : strings.comments,
+                      count > 0
+                          ? '${strings.comments} ($count)'
+                          : strings.comments,
                       style: GoogleFonts.poppins(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w800,
@@ -224,13 +227,18 @@ class _CommentsBottomSheetContentState
 
                         return ListView.builder(
                           controller: _scrollController,
-                          itemCount: comments.length +
-                              (state is CommentsLoaded && state.hasNextPage ? 1 : 0),
+                          itemCount:
+                              comments.length +
+                              (state is CommentsLoaded && state.hasNextPage
+                                  ? 1
+                                  : 0),
                           itemBuilder: (context, index) {
                             if (index == comments.length) {
                               return const Padding(
                                 padding: EdgeInsets.all(16.0),
-                                child: Center(child: CircularProgressIndicator()),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
                             }
                             return _buildCommentItem(context, comments[index]);
@@ -258,7 +266,7 @@ class _CommentsBottomSheetContentState
                                 },
                                 child: Text(
                                   strings.retry,
-                                  style:  TextStyle(color: theme.surface),
+                                  style: TextStyle(color: theme.surface),
                                 ),
                               ),
                             ],
@@ -287,10 +295,9 @@ class _CommentsBottomSheetContentState
     );
   }
 
-
   Widget _buildCommentItem(BuildContext context, CommentModel comment) {
     final strings = S.of(context);
-    final theme= Theme.of(context).colorScheme;
+    final theme = Theme.of(context).colorScheme;
     final bloc = context.read<CommentsBloc>();
     final isCurrentUser = comment.userId == bloc.currentUserId;
 
@@ -307,7 +314,6 @@ class _CommentsBottomSheetContentState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           GestureDetector(
             onTap: () => _navigateToUserProfile(context, comment.userId),
             child: CircleAvatar(
@@ -320,9 +326,9 @@ class _CommentsBottomSheetContentState
                   ? Text(
                       (comment.fullName.isNotEmpty ? comment.fullName[0] : 'U')
                           .toUpperCase(),
-                      style:  TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color:theme.onSurface,
+                        color: theme.onSurface,
                       ),
                     )
                   : null,
@@ -339,22 +345,22 @@ class _CommentsBottomSheetContentState
                     children: [
                       Text(
                         comment.fullName,
-                        style:  TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: theme.onSurface,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        formatTimeAgo(context,comment.createdAt.toUtc()),
-                        style:  TextStyle(color: theme.onSurface, fontSize: 12),
+                        formatTimeAgo(context, comment.createdAt.toUtc()),
+                        style: TextStyle(color: theme.onSurface, fontSize: 12),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
                     comment.text,
-                    style:  TextStyle(fontSize: 14, color:theme.onSurface ),
+                    style: TextStyle(fontSize: 14, color: theme.onSurface),
                   ),
                 ],
               ),
@@ -554,7 +560,10 @@ class _CommentsBottomSheetContentState
                           _editingCommentId != null
                               ? strings.update
                               : strings.post,
-                          style:  TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).colorScheme.onSurface),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       );
                     },
@@ -567,5 +576,4 @@ class _CommentsBottomSheetContentState
       ),
     );
   }
-
 }

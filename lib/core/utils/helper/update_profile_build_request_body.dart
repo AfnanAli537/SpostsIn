@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:sports_in/core/utils/helper/image_helper.dart';
+import 'package:dio/dio.dart';
+// import 'package:sports_in/core/utils/helper/image_helper.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -8,6 +9,7 @@ class UpdateProfileBodyBuilder {
   static Future<Map<String, dynamic>> buildUpdateBody({
     required ProfileModel currentProfile,
     File? newImage,
+    String? oldImage,
     String? firstName,
     String? lastName,
     String? bio,
@@ -33,11 +35,6 @@ class UpdateProfileBodyBuilder {
       s = null;
     }
 
-    // Upload new image if provided
-    String? profilePictureUrl = currentProfile.profileImage;
-    if (newImage != null) {
-      profilePictureUrl = await CloudinaryService.uploadImage(newImage);
-    }
 
     // Build full name
     String fullName = currentProfile.name;
@@ -61,8 +58,6 @@ class UpdateProfileBodyBuilder {
       genderId = genderEnum != null ? EnumMapper.getGenderId(genderEnum) : null;
     }
 
-    // Convert sports to IDs if provided
-    // ignore: unused_local_variable
     List<String>? sportIds;
     if (sports != null && sports.isNotEmpty) {
       sportIds = sports
@@ -79,127 +74,125 @@ class UpdateProfileBodyBuilder {
           .toList();
     }
 
-    // Build the complete body with all fields
     final body = <String, dynamic>{
-      "userId": currentProfile.id,
-      "fullName": fullName,
-      "userType": _getUserTypeString(currentProfile.userType),
-      "profilePictureUrl": profilePictureUrl,
-      "bio": bio ?? currentProfile.description,
-      "sports": sports ?? [],
-      "followersCount": currentProfile.stats.followers,
-      "followingCount": currentProfile.stats.following,
-      "connectionsCount": currentProfile.stats.connections,
-      "analyzedPeopleCount": currentProfile.stats.analyzedPeople,
+      "UserId": currentProfile.id,
+      "FullName": fullName,
+      "UserType": _getUserTypeString(currentProfile.userType),
+      if(newImage != null)
+          "ProfileImage": await MultipartFile.fromFile(newImage.path,filename: newImage.path.split('/').last,),
+          "ProfilePictureUrl": oldImage,
+      "Bio": bio ?? currentProfile.description,
+      "Sports": sportIds??sports ?? [],
+      "FollowersCount": currentProfile.stats.followers,
+      "FollowingCount": currentProfile.stats.following,
+      "ConnectionsCount": currentProfile.stats.connections,
+      "AnalyzedPeopleCount": currentProfile.stats.analyzedPeople,
     };
 
-    // Add user-type specific fields based on current profile type
     switch (currentProfile.userType) {
       case UserType.player:
         final playerData = currentProfile.playerData!;
         body.addAll({
-          "height": height ?? playerData.height,
-          "weight": weight ?? playerData.weight,
-          "position": position ?? playerData.position,
-          "age": age ?? playerData.age,
-          "gender": playerData.gender, // You might need to get this from current profile
-          "yearsOfExperience": null,
-          "specialization": specialization ?? playerData.specializedSport,
-          "foundationDate": null,
-          "industry": null,
-          "isOwner": true,
-          "isFollowedByMe": currentProfile.isFollowing,
-          "connectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
+          "Height": height ?? playerData.height,
+          "Weight": weight ?? playerData.weight,
+          "Position": position ?? playerData.position,
+          "Age": age ?? playerData.age,
+          if(playerData.gender!=0 && playerData.gender != null)"Gender": playerData.gender, 
+          "YearsOfExperience": null,
+          "Specialization": specialization ?? playerData.specializedSport,
+          "FoundationDate": null,
+          "Industry": null,
+          "IsOwner": true,
+          "IsFollowedByMe": currentProfile.isFollowing,
+          "ConnectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
         });
         break;
 
       case UserType.coach:
         final coachData = currentProfile.coachData!;
         body.addAll({
-          "height": null,
-          "weight": null,
-          "position": null,
-          "age": null,
-          "gender": coachData.gender,
-          "yearsOfExperience": yearsOfExperience ?? coachData.yearsOfExperience,
-          "specialization": specialization ?? coachData.specializedSport,
-          "foundationDate": null,
-          "industry": null,
-          "isOwner": true,
-          "isFollowedByMe": currentProfile.isFollowing,
-          "connectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
+          "Height": null,
+          "Weight": null,
+          "Position": null,
+          "Age": null,
+          if(coachData.gender!=0 && coachData.gender != null)"Gender": coachData.gender,
+          "YearsOfExperience": yearsOfExperience ?? coachData.yearsOfExperience,
+          "Specialization": specialization ?? coachData.specializedSport,
+          "FoundationDate": null,
+          "Industry": null,
+          "IsOwner": true,
+          "IsFollowedByMe": currentProfile.isFollowing,
+          "ConnectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
         });
         break;
 
       case UserType.scout:
         final scoutData = currentProfile.scoutData!;
         body.addAll({
-          "height": null,
-          "weight": null,
-          "position": null,
-          "age": null,
-          "gender": scoutData.gender,
-          "yearsOfExperience": yearsOfExperience ?? scoutData.yearsOfExperience,
-          "specialization": specialization ?? scoutData.specializedSport,
-          "foundationDate": null,
-          "industry": null,
-          "isOwner": true,
-          "isFollowedByMe": currentProfile.isFollowing,
-          "connectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
+          "Height": null,
+          "Weight": null,
+          "Position": null,
+          "Age": null,
+          if(scoutData.gender!=0 && scoutData.gender != null)"Gender": scoutData.gender,
+          "YearsOfExperience": yearsOfExperience ?? scoutData.yearsOfExperience,
+          "Specialization": specialization ?? scoutData.specializedSport,
+          "FoundationDate": null,
+          "Industry": null,
+          "IsOwner": true,
+          "IsFollowedByMe": currentProfile.isFollowing,
+          "ConnectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
         });
         break;
 
       case UserType.club:
         final clubData = currentProfile.clubData!;
         body.addAll({
-          "height": null,
-          "weight": null,
-          "position": null,
-          "age": null,
-          "gender": null,
-          "yearsOfExperience": null,
-          "specialization": null,
-          "foundationDate": foundationDate ?? clubData.foundedYear,
-          "industry": null,
-          "isOwner": true,
-          "isFollowedByMe": currentProfile.isFollowing,
-          "connectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
+          "Height": null,
+          "Weight": null,
+          "Position": null,
+          "Age": null,
+          "YearsOfExperience": null,
+          "Specialization": null,
+          "FoundationDate": foundationDate ?? clubData.foundedYear,
+          "Industry": null,
+          "IsOwner": true,
+          "IsFollowedByMe": currentProfile.isFollowing,
+          "ConnectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
         });
         break;
 
       case UserType.institute:
         final instituteData = currentProfile.instituteData!;
         body.addAll({
-          "height": null,
-          "weight": null,
-          "position": null,
-          "age": null,
-          "gender": null,
-          "yearsOfExperience": null,
-          "specialization": null,
-          "foundationDate": null,
-          "industry": industry ?? instituteData.industry,
-          "isOwner": true,
-          "isFollowedByMe": currentProfile.isFollowing,
-          "connectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
+          "Height": null,
+          "Weight": null,
+          "Position": null,
+          "Age": null,
+          "YearsOfExperience": null,
+          "Specialization": null,
+          "FoundationDate": null,
+          "Industry": industry ?? instituteData.industry,
+          "IsOwner": true,
+          "IsFollowedByMe": currentProfile.isFollowing,
+          "ConnectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
         });
         break;
 
       case UserType.other:
         final otherData = currentProfile.otherData!;
         body.addAll({
-          "height": null,
-          "weight": null,
-          "position": null,
-          "age": null,
-          "gender": genderId ?? otherData.gender,
-          "yearsOfExperience": null,
-          "specialization": null,
-          "foundationDate": null,
-          "industry": null,
-          "isOwner": true,
-          "isFollowedByMe": currentProfile.isFollowing,
-          "connectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
+          "Height": null,
+          "Weight": null,
+          "Position": null,
+          "Age": null,
+          if(otherData.gender!=0 && otherData.gender != null)"Gender": genderId ?? otherData.gender,
+          "YearsOfExperience": null,
+          "Specialization": null,
+          "FoundationDate": null,
+          "Industry": null,
+          "IsOwner": true,
+          "IsFollowedByMe": currentProfile.isFollowing,
+          "ConnectionStatus": currentProfile.isConnected ? "Connected" : "NotConnected",
         });
         break;
     }
