@@ -83,7 +83,7 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
       final state = context.read<PostsBloc>().state;
-      if (state is PostsLoaded && state.hasNextPage) {
+      if (state is UserPostsLoaded && state.hasNextPage) {
         final currentState = context.read<PostsBloc>().state;
         if (currentState is! PostsLoadingMore) {
           context.read<PostsBloc>().add(LoadMorePosts());
@@ -145,7 +145,7 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
         actions: [
           if (widget.isCurrentUser)
             Padding(
-              padding: const EdgeInsets.only(right: 12.0), // adjust as needed
+              padding: const EdgeInsets.only(right: 12.0),
               child: IconSwitch(
                 value: widget.onlyInactive,
                 onChanged: (value) {
@@ -158,13 +158,21 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
                 inactiveIcon: Icons.visibility_off_sharp,
                 activeColor: theme.colorScheme.primary,
                 inactiveColor: Colors.grey[300]!,
-                width: 70.w, // you can tweak these numbers
+                width: 70.w,
                 height: 28.h,
               ),
             ),
         ],
       ),
       body: BlocConsumer<PostsBloc, PostsState>(
+        buildWhen: (previous, current) =>
+            current is PostsLoading ||
+            current is UserPostsLoaded ||
+            current is PostsError,
+        listenWhen: (previous, current) =>
+            current is PostDeleteSuccess ||
+            current is PostArchivedSuccess ||
+            current is PostsError,
         listener: (context, state) {
           if (state is PostDeleteSuccess) {
             Fluttertoast.showToast(
@@ -173,15 +181,16 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
             );
-            if (state is PostArchivedSuccess) {
-              Fluttertoast.showToast(
-                msg: string.postArchived,
-                backgroundColor: ColorManager.success,
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-              );
-            }
-          } else if (state is PostsError) {
+          }
+          if (state is PostArchivedSuccess) {
+            Fluttertoast.showToast(
+              msg: string.postArchived,
+              backgroundColor: ColorManager.success,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+            );
+          }
+          if (state is PostsError) {
             Fluttertoast.showToast(
               msg: state.message,
               backgroundColor: ColorManager.error,
@@ -294,7 +303,6 @@ class _ProfilePostsListViewState extends State<_ProfilePostsListView> {
                     post: post,
                     isCurrentUser: widget.isCurrentUser,
                     onDeleted: () {
-                      // Delete handled by PostsBloc automatically
                       _refreshPosts();
                     },
                   ),
