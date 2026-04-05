@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 // import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
@@ -520,6 +521,7 @@ class _PaymentOrchestratorState extends State<_PaymentOrchestrator> {
             context,
             MaterialPageRoute(
               builder: (_) => WebViewScreen(
+                prevScreen: AppRoutes.mainLayout,
                 url: state.redirectUrl,
                 title: strings.completePayment,
               ),

@@ -303,6 +303,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   ctx,
                   MaterialPageRoute(
                     builder: (_) => WebViewScreen(
+                      prevScreen: AppRoutes.mainLayout,
                       url: state.redirectUrl,
                       title: string.completePayment,
                     ),

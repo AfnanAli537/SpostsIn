@@ -152,6 +152,7 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                   ctx,
                   MaterialPageRoute(
                     builder: (_) => WebViewScreen(
+                      prevScreen: AppRoutes.mainLayout,
                       url: state.redirectUrl,
                       title: strings.completePayment,
                     ),

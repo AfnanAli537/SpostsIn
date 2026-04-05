@@ -30,7 +30,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Widget> _pages = [
+  late final List<Widget> _pages = [
     const HomePage(),
     const SearchScreen(),
     BlocProvider<ChatBloc>(
@@ -45,8 +45,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   void initState() {
     super.initState();
 
-    // FIX: Register the callback BEFORE calling connect(), so no notifications
-    // are missed if the connection resolves very quickly.
     final hub = GetIt.I<NotificationHubService>();
 
     hub.onReceiveNotification = (notification) {
@@ -61,10 +59,8 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
       debugPrint('🔌 SignalR state: $state');
     };
 
-    // Now connect — callback is already in place
     _initSignalR(hub);
 
-    // Fetch unread count on app start
     context.read<NotificationBloc>().add(const GetUnreadCountEvent());
     context.read<ProfileBloc>().add(LoadMyProfile());
   }
@@ -73,25 +69,22 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     try {
       await hub.connect();
     } catch (e) {
-      // connect() already handles retries internally — just log here
       debugPrint('❌ Initial SignalR connect error: $e');
     }
   }
 
   @override
   void dispose() {
-    // Optional: disconnect when the nav shell is disposed (e.g. on logout)
-    // GetIt.I<NotificationHubService>().disconnect();
     super.dispose();
   }
 
   void _onItemTapped(int index) {
+    // Unfocus any active text field when switching tabs
+    FocusScope.of(context).unfocus();
     setState(() => _currentIndex = index);
   }
 
   void _openNotifications() {
-    // Read the bloc HERE where CustomBottomNav context HAS the provider.
-    // The new route context cannot find BlocProvider<NotificationBloc>.
     final bloc = context.read<NotificationBloc>();
     Navigator.push(
       context,
@@ -140,7 +133,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     );
   }
 
-  // ─── Bell icon with unread badge ──────────────────────────────────────────
   Widget _buildNotificationBell() {
     return BlocBuilder<NotificationBloc, NotificationState>(
       buildWhen: (prev, curr) =>
@@ -194,14 +186,21 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       key: _scaffoldKey,
       extendBody: true,
       drawer: const AppDrawer(),
+      // ── Fix: unfocus everything when the drawer closes ─────────────────
+      onDrawerChanged: (isOpen) {
+        if (!isOpen) {
+          FocusScope.of(context).unfocus();
+        }
+      },
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return[
+          return [
             SliverAppBar(
               backgroundColor: theme.colorScheme.surface,
               elevation: 0,
@@ -209,7 +208,11 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
               snap: true,
               leading: IconButton(
                 icon: Icon(Icons.menu, color: theme.colorScheme.onSurface),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () {
+                  // Unfocus before opening drawer so search field is blurred
+                  FocusScope.of(context).unfocus();
+                  _scaffoldKey.currentState?.openDrawer();
+                },
               ),
               title: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -236,24 +239,37 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
             ),
           ];
         },
-        body: IndexedStack(index: _currentIndex, children: _pages),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: SizedBox(
-        width: 60.w,
-        height: 60.h,
-        child: FloatingActionButton(
-          shape: const CircleBorder(),
-          backgroundColor: theme.colorScheme.primary,
-          elevation: 4,
-          onPressed: () => showCreateOptionsBottomSheet(context),
-          child: Icon(
-            Icons.add,
-            color: theme.colorScheme.onPrimary,
-            size: 32.r,
-          ),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages
+              .asMap()
+              .entries
+              .map((e) => ExcludeFocus(
+                    excluding: _currentIndex != e.key,
+                    child: e.value,
+                  ))
+              .toList(),
         ),
       ),
+      // ── Fix: hide FAB when keyboard is open ────────────────────────────
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: isKeyboardOpen
+          ? null
+          : SizedBox(
+              width: 60.w,
+              height: 60.h,
+              child: FloatingActionButton(
+                shape: const CircleBorder(),
+                backgroundColor: theme.colorScheme.primary,
+                elevation: 4,
+                onPressed: () => showCreateOptionsBottomSheet(context),
+                child: Icon(
+                  Icons.add,
+                  color: theme.colorScheme.onPrimary,
+                  size: 32.r,
+                ),
+              ),
+            ),
       bottomNavigationBar: BottomAppBar(
         clipBehavior: Clip.antiAlias,
         shape: const CircularNotchedRectangle(),
