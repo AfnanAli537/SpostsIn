@@ -19,17 +19,16 @@ class SearchQueryChanged extends SearchEvent {
 
 class SearchWithFilters extends SearchEvent {
   final String query;
-  final SearchFilters filters;
+  final SearchFilters? filters; // nullable now
 
   const SearchWithFilters({
     required this.query,
-    required this.filters,
+    this.filters,
   });
 
   @override
   List<Object?> get props => [query, filters];
 }
-
 class LoadFilterOptions extends SearchEvent {}
 
 class ClearSearch extends SearchEvent {}

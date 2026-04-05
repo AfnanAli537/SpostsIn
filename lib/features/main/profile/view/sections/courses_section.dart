@@ -36,7 +36,7 @@ class CoursesSection extends StatelessWidget {
           child: ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
-            itemCount: courses.length > 6 ? 6 : courses.length,
+            itemCount: courses.length > 3 ? 3 : courses.length,
             itemBuilder: (context, index) {
               final course = courses[index];
               return Padding(

@@ -44,6 +44,6 @@ abstract class OpportunityInterface {
     required int sportTypeId,
     String? mediaFile,
   });
-
+  Future<void> toggleOpportunityVisibility({required String opportunityId});
   Future<void> deleteOpportunity({required String opportunityId});
 }

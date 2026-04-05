@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/core/constants/strings_keys.dart';
@@ -31,10 +30,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
 
   emit(LoginSuccess(response.token));
-  // ✅ Every catch block in every cubit should look like this
 } catch (e) {
   if (e is ApiException) {
-    emit(LoginFailure(generalError: e.message)); // raw server message
+    emit(LoginFailure(generalError: e.message)); 
   } else {
     emit(LoginFailure(generalError: StringKeys.unexpectedError));
   }

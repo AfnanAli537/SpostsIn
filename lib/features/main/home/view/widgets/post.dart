@@ -217,7 +217,20 @@ class _PostWidgetState extends State<PostWidget> {
       isDestructive: true,
     );
   }
+  void _showToggleConfirmation({required bool isArchiving}) {
+    final strings = S.of(context);
 
+    ConfirmationDialog.show(
+      context: context,
+      title: isArchiving?strings.archivePost:strings.restorePost,
+      message: isArchiving?strings.archivePostConfirmation:strings.restorePostConfirmation,
+      onConfirm: () {
+        context.read<PostsBloc>().add(TogglePostVisibility(postId: widget.post.id));
+        widget.onDeleted?.call();
+      },
+      confirmText: isArchiving?strings.archive:strings.restore,
+    );
+  }
   void _navigateToAuthorProfile() {
     Navigator.pushNamed(
       context,
@@ -269,12 +282,12 @@ class _PostWidgetState extends State<PostWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
                   onTap: _navigateToAuthorProfile,
                   child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                     children: [
                       Row(
@@ -320,123 +333,99 @@ class _PostWidgetState extends State<PostWidget> {
                     ],
                   ),
                 ),
-                // Visibility(
-                //   visible: widget.isCurrentUser ||_isVideo,
-                //   child: PopupMenuButton<String>(
-                //     icon: Icon(Icons.more_vert, color: theme.onSurface),
-                //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                //     onSelected: (value) async {
-                //       if (value == 'analyze') {
-                //         Fluttertoast.showToast(msg: strings.analyzeVideoComingSoon);
-                //       } else if (value == 'edit') {
-                //         Navigator.pushNamed(context, AppRoutes.profilePostsEditScreen, arguments: widget.post);
-                //       } else if (value == 'delete') {
-                //         _showDeleteConfirmation();
-                //       }
-                //     },
-                //     itemBuilder: (context) => [
-                //       if (_hasVideo)
-                //         PopupMenuItem(
-                //           value: 'analyze',
-                //           child: Row(
-                //             children: [
-                //               Icon(Icons.analytics_outlined, size: 20.sp),
-                //               SizedBox(width: 8.w),
-                //               Text(strings.analyzeVideo),
-                //             ],
-                //           ),
-                //         ),
-                //       if (widget.isCurrentUser) ...[
-                //         PopupMenuItem(
-                //           value: 'edit',
-                //           child: Row(
-                //             children: [
-                //               Icon(Icons.edit_outlined, size: 20.sp),
-                //               SizedBox(width: 8.w),
-                //               Text(strings.edit),
-                //             ],
-                //           ),
-                //         ),
-                //         PopupMenuItem(
-                //           value: 'delete',
-                //           child: Row(
-                //             children: [
-                //               Icon(Icons.delete_outline, size: 20.sp, color: Colors.red[700]),
-                //               SizedBox(width: 8.w),
-                //               Text(strings.delete, style: TextStyle(color: Colors.red[700])),
-                //             ],
-                //           ),
-                //         ),
-                //       ],
-                //     ],
-                //   ),
-                // ),
-               Visibility(
-                        visible: widget.isCurrentUser || _isVideo,
-                        child: PopupMenuButton<String>(
-                          icon: Icon(Icons.more_vert, color: theme.onSurface),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
+                Visibility(
+                  visible: widget.isCurrentUser || _isVideo,
+                  child: PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: theme.onSurface),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    onSelected: (value) async {
+                      if (value == 'analyze') {
+                        Fluttertoast.showToast(
+                          msg: strings.analyzeVideoComingSoon,
+                        );
+                      } else if (value == 'edit') {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.profilePostsEditScreen,
+                          arguments: widget.post,
+                        );
+                      } else if (value == 'delete') {
+                        _showDeleteConfirmation();
+                      }
+                      else if (value == 'archive') {
+                        _showToggleConfirmation(isArchiving: true);
+                      }
+                      else if (value == 'restore') {
+                        _showToggleConfirmation(isArchiving: false);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      if (_hasVideo)
+                        PopupMenuItem(
+                          value: 'analyze',
+                          child: Row(
+                            children: [
+                              Icon(Icons.analytics_outlined, size: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text(strings.analyzeVideo),
+                            ],
                           ),
-                          onSelected: (value) async {
-                            if (value == 'analyze') {
-                              Fluttertoast.showToast(
-                                msg: strings.analyzeVideoComingSoon,
-                              );
-                            } else if (value == 'edit') {
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.profilePostsEditScreen,
-                                arguments: widget.post,
-                              );
-                            } else if (value == 'delete') {
-                              _showDeleteConfirmation();
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            if (_hasVideo)
-                              PopupMenuItem(
-                                value: 'analyze',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.analytics_outlined, size: 20.sp),
-                                    SizedBox(width: 8.w),
-                                    Text(strings.analyzeVideo),
-                                  ],
-                                ),
+                        ),
+                      if (widget.isCurrentUser) ...[
+                        if(widget.post.isActive)
+                        PopupMenuItem(
+                          value: 'archive',
+                          child: Row(
+                            children: [
+                              Icon(Icons.archive_outlined, size: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text(strings.archive),
+                            ],
+                          ),
+                        )else
+                        PopupMenuItem(
+                          value: 'restore',
+                          child: Row(
+                            children: [
+                              Icon(Icons.restore_outlined, size: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text(strings.restore),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_outlined, size: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text(strings.edit),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.delete_outline,
+                                size: 20.sp,
+                                color: Colors.red[700],
                               ),
-                            if (widget.isCurrentUser) ...[
-                              PopupMenuItem(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit_outlined, size: 20.sp),
-                                    SizedBox(width: 8.w),
-                                    Text(strings.edit),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.delete_outline,
-                                      size: 20.sp,
-                                      color: Colors.red[700],
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    Text(
-                                      strings.delete,
-                                      style: TextStyle(color: Colors.red[700]),
-                                    ),
-                                  ],
-                                ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                strings.delete,
+                                style: TextStyle(color: Colors.red[700]),
                               ),
                             ],
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
+                    ],
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 16.h),
@@ -450,7 +439,7 @@ class _PostWidgetState extends State<PostWidget> {
                 fontStyle: _showTranslation && _translatedDesc != null
                     ? FontStyle.italic
                     : FontStyle.normal,
-                color: theme.onSurface
+                color: theme.onSurface,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
@@ -592,15 +581,39 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Widget _buildImageWidget() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.r),
-      child: Image.network(
-        widget.post.mediaUrl!,
-        width: double.infinity,
-        height: 200.h,
-        fit: BoxFit.cover,
-      ),
-    );
-  }
+ Widget _buildImageWidget() {
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(8.r),
+    child: Image.network(
+      widget.post.mediaUrl!,
+      width: double.infinity,
+      height: 200.h,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          color: Colors.grey[300],
+          height: 200.h,
+          child: Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
 }

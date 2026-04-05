@@ -34,6 +34,8 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
     on<UpdateOpportunity>(_onUpdateOpportunity);
     on<DeleteOpportunity>(_onDeleteOpportunity);
     on<FetchMyOpportunities>(_onFetchMyOpportunities);
+    on<ToggleOpportunityVisibility>(_onToggleOpportunityVisibility);
+    on<LoadMoreMyOpportunities>(_onLoadMoreMyOpportunities);
   }
 
   String? get currentUserId => prefs.getUserId();
@@ -286,23 +288,61 @@ Future<void> _onFetchMyOpportunities(
   Emitter<OpportunityState> emit,
 ) async {
   try {
-    emit(OpportunityLoading());
-    
+    // Emit loading states
+    if (event.page == 1) {
+      emit(MyOpportunitiesLoading());
+    } else {
+      final currentState = state;
+      if (currentState is MyOpportunitiesLoaded) {
+        emit(MyOpportunitiesLoadingMore(currentState.opportunities));
+      } else {
+        emit(MyOpportunitiesLoading());
+      }
+    }
+
     final response = await opportunityRepo.getMyOpportunities(
       showActive: event.showActive,
       page: event.page,
       pageSize: event.pageSize,
     );
-    
+
+    List<OpportunityModel> allOpps;
+    if (event.page == 1) {
+      allOpps = response.items;
+    } else {
+      final currentState = state;
+      if (currentState is MyOpportunitiesLoaded) {
+        allOpps = [...currentState.opportunities, ...response.items];
+      } else if (currentState is MyOpportunitiesLoadingMore) {
+        allOpps = [...currentState.currentOpportunities, ...response.items];
+      } else {
+        allOpps = response.items;
+      }
+    }
+
     emit(MyOpportunitiesLoaded(
-      opportunities: response.items,
+      opportunities: allOpps,
       hasMore: response.hasNextPage,
+      currentPage: event.page,
     ));
   } catch (e) {
     emit(OpportunityError(e is ApiException ? e.message : e.toString()));
   }
 }
 
+Future<void> _onLoadMoreMyOpportunities(
+  LoadMoreMyOpportunities event,
+  Emitter<OpportunityState> emit,
+) async {
+  final currentState = state;
+  if (currentState is MyOpportunitiesLoaded && currentState.hasMore) {
+    // Dispatch a FetchMyOpportunities with the next page
+    add(FetchMyOpportunities(
+      showActive: event.showActive,
+      page: currentState.currentPage + 1,
+      pageSize: 10, // use default or stored
+    ));
+  }}
 Future<void> _onUpdateOpportunity(
   UpdateOpportunity event,
   Emitter<OpportunityState> emit,
@@ -340,4 +380,20 @@ Future<void> _onDeleteOpportunity(
     emit(OpportunityError(e is ApiException ? e.message : e.toString()));
   }
 }
+
+Future<void> _onToggleOpportunityVisibility(
+  ToggleOpportunityVisibility event,
+  Emitter<OpportunityState> emit,
+) async {
+  try {
+    emit(OpportunityLoading());
+    
+    await opportunityRepo.toggleOpportunityVisibility(opportunityId:  event.opportunityId);
+    
+    emit(OpportunityToggeled(opportunityId: event.opportunityId));
+  } catch (e) {
+    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+  }
+}
+
 }
