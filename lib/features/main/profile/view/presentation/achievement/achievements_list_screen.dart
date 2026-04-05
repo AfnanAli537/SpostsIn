@@ -127,7 +127,7 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileLoading && _achievements.isEmpty) {
-              _buildShimmerLoading();
+            _buildShimmerLoading();
           }
           if (state is AchievementsLoaded) {
             setState(() {
@@ -204,7 +204,7 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
                   Icon(
                     Icons.emoji_events_outlined,
                     size: 64.sp,
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: theme.colorScheme.primary,
                   ),
                   SizedBox(height: 16.h),
                   Text(
@@ -212,7 +212,7 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
                         ? 'No achievements yet'
                         : 'No achievements',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: theme.colorScheme.onError,
                     ),
                   ),
                   if (widget.isCurrentUser) ...[
@@ -220,29 +220,29 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
                     Text(
                       'Add your first achievement',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: theme.colorScheme.onError,
                       ),
                     ),
                     SizedBox(height: 24.h),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                AchievementEditScreen(userId: widget.userId),
-                          ),
-                        );
-                        if (result == true) {
-                          _refreshAchievements();
-                        }
-                      },
-                      icon: const Icon(Icons.add),
-                      label: Text(
-                        // strings.addAchievement ??
-                        'Add Achievement',
-                      ),
-                    ),
+                    // ElevatedButton.icon(
+                    //   onPressed: () async {
+                    //     final result = await Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (_) =>
+                    //             AchievementEditScreen(userId: widget.userId),
+                    //       ),
+                    //     );
+                    //     if (result == true) {
+                    //       _refreshAchievements();
+                    //     }
+                    //   },
+                    //   icon: Icon(Icons.add, color: theme.colorScheme.onPrimary),
+                    //   label: Text(
+                    //     strings.addAchievement,
+                    //     style: TextStyle(color: theme.colorScheme.onPrimary),
+                    //   ),
+                    // ),
                   ],
                 ],
               ),
@@ -302,14 +302,14 @@ class _AchievementsListViewState extends State<_AchievementsListView> {
       ),
     );
   }
-  
+
   Widget _buildShimmerLoading() {
-  return ListView.separated(
-    itemCount: 5,
-    separatorBuilder: (context, index) => SizedBox(height: 8.h),
-    itemBuilder: (context, index) =>  _AchievementShimmerCard(),
-  );
-}
+    return ListView.separated(
+      itemCount: 5,
+      separatorBuilder: (context, index) => SizedBox(height: 8.h),
+      itemBuilder: (context, index) => _AchievementShimmerCard(),
+    );
+  }
 }
 
 class _AchievementCard extends StatelessWidget {
@@ -398,7 +398,6 @@ class _AchievementCard extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _AchievementShimmerCard extends StatelessWidget {
@@ -415,7 +414,11 @@ class _AchievementShimmerCard extends StatelessWidget {
               child: Column(
                 children: [
                   Container(width: 50.w, height: 12.h, color: Colors.white),
-                  Container(width: double.infinity, height: 16.h, color: Colors.white),
+                  Container(
+                    width: double.infinity,
+                    height: 16.h,
+                    color: Colors.white,
+                  ),
                   Container(width: 120.w, height: 12.h, color: Colors.white),
                 ],
               ),

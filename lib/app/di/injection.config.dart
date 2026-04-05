@@ -47,6 +47,8 @@ import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_
 import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
 import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
     as _i679;
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart'
+    as _i324;
 import 'package:sports_in/features/main/courses/data/data_sources/course_remote_data_source.dart'
     as _i8;
 import 'package:sports_in/features/main/courses/data/interface/i_course_data_source.dart'
@@ -259,6 +261,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i567.CoursesBloc>(
       () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i324.ChatBloc>(
+      () => _i324.ChatBloc(
+        repo: gh<_i503.ChatRepository>(),
+        hub: gh<_i679.ChatHubService>(),
+      ),
     );
     gh.factory<_i803.SearchBloc>(
       () => _i803.SearchBloc(gh<_i514.SearchRepo>()),

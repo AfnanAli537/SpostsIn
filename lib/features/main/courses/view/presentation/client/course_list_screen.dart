@@ -334,7 +334,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                     SizedBox(height: 16.h),
                     ElevatedButton(
                       onPressed: _fetchInitialCourses,
-                      child: Text(string.retry),
+                      child: Text(string.retry, style: TextStyle(color: theme.colorScheme.onPrimary)),
                     ),
                   ],
                 ),

@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/features/notitification/presentation/notifi_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
@@ -35,7 +38,8 @@ class AppDrawer extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.notifications_none_rounded,
                   title: string.notifications,
-                  onTap: () => Navigator.pop(context),
+                  onTap: (){Navigator.pop(context);
+                  _openNotifications(context);},
                   theme: theme,
                 ),
                 SizedBox(height: 12.h),
@@ -338,6 +342,16 @@ class AppDrawer extends StatelessWidget {
           (route) => false,
         );
       },
+    );
+  }
+
+  void _openNotifications(BuildContext context) {
+    final bloc = context.read<NotificationBloc>();
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (_) => NotificationScreen(notificationBloc: bloc),
+      ),
     );
   }
 }

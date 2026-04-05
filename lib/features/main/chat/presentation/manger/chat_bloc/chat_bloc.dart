@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
 import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart';
@@ -8,9 +9,16 @@ import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
 part 'chat_event.dart';
 part 'chat_state.dart';
 
+@injectable
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final ChatRepository _repo;
   final ChatHubService _hub;
+
+  bool _isClosed = false;
+
+  void _safeAdd(ChatEvent event) {
+    if (!_isClosed) add(event);
+  }
 
   ChatBloc({required ChatRepository repo, required ChatHubService hub})
     : _repo = repo,
@@ -291,9 +299,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       messageId: event.messageId,
       newContent: event.newContent,
     );
-    result.fold((e) => emit(state.copyWith(sendError: e.message)), (_) {
-      state.copyWith(sendError: null);
-    });
+    result.fold(
+      (e) => emit(state.copyWith(sendError: e.message)),
+      (_) => emit(state.copyWith(sendError: null)),
+    );
   }
 
   Future<void> _onDeleteMessage(
@@ -310,9 +319,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final result = await _repo.deleteMessage(messageId: event.messageId);
     result.fold(
       (e) => emit(state.copyWith(messages: before, sendError: e.message)),
-      (_) {
-        state.copyWith(sendError: null);
-      },
+      (_) => emit(state.copyWith(sendError: null)),
     );
   }
 
@@ -359,25 +366,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     // Register hub callbacks first so we get connection state and messages
     _hub.onConnectionStateChanged = (connectionState) =>
-        add(HubConnectionStateChangedEvent(connectionState: connectionState));
+        _safeAdd(HubConnectionStateChangedEvent(connectionState: connectionState));
     _hub.onReceiveMessage = (message) =>
-        add(HubMessageReceivedEvent(message: message));
+        _safeAdd(HubMessageReceivedEvent(message: message));
     _hub.onMessageEdited = (id, content) =>
-        add(HubMessageEditedEvent(messageId: id, newContent: content));
-    _hub.onMessageDeleted = (id) => add(HubMessageDeletedEvent(messageId: id));
+        _safeAdd(HubMessageEditedEvent(messageId: id, newContent: content));
+    _hub.onMessageDeleted = (id) =>
+        _safeAdd(HubMessageDeletedEvent(messageId: id));
     _hub.onUserTyping = (userId, isTyping) =>
-        add(HubUserTypingEvent(userId: userId, isTyping: isTyping));
+        _safeAdd(HubUserTypingEvent(userId: userId, isTyping: isTyping));
     _hub.onMessageStatusChanged = (id, status) =>
-        add(HubMessageStatusChangedEvent(messageId: id, status: status));
+        _safeAdd(HubMessageStatusChangedEvent(messageId: id, status: status));
     _hub.onConversationSeen = (senderId, groupId) =>
-        add(HubConversationSeenEvent(senderId: senderId, groupId: groupId));
-    _hub.onUserStatusChanged = (userId, isOnline, timestamp) => add(
-      HubUserStatusChangedEvent(
-        userId: userId,
-        isOnline: isOnline,
-        timestamp: timestamp,
-      ),
-    );
+        _safeAdd(HubConversationSeenEvent(senderId: senderId, groupId: groupId));
+    _hub.onUserStatusChanged = (userId, isOnline, timestamp) =>
+        _safeAdd(HubUserStatusChangedEvent(
+          userId: userId,
+          isOnline: isOnline,
+          timestamp: timestamp,
+        ));
 
     try {
       await _hub.connect();
@@ -468,8 +475,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     emit(state.copyWith(messages: updatedMessages, typingInfo: updatedTyping));
 
-    // Refresh chats so unread counters & last message stay in sync
-    add(LoadChatsEvent(isRefresh: true));
+    _safeAdd(LoadChatsEvent(isRefresh: true));
   }
 
   void _onHubMessageEdited(
@@ -525,7 +531,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         .map((m) => m.isMe ? m.copyWith(status: 3) : m)
         .toList();
     emit(state.copyWith(messages: updatedMessages));
-    add(LoadChatsEvent(isRefresh: true));
+    _safeAdd(LoadChatsEvent(isRefresh: true));
   }
 
   void _onHubUserStatusChanged(
@@ -571,9 +577,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         targetId: event.targetId,
         isTyping: event.isTyping,
       );
-    } catch (_) {
-      // Ignore hub errors for typing; no state change needed
-    }
+    } catch (_) {}
   }
 
   Future<void> _onNotifySeen(
@@ -589,6 +593,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   @override
   Future<void> close() async {
+    _isClosed = true;
+
+    // Null out all hub callbacks synchronously BEFORE the async disconnect,
+    // so no in-flight callback can call add() on the already-closing bloc.
+    _hub.onConnectionStateChanged = null;
+    _hub.onReceiveMessage = null;
+    _hub.onMessageEdited = null;
+    _hub.onMessageDeleted = null;
+    _hub.onUserTyping = null;
+    _hub.onMessageStatusChanged = null;
+    _hub.onConversationSeen = null;
+    _hub.onUserStatusChanged = null;
+
     await _hub.disconnect();
     return super.close();
   }

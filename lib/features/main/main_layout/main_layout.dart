@@ -29,7 +29,7 @@ class CustomBottomNav extends StatefulWidget {
 class _CustomBottomNavState extends State<CustomBottomNav> {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  final FocusNode _focusNode = FocusNode();
   late final List<Widget> _pages = [
     const HomePage(),
     const SearchScreen(),
@@ -50,8 +50,8 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     hub.onReceiveNotification = (notification) {
       if (!mounted) return;
       context.read<NotificationBloc>().add(
-            RealtimeNotificationReceivedEvent(notification: notification),
-          );
+        RealtimeNotificationReceivedEvent(notification: notification),
+      );
     };
 
     hub.onConnectionStateChanged = (state) {
@@ -192,9 +192,10 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
       key: _scaffoldKey,
       extendBody: true,
       drawer: const AppDrawer(),
-      // ── Fix: unfocus everything when the drawer closes ─────────────────
       onDrawerChanged: (isOpen) {
-        if (!isOpen) {
+        if (isOpen) {
+          // Dismiss keyboard as soon as the drawer starts opening
+          _focusNode.unfocus();
           FocusScope.of(context).unfocus();
         }
       },
@@ -233,9 +234,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
                   ),
                 ],
               ),
-              actions: [
-                _buildNotificationBell(),
-              ],
+              actions: [_buildNotificationBell()],
             ),
           ];
         },
@@ -244,10 +243,12 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
           children: _pages
               .asMap()
               .entries
-              .map((e) => ExcludeFocus(
-                    excluding: _currentIndex != e.key,
-                    child: e.value,
-                  ))
+              .map(
+                (e) => ExcludeFocus(
+                  excluding: _currentIndex != e.key,
+                  child: e.value,
+                ),
+              )
               .toList(),
         ),
       ),

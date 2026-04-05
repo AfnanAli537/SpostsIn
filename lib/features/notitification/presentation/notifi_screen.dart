@@ -8,6 +8,7 @@ import 'package:sports_in/features/main/opportunity/view/presentation/details.da
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_event.dart';
+import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_state.dart';
 import 'package:sports_in/features/notitification/data/model/notifi_model.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 
@@ -28,34 +29,20 @@ const _opportunityTypes = {
 const _connectionTypes = {'ConnectionRequest', 'GroupInvitation'};
 
 class NotificationScreen extends StatelessWidget {
-  /// THE FIX: Accept the existing NotificationBloc as a constructor parameter.
-  ///
-  /// WHY: Navigator.push() creates a brand-new route with its own BuildContext
-  /// that is completely outside the BlocProvider tree of CustomBottomNav.
-  /// Calling context.read<NotificationBloc>() inside build() of this screen
-  /// throws ProviderNotFoundException because that context has no ancestor
-  /// BlocProvider<NotificationBloc>.
-  ///
-  /// By passing the bloc explicitly from the CALLER (CustomBottomNav) where
-  /// the context DOES have the provider, we reuse the exact same instance that
-  /// receives SignalR real-time events — so this screen updates live.
   final NotificationBloc notificationBloc;
 
   const NotificationScreen({super.key, required this.notificationBloc});
 
   @override
   Widget build(BuildContext context) {
-    // Trigger a fresh load on the shared bloc instance
     notificationBloc
       ..add(const GetNotificationsEvent())
       ..add(const GetUnreadCountEvent());
 
     return MultiBlocProvider(
       providers: [
-        // BlocProvider.value reuses the instance WITHOUT closing it on pop —
-        // correct because CustomBottomNav (the owner) is still alive
         BlocProvider.value(value: notificationBloc),
-        // ConnectionsBloc is only needed inside this screen, create fresh
+        // Fresh ConnectionsBloc — works in standalone mode (no LoadConnections needed)
         BlocProvider(create: (_) => GetIt.I<ConnectionsBloc>()),
       ],
       child: const _NotificationView(),
@@ -211,13 +198,27 @@ class _NotificationViewState extends State<_NotificationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bgColor,
-      appBar: _buildAppBar(),
-      body: Column(children: [
-        _buildCategoryBar(),
-        Expanded(child: _buildBody()),
-      ]),
+    // Listen for ConnectionsBloc errors (e.g. failed accept/reject)
+    return BlocListener<ConnectionsBloc, ConnectionsState>(
+      listener: (context, state) {
+        if (state is ConnectionsActionError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: _bgColor,
+        appBar: _buildAppBar(),
+        body: Column(children: [
+          _buildCategoryBar(),
+          Expanded(child: _buildBody()),
+        ]),
+      ),
     );
   }
 
@@ -577,7 +578,7 @@ class _DefaultTile extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Connection Tile — stateful for loading / done feedback
+// Connection Tile
 // ─────────────────────────────────────────────────────────────────────────────
 class _ConnectionTile extends StatefulWidget {
   final NotificationModel n;
@@ -684,7 +685,16 @@ class _ConnectionTileState extends State<_ConnectionTile> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 10),
-                    _buildActionArea(),
+                    // Listen to ConnectionsBloc for error feedback on this tile
+                    BlocListener<ConnectionsBloc, ConnectionsState>(
+                      listener: (context, state) {
+                        if (state is ConnectionsActionError && mounted) {
+                          // Revert the tile's local optimistic status on failure
+                          setState(() => _actionStatus = null);
+                        }
+                      },
+                      child: _buildActionArea(),
+                    ),
                   ],
                 ),
               ),

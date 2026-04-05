@@ -19,7 +19,6 @@ class RegisterLists {
         s.volleyball,
         s.handball,
         s.teakwando,
-        s.gymnastics,
 
       ];
 
@@ -29,7 +28,6 @@ class RegisterLists {
         s.volleyballer,
         s.handballPlayer,
         s.teakwandoPlayer,
-        s.gymnast,
       ];
 
   static List<String> positionOptions(S s, String? sport) {

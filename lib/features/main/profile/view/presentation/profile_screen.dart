@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/my_ads_screen.dart';
+import 'package:sports_in/features/main/chat/data/models/chat_models.dart';
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
+import 'package:sports_in/features/main/chat/presentation/view/chat_view.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
@@ -195,13 +200,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileHeader(
-              profile: profile,
-              isOwnProfile: profile.isOwner,
-              theme: theme,
-              onEditPressed: profile.isOwner
-                  ? () => _navigateToEditProfile(context)
-                  : null,
+  profile: profile,
+  isOwnProfile: profile.isOwner,
+  theme: theme,
+  onEditPressed: profile.isOwner
+      ? () => _navigateToEditProfile(context)
+      : null,
+      onchat: !profile.isOwner
+    ? () async {
+        final sharedPref = SharedPref(await SharedPreferences.getInstance());
+        final currentUserId = sharedPref.getUserId();
+        if (currentUserId == null) return;
+
+        final chatModel = ChatModel(
+          id: profile.id,
+          title: profile.name,
+          isGroup: false,
+          members: [],
+          lastMessage: null,
+          lastMessageTime: null,
+          unreadCount: 0,
+          isOnline: false,
+          groupPhoto: profile.profileImage,
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider(          // ← create, not .value
+              create: (_) => getIt<ChatBloc>(),     // ← fresh instance
+              child: ChatView(
+                chat: chatModel,
+                currentUserId: currentUserId,
+              ),
             ),
+          ),
+        );
+      }
+    : null,
+),
             ProfileDescription(description: profile.description),
             SizedBox(height: 8.h),
             ...ProfileSectionFactory.buildSections(
