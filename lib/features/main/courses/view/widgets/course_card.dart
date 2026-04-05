@@ -494,7 +494,7 @@ class _PaymentOrchestratorState extends State<_PaymentOrchestrator> {
       // handled by the listener). We can safely pop here because if credit
       // card is in flight the listener below will still fire before this
       // context is gone.
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
     }
   }
 
