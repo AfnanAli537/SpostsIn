@@ -21,6 +21,7 @@ class PlayerDataSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Column(
@@ -33,7 +34,7 @@ class PlayerDataSection extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 16.w),
+          SizedBox(width: 12.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +64,7 @@ class PlayerDataSection extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
           ),
-          SizedBox(width: 18.w),
+          SizedBox(width: 6.w),
           Expanded(
             child: Text(
               value,

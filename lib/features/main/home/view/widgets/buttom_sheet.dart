@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/create_add_screen.dart';
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
+import 'package:sports_in/features/main/courses/view/presentation/provider/create_course_screen.dart';
 import 'package:sports_in/features/main/home/data/repo/posts_repo.dart';
 import 'package:sports_in/features/main/home/view/presentation/uploadposts.dart';
 import 'package:sports_in/features/main/home/view/widgets/option_card.dart';
@@ -19,7 +23,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = S.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.r)),
@@ -42,6 +46,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
+                // ── Create Post ──────────────────────────────────────────────
                 buildOptionCard(
                   icon: Icons.edit_note,
                   iconColor: const Color(0xFFFFA726),
@@ -52,7 +57,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                          create: (_) => PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
+                          create: (_) =>
+                              PostsBloc(postRepo: getIt<PostsRepositoryImpl>()),
                           child: const UploadContentScreen(),
                         ),
                       ),
@@ -60,37 +66,74 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 16.h),
+
+                // ── Create Achievement ───────────────────────────────────────
                 buildOptionCard(
                   icon: Icons.star,
                   iconColor: const Color(0xFFFFEE58),
                   title: strings.createAchievement,
                   onTap: () async {
                     final sharedPref = getIt<SharedPref>();
-                    // final result =
-                      await Navigator.push(
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => AchievementEditScreen(userId: sharedPref.getUserId()!),
+                        builder: (_) => AchievementEditScreen(
+                          userId: sharedPref.getUserId()!,
+                        ),
                       ),
                     );
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
+                    if (context.mounted) Navigator.pop(context);
                   },
                 ),
                 SizedBox(height: 16.h),
+
+                // ── Create Course (coach / club / institute only) ─────────────
                 FutureBuilder(
                   future: getIt<SharedPref>().getUserFromPrefs(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return const SizedBox.shrink();
+                    final userType =
+                        snapshot.data!.userType?.toLowerCase();
+                    final canCreate = userType == 'coach' ||
+                        userType == 'club' ||
+                        userType == 'institute';
+                    return Visibility(
+                      visible: canCreate,
+                      child: Column(
+                        children: [
+                          buildOptionCard(
+                            icon: Icons.school_outlined,
+                            iconColor: const Color(0xFF66BB6A),
+                            title: 'Create Course',
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CreateCourseScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+                        ],
+                      ),
+                    );
+                  },
+                ),
 
-                    final userType = snapshot.data!.userType?.toLowerCase();
-                    final canCreateOpportunity = userType == 'coach' ||
+                // ── Create Opportunity (coach / scout / club only) ────────────
+                FutureBuilder(
+                  future: getIt<SharedPref>().getUserFromPrefs(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+                    final userType =
+                        snapshot.data!.userType?.toLowerCase();
+                    final canCreate = userType == 'coach' ||
                         userType == 'scout' ||
                         userType == 'club';
-
                     return Visibility(
-                      visible: canCreateOpportunity,
+                      visible: canCreate,
                       child: buildOptionCard(
                         icon: Icons.campaign,
                         iconColor: const Color(0xFF90CAF9),
@@ -102,7 +145,8 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => BlocProvider(
                                 create: (_) => OpportunityBloc(
-                                  opportunityRepo: getIt<OpportunityReposatory>(),
+                                  opportunityRepo:
+                                      getIt<OpportunityReposatory>(),
                                 ),
                                 child: const AddOpportunityScreen(),
                               ),
@@ -113,38 +157,52 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                     );
                   },
                 ),
+
+                // spacing after Opportunity card when visible
                 FutureBuilder(
                   future: getIt<SharedPref>().getUserFromPrefs(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return const SizedBox.shrink();
-
-                    final userType = snapshot.data!.userType?.toLowerCase();
-                    final canCreateOpportunity = userType == 'coach' ||
+                    final userType =
+                        snapshot.data!.userType?.toLowerCase();
+                    final canCreate = userType == 'coach' ||
                         userType == 'scout' ||
-                        userType == 'club';
-
+                        userType == 'club' ||
+                        userType == 'institute';
                     return Visibility(
-                      visible: canCreateOpportunity,
+                      visible: canCreate,
                       child: SizedBox(height: 16.h),
                     );
                   },
                 ),
+
+                // ── Create Advertisement ─────────────────────────────────────
                 buildOptionCard(
-                  icon: Icons.work_outline,
+                  icon: Icons.campaign_outlined,
                   iconColor: const Color(0xFFBCAAA4),
                   title: strings.createAdvertisement,
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // close the bottom sheet first
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) =>
+                              AdsBloc(adsRepo: getIt<AdsRepositoryImpl>()),
+                          child: const CreateAdScreen(),
+                        ),
+                      ),
+                    );
                   },
                 ),
                 SizedBox(height: 16.h),
+
+                // ── Video Analysis ───────────────────────────────────────────
                 buildOptionCard(
                   icon: Icons.play_arrow,
                   iconColor: const Color(0xFF9CCC65),
                   title: strings.makeVideoAnalysis,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                  onTap: () => Navigator.pop(context),
                 ),
                 SizedBox(height: 30.h),
               ],
@@ -154,7 +212,6 @@ class CreateOptionsBottomSheet extends StatelessWidget {
       ),
     );
   }
-
 }
 
 void showCreateOptionsBottomSheet(BuildContext context) {

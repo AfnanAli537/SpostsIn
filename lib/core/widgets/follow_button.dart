@@ -8,12 +8,12 @@ class FollowButton extends StatelessWidget {
   final String followText;
 
   const FollowButton({
-    Key? key,
+    super.key,
     required this.isFollowing,
     required this.onPressed,
     this.followingText = 'Following',
     this.followText = 'Follow',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

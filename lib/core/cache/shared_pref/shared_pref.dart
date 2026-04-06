@@ -96,14 +96,18 @@ class SharedPref {
   ///user data
 
   Future<void> saveUserToPrefs(LoginResponse response) async {
-    if (response.token != null)
+    if (response.token != null) {
       await _prefs.setString('Token', response.token!);
-    if (response.userId != null)
+    }
+    if (response.userId != null) {
       await _prefs.setString('userId', response.userId!);
-    if (response.userType != null)
+    }
+    if (response.userType != null) {
       await _prefs.setString('userType', response.userType!);
-    if (response.email != null)
+    }
+    if (response.email != null) {
       await _prefs.setString('email', response.email!);
+    }
     if (response.name != null) {
       await _prefs.setString('name', jsonEncode(response.name!.toJson()));
     }
@@ -140,5 +144,70 @@ class SharedPref {
       name: name,
       expiresAt: expiresAt,
     );
+  }
+
+  static const String _accountsListKey = 'saved_accounts';
+  static const String _activeAccountKey = 'active_account_id';
+
+  Future<void> saveAccount(LoginResponse response) async {
+    await saveUserToPrefs(response);
+
+    final accountsList = await getSavedAccounts();
+
+    final existingIndex = accountsList.indexWhere(
+      (acc) => acc.userId == response.userId,
+    );
+
+    if (existingIndex != -1) {
+      accountsList[existingIndex] = response;
+    } else {
+      accountsList.add(response);
+    }
+
+    final accountsJson = accountsList.map((acc) => acc.toJson()).toList();
+    await _prefs.setString(_accountsListKey, jsonEncode(accountsJson));
+
+    await _prefs.setString(_activeAccountKey, response.userId!);
+  }
+
+  Future<List<LoginResponse>> getSavedAccounts() async {
+    final accountsStr = _prefs.getString(_accountsListKey);
+    if (accountsStr == null) return [];
+
+    try {
+      final List<dynamic> accountsJson = jsonDecode(accountsStr);
+      return accountsJson.map((json) => LoginResponse.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> switchAccount(String userId) async {
+    final accounts = await getSavedAccounts();
+    final account = accounts.firstWhere(
+      (acc) => acc.userId == userId,
+      orElse: () => throw Exception('Account not found'),
+    );
+
+    await saveUserToPrefs(account);
+    await _prefs.setString(_activeAccountKey, userId);
+  }
+
+  Future<void> removeAccount(String userId) async {
+    final accounts = await getSavedAccounts();
+    accounts.removeWhere((acc) => acc.userId == userId);
+
+    final accountsJson = accounts.map((acc) => acc.toJson()).toList();
+    await _prefs.setString(_accountsListKey, jsonEncode(accountsJson));
+
+    final activeAccount = _prefs.getString(_activeAccountKey);
+    if (activeAccount == userId) {
+      await clearToken();
+      await _prefs.remove(_activeAccountKey);
+    }
+  }
+
+  String? getActiveAccountId() {
+    return _prefs.getString(_activeAccountKey);
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -126,7 +128,7 @@ class _SearchViewState extends State<_SearchView> {
                 _performSearch();
               },
               decoration: InputDecoration(
-                hintText: strings.search ?? 'Search',
+                hintText: strings.search,
                 prefixIcon: Icon(Icons.search, size: 20.sp),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.tune, size: 20.sp),
@@ -284,7 +286,7 @@ class _SearchViewState extends State<_SearchView> {
                   ),
                 ),
                 child: Text(
-                  strings.search ?? 'Search',
+                  strings.search,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -298,25 +300,25 @@ class _SearchViewState extends State<_SearchView> {
     ));
   }
 
-  Widget _buildFilterHeader(ThemeData theme, S strings) {
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 20.sp),
-          onPressed: () {},
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-        SizedBox(width: 8.w),
-        Text(
-          'Filter',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildFilterHeader(ThemeData theme, S strings) {
+  //   return Row(
+  //     children: [
+  //       IconButton(
+  //         icon: Icon(Icons.arrow_back_ios, size: 20.sp),
+  //         onPressed: () {},
+  //         padding: EdgeInsets.zero,
+  //         constraints: const BoxConstraints(),
+  //       ),
+  //       SizedBox(width: 8.w),
+  //       Text(
+  //         'Filter',
+  //         style: theme.textTheme.titleMedium?.copyWith(
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildSectionLabel(String label, ThemeData theme) {
     return Padding(
