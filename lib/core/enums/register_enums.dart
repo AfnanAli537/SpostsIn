@@ -1,9 +1,5 @@
-
 /// Enum for Gender
-enum Gender {
-  male,
-  female,
-}
+enum Gender { male, female }
 
 /// Enum for Sport Types
 enum SportType {

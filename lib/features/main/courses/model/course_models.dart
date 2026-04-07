@@ -1,9 +1,3 @@
-// ✅ CORRECTED: ALL durations in SECONDS (not minutes or hours!)
-// API specification:
-// - lesson.duration: SECONDS
-// - lesson.watchedTime: SECONDS  
-// - course.totalDurationHours: HOURS (only this one!)
-
 import 'dart:io';
 
 class CourseModel {
@@ -17,9 +11,9 @@ class CourseModel {
   final CourseOwner owner;
   final bool isEnrolled;
   final bool isOwner;
-  final int progress; // 0-100
+  final num progress;
   final int lessonsCount;
-  final double totalDurationHours; // ✅ HOURS (only this field!)
+  final double totalDurationHours;
   final int enrolledUsersCount;
 
   CourseModel({
@@ -55,9 +49,10 @@ class CourseModel {
       ),
       isEnrolled: json['isEnrolled'] as bool? ?? false,
       isOwner: json['isOwner'] as bool? ?? false,
-      progress: json['progress'] as int? ?? 0,
+      progress: json['progress'] as num? ?? 0,
       lessonsCount: json['lessonsCount'] as int? ?? 0,
-      totalDurationHours: (json['totalDurationHours'] as num?)?.toDouble() ?? 0.0,
+      totalDurationHours:
+          (json['totalDurationHours'] as num?)?.toDouble() ?? 0.0,
       enrolledUsersCount: json['enrolledUsersCount'] as int? ?? 0,
     );
   }
@@ -83,7 +78,6 @@ class CourseModel {
 
   bool get isFree => price == 0;
 
-  // ✅ Format course total duration (input: hours)
   String get formattedDuration {
     if (totalDurationHours < 1) {
       final minutes = (totalDurationHours * 60).round();
@@ -91,9 +85,7 @@ class CourseModel {
     }
     final hours = totalDurationHours.floor();
     final minutes = ((totalDurationHours - hours) * 60).round();
-    if (minutes == 0) {
-      return '${hours}h';
-    }
+    if (minutes == 0) return '${hours}h';
     return '${hours}h ${minutes}min';
   }
 }
@@ -131,10 +123,10 @@ class LessonModel {
   final String title;
   final String? description;
   final String? videoUrl;
-  final double duration; // ✅ SECONDS (not minutes!)
+  final double duration;
   final int order;
   final bool isWatched;
-  final double watchedTime; // ✅ SECONDS (not minutes!)
+  final double watchedTime;
   final double videoZoomScale;
 
   LessonModel({
@@ -177,42 +169,57 @@ class LessonModel {
     };
   }
 
-  // ✅ Format lesson duration (input: seconds)
+  LessonModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? videoUrl,
+    double? duration,
+    int? order,
+    bool? isWatched,
+    double? watchedTime,
+    double? videoZoomScale,
+  }) {
+    return LessonModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      videoUrl: videoUrl ?? this.videoUrl,
+      duration: duration ?? this.duration,
+      order: order ?? this.order,
+      isWatched: isWatched ?? this.isWatched,
+      watchedTime: watchedTime ?? this.watchedTime,
+      videoZoomScale: videoZoomScale ?? this.videoZoomScale,
+    );
+  }
+
   String get formattedDuration {
     final totalSeconds = duration.round();
-    if (totalSeconds < 60) {
-      return '${totalSeconds}s';
-    }
+    if (totalSeconds < 60) return '${totalSeconds}s';
     if (totalSeconds < 3600) {
       final minutes = (totalSeconds / 60).floor();
       final seconds = totalSeconds % 60;
-      if (seconds == 0) {
-        return '${minutes}min';
-      }
+      if (seconds == 0) return '${minutes}min';
       return '${minutes}min ${seconds}s';
     }
     final hours = (totalSeconds / 3600).floor();
     final minutes = ((totalSeconds % 3600) / 60).floor();
-    if (minutes == 0) {
-      return '${hours}h';
-    }
+    if (minutes == 0) return '${hours}h';
     return '${hours}h ${minutes}min';
   }
 
-  // Progress percentage
   double get progressPercentage {
     if (duration == 0) return 0.0;
     return (watchedTime / duration * 100).clamp(0.0, 100.0);
   }
 
-  // ✅ For video player: already in seconds!
   int get durationInSeconds => duration.round();
   int get watchedTimeInSeconds => watchedTime.round();
 }
 
 class EnrolledUserModel {
   final DateTime enrolledAt;
-  final int progress;
+  final num progress;
   final String userId;
   final String fullName;
   final String? profilePictureUrl;
@@ -228,7 +235,7 @@ class EnrolledUserModel {
   factory EnrolledUserModel.fromJson(Map<String, dynamic> json) {
     return EnrolledUserModel(
       enrolledAt: DateTime.parse(json['enrolledAt'] as String),
-      progress: json['progress'] as int? ?? 0,
+      progress: json['progress'] as num? ?? 0,
       userId: json['userId'] as String? ?? '',
       fullName: json['fullName'] as String? ?? '',
       profilePictureUrl: json['profilePictureUrl'] as String?,
@@ -265,9 +272,11 @@ class RevenueReportModel {
     return RevenueReportModel(
       totalAllTimeRevenue:
           (json['totalAllTimeRevenue'] as num?)?.toDouble() ?? 0.0,
-      totalMonthRevenue: (json['totalMonthRevenue'] as num?)?.toDouble() ?? 0.0,
+      totalMonthRevenue:
+          (json['totalMonthRevenue'] as num?)?.toDouble() ?? 0.0,
       weeklyBreakdown: (json['weeklyBreakdown'] as List<dynamic>?)
-              ?.map((e) => WeeklyRevenueModel.fromJson(e as Map<String, dynamic>))
+              ?.map((e) =>
+                  WeeklyRevenueModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       month: json['month'] as int? ?? 0,
@@ -290,10 +299,7 @@ class WeeklyRevenueModel {
   final String weekLabel;
   final double revenue;
 
-  WeeklyRevenueModel({
-    required this.weekLabel,
-    required this.revenue,
-  });
+  WeeklyRevenueModel({required this.weekLabel, required this.revenue});
 
   factory WeeklyRevenueModel.fromJson(Map<String, dynamic> json) {
     return WeeklyRevenueModel(
@@ -302,15 +308,9 @@ class WeeklyRevenueModel {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'weekLabel': weekLabel,
-      'revenue': revenue,
-    };
-  }
+  Map<String, dynamic> toJson() => {'weekLabel': weekLabel, 'revenue': revenue};
 }
 
-// Paginated response wrapper
 class PaginatedCoursesResponse {
   final List<CourseModel> items;
   final int totalCount;
@@ -358,7 +358,6 @@ class PaginatedCoursesResponse {
   }
 }
 
-// Request models for creating/updating
 class CreateCourseRequest {
   final String title;
   final String description;
@@ -381,7 +380,7 @@ class UpdateCourseRequest {
   final String description;
   final double price;
   final int sportTypeId;
-  final File? thumbnailFile;
+  final dynamic thumbnail;
 
   UpdateCourseRequest({
     required this.id,
@@ -389,14 +388,14 @@ class UpdateCourseRequest {
     required this.description,
     required this.price,
     required this.sportTypeId,
-    this.thumbnailFile,
+    this.thumbnail,
   });
 }
 
 class CreateLessonRequest {
   final String title;
   final String description;
-  final double duration; // ✅ IN SECONDS
+  final double duration;
   final int? order;
   final File videoFile;
 
@@ -413,9 +412,9 @@ class UpdateLessonRequest {
   final String lessonId;
   final String title;
   final String description;
-  final double duration; // ✅ IN SECONDS
+  final double duration;
   final int order;
-  final File? videoFile;
+  final dynamic video;
 
   UpdateLessonRequest({
     required this.lessonId,
@@ -423,12 +422,12 @@ class UpdateLessonRequest {
     required this.description,
     required this.duration,
     required this.order,
-    this.videoFile,
+    this.video,
   });
 }
 
 class UpdateProgressRequest {
-  final double watchedTime; // ✅ IN SECONDS
+  final double watchedTime;
   final bool isWatched;
   final double zoomScale;
 

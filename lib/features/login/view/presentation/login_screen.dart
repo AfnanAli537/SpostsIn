@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/login/view/widgets/circular_container.dart';
 import 'package:sports_in/core/widgets/auth_title.dart';
@@ -37,6 +40,7 @@ class LoginScreen extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
+    final _sharedpref =getIt<SharedPref>();
     final string = S.of(context);
     final themeCubit = context.watch<ThemeCubit>();
 
@@ -48,42 +52,35 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: BlocConsumer<LoginBloc, LoginState>(
+      body:MultiBlocListener(
+       
+            listeners: [
+      // ── LoginBloc listener ──
+      BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
-          //           if (state is TokenExpired) {
-          //   Navigator.pushReplacementNamed(context, AppRoutes.login);
-          //          Fluttertoast.showToast(
-          //               msg:string.tokenEX ,
-          //               backgroundColor: Colors.red,
-          //               toastLength: Toast.LENGTH_LONG,
-          //               gravity: ToastGravity.TOP,
-          //             );
-          // }
           if (state is LoginSuccess) {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
-
-            // Navigator.pushReplacementNamed(context, AppRoutes.mainLayout);
             Fluttertoast.showToast(
               msg: string.loginSuccess,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
+            context.read<PaymentBloc>().add(
+              FetchMySubscriptionEvent(userId: _sharedpref.getUserId()!),
+            );
           } else if (state is LoginFailure) {
             _showError(context, state.generalError!);
-          }
-          if (state is GoogleSignInSuccess) {
+          } else if (state is GoogleSignInSuccess) {
             Fluttertoast.showToast(
-              msg: "sucessfull sign in with google",
+              msg: "successful sign in with google",
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-               Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.mainLayout,
+              (route) => false,
+            );
           } else if (state is GoogleSignInFailure) {
             Fluttertoast.showToast(
               msg: state.errorKey,
@@ -93,7 +90,36 @@ class LoginScreen extends StatelessWidget {
             );
           }
         },
-        builder: (context, state) {
+      ),
+      BlocListener<PaymentBloc, PaymentState>(
+        listener: (context, state) {
+          if (state is MySubscriptionLoaded) {
+            final needsSubscription =
+                state.subscription.isFree || !state.subscription.isValid;
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              needsSubscription ? AppRoutes.subscription : AppRoutes.mainLayout,
+              (route) => false,
+            );
+          }
+
+          if (state is NoActiveSubscription) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.subscription,
+              (route) => false,
+            );
+          }
+
+          if (state is MySubscriptionError) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.mainLayout,
+              (route) => false,
+            );
+          }
+        },
+      ),
+    ],
+        child: BlocBuilder<LoginBloc, LoginState> (
+        builder:(context, state) {
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -303,6 +329,6 @@ class LoginScreen extends StatelessWidget {
           );
         },
       ),
-    );
+      )  );
   }
 }

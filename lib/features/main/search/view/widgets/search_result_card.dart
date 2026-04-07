@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/widgets/custom_avatar.dart';
 import '../../model/search_result_model.dart';
 
 class SearchResultCard extends StatelessWidget {
@@ -15,88 +16,113 @@ class SearchResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return InkWell(
+
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        margin: EdgeInsets.only(bottom: 16.h),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.2),
-          ),
-        ),
-        child: Row(
-          children: [
-            // Profile Image
-            CircleAvatar(
-              radius: 24.r,
-              backgroundColor: theme.colorScheme.surfaceVariant,
-              backgroundImage: NetworkImage(result.profileImage),
-              onBackgroundImageError: (_, __) {},
-              child: result.profileImage.isEmpty
-                  ? Icon(
-                      Icons.person,
-                      size: 24.sp,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    )
-                  : null,
-            ),
-            SizedBox(width: 12.w),
-            
-            // Name and Role
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    result.name,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    result.role,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: _getRoleColor(theme),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            
-            // Arrow Icon
-            Icon(
-              Icons.chevron_right,
-              color: theme.colorScheme.onSurfaceVariant,
-              size: 24.sp,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
             ),
           ],
         ),
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Avatar
+              CustomAvatar(
+                imageUrl: result.profileImage,
+                name: result.name,
+                radius: 32.r,
+              ),
+              SizedBox(width: 16.w),
+
+              // Name + Role + Location
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      result.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      result.role,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (result.location != null) ...[
+                      SizedBox(height: 4.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14.sp,
+                            color: theme.colorScheme.onTertiaryContainer,
+                          ),
+                          SizedBox(width: 2.w),
+                          Text(
+                            result.location!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onTertiaryContainer,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+             // Replace the age badge at the end with this:
+Column(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  crossAxisAlignment: CrossAxisAlignment.end,
+  children: [
+    if (result.age != null)
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Text(
+          '${result.age}y',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    SizedBox(height: 8.h),
+    Icon(
+      Icons.arrow_forward_ios_rounded,
+      size: 16.sp,
+      color: theme.colorScheme.onTertiaryContainer,
+    ),
+  ],
+),
+            ],
+          ),
+        ),
       ),
     );
-  }
-
-  Color _getRoleColor(ThemeData theme) {
-    switch (result.userType) {
-      case UserType.athlete:
-        return theme.colorScheme.primary;
-      case UserType.coach:
-        return theme.colorScheme.secondary;
-      case UserType.agent:
-        return theme.colorScheme.tertiary;
-      case UserType.scout:
-        return theme.colorScheme.error;
-      default:
-        return theme.colorScheme.onSurfaceVariant;
-    }
   }
 }

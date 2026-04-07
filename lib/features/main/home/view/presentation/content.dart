@@ -8,27 +8,43 @@ import 'package:sports_in/features/main/opportunity/view/presentation/opportunit
 class BuildContent extends StatelessWidget {
   final HomeTab currentTab;
   final void Function(HomeTab) onTabChange;
+  final GlobalKey<ForYouTabState> forYouKey;
+  final GlobalKey<PostsTabState> postsKey;
+  final GlobalKey<CoursesTabState> coursesKey;
+  final GlobalKey<OpportunitiesContentState> opportunitiesKey;
 
   const BuildContent({
     super.key,
     required this.currentTab,
     required this.onTabChange,
+    required this.forYouKey,
+    required this.postsKey,
+    required this.coursesKey,
+    required this.opportunitiesKey,
   });
 
   @override
   Widget build(BuildContext context) {
-    switch (currentTab) {
-      case HomeTab.forYou:
-        return ForYouTab(onTabChange: onTabChange);
-      
-      case HomeTab.posts:
-        return PostsTab();
-      
-      case HomeTab.courses:
-        return const CoursesTab();
-      
-      case HomeTab.opportunities:
-        return const OpportunitiesContent();
-    }
+    final tabs = [
+      ForYouTab(key: forYouKey, onTabChange: onTabChange),
+      PostsTab(key: postsKey),
+      CoursesTab(key: coursesKey),
+      OpportunitiesContent(key: opportunitiesKey),
+    ];
+    final activeIndex = HomeTab.values.indexOf(currentTab);
+
+    return SliverToBoxAdapter(
+      child: Stack(
+        children: List.generate(tabs.length, (i) {
+          return Offstage(
+            offstage: i != activeIndex,
+            child: TickerMode(
+              enabled: i == activeIndex,
+              child: tabs[i],
+            ),
+          );
+        }),
+      ),
+    );
   }
 }

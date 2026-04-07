@@ -19,12 +19,14 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
   PostsBloc({required this.postRepo}) : super(PostsInitial()) {
     on<FetchPosts>(_onFetchPosts);
+    on<FetchSinglePost>(_onFetchSinglePost);
     on<FetchUserPosts>(_onFetchUserPosts);
     on<LikePost>(_onLikePost);
     on<UploadPost>(_onUploadPost);
     on<LoadMorePosts>(_onLoadMorePosts);
     on<UpdatePost>(_onUpdatePost);
     on<DeletePost>(_onDeletePost);
+    on<TogglePostVisibility>(_onTogglePostVisibility);
   }
 
   final List<PostModel> _posts = [];
@@ -51,7 +53,11 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
       emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
     } catch (e) {
-    emit(PostsError('Failed to fetch posts: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        PostsError(
+          'Failed to fetch posts: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
 
@@ -83,12 +89,27 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
       emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
     } catch (e) {
-    emit(PostsError('Failed to load more posts: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        PostsError(
+          'Failed to load more posts: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     } finally {
       _isFetching = false;
     }
   }
-
+Future<void> _onFetchSinglePost(
+  FetchSinglePost event,
+  Emitter<PostsState> emit,
+) async {
+  emit(PostsLoading());
+  try {
+    final post = await postRepo.getPostById(postId: event.postId);
+    emit(SinglePostLoaded(post: post));
+  } catch (e) {
+    emit(PostsError( e.toString()));
+  }
+}
   Future<void> _onFetchUserPosts(
     FetchUserPosts event,
     Emitter<PostsState> emit,
@@ -102,6 +123,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         userId: event.userId,
         page: event.page,
         pageSize: event.pageSize,
+        onlyInactive: event.onlyInactive,
       );
 
       emit(
@@ -111,72 +133,85 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         ),
       );
     } catch (e) {
-      emit(PostsError('Failed to fetch user posts: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        PostsError(
+          'Failed to fetch user posts: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
-
+// Future<void> _onFetchSinglePost(
+//   FetchSinglePost event,
+//   Emitter<PostsState> emit,
+// ) async {
+//   emit(PostsLoading());
+//   final result = await postRepo.getPostById(event.postId);
+//   result.fold(
+//     (error) => emit(PostsError( error.message)),
+//     (post) => emit(SinglePostLoaded(post: post)),
+//   );
+// }
   Future<void> _onLikePost(LikePost event, Emitter<PostsState> emit) async {
     final currentState = state;
-    if (currentState is! PostsLoaded) return;
+    if (currentState is! PostsLoaded && currentState is! UserPostsLoaded)return;
 
-    try {
-      final updatedPosts = currentState.posts.map((post) {
-        if (post.id == event.postId) {
-          final newIsLiked = !post.isLikedByCurrentUser;
-          final newLikesCount = newIsLiked
-              ? post.likesCount + 1
-              : post.likesCount - 1;
-          return PostModel(
-            id: post.id,
-            title: post.title,
-            description: post.description,
-            isActive: post.isActive,
-            mediaUrl: post.mediaUrl,
-            createdAt: post.createdAt,
-            author: post.author,
-            likesCount: newLikesCount,
-            commentsCount: post.commentsCount,
-            isLikedByCurrentUser: newIsLiked,
-          );
-        }
-        return post;
-      }).toList();
-      emit(
-        PostsLoaded(posts: updatedPosts, hasNextPage: currentState.hasNextPage),
+    List<PostModel> toggleInList(List<PostModel> posts) => posts.map((post) {
+      if (post.id != event.postId) return post;
+      final newIsLiked = !post.isLikedByCurrentUser;
+      return PostModel(
+        id: post.id,
+        title: post.title,
+        description: post.description,
+        isActive: post.isActive,
+        mediaUrl: post.mediaUrl,
+        sportType: post.sportType,
+        createdAt: post.createdAt,
+        author: post.author,
+        likesCount: newIsLiked ? post.likesCount + 1 : post.likesCount - 1,
+        commentsCount: post.commentsCount,
+        isLikedByCurrentUser: newIsLiked,
       );
-      log("==========================like done/removed");
-      log(" Like API called");
-      await postRepo.likePost(postId: event.postId);
-    } catch (e) {
-      log(' Like failed: $e');
-      final revertedPosts = currentState.posts.map((post) {
-        if (post.id == event.postId) {
-          final originalIsLiked = !post.isLikedByCurrentUser;
-          final originalLikesCount = originalIsLiked
-              ? post.likesCount + 1
-              : post.likesCount - 1;
-          return PostModel(
-            isActive: post.isActive,
-            title: post.title,
-            id: post.id,
-            author: post.author,
-            description: post.description,
-            mediaUrl: post.mediaUrl,
-            createdAt: post.createdAt,
-            isLikedByCurrentUser: originalIsLiked,
-            likesCount: originalLikesCount,
-            commentsCount: post.commentsCount,
-          );
-        }
-        return post;
-      }).toList();
+    }).toList();
 
+    // Optimistic update
+    if (currentState is PostsLoaded) {
       emit(
         PostsLoaded(
-          posts: revertedPosts,
+          posts: toggleInList(currentState.posts),
           hasNextPage: currentState.hasNextPage,
         ),
       );
+    } else if (currentState is UserPostsLoaded) {
+      emit(
+        UserPostsLoaded(
+          posts: toggleInList(currentState.posts),
+          hasNextPage: currentState.hasNextPage,
+        ),
+      );
+    }
+
+    try {
+      log("==========================like done/removed");
+      log("Like API called");
+      await postRepo.likePost(postId: event.postId);
+    } catch (e) {
+      log('Like failed: $e');
+      // Revert optimistic update
+      if (currentState is PostsLoaded) {
+        emit(
+          PostsLoaded(
+            posts: currentState.posts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      } else if (currentState is UserPostsLoaded) {
+        emit(
+          UserPostsLoaded(
+            posts: currentState.posts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
     }
   }
 
@@ -203,6 +238,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       title: event.title,
       description: event.description,
       mediaUrl: event.mediaUrl,
+      sportType: event.sport,
       createdAt: DateTime.now(),
       isActive: true,
       author: currentUser,
@@ -234,6 +270,8 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         description: event.description,
         isActive: true,
         mediaUrl: event.mediaUrl,
+        sportType: event.sport,
+
         createdAt: DateTime.now(),
         author: currentUser,
         likesCount: 0,
@@ -262,7 +300,11 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
       emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
 
-      emit(PostsError("Failed to upload post: ${e is ApiException ? e.message : e.toString()}"));
+      emit(
+        PostsError(
+          "Failed to upload post: ${e is ApiException ? e.message : e.toString()}",
+        ),
+      );
     }
   }
 
@@ -291,7 +333,11 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         );
       }
     } catch (e) {
-      emit(PostsError('Failed to update post: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        PostsError(
+          'Failed to update post: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
 
@@ -339,7 +385,75 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         );
       }
     } catch (e) {
-      emit(PostsError('Failed to delete post: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        PostsError(
+          'Failed to delete post: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
+
+      if (currentState is PostsLoaded) {
+        emit(
+          PostsLoaded(
+            posts: currentState.posts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _onTogglePostVisibility(
+    TogglePostVisibility event,
+    Emitter<PostsState> emit,
+  ) async {
+    final currentState = state;
+
+    try {
+      await postRepo.togglePostVisibility(postId: event.postId);
+
+      if (currentState is PostsLoaded) {
+        final updatedPosts = currentState.posts
+            .where((post) => post.id != event.postId)
+            .toList();
+
+        emit(
+          PostsLoaded(
+            posts: updatedPosts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      } else if (currentState is UserPostsLoaded) {
+        final updatedPosts = currentState.posts
+            .where((post) => post.id != event.postId)
+            .toList();
+
+        emit(
+          UserPostsLoaded(
+            posts: updatedPosts,
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
+
+      emit(PostArchivedSuccess());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      if (currentState is PostsLoaded) {
+        emit(
+          PostsLoaded(
+            posts: currentState.posts
+                .where((p) => p.id != event.postId)
+                .toList(),
+            hasNextPage: currentState.hasNextPage,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(
+        PostsError(
+          'Failed to archive post: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
 
       if (currentState is PostsLoaded) {
         emit(

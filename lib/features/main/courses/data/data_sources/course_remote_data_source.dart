@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -197,21 +199,26 @@ class CourseRemoteDataSource implements ICourseDataSource {
         'SportTypeId': request.sportTypeId,
       });
 
-      if (request.thumbnailFile != null) {
-        formData.files.add(
-          MapEntry(
-            'ThumbnailFile',
-            await MultipartFile.fromFile(
-              request.thumbnailFile!.path,
-              filename: request.thumbnailFile!.path.split('/').last,
-            ),
+      if (request.thumbnail is File) {
+      formData.files.add(
+        MapEntry(
+          'ThumbnailFile',
+          await MultipartFile.fromFile(
+            request.thumbnail!.path,
+            filename: request.thumbnail!.path.split('/').last,
           ),
-        );
-      }
+        ),
+      );
+    } else if (request.thumbnail is String) {
+      formData.fields.add(MapEntry('ThumbnailFile', request.thumbnail));
+    }
 
       final response = await _apiClient.put(
         Endpoints.updateCourse.replaceAll('{id}', request.id),
         data: formData,
+        options: Options(
+          contentType: Headers.multipartFormDataContentType,
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -323,21 +330,27 @@ class CourseRemoteDataSource implements ICourseDataSource {
         'Order': request.order,
       });
 
-      if (request.videoFile != null) {
-        formData.files.add(
-          MapEntry(
-            'VideoFile',
-            await MultipartFile.fromFile(
-              request.videoFile!.path,
-              filename: request.videoFile!.path.split('/').last,
-            ),
+      if (request.video is File) {
+      formData.files.add(
+        MapEntry(
+          'VideoFile',
+          await MultipartFile.fromFile(
+            request.video!.path,
+            filename: request.video!.path.split('/').last,
           ),
-        );
-      }
+        ),
+      );
+    } else if (request.video is String) {
+      // Send existing URL as field (backend should handle this)
+      formData.fields.add(MapEntry('VideoFile', request.video));
+    }
 
       final response = await _apiClient.put(
         Endpoints.updateLesson.replaceAll('{lessonId}', request.lessonId),
         data: formData,
+        options: Options(
+        contentType: Headers.multipartFormDataContentType,
+      ),
       );
 
       if (response.statusCode == 200) {

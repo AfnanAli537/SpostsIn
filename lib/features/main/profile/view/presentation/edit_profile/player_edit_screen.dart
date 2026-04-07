@@ -7,9 +7,9 @@ import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_state.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_two_fields_row.dart';
@@ -72,6 +72,8 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     weightController.dispose();
     ageController.dispose();
     bioController.dispose();
+    sportNameNotifier.dispose();
+    positionNotifier.dispose();
     super.dispose();
   }
 
@@ -96,6 +98,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       height: parsedHeight,
@@ -104,7 +107,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
       bio: bioController.text.trim(),
       // gender: genderNotifier.value,
       // location: locationNotifier.value,
-      specialization: sportNameNotifier.value,
+      sports: sportNameNotifier.value != null ? [sportNameNotifier.value!] : null,
       position: positionNotifier.value,
       // hasClub: hasClubNotifier.value,
     );

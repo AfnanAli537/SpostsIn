@@ -6,35 +6,65 @@ import 'package:sports_in/features/main/courses/model/course_models.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-class RevenueScreen extends StatefulWidget {
+class RevenueTab extends StatefulWidget {
   final String courseId;
 
-  const RevenueScreen({
+  const RevenueTab({
     super.key,
     required this.courseId,
   });
 
   @override
-  State<RevenueScreen> createState() => _RevenueScreenState();
+  State<RevenueTab> createState() => _RevenueTabState();
 }
 
-class _RevenueScreenState extends State<RevenueScreen> {
+class _RevenueTabState extends State<RevenueTab> {
   final DateTime _now = DateTime.now();
+  late int _selectedMonth;
+  late int _selectedYear;
+
+  // Generate last 12 months for dropdown
+  final List<int> _months = List.generate(12, (index) => index + 1);
+  late final List<int> _years;
 
   @override
   void initState() {
     super.initState();
+    _selectedMonth = _now.month;
+    _selectedYear = _now.year;
+    
+    // Generate years (current year and 2 years back)
+    _years = List.generate(3, (index) => _now.year - index);
+    
     _fetchRevenue();
   }
 
   void _fetchRevenue() {
     context.read<CoursesBloc>().add(
-          FetchRevenueReport(
-            courseId: widget.courseId,
-            month: _now.month,
-            year: _now.year,
-          ),
-        );
+      FetchRevenueReport(
+        courseId: widget.courseId,
+        month: _selectedMonth,
+        year: _selectedYear,
+      ),
+    );
+  }
+
+  String _getMonthName(int month, S string) {
+    switch (month) {
+      case 1: return string.january;
+      case 2: return string.february;
+      case 3: return string.march;
+      case 4: return string.april;
+      case 5: return string.may;
+      case 6: return string.june;
+      case 7: return string.july;
+      case 8: return string.august;
+      case 9: return string.september;
+      case 10: return string.october;
+      case 11: return string.november;
+      case 12: return string.december;
+      default: return '';
+    }
   }
 
   @override
@@ -60,20 +90,23 @@ class _RevenueScreenState extends State<RevenueScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Month/Year Filter
+                  _buildMonthYearFilter(theme, string),
+                  SizedBox(height: 16.h),
+
                   // Total revenue cards
                   _buildRevenueCards(state.report, theme, string),
                   SizedBox(height: 24.h),
 
                   // Weekly breakdown chart
                   Text(
-                    // string.weeklyBreakdown ??
-                     'Weekly Breakdown',
+                    string.weeklyBreakdown,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  _buildRevenueChart(state.report, theme),
+                  _buildRevenueChart(state.report, theme, string),
                   SizedBox(height: 24.h),
 
                   // Weekly details
@@ -115,16 +148,107 @@ class _RevenueScreenState extends State<RevenueScreen> {
     );
   }
 
+  // Month/Year Filter Dropdowns
+  Widget _buildMonthYearFilter(ThemeData theme, S string) {
+    return Container(
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.filter_list,
+            color: theme.colorScheme.primary,
+            size: 20.sp,
+          ),
+          SizedBox(width: 12.w),
+          
+          // Month Dropdown
+          Expanded(
+            flex: 2,
+            child: DropdownButtonFormField<int>(
+              value: _selectedMonth,
+              decoration: InputDecoration(
+                labelText: string.month,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 8.h,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+              items: _months.map((month) {
+                return DropdownMenuItem(
+                  value: month,
+                  child: Text(
+                    _getMonthName(month, string),
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedMonth = value;
+                  });
+                  _fetchRevenue();
+                }
+              },
+            ),
+          ),
+          
+          SizedBox(width: 12.w),
+          
+          // Year Dropdown
+          Expanded(
+            flex: 1,
+            child: DropdownButtonFormField<int>(
+              value: _selectedYear,
+              decoration: InputDecoration(
+                labelText: string.year,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 8.h,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+              items: _years.map((year) {
+                return DropdownMenuItem(
+                  value: year,
+                  child: Text(
+                    year.toString(),
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedYear = value;
+                  });
+                  _fetchRevenue();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildRevenueCards(RevenueReportModel report, ThemeData theme, S string) {
     return Row(
       children: [
         Expanded(
           child: _buildRevenueCard(
-            // string.allTimeRevenue ??
-             'All-Time Revenue',
-            '${report.totalAllTimeRevenue.toStringAsFixed(0)} ${
-              // string.egp ??
-               "EGP"}',
+            string.allTimeRevenue,
+            '${report.totalAllTimeRevenue.toStringAsFixed(0)} ${string.egp}',
             Icons.account_balance_wallet,
             theme.colorScheme.primary,
             theme,
@@ -133,11 +257,8 @@ class _RevenueScreenState extends State<RevenueScreen> {
         SizedBox(width: 16.w),
         Expanded(
           child: _buildRevenueCard(
-            // string.thisMonth ?? 
-            'This Month',
-            '${report.totalMonthRevenue.toStringAsFixed(0)} ${
-              // string.egp ??
-               "EGP"}',
+            '${_getMonthName(_selectedMonth, string)} ${_selectedYear}',
+            '${report.totalMonthRevenue.toStringAsFixed(0)} ${string.egp}',
             Icons.calendar_today,
             Colors.green,
             theme,
@@ -178,23 +299,29 @@ class _RevenueScreenState extends State<RevenueScreen> {
             label,
             style: theme.textTheme.bodySmall,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRevenueChart(RevenueReportModel report, ThemeData theme) {
+  Widget _buildRevenueChart(RevenueReportModel report, ThemeData theme, S string) {
     if (report.weeklyBreakdown.isEmpty) {
       return Container(
         height: 200.h,
         alignment: Alignment.center,
         child: Text(
-          'No data available',
+          string.noDataForMonth('${_getMonthName(_selectedMonth, string)} ${_selectedYear}'),
           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
+          textAlign: TextAlign.center,
         ),
       );
     }
+
+    final maxRevenue = _getMaxRevenue(report);
+    final horizontalInterval = maxRevenue > 0 ? (maxRevenue / 5) : 20.0;
 
     return Container(
       height: 250.h,
@@ -206,13 +333,13 @@ class _RevenueScreenState extends State<RevenueScreen> {
       child: BarChart(
         BarChartData(
           alignment: BarChartAlignment.spaceAround,
-          maxY: _getMaxRevenue(report) * 1.2,
+          maxY: maxRevenue > 0 ? maxRevenue * 1.2 : 100,
           barTouchData: BarTouchData(
             enabled: true,
             touchTooltipData: BarTouchTooltipData(
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 return BarTooltipItem(
-                  '${rod.toY.toStringAsFixed(0)} EGP',
+                  '${rod.toY.toStringAsFixed(0)} ${string.egp}',
                   const TextStyle(color: Colors.white),
                 );
               },
@@ -252,7 +379,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: _getMaxRevenue(report) / 5,
+            horizontalInterval: horizontalInterval,
           ),
           borderData: FlBorderData(show: false),
           barGroups: report.weeklyBreakdown.asMap().entries.map((entry) {
@@ -274,12 +401,15 @@ class _RevenueScreenState extends State<RevenueScreen> {
   }
 
   Widget _buildWeeklyDetails(RevenueReportModel report, ThemeData theme, S string) {
+    if (report.weeklyBreakdown.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          // string.weeklyDetails ?? 
-          'Weekly Details',
+          string.weeklyDetails,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -303,9 +433,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
                   ),
                 ),
                 Text(
-                  '${week.revenue.toStringAsFixed(0)} ${
-                    // string.egp ??
-                     "EGP"}',
+                  '${week.revenue.toStringAsFixed(0)} ${string.egp}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -320,7 +448,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
   }
 
   double _getMaxRevenue(RevenueReportModel report) {
-    if (report.weeklyBreakdown.isEmpty) return 100;
+    if (report.weeklyBreakdown.isEmpty) return 0;
     return report.weeklyBreakdown
         .map((w) => w.revenue)
         .reduce((a, b) => a > b ? a : b);

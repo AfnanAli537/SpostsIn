@@ -7,15 +7,22 @@ import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
+import 'package:sports_in/features/main/opportunity/view/widgets/opportunity_card_shimmer.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/view/widgets/text_switch.dart';
+import 'package:sports_in/generated/l10n.dart';
 // import 'package:sports_in/generated/l10n.dart';
 
 class MyOpportunitiesListScreen extends StatelessWidget {
   final bool showActiveOnly;
+  final bool isCurrentUser;
+
 
   const MyOpportunitiesListScreen({
     super.key,
-    this.showActiveOnly = true, // true = active, false = inactive
+    this.showActiveOnly = true,
+    this.isCurrentUser = true,
+     // true = active, false = inactive
   });
 
   @override
@@ -23,27 +30,24 @@ class MyOpportunitiesListScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => getIt<OpportunityBloc>()
         ..add(FetchMyOpportunities(showActive: showActiveOnly)),
-      child: _MyOpportunitiesListView(showActiveOnly: showActiveOnly),
+      child: _MyOpportunitiesListView(showActiveOnly: showActiveOnly,isCurrentUser: isCurrentUser,),
     );
   }
 }
 
+// ignore: must_be_immutable
 class _MyOpportunitiesListView extends StatefulWidget {
-  final bool showActiveOnly;
+  bool showActiveOnly;
+  final bool isCurrentUser;
 
-  const _MyOpportunitiesListView({required this.showActiveOnly});
+  _MyOpportunitiesListView({required this.showActiveOnly, required this.isCurrentUser});
 
   @override
-  State<_MyOpportunitiesListView> createState() =>
-      _MyOpportunitiesListViewState();
+  State<_MyOpportunitiesListView> createState() => _MyOpportunitiesListViewState();
 }
 
 class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
   final ScrollController _scrollController = ScrollController();
-  final List<OpportunityModel> _opportunities = [];
-  int _currentPage = 1;
-  bool _isLoadingMore = false;
-  bool _hasMore = true;
 
   @override
   void initState() {
@@ -59,31 +63,18 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent * 0.9 &&
-        !_isLoadingMore &&
-        _hasMore) {
-      _loadMore();
+        _scrollController.position.maxScrollExtent * 0.9) {
+      final state = context.read<OpportunityBloc>().state;
+      if (state is MyOpportunitiesLoaded && state.hasMore) {
+        // Prevent multiple loads if already loading more
+        if (context.read<OpportunityBloc>().state is! OpportunityLoadingMore) {
+          context.read<OpportunityBloc>().add(LoadMoreMyOpportunities(showActive: widget.showActiveOnly));
+        }
+      }
     }
   }
 
-  void _loadMore() {
-    setState(() {
-      _isLoadingMore = true;
-    });
-    context.read<OpportunityBloc>().add(
-          FetchMyOpportunities(
-            showActive: widget.showActiveOnly,
-            page: _currentPage + 1,
-          ),
-        );
-  }
-
   void _refreshOpportunities() {
-    setState(() {
-      _opportunities.clear();
-      _currentPage = 1;
-      _hasMore = true;
-    });
     context.read<OpportunityBloc>().add(
           FetchMyOpportunities(
             showActive: widget.showActiveOnly,
@@ -95,30 +86,59 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final strings = S.of(context);
+    final string = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.showActiveOnly 
-            ?  'Active Opportunities'
-            : 'Inactive Opportunities'),
+        title: Column(
+          children: [
+            Text(
+              widget.isCurrentUser ? string.myOpportunities : string.opportunities,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            widget.showActiveOnly
+                ? Text(
+                    string.publicOpportunities,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onError,
+                    ),
+                  )
+                : Text(
+                    string.archiveOpportunities,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onError,
+                    ),
+                  ),
+          ],
+        ),
+        actions: [
+          if (widget.isCurrentUser)
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: IconSwitch(
+                value: widget.showActiveOnly,
+                onChanged: (value) {
+                  setState(() {
+                    widget.showActiveOnly = value;
+                  });
+                  _refreshOpportunities();
+                },
+                activeIcon:  Icons.visibility_off_sharp,
+                inactiveIcon:Icons.visibility_sharp,
+                activeColor: theme.colorScheme.primary,
+                inactiveColor: Colors.grey[300]!,
+                width: 70.w,
+                height: 28.h,
+              ),
+            ),
+        ],
       ),
       body: BlocConsumer<OpportunityBloc, OpportunityState>(
         listener: (context, state) {
-          if (state is MyOpportunitiesLoaded) {
-            setState(() {
-              if (_currentPage == 1) {
-                _opportunities.clear();
-              }
-              _opportunities.addAll(state.opportunities);
-              _hasMore = state.hasMore;
-              _currentPage++;
-              _isLoadingMore = false;
-            });
-          } else if (state is OpportunityDeleted) {
-            setState(() {
-              _opportunities.removeWhere((o) => o.id == state.opportunityId);
-            });
+          if (state is OpportunityDeleted) {
+            _refreshOpportunities(); // Refresh after delete
             Fluttertoast.showToast(
               msg: 'Opportunity deleted successfully',
               backgroundColor: Colors.green,
@@ -126,7 +146,6 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
               gravity: ToastGravity.TOP,
             );
           } else if (state is OpportunityUpdated) {
-            // Refresh the list after update
             _refreshOpportunities();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -135,9 +154,6 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
               ),
             );
           } else if (state is OpportunityError) {
-            setState(() {
-              _isLoadingMore = false;
-            });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -147,13 +163,17 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
           }
         },
         builder: (context, state) {
-          // Show loading on initial load
-          if (state is OpportunityLoading && _opportunities.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+          // Show initial loading
+          if (state is MyOpportunitiesLoading || state is OpportunityInitial) {
+            return ListView.builder(
+              padding: EdgeInsets.all(16.r),
+              itemCount: 3,
+              itemBuilder: (context, index) => const OpportunityCardShimmer(),
+            );
           }
 
-          // Show error only if no opportunities loaded
-          if (state is OpportunityError && _opportunities.isEmpty) {
+          // Show error with retry
+          if (state is OpportunityError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -179,97 +199,108 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
             );
           }
 
-          // Show empty state
-          if (_opportunities.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.work_outline,
-                    size: 64.sp,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    widget.showActiveOnly
-                        ? 'No active opportunities'
-                        : 'No inactive opportunities',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+          // Show loaded list
+          if (state is MyOpportunitiesLoaded) {
+            final opportunities = state.opportunities;
+
+            if (opportunities.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.work_outline,
+                      size: 64.sp,
+                      color: theme.colorScheme.primary,
                     ),
-                  ),
-                ],
+                    SizedBox(height: 16.h),
+                    Text(
+                      widget.showActiveOnly
+                          ? 'No active opportunities'
+                          : 'No inactive opportunities',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onError,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                _refreshOpportunities();
+                await Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: ListView.separated(
+                controller: _scrollController,
+                padding: EdgeInsets.all(16.r),
+                itemCount: opportunities.length + (state.hasMore ? 1 : 0),
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  if (index >= opportunities.length) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  final opportunity = opportunities[index];
+                  return _MyOpportunityCard(
+                    opportunity: opportunity,
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<OpportunityBloc>(),
+                            child: OpportunityDetailsPage(
+                              opportunityId: opportunity.id,
+                              isOwner: opportunity.isOwner,
+                            ),
+                          ),
+                        ),
+                      );
+                      if (result == true) {
+                        _refreshOpportunities();
+                      }
+                    },
+                    onEdit: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<OpportunityBloc>(),
+                            child: UpdateOpportunityScreen(
+                              opportunityId: opportunity.id,
+                            ),
+                          ),
+                        ),
+                      );
+                      if (result == true) {
+                        _refreshOpportunities();
+                      }
+                    },
+                    onDelete: () => _showDeleteConfirmation(
+                      context,
+                      opportunity.id,
+                      opportunity.title,
+                    ),
+                    onToggle: (bool isArchiving) => _showToggleConfirmation(
+                      context,
+                      opportunity.id,
+                      isArchiving,
+                    ),
+                    showActiveOnly: widget.showActiveOnly,
+                  );
+                },
               ),
             );
           }
 
-          // Show opportunities list
-          return RefreshIndicator(
-            onRefresh: () async {
-              _refreshOpportunities();
-              await Future.delayed(const Duration(milliseconds: 500));
-            },
-            child: ListView.separated(
-              controller: _scrollController,
-              padding: EdgeInsets.all(16.r),
-              itemCount: _opportunities.length + (_isLoadingMore ? 1 : 0),
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
-              itemBuilder: (context, index) {
-                if (index >= _opportunities.length) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-
-                final opportunity = _opportunities[index];
-                return _MyOpportunityCard(
-                  opportunity: opportunity,
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: context.read<OpportunityBloc>(),
-                          child: OpportunityDetailsPage(
-                            opportunityId: opportunity.id,
-                            isOwner: opportunity.isOwner,
-                          ),
-                        ),
-                      ),
-                    );
-                    if (result == true) {
-                      _refreshOpportunities();
-                    }
-                  },
-                  onEdit: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: context.read<OpportunityBloc>(),
-                          child: UpdateOpportunityScreen(
-                            opportunityId: opportunity.id,
-                          ),
-                        ),
-                      ),
-                    );
-                    if (result == true) {
-                      _refreshOpportunities();
-                    }
-                  },
-                  onDelete: () => _showDeleteConfirmation(
-                    context,
-                    opportunity.id,
-                    opportunity.title,
-                  ),
-                );
-              },
-            ),
-          );
+          return const SizedBox.shrink();
         },
       ),
     );
@@ -295,27 +326,52 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
       isDestructive: true,
     );
   }
+
+  void _showToggleConfirmation(
+    BuildContext context,
+    String opportunityId,
+    bool isArchiving,
+  ) {
+    final action = isArchiving ? 'Archive' : 'Restore';
+    ConfirmationDialog.show(
+      context: context,
+      title: '$action Opportunity',
+      message: 'Are you sure you want to $action this opportunity?',
+      onConfirm: () {
+        context.read<OpportunityBloc>().add(
+              ToggleOpportunityVisibility(opportunityId: opportunityId),
+            );
+      },
+      confirmText: action,
+    );
+  }
 }
+
 class _MyOpportunityCard extends StatelessWidget {
   final OpportunityModel opportunity;
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final ValueChanged<bool> onToggle; // Now expects a bool
+  final bool showActiveOnly;
 
   const _MyOpportunityCard({
     required this.opportunity,
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
+    required this.onToggle,
+    required this.showActiveOnly,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context); // Add if needed
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // Set a fixed height or let it expand based on padding
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
@@ -327,11 +383,9 @@ class _MyOpportunityCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Main Content Row
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Left Side: Text Details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +395,7 @@ class _MyOpportunityCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
+                          color: theme.colorScheme.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -351,7 +405,7 @@ class _MyOpportunityCard extends StatelessWidget {
                         opportunity.publisherName,
                         style: TextStyle(
                           fontSize: 15.sp,
-                      color: theme.colorScheme.onError,
+                          color: theme.colorScheme.onError,
                         ),
                       ),
                       SizedBox(height: 12.h),
@@ -367,7 +421,7 @@ class _MyOpportunityCard extends StatelessWidget {
                             "Since ${_formatDate(opportunity.createdAt)}",
                             style: TextStyle(
                               fontSize: 13.sp,
-                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+                              color: theme.colorScheme.onSurface.withOpacity(0.5),
                             ),
                           ),
                         ],
@@ -376,7 +430,6 @@ class _MyOpportunityCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 12.w),
-                // Right Side: Dark Navy Box / Logo
                 Container(
                   width: 80.w,
                   height: 80.w,
@@ -391,10 +444,8 @@ class _MyOpportunityCard extends StatelessWidget {
                 ),
               ],
             ),
-            
-            // Top Right Popup Menu
             Positioned(
-              top: -10, // Adjust to align with your preference
+              top: -10,
               right: -10,
               child: PopupMenuButton<String>(
                 padding: EdgeInsets.zero,
@@ -404,25 +455,65 @@ class _MyOpportunityCard extends StatelessWidget {
                   size: 20.sp,
                 ),
                 onSelected: (value) {
-                  if (value == 'edit') onEdit();
-                  if (value == 'delete') onDelete();
+                  if (value == 'edit') {
+                    onEdit();
+                  } else if (value == 'delete') {
+                    onDelete();
+                  } else if (value == 'archive') {
+                    onToggle(true); // isArchiving = true
+                  } else if (value == 'restore') {
+                    onToggle(false); // isArchiving = false
+                  }
                 },
                 itemBuilder: (context) => [
+                  if (showActiveOnly)
+                    PopupMenuItem(
+                      value: 'archive',
+                      child: Row(
+                        children: [
+                          Icon(Icons.archive_outlined, size: 20.sp),
+                          SizedBox(width: 8.w),
+                          Text(strings.archive), // Use localized string
+                        ],
+                      ),
+                    )
+                  else
+                    PopupMenuItem(
+                      value: 'restore',
+                      child: Row(
+                        children: [
+                          Icon(Icons.restore_outlined, size: 20.sp),
+                          SizedBox(width: 8.w),
+                          Text(strings.restore),
+                        ],
+                      ),
+                    ),
                   PopupMenuItem(
                     value: 'edit',
-                    child: Row(children: [
-                          Icon(Icons.edit_outlined, size: 20.sp),
-                          SizedBox(width: 8.w),
-                          const Text('Edit')
-                        ]),
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_outlined, size: 20.sp),
+                        SizedBox(width: 8.w),
+                        const Text('Edit'),
+                      ],
+                    ),
                   ),
                   PopupMenuItem(
                     value: 'delete',
-                    child: Row(children: [
-                          Icon(Icons.delete_outline, size: 20.sp, color: Colors.red[700]),
-                          SizedBox(width: 8.w),
-                          Text('Delete', style: TextStyle(color: Colors.red[700]))
-                        ]),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete_outline,
+                          size: 20.sp,
+                          color: Colors.red[700],
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.red[700]),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

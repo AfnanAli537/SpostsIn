@@ -27,7 +27,11 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
       {'key': 'coach', 'label': string.coach, 'icon': SvgAssets.coach},
       {'key': 'scout', 'label': string.scout, 'icon': SvgAssets.scout},
       {'key': 'club', 'label': string.club, 'icon': SvgAssets.club},
-      {'key': 'institute', 'label': string.institute, 'icon': SvgAssets.institute},
+      {
+        'key': 'institute',
+        'label': string.institute,
+        'icon': SvgAssets.institute,
+      },
       {'key': 'other', 'label': string.other, 'icon': SvgAssets.other},
     ];
   }
@@ -59,82 +63,82 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return 
-      Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      color: Theme.of(context).colorScheme.onError,
-                      onPressed: (){
-                         Navigator.pushReplacementNamed(context, AppRoutes.login);
-                      },
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).colorScheme.onError,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, AppRoutes.login);
+          },
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(
-                string.whatIsYourType,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              string.whatIsYourType,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 4.h),
-              Text(
-                string.knowingYourGoal,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium,
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              string.knowingYourGoal,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
+            ),
+            SizedBox(height: 24.h),
+
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemHeight =
+                      (constraints.maxHeight -
+                          (userTypes.length - 1.h) * 12.h) /
+                      userTypes.length;
+
+                  return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: userTypes.length,
+                    itemBuilder: (context, index) {
+                      final type = userTypes[index];
+                      return SizedBox(
+                        height: itemHeight,
+                        child: TypeOptionTile(
+                          // Display localized label
+                          label: type['label'],
+                          icon: type['icon'],
+                          isSelected: selectedType == type['key'],
+                          onTap: () => setState(() {
+                            selectedType = type['key'];
+                          }),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
-              SizedBox(height: 24.h),
-      
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final itemHeight = (constraints.maxHeight -
-                            (userTypes.length - 1.h) * 12.h) /
-                        userTypes.length;
-      
-                    return ListView.builder(
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: userTypes.length,
-                      itemBuilder: (context, index) {
-                        final type = userTypes[index];
-                        return SizedBox(
-                          height: itemHeight,
-                          child: TypeOptionTile(
-                            // Display localized label
-                            label: type['label'],
-                            icon: type['icon'],
-                            isSelected: selectedType == type['key'],
-                            onTap: () => setState(() {
-                              selectedType = type['key'];
-                            }),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+            ),
+
+            SizedBox(height: 16.h),
+
+            SizedBox(
+              width: double.infinity,
+              child: CustomElevatedButton(
+                text: string.continueText,
+                enabled: selectedType != null,
+                onPressed: () {
+                  if (selectedType != null) _navigateToNext();
+                },
               ),
-      
-              SizedBox(height: 16.h),
-      
-              SizedBox(
-                width: double.infinity,
-                child: CustomElevatedButton(
-                  text: string.continueText,
-                  enabled: selectedType != null,
-                  onPressed: () {
-                    if (selectedType != null) _navigateToNext();
-                  },
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

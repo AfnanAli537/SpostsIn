@@ -38,7 +38,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
     super.initState();
     _titleController = TextEditingController(text: widget.post.title);
     _descriptionController = TextEditingController(text: widget.post.description);
-    sportNotifier = ValueNotifier<String?>(null);
+    sportNotifier = ValueNotifier<String?>(widget.post.sportType);
   }
 
   @override
@@ -127,7 +127,6 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
       return;
     }
 
-    // ✅ Set loading state
     setState(() => _isUpdating = true);
 
     context.read<PostsBloc>().add(

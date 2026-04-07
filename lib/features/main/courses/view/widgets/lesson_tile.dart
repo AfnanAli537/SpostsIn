@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class LessonTile extends StatelessWidget {
   final LessonModel lesson;
   final bool isEnrolled;
   final VoidCallback onTap;
+  final S string;
 
   const LessonTile({
     super.key,
     required this.lesson,
     required this.isEnrolled,
     required this.onTap,
+    required this.string,
   });
 
   @override
@@ -41,12 +44,12 @@ class LessonTile extends StatelessWidget {
               height: 48.w,
               decoration: BoxDecoration(
                 color: lesson.isWatched
-                    ? theme.colorScheme.primary.withOpacity(0.2) // ✅ Different shade
+                    ? theme.colorScheme.primary.withOpacity(0.2) 
                     : theme.colorScheme.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                lesson.isWatched ? Icons.check_circle : Icons.play_arrow, // ✅ Check if watched
+                lesson.isWatched ? Icons.check_circle : Icons.play_arrow,
                 color: lesson.isWatched
                     ? theme.colorScheme.primary
                     : theme.colorScheme.primary.withOpacity(0.7),
@@ -63,7 +66,7 @@ class LessonTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Lesson ${lesson.order}',
+                        string.lessonNumber(lesson.order), 
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: theme.colorScheme.primary,
@@ -82,7 +85,7 @@ class LessonTile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(
-                            'Watched',
+                            string.watched, 
                             style: TextStyle(
                               fontSize: 10.sp,
                               color: Colors.green,
@@ -135,7 +138,9 @@ class LessonTile extends StatelessWidget {
                       if (lesson.progressPercentage > 0) ...[
                         SizedBox(width: 16.w),
                         Text(
-                          '${lesson.progressPercentage.toInt()}% watched',
+                          string.percentageWatched(
+                            lesson.progressPercentage.toInt().toString(),
+                          ), 
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: theme.colorScheme.primary,
@@ -163,7 +168,7 @@ class LessonTile extends StatelessWidget {
 
             // Arrow or lock icon
             Icon(
-              canPlay ? Icons.arrow_forward_ios : Icons.lock_outline, // ✅ Arrow for description
+              canPlay ? Icons.arrow_forward_ios : Icons.lock_outline, 
               size: 16.sp,
               color: canPlay
                   ? theme.colorScheme.onSurface.withOpacity(0.5)

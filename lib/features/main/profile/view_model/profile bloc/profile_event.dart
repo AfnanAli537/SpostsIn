@@ -11,7 +11,6 @@ class LoadMyProfile extends ProfileEvent {}
 
 class LoadUserProfile extends ProfileEvent {
   final String userId;
-
   const LoadUserProfile({required this.userId});
 
   @override
@@ -20,7 +19,6 @@ class LoadUserProfile extends ProfileEvent {
 
 class UpdateProfile extends ProfileEvent {
   final Map<String, dynamic> updateData;
-
   const UpdateProfile({required this.updateData});
 
   @override
@@ -29,33 +27,40 @@ class UpdateProfile extends ProfileEvent {
 
 class ToggleFollow extends ProfileEvent {
   final String userId;
-
   const ToggleFollow({required this.userId});
 
   @override
   List<Object?> get props => [userId];
 }
 
-class ToggleConnect extends ProfileEvent {
-  final String userId;
+// ── Connection Events ────────────────────────────────────────────────────────
 
-  const ToggleConnect({required this.userId});
+/// Send a new connection request (connectionStatus is null → becomes "Pending")
+class SendConnectionRequest extends ProfileEvent {
+  final String receiverId;
+  const SendConnectionRequest({required this.receiverId});
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [receiverId];
 }
 
-// Achievement Events
+/// Remove an accepted contact (connectionStatus is "Accepted" → becomes null)
+class RemoveContact extends ProfileEvent {
+  final String targetId;
+  const RemoveContact({required this.targetId});
+
+  @override
+  List<Object?> get props => [targetId];
+}
+
+// ── Achievement Events ───────────────────────────────────────────────────────
+
 class LoadAchievements extends ProfileEvent {
   final String userId;
   final int page;
   final int size;
 
-  const LoadAchievements({
-    required this.userId,
-    this.page = 1,
-    this.size = 10,
-  });
+  const LoadAchievements({required this.userId, this.page = 1, this.size = 10});
 
   @override
   List<Object?> get props => [userId, page, size];
@@ -99,30 +104,27 @@ class UpdateAchievement extends ProfileEvent {
 
 class DeleteAchievement extends ProfileEvent {
   final String achievementId;
-
   const DeleteAchievement({required this.achievementId});
 
   @override
   List<Object?> get props => [achievementId];
 }
 
-// Posts Events
+// ── Posts Events ─────────────────────────────────────────────────────────────
+
 class LoadPosts extends ProfileEvent {
   final String userId;
   final int page;
   final int size;
 
-  const LoadPosts({
-    required this.userId,
-    this.page = 1,
-    this.size = 10,
-  });
+  const LoadPosts({required this.userId, this.page = 1, this.size = 10});
 
   @override
   List<Object?> get props => [userId, page, size];
 }
 
-// Opportunities Events
+// ── Opportunities Events ─────────────────────────────────────────────────────
+
 class LoadOpportunities extends ProfileEvent {
   final String userId;
   final int page;
@@ -138,7 +140,8 @@ class LoadOpportunities extends ProfileEvent {
   List<Object?> get props => [userId, page, pageSize];
 }
 
-// Courses Events
+// ── Courses Events ───────────────────────────────────────────────────────────
+
 class LoadCourses extends ProfileEvent {
   final String userId;
   final int page;
@@ -154,7 +157,8 @@ class LoadCourses extends ProfileEvent {
   List<Object?> get props => [userId, page, pageSize];
 }
 
-// Interests Events
+// ── Interests Events ─────────────────────────────────────────────────────────
+
 class LoadInterests extends ProfileEvent {
   final String userId;
   final int page;

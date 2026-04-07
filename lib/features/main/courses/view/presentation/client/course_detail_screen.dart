@@ -1,25 +1,39 @@
+// ignore_for_file: unnecessary_cast
+
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/utils/helper/payment_flow_helper.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
+import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
-import 'package:sports_in/features/main/courses/view/presentation/client/inline_lesson_video_player.dart';
-import 'package:sports_in/features/main/courses/view/presentation/provider/enrollees_screen.dart';
-import 'package:sports_in/features/main/courses/view/presentation/provider/revenue_screen.dart';
+import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/course_description_tab.dart';
+import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/course_lessons_tab.dart';
+import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/course_progress_tab.dart';
+import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/enrollees_tab.dart';
+import 'package:sports_in/features/main/courses/view/presentation/course_details_tabs/revenue_tab.dart';
+import 'package:sports_in/features/main/courses/view/presentation/provider/edit_lesson_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/provider/upload_video_screen.dart';
+import 'package:sports_in/features/main/courses/view/widgets/course_header.dart';
+import 'package:sports_in/features/main/courses/view/widgets/inline_edit_dialog.dart';
 import 'package:sports_in/features/main/courses/view/widgets/shimmer_widget.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
+import 'package:sports_in/features/payment/data/enums/enums.dart';
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
+import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
+import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;
 
-  const CourseDetailScreen({
-    super.key,
-    required this.courseId,
-  });
+  const CourseDetailScreen({super.key, required this.courseId});
 
   @override
   State<CourseDetailScreen> createState() => _CourseDetailScreenState();
@@ -29,846 +43,561 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   CourseModel? _course;
-  LessonModel? _currentPlayingLesson;
   List<LessonModel> _allLessons = [];
+  LessonModel? _currentPlayingLesson;
+
+  bool _isEditMode = false;
+  bool _hasUnsavedChanges = false;
+  File? _newThumbnail;
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _priceController;
+  bool _isFreeEdit = false;
+  String? _transId;
+  bool _isManualActivationHandled = false; 
+
+  // Processing dialog state — same pattern as AdPaymentScreen
+  bool _isProcessingDialogOpen = false;
+  String? _handledPaymentStateType;
 
   @override
   void initState() {
     super.initState();
     context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     _tabController = TabController(length: 2, vsync: this);
+    _titleController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _priceController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
-  void _updateTabController(CourseModel course) {
-    if (_course == null || 
-        _course!.isOwner != course.isOwner || 
-        _course!.isEnrolled != course.isEnrolled) {
-      _tabController.dispose();
-      
-      // ✅ NEW: Lessons tab is FIRST
-      int tabLength = 2; // Default: Lessons, Description
-      if (course.isOwner) {
-        tabLength = 4; // Lessons, Description, Enrolled, Revenue
-      } else if (course.isEnrolled) {
-        tabLength = 3; // Lessons, Description, Progress
-      }
-      
-      _tabController = TabController(length: tabLength, vsync: this);
-      _course = course;
-      
-      // Fetch lessons
-      context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
+  @override
+  void didUpdateWidget(CourseDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.courseId != widget.courseId) {
+      setState(() {
+        _course = null;
+        _allLessons = [];
+        _currentPlayingLesson = null;
+        _isEditMode = false;
+        _hasUnsavedChanges = false;
+        _newThumbnail = null;
+        _handledPaymentStateType = null;
+      });
+      context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
     }
   }
+
+  void _updateTabController(CourseModel course) {
+    if (_course?.id != course.id) {
+      _allLessons = [];
+      _currentPlayingLesson = null;
+    }
+    if (_course == null ||
+        _course!.isOwner != course.isOwner ||
+        _course!.isEnrolled != course.isEnrolled) {
+      _tabController.dispose();
+      int length = 2;
+      if (course.isOwner) {
+        length = 4;
+      } else if (course.isEnrolled) {
+        length = 3;
+      }
+      _tabController = TabController(length: length, vsync: this);
+    }
+    _course = course;
+    context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
+  }
+
+  // ── Processing dialog helpers (same as AdPaymentScreen) ────────────────
+
+  void _showProcessingDialog() {
+    if (_isProcessingDialogOpen) return;
+    _isProcessingDialogOpen = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ProcessingPaymentDialog(),
+    ).then((_) => _isProcessingDialogOpen = false);
+  }
+
+  void _dismissProcessingDialog() {
+    if (_isProcessingDialogOpen && mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isProcessingDialogOpen = false;
+    }
+  }
+
+  // ── Edit mode helpers ──────────────────────────────────────────────────────
+
+  void _enterEditMode(CourseModel course) {
+    setState(() {
+      _isEditMode = true;
+      _titleController.text = course.title;
+      _descriptionController.text = course.description ?? '';
+      _priceController.text = course.price.toString();
+      _isFreeEdit = course.isFree;
+      _newThumbnail = null;
+      _hasUnsavedChanges = false;
+    });
+  }
+
+  void _cancelEditMode() => setState(() {
+        _isEditMode = false;
+        _hasUnsavedChanges = false;
+      });
+
+  void _onFieldChanged() => setState(() => _hasUnsavedChanges = true);
+
+  Future<void> _pickThumbnail() async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      maxHeight: 1080,
+      imageQuality: 85,
+    );
+    if (picked != null) {
+      setState(() {
+        _newThumbnail = File(picked.path);
+        _onFieldChanged();
+      });
+    }
+  }
+
+  Future<void> _saveAllChanges(CourseModel course, S string) async {
+    if (_titleController.text.trim().isEmpty) {
+      Fluttertoast.showToast(
+          msg: string.titleCannotBeEmpty, backgroundColor: Colors.orange);
+      return;
+    }
+    if (!_isFreeEdit) {
+      final price = double.tryParse(_priceController.text);
+      if (price == null || price < 0) {
+        Fluttertoast.showToast(
+            msg: string.invalidPrice, backgroundColor: Colors.orange);
+        return;
+      }
+    }
+    final newPrice = _isFreeEdit ? 0.0 : double.parse(_priceController.text);
+    context.read<CoursesBloc>().add(UpdateCourse(
+          courseId: course.id,
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          price: newPrice,
+          sportTypeId: course.sportTypeId,
+          thumbnail: _newThumbnail?.path ?? course.thumbnailUrl ?? '',
+        ));
+    setState(() {
+      _isEditMode = false;
+      _hasUnsavedChanges = false;
+      _newThumbnail = null;
+    });
+    Fluttertoast.showToast(
+        msg: string.savingChanges, backgroundColor: Colors.blue);
+  }
+
+  Future<void> _deleteLesson(LessonModel lesson, S string) async {
+    final confirmed = await InlineEditDialog.showConfirmation(
+      context: context,
+      string: string,
+      title: string.deleteLesson,
+      message: string.deleteLessonConfirmation(lesson.title),
+      confirmText: string.delete,
+      isDestructive: true,
+    );
+    if (confirmed) {
+      context.read<CoursesBloc>().add(DeleteLesson(lessonId: lesson.id));
+      Fluttertoast.showToast(
+          msg: string.deletingLesson, backgroundColor: Colors.orange);
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          context
+              .read<CoursesBloc>()
+              .add(FetchCourseLessons(courseId: widget.courseId));
+        }
+      });
+    }
+  }
+
+  void _navigateToEditLesson(LessonModel lesson) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<CoursesBloc>(),
+          child: EditLessonScreen(lesson: lesson, courseId: widget.courseId),
+        ),
+      ),
+    ).then((updated) {
+      if (updated == true) {
+        context
+            .read<CoursesBloc>()
+            .add(FetchCourseLessons(courseId: widget.courseId));
+      }
+    });
+  }
+
+  // ── Payment ────────────────────────────────────────────────────────────────
+
+  Future<void> _handleEnroll(BuildContext enrollContext, CourseModel course) async {
+    if (course.isFree) {
+      enrollContext.read<CoursesBloc>().add(EnrollInCourse(courseId: course.id));
+      return;
+    }
+
+    // Reset guard for a fresh payment attempt — same as AdPaymentScreen
+    setState(() => _handledPaymentStateType = null);
+
+    final paymentBloc = enrollContext.read<PaymentBloc>();
+    await initiatePaymentFlow(
+      context: enrollContext,
+      paymentBloc: paymentBloc,
+      targetId: course.id,
+      targetType: PaymentTargetType.course,
+      price: course.price,
+    );
+    // initiatePaymentFlow awaits the showGeneralDialog, so by the time
+    // we're back here Fawry/Vodafone screens have already handled their
+    // own dialogs and navigation. Nothing more to do for those methods.
+    // Credit card redirect is handled by the BlocListener below.
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final string = S.of(context);
 
-    return BlocConsumer<CoursesBloc, CoursesState>(
-      listener: (context, state) {
-        if (state is EnrollmentSuccess) {
-          Fluttertoast.showToast(
-            msg: 'Enrolled successfully',
-            backgroundColor: Colors.green,
-          );
-          context.read<CoursesBloc>().add(FetchCourseDetail(courseId: widget.courseId));
-        } else if (state is CourseDeleted) {
-          Fluttertoast.showToast(
-            msg: 'Course deleted',
-            backgroundColor: Colors.green,
-          );
-          Navigator.pop(context, true);
-        } else if (state is CoursesError) {
-          Fluttertoast.showToast(
-            msg: state.message,
-            backgroundColor: Colors.red,
-          );
-        }
-      },
-      buildWhen: (previous, current) {
-        return current is CourseDetailLoading ||
-            current is CourseDetailLoaded ||
-            (current is CoursesError && previous is! CourseDetailLoaded);
-      },
-      builder: (context, state) {
-        if (_course != null && (state is CoursesLoading || state is LessonsLoaded)) {
-          return _buildDetailScreen(_course!, theme, string);
-        }
+    return BlocProvider<PaymentBloc>(
+      create: (_) => getIt<PaymentBloc>(),
+      child: Builder(
+        builder: (paymentContext) {
+          return BlocListener<PaymentBloc, PaymentState>(
+            listener: (ctx, state) {
+              // ── Processing overlay for credit card initiation only ──────
+              // Fawry and Vodafone manage their own processing dialogs
+              // internally, just like in the ad payment flow.
+              if (state is PaymentInitiating) {
+                _showProcessingDialog();
+              }
 
-        if (state is CourseDetailLoading) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: const CourseDetailShimmer(), // ✅ Shimmer instead of loading
-          );
-        }
+              // ── Credit card: redirect to WebView ──────────────────────
+              if (state is PaymentRedirectReady) {
+                final stateKey =
+                    state.runtimeType.toString() + state.redirectUrl;
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
 
-        if (state is CourseDetailLoaded) {
-          _updateTabController(state.course);
-          return _buildDetailScreen(state.course, theme, string);
-        }
+                _dismissProcessingDialog();
+                _transId = state.transactionId;
 
-        if (state is CoursesError) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: theme.colorScheme.error),
-                  SizedBox(height: 16.h),
-                  Text(state.message, textAlign: TextAlign.center),
-                  SizedBox(height: 16.h),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<CoursesBloc>().add(
-                            FetchCourseDetail(courseId: widget.courseId),
-                          );
-                    },
-                    child: Text(string.retry),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        return Scaffold(
-          appBar: AppBar(),
-          body: const CourseDetailShimmer(), // ✅ Shimmer fallback
-        );
-      },
-    );
-  }
-
-  Widget _buildDetailScreen(CourseModel course, ThemeData theme, S string) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          course.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: [
-          if (course.isOwner)
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'edit') {
-                  // Navigate to edit screen
-                } else if (value == 'delete') {
-                  _showDeleteConfirmation(course.id);
-                } else if (value == 'add_lesson') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<CoursesBloc>(),
-                        child: UploadVideoScreen(
-                          courseId: course.id,
-                          existingLessonsCount: course.lessonsCount,
-                        ),
-                      ),
+                Navigator.push(
+                  ctx,
+                  MaterialPageRoute(
+                    builder: (_) => WebViewScreen(
+                      prevScreen: AppRoutes.mainLayout,
+                      url: state.redirectUrl,
+                      title: string.completePayment,
                     ),
+                  ),
+                );
+              }
+
+              // ── Free course success (ProcessSuccessful) ────────────────
+              // Show success dialog, then trigger enrollment, then navigate
+              // back. This mirrors how AdPaymentScreen handles free/redirect.
+              if (state is ProcessSuccessful) {
+                final stateKey = state.runtimeType.toString();
+                if (stateKey == _handledPaymentStateType) return;
+                _handledPaymentStateType = stateKey;
+
+                _dismissProcessingDialog();
+                if (!mounted || _course == null) return;
+
+                final courseId = _course!.id;
+                showDialog(
+                  context: ctx,
+                  barrierDismissible: false,
+                  builder: (_) => PaymentSuccessDialog(
+                    transactionId: _transId ?? string.unKnown,
+                    onDismissed: () {
+                      if (mounted) {
+                        ctx
+                            .read<CoursesBloc>()
+                            .add(EnrollInCourse(courseId: courseId));
+                      }
+                    },
+                  ),
+                );
+              }
+
+              // ── FAWRY / VODAFONE success (ManualActivateSuccess) ──────────────
+              // Do NOT show a dialog here — Fawry shows it on its own screen and
+              // Vodafone shows it on its own screen then navigates away.
+              // We just dismiss the processing overlay (safety) and reset state.
+              if (state is ManualActivateSuccess && !_isManualActivationHandled) {
+                _isManualActivationHandled = true;
+                _dismissProcessingDialog();
+                // Reset guard so the next payment attempt is fresh.
+                setState(() => _handledPaymentStateType = null);
+                // Trigger enrollment after successful payment
+                if (mounted && _course != null) {
+                  ctx
+                      .read<CoursesBloc>()
+                      .add(EnrollInCourse(courseId: _course!.id));
+                }
+              }
+
+              // ── Errors ─────────────────────────────────────────────────
+              if (state is PaymentInitiateError) {
+                _dismissProcessingDialog();
+                Fluttertoast.showToast(
+                    msg: state.message, backgroundColor: Colors.red);
+              }
+              if (state is ManualActivateError) {
+                _dismissProcessingDialog();
+                Fluttertoast.showToast(
+                    msg: state.message, backgroundColor: Colors.red);
+              }
+            },
+            child: BlocConsumer<CoursesBloc, CoursesState>(
+              listener: (ctx, state) {
+                if (state is EnrollmentSuccess) {
+                  Fluttertoast.showToast(
+                      msg: string.enrolledSuccessfully,
+                      backgroundColor: Colors.green);
+                  Navigator.of(ctx).pushNamedAndRemoveUntil(
+                    AppRoutes.mainLayout,
+                    (route) => false,
                   );
+                } else if (state is CourseDeleted) {
+                  Fluttertoast.showToast(
+                      msg: string.courseDeleted,
+                      backgroundColor: Colors.green);
+                  Navigator.pop(ctx, true);
+                } else if (state is CoursesError) {
+                  Fluttertoast.showToast(
+                      msg: state.message, backgroundColor: Colors.red);
                 }
               },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'add_lesson',
-                  child: Row(
-                    children: [
-                      Icon(Icons.video_library),
-                      SizedBox(width: 8),
-                      Text('Add Lesson'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.edit),
-                      SizedBox(width: 8),
-                      Text(string.edit),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Colors.red[700]),
-                      SizedBox(width: 8),
-                      Text(string.delete, style: TextStyle(color: Colors.red[700])),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // ✅ 1. VIDEO HEADER (fixed, always visible)
-          if (_currentPlayingLesson != null)
-            InlineLessonVideoPlayer(
-              lesson: _currentPlayingLesson!,
-              courseId: widget.courseId,
-              allLessons: _allLessons,
-              onBack: () {
-                setState(() => _currentPlayingLesson = null);
-              },
-              onNextLesson: (nextLesson) {
-                setState(() => _currentPlayingLesson = nextLesson);
-              },
-              onPreviousLesson: (prevLesson) {
-                setState(() => _currentPlayingLesson = prevLesson);
-              },
-            )
-          else
-            // ✅ Thumbnail when no video playing
-            if (course.thumbnailUrl != null)
-              SizedBox(
-                width: double.infinity,
-                height: 200.h,
-                child: Image.network(
-                  course.thumbnailUrl!,
-                  width: double.infinity,
-                  height: 200.h,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 200.h,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_not_supported, size: 48.sp),
-                  ),
-                ),
-              ),
-        
-          // ✅ 2. TABS (fixed, always visible)
-          TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabs: _buildTabs(course, string),
-          ),
-          
-          // ✅ 3. TAB CONTENT (scrollable)
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: _buildTabViews(course, theme, string),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: !course.isOwner && !course.isEnrolled
-          ? _buildEnrollButton(course, theme, string)
-          : null,
-    );
-  }
+              buildWhen: (previous, current) =>
+                  current is CourseDetailLoading ||
+                  current is CourseDetailLoaded ||
+                  current is LessonsLoaded ||
+                  (current is CoursesError && previous is! CourseDetailLoaded),
+              builder: (ctx, state) {
+                if (_course == null && state is CourseDetailLoaded) {
+                  _updateTabController(state.course);
+                }
+                if (state is LessonsLoaded &&
+                    state.courseId == widget.courseId) {
+                  if (state.lessons != _allLessons) {
+                    _allLessons = List.from(state.lessons);
+                  }
+                }
 
-  // ✅ NEW TAB ORDER: Lessons → Description → Progress/Enrolled → Revenue
-  List<Widget> _buildTabs(CourseModel course, S string) {
-    final tabs = <Widget>[
-      const Tab(text: 'Lessons'),      // ✅ First tab
-      Tab(text: string.description),   // ✅ Second tab
-    ];
+                final course = _course ??
+                    (state is CourseDetailLoaded ? state.course : null);
 
-    if (course.isOwner) {
-      tabs.addAll([
-        const Tab(text: 'Enrolled'),   // ✅ Third tab
-        const Tab(text: 'Revenue'),    // ✅ Fourth tab
-      ]);
-    } else if (course.isEnrolled) {
-      tabs.add(const Tab(text: 'Progress')); // ✅ Third tab
-    }
-
-    return tabs;
-  }
-
-  // ✅ NEW TAB VIEW ORDER: Lessons → Description → Progress/Enrolled → Revenue
-  List<Widget> _buildTabViews(CourseModel course, ThemeData theme, S string) {
-    final views = <Widget>[
-      _buildLessonsTab(course, theme, string),  // ✅ First view
-      _buildDescriptionTab(course, theme, string), // ✅ Second view
-    ];
-
-    if (course.isOwner) {
-      views.addAll([
-        EnrolleesScreen(courseId: course.id),    // ✅ Third view
-        RevenueScreen(courseId: course.id),       // ✅ Fourth view
-      ]);
-    } else if (course.isEnrolled) {
-      views.add(_buildProgressTab(course, theme, string)); // ✅ Third view
-    }
-
-    return views;
-  }
-
-  // ✅ Lessons Tab
-  Widget _buildLessonsTab(CourseModel course, ThemeData theme, S string) {
-    return BlocBuilder<CoursesBloc, CoursesState>(
-      builder: (context, state) {
-        if (state is LessonsLoaded) {
-          _allLessons = state.lessons;
-          
-          if (state.lessons.isEmpty) {
-            return _buildEmptyLessonsState(theme, string);
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<CoursesBloc>().add(
-                    FetchCourseLessons(courseId: widget.courseId),
+                if (course == null) {
+                  return Scaffold(
+                    appBar: AppBar(),
+                    body: const CourseDetailShimmer(),
                   );
-              await Future.delayed(const Duration(milliseconds: 500));
-            },
-            child: ListView.separated(
-              padding: EdgeInsets.all(16.r),
-              itemCount: state.lessons.length,
-              separatorBuilder: (_, __) => SizedBox(height: 12.h),
-              itemBuilder: (context, index) {
-                final lesson = state.lessons[index];
-                final isCurrentlyPlaying = _currentPlayingLesson?.id == lesson.id;
-                
-                return _buildLessonCard(
-                  lesson,
-                  state.isEnrolled,
-                  isCurrentlyPlaying,
-                  theme,
-                  string,
+                }
+
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(course.title,
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    actions: _buildAppBarActions(course, string),
+                  ),
+                  body: NestedScrollView(
+                    headerSliverBuilder: (_, __) => [
+                      SliverToBoxAdapter(
+                        child: CourseHeader(
+                          currentPlayingLesson: _currentPlayingLesson,
+                          allLessons: _allLessons,
+                          courseId: widget.courseId,
+                          thumbnailUrl: course.thumbnailUrl,
+                          onBack: () =>
+                              setState(() => _currentPlayingLesson = null),
+                          onNextLesson: (l) =>
+                              setState(() => _currentPlayingLesson = l),
+                          onPreviousLesson: (l) =>
+                              setState(() => _currentPlayingLesson = l),
+                        ),
+                      ),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _SliverAppBarDelegate(
+                          TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            labelColor: Theme.of(ctx).colorScheme.primary,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorSize: TabBarIndicatorSize.label,
+                            tabs: _buildTabs(course, string),
+                          ),
+                        ),
+                      ),
+                    ],
+                    body: TabBarView(
+                      controller: _tabController,
+                      children: _buildTabViews(course, string),
+                    ),
+                  ),
+                  bottomNavigationBar: (!course.isOwner && !course.isEnrolled)
+                      ? _buildEnrollButton(paymentContext, course, string)
+                      : null,
                 );
               },
             ),
           );
-        }
-
-        if (state is CoursesError) {
-          return _buildLessonsErrorState(state.message, theme, string);
-        }
-
-        // ✅ Shimmer while loading
-        return const LessonsListShimmer();
-      },
-    );
-  }
-
-  Widget _buildLessonCard(
-    LessonModel lesson,
-    bool isEnrolled,
-    bool isCurrentlyPlaying,
-    ThemeData theme,
-    S string,
-  ) {
-    final canPlay = isEnrolled;
-
-    return InkWell(
-      onTap: canPlay
-          ? () {
-              setState(() {
-                _currentPlayingLesson = lesson;
-              });
-            }
-          : null,
-      child: Container(
-        padding: EdgeInsets.all(16.r),
-        decoration: BoxDecoration(
-          color: isCurrentlyPlaying
-              ? theme.colorScheme.primary.withOpacity(0.1)
-              : theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: lesson.isWatched
-                ? theme.colorScheme.primary.withOpacity(0.3)
-                : (isCurrentlyPlaying
-                    ? theme.colorScheme.primary
-                    : Colors.grey[300]!),
-            width: isCurrentlyPlaying ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 56.w,
-              height: 56.w,
-              decoration: BoxDecoration(
-                color: lesson.isWatched
-                    ? Colors.green.withOpacity(0.2)
-                    : theme.colorScheme.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                lesson.isWatched
-                    ? Icons.check_circle
-                    : Icons.play_circle_outline,
-                color: lesson.isWatched
-                    ? Colors.green
-                    : theme.colorScheme.primary,
-                size: 32.sp,
-              ),
-            ),
-            SizedBox(width: 16.w),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Lesson ${lesson.order}',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (lesson.isWatched) ...[
-                        SizedBox(width: 8.w),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 2.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                          child: Text(
-                            'Completed',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (isCurrentlyPlaying) ...[
-                        SizedBox(width: 8.w),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 2.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4.r),
-                          ),
-                          child: Text(
-                            'Playing',
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  SizedBox(height: 4.h),
-                  
-                  Text(
-                    lesson.title,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 8.h),
-                  
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 14.sp,
-                        color: Colors.grey[600],
-                      ),
-                      SizedBox(width: 4.w),
-                      Text(
-                        _formatDuration(lesson.duration),
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
-                        SizedBox(width: 16.w),
-                        Text(
-                          '${lesson.progressPercentage.toInt()}% watched',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  
-                  if (lesson.progressPercentage > 0 && !lesson.isWatched) ...[
-                    SizedBox(height: 8.h),
-                    LinearProgressIndicator(
-                      value: lesson.progressPercentage / 100,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        theme.colorScheme.primary,
-                      ),
-                      minHeight: 4.h,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            Icon(
-              canPlay ? Icons.arrow_forward_ios : Icons.lock_outline,
-              size: 20.sp,
-              color: canPlay
-                  ? theme.colorScheme.onSurface.withOpacity(0.5)
-                  : Colors.grey[400],
-            ),
-          ],
-        ),
+        },
       ),
     );
   }
 
-  Widget _buildDescriptionTab(CourseModel course, ThemeData theme, S string) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            course.title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8.h),
-
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20.r,
-                backgroundImage: course.owner.profilePictureUrl != null
-                    ? NetworkImage(course.owner.profilePictureUrl!)
-                    : null,
-                child: course.owner.profilePictureUrl == null
-                    ? const Icon(Icons.person)
-                    : null,
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      course.owner.fullName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      '${course.enrolledUsersCount} students',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          Row(
-            children: [
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.play_circle_outline, size: 16.sp, color: theme.colorScheme.primary),
-                    SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        '${course.lessonsCount} lessons',
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.access_time, size: 16.sp, color: theme.colorScheme.primary),
-                    SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        course.formattedDuration,
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: course.isFree ? Colors.green.withOpacity(0.1) : theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Text(
-              course.isFree ? 'FREE' : '${course.price} EGP',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: course.isFree ? Colors.green : theme.colorScheme.onPrimaryContainer,
-              ),
-            ),
-          ),
-          SizedBox(height: 24.h),
-
-          if (course.description != null && course.description!.isNotEmpty) ...[
-            Text(
-              string.description,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              course.description!,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ],
-        ],
-      ),
-    );
+  List<Widget> _buildTabs(CourseModel course, S string) {
+    final tabs = [
+      Tab(text: string.lessons),
+      Tab(text: string.description),
+    ];
+    if (course.isOwner) {
+      tabs.addAll([Tab(text: string.enrolled), Tab(text: string.revenue)]);
+    } else if (course.isEnrolled) {
+      tabs.add(Tab(text: string.progress));
+    }
+    return tabs;
   }
 
-  Widget _buildProgressTab(CourseModel course, ThemeData theme, S string) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.r),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(16.r),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  '${course.progress}%',
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Course Progress',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                LinearProgressIndicator(
-                  value: course.progress / 100,
-                  minHeight: 8.h,
-                  backgroundColor: theme.colorScheme.surface,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 24.h),
+  List<Widget> _buildTabViews(CourseModel course, S string) {
+    final views = <Widget>[
+      CourseLessonsTab(
+        course: course,
+        lessons: _allLessons,
+        currentPlayingLesson: _currentPlayingLesson,
+        isEditMode: _isEditMode,
+        onRefresh: () => context
+            .read<CoursesBloc>()
+            .add(FetchCourseLessons(courseId: widget.courseId)),
+        onLessonTap: (l) => setState(() => _currentPlayingLesson = l),
+        onUpdateLesson: _navigateToEditLesson,
+        onDeleteLesson: (lesson) => _deleteLesson(lesson, string),
+      ),
+      CourseDescriptionTab(
+        course: course,
+        isEditMode: _isEditMode,
+        hasUnsavedChanges: _hasUnsavedChanges,
+        newThumbnail: _newThumbnail,
+        titleController: _titleController,
+        descriptionController: _descriptionController,
+        priceController: _priceController,
+        isFree: _isFreeEdit,
+        onPickThumbnail: _pickThumbnail,
+        onCancelEdit: _cancelEditMode,
+        onSaveChanges: () => _saveAllChanges(course, string),
+        onFreeChanged: (v) => _isFreeEdit = v,
+        onFieldChanged: _onFieldChanged,
+      ),
+    ];
+    if (course.isOwner) {
+      views.add(EnrolleesTab(courseId: course.id));
+      views.add(RevenueTab(courseId: course.id));
+    } else if (course.isEnrolled) {
+      views.add(CourseProgressTab(course: course));
+    }
+    return views;
+  }
 
-          Row(
-            children: [
-              Expanded(
-                child: _buildProgressStat(
-                  'Completed',
-                  '${(course.lessonsCount * course.progress / 100).round()}/${course.lessonsCount}',
-                  Icons.check_circle,
-                  Colors.green,
-                  theme,
+  List<Widget> _buildAppBarActions(CourseModel course, S string) {
+    if (!course.isOwner) return [];
+    return [
+      PopupMenuButton<String>(
+        onSelected: (value) {
+          if (value == 'edit') {
+            _isEditMode ? _cancelEditMode() : _enterEditMode(course);
+          } else if (value == 'delete') {
+            _showDeleteConfirmation(course.id, string);
+          } else if (value == 'add_lesson') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<CoursesBloc>(),
+                  child: UploadLessonScreen(
+                    courseId: course.id,
+                    existingLessonsCount: course.lessonsCount,
+                  ),
                 ),
               ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: _buildProgressStat(
-                  'Time Spent',
-                  '${(course.totalDurationHours * course.progress / 100).toStringAsFixed(1)}h',
-                  Icons.access_time,
-                  Colors.blue,
-                  theme,
-                ),
-              ),
-            ],
+            );
+          }
+        },
+        itemBuilder: (_) => [
+          PopupMenuItem(
+            value: 'add_lesson',
+            child: Row(children: [
+              const Icon(Icons.video_library),
+              SizedBox(width: 8.w),
+              Text(string.addLesson),
+            ]),
+          ),
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(children: [
+              Icon(_isEditMode ? Icons.close : Icons.edit),
+              SizedBox(width: 8.w),
+              Text(_isEditMode ? string.cancelEdit : string.editCourse),
+            ]),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(children: [
+              const Icon(Icons.delete, color: Colors.red),
+              SizedBox(width: 8.w),
+              Text(string.delete, style: const TextStyle(color: Colors.red)),
+            ]),
           ),
         ],
       ),
-    );
+    ];
   }
 
-  Widget _buildProgressStat(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-    ThemeData theme,
-  ) {
+  Widget _buildEnrollButton(
+      BuildContext paymentContext, CourseModel course, S string) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 32.sp, color: color),
-          SizedBox(height: 8.h),
-          Text(
-            value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDuration(double durationSeconds) {
-    final totalSeconds = durationSeconds.round();
-    if (totalSeconds < 60) {
-      return '${totalSeconds}s';
-    }
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (minutes < 60) {
-      return seconds > 0 ? '${minutes}m ${seconds}s' : '${minutes}m';
-    }
-    final hours = minutes ~/ 60;
-    final remainingMinutes = minutes % 60;
-    return remainingMinutes > 0
-        ? '${hours}h ${remainingMinutes}m'
-        : '${hours}h';
-  }
-
-  Widget _buildEmptyLessonsState(ThemeData theme, S string) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.video_library_outlined,
-            size: 64.sp,
-            color: Colors.grey[400],
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            'No lessons available',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLessonsErrorState(String message, ThemeData theme, S string) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 64.sp,
-            color: theme.colorScheme.error,
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            message,
-            style: theme.textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 16.h),
-          ElevatedButton(
-            onPressed: () {
-              context.read<CoursesBloc>().add(
-                    FetchCourseLessons(courseId: widget.courseId),
-                  );
-            },
-            child: Text(string.retry),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEnrollButton(CourseModel course, ThemeData theme, S string) {
-    return Container(
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: Theme.of(paymentContext).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, -2)),
         ],
       ),
       child: SafeArea(
         child: BlocBuilder<CoursesBloc, CoursesState>(
-          builder: (context, state) {
+          builder: (_, state) {
             final isLoading = state is EnrollmentLoading;
             return CustomElevatedButton(
               text: course.isFree
-                  ? 'Enroll Now'
-                  : 'Enroll for ${course.price} EGP',
+                  ? string.enrollNow
+                  : string.enrollForPrice('${course.price} ${string.egp}'),
               isLoading: isLoading,
               onPressed: isLoading
-                  ? ()=>{}
-                  : () {
-                      context.read<CoursesBloc>().add(
-                            EnrollInCourse(courseId: course.id),
-                          );
-                    },
+                  ? () {}
+                  : () => _handleEnroll(paymentContext, course),
             );
           },
         ),
@@ -876,18 +605,40 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     );
   }
 
-  void _showDeleteConfirmation(String courseId) {
+  void _showDeleteConfirmation(String courseId, S string) {
     ConfirmationDialog.show(
       context: context,
-      title: 'Delete Course',
-      message: 'Are you sure you want to delete this course? This action cannot be undone.',
-      onConfirm: () {
-        context.read<CoursesBloc>().add(DeleteCourse(courseId: courseId));
-      },
-      confirmText: S.of(context).delete,
-      cancelText: S.of(context).cancel,
+      title: string.deleteCourse,
+      message: string.deleteCourseConfirmation,
+      onConfirm: () =>
+          context.read<CoursesBloc>().add(DeleteCourse(courseId: courseId)),
+      confirmText: string.delete,
+      cancelText: string.cancel,
       icon: Icons.delete_outline,
       isDestructive: true,
     );
   }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+
+  _SliverAppBarDelegate(this._tabBar);
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+          BuildContext context, double shrinkOffset, bool overlapsContent) =>
+      Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: _tabBar,
+      );
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/courses/model/course_models.dart';
 
 class EnrolleeCard extends StatelessWidget {
-  final EnrolledUserModel enrollee; // ✅ Changed from EnrolleeModel
+  final EnrolledUserModel enrollee;
   final VoidCallback onTap;
 
   const EnrolleeCard({
@@ -66,29 +66,14 @@ class EnrolleeCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min, // Keeps column height minimal
             children: [
               Text(
-                '${enrollee.progress}%',
+                '${formatProgress(enrollee.progress)}%',
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
                   color: _getProgressColor(enrollee.progress),
-                ),
-              ),
-              SizedBox(height: 4.h),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                decoration: BoxDecoration(
-                  color: _getProgressColor(enrollee.progress).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-                child: Text(
-                  _getPerformanceLabel(enrollee.progress),
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    color: _getProgressColor(enrollee.progress),
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
               ),
             ],
@@ -112,45 +97,26 @@ class EnrolleeCard extends StatelessWidget {
     } else if (difference.inDays < 30) {
       return '${(difference.inDays / 7).floor()} weeks ago';
     } else {
-      final months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ];
       return '${months[date.month - 1]} ${date.day}, ${date.year}';
     }
   }
 
-  String _getPerformanceLabel(int progress) {
-    if (progress >= 75) {
-      return 'Excellent';
-    } else if (progress >= 50) {
-      return 'Good';
-    } else if (progress >= 25) {
-      return 'Average';
-    } else {
-      return 'Needs Work';
-    }
+
+  Color _getProgressColor(num progress) {
+    if (progress >= 75) return Colors.green;
+    if (progress >= 50) return Colors.blue;
+    if (progress >= 25) return Colors.orange;
+    return Colors.red;
   }
 
-  Color _getProgressColor(int progress) {
-    if (progress >= 75) {
-      return Colors.green;
-    } else if (progress >= 50) {
-      return Colors.blue;
-    } else if (progress >= 25) {
-      return Colors.orange;
-    } else {
-      return Colors.red;
+  String formatProgress(num value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString();
     }
+    return value.toStringAsFixed(2);
   }
 }

@@ -5,12 +5,12 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/sports_in.dart';
 import 'package:sports_in/core/config/language_cubit/language_cubit.dart';
 import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-
+  // await ChatInit.init(); // opens Hive boxes
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

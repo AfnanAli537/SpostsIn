@@ -5,19 +5,19 @@ import 'package:sports_in/features/main/courses/view/widgets/enrollee_card.dart'
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-class EnrolleesScreen extends StatefulWidget {
+class EnrolleesTab extends StatefulWidget {
   final String courseId;
 
-  const EnrolleesScreen({
+  const EnrolleesTab({
     super.key,
     required this.courseId,
   });
 
   @override
-  State<EnrolleesScreen> createState() => _EnrolleesScreenState();
+  State<EnrolleesTab> createState() => _EnrolleesTabState();
 }
 
-class _EnrolleesScreenState extends State<EnrolleesScreen> {
+class _EnrolleesTabState extends State<EnrolleesTab> {
   @override
   void initState() {
     super.initState();
@@ -48,16 +48,14 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
                   ),
                   SizedBox(height: 16.h),
                   Text(
-                    // string.noEnrollees ?? 
-                    'No enrollees yet',
+                    string.noEnrolleesYet,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: Colors.grey[600],
                     ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
-                    // string.enrolleesWillAppear ?? 
-                    'Enrolled students will appear here',
+                    string.enrolleesWillAppear,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.grey[500],
                     ),
@@ -88,8 +86,7 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildStat(
-                        // string.totalEnrolled ?? 
-                        'Total Enrolled',
+                        string.totalEnrolled,
                         '${state.enrollees.length}',
                         Icons.people,
                         theme,
@@ -100,8 +97,7 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
                         color: theme.colorScheme.onPrimaryContainer.withOpacity(0.2),
                       ),
                       _buildStat(
-                        // string.avgProgress ??
-                         'Avg Progress',
+                        string.avgProgress,
                         '${_calculateAverageProgress(state.enrollees)}%',
                         Icons.trending_up,
                         theme,
@@ -121,8 +117,7 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
                       return EnrolleeCard(
                         enrollee: enrollee,
                         onTap: () {
-                          // Could navigate to detailed progress screen
-                          _showEnrolleeDetails(enrollee);
+                          _showEnrolleeDetails(enrollee, string);
                         },
                       );
                     },
@@ -194,13 +189,13 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
     );
   }
 
-  int _calculateAverageProgress(List enrollees) {
+  num _calculateAverageProgress(List enrollees) {
     if (enrollees.isEmpty) return 0;
-    final total = enrollees.fold<int>(0, (sum, e) => sum + (e.progress as int));
+    final total = enrollees.fold<num>(0, (sum, e) => sum + (e.progress as num));
     return (total / enrollees.length).round();
   }
 
-  void _showEnrolleeDetails(enrollee) {
+  void _showEnrolleeDetails(enrollee, S string) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -209,19 +204,19 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Progress: ${enrollee.progress}%'),
+            Text('${string.progress}: ${formatProgress(enrollee.progress)}%'),
             SizedBox(height: 8.h),
             LinearProgressIndicator(
               value: enrollee.progress / 100,
             ),
             SizedBox(height: 16.h),
-            Text('Enrolled: ${_formatDate(enrollee.enrolledAt)}'),
+            Text('${string.enrolled}: ${_formatDate(enrollee.enrolledAt)}'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(string.close),
           ),
         ],
       ),
@@ -230,5 +225,12 @@ class _EnrolleesScreenState extends State<EnrolleesScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+  
+  String formatProgress(num value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(2);
   }
 }
