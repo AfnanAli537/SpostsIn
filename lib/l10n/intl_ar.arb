@@ -266,6 +266,7 @@
   "followError": "فشلت المتابعة",
   "unfollowSuccess": "تم إلغاء المتابعة بنجاح!",
   "disconnectSuccess": "تم قطع الاتصال بنجاح!",
+  "noMoreContacts": "لا توجد جهات اتصال أخرى",
   "search": "أبحث",
   "searchResults": "نتائج البحث",
   "noResultsFound": "لا توجد نتائج",

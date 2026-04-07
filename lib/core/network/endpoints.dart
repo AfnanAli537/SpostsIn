@@ -45,6 +45,7 @@ static const String getPostById = '/api/Posts/{id}';
   static const String respondConnection = '/api/Social/respond-connection';
   static const String connectionRequests = '/api/Social/connection-requests';
   static const String contacts = '/api/Chat/contacts';
+  static const String userConnections = '/api/Social/{userId}/connections';
   static const String getOpportunities =
       "/api/Opportunity/{targetUserId}/Target";
 

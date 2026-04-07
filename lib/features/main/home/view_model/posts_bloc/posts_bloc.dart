@@ -82,7 +82,11 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
         pageSize: pageSize,
       );
 
-      _posts.addAll(fetchedPosts);
+      final newPosts = fetchedPosts.where((newPost) =>
+        !_posts.any((existing) => existing.id == newPost.id)
+      ).toList();
+
+      _posts.addAll(newPosts);
 
       _currentPage = nextPage;
       _hasNextPage = fetchedPosts.length == pageSize;
@@ -97,8 +101,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     } finally {
       _isFetching = false;
     }
-  }
-Future<void> _onFetchSinglePost(
+  }Future<void> _onFetchSinglePost(
   FetchSinglePost event,
   Emitter<PostsState> emit,
 ) async {

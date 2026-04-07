@@ -795,3 +795,34 @@ class ContactItem {
     );
   }
 }
+class UserContactItem {
+  final String userId;
+  final String fullName;
+  final String? profilePictureUrl;
+  final String userType; // e.g., "User"
+  final String? bio;
+  final bool isFollowedByMe;
+  final String? connectionStatus; // or maybe an enum, depending on possible values
+
+  const UserContactItem({
+    required this.userId,
+    required this.fullName,
+    this.profilePictureUrl,
+    required this.userType,
+    this.bio,
+    required this.isFollowedByMe,
+    this.connectionStatus,
+  });
+
+  factory UserContactItem.fromJson(Map<String, dynamic> json) {
+    return UserContactItem(
+      userId: json['userId'] ?? '',
+      fullName: json['fullName'] ?? '',
+      profilePictureUrl: json['profilePictureUrl'] as String?,
+      userType: json['userType'] ?? '',
+      bio: json['bio'] as String?,
+      isFollowedByMe: json['isFollowedByMe'] as bool? ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
+    );
+  }
+}

@@ -788,6 +788,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "لا توجد دروس متاحة",
     ),
     "noLikesYet": MessageLookupByLibrary.simpleMessage("لا توجد إعجابات بعد"),
+    "noMoreContacts": MessageLookupByLibrary.simpleMessage(
+      "لا توجد جهات اتصال أخرى",
+    ),
     "noMoreRequests": MessageLookupByLibrary.simpleMessage(
       "لا توجد المزيد من طلبات الاتصال",
     ),

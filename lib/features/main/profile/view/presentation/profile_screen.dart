@@ -227,8 +227,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider(          // ← create, not .value
-              create: (_) => getIt<ChatBloc>(),     // ← fresh instance
+            builder: (_) => BlocProvider(         
+              create: (_) => getIt<ChatBloc>(),    
               child: ChatView(
                 chat: chatModel,
                 currentUserId: currentUserId,

@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/widgets/connect_button.dart';
 import 'package:sports_in/core/widgets/custom_avatar.dart';
+import 'package:sports_in/core/widgets/follow_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view/widgets/connections_shimmer.dart';
 import 'package:sports_in/features/main/profile/view_model/connection bloc/connections_bloc.dart';
@@ -14,9 +17,6 @@ import 'package:sports_in/generated/l10n.dart';
 
 class ConnectionsScreen extends StatelessWidget {
   final bool isOwner;
-
-  /// Pass the other user's ID when isOwner is false.
-  /// Null means we're loading the current user's own data.
   final String? userId;
 
   const ConnectionsScreen({
@@ -30,14 +30,16 @@ class ConnectionsScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<ConnectionsBloc>()
         ..add(LoadConnections(userId: isOwner ? null : userId)),
-      child: _ConnectionsView(isOwner: isOwner),
+      child: _ConnectionsView(isOwner: isOwner, userId: userId),
     );
   }
 }
 
 class _ConnectionsView extends StatefulWidget {
   final bool isOwner;
-  const _ConnectionsView({required this.isOwner});
+  final String? userId;
+
+  const _ConnectionsView({required this.isOwner, this.userId});
 
   @override
   State<_ConnectionsView> createState() => _ConnectionsViewState();
@@ -45,11 +47,15 @@ class _ConnectionsView extends StatefulWidget {
 
 class _ConnectionsViewState extends State<_ConnectionsView> {
   final _scrollController = ScrollController();
+  late final String currentUserId;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    // Get current user ID from SharedPref
+    final sharedPref = getIt<SharedPref>();
+    currentUserId = sharedPref.getUserId() ?? '';
   }
 
   @override
@@ -59,9 +65,14 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+    final pixels = _scrollController.position.pixels;
+    final maxExtent = _scrollController.position.maxScrollExtent;
+    if (pixels < maxExtent - 200) return;
+
+    if (widget.isOwner) {
       context.read<ConnectionsBloc>().add(LoadMoreRequests());
+    } else {
+      context.read<ConnectionsBloc>().add(LoadMoreContacts());
     }
   }
 
@@ -104,11 +115,10 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                   Text(state.message, textAlign: TextAlign.center),
                   SizedBox(height: 16.h),
                   ElevatedButton(
-                    onPressed: () => context
-                        .read<ConnectionsBloc>()
-                        .add(LoadConnections(
-                          userId: widget.isOwner ? null : null,
-                        )),
+                    onPressed: () => context.read<ConnectionsBloc>().add(
+                          LoadConnections(
+                              userId: widget.isOwner ? null : widget.userId),
+                        ),
                     child: Text(strings.retry),
                   ),
                 ],
@@ -121,13 +131,13 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
             final bloc = context.read<ConnectionsBloc>();
 
             return RefreshIndicator(
-              onRefresh: () async => bloc.add(LoadConnections(
-                userId: widget.isOwner ? null : null,
-              )),
+              onRefresh: () async => bloc.add(
+                LoadConnections(userId: widget.isOwner ? null : widget.userId),
+              ),
               child: CustomScrollView(
                 controller: _scrollController,
                 slivers: [
-                  // ── Contacts (always shown) ───────────────────────────
+                  // ── Contacts ──────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: _SectionHeader(
                       title: strings.myContacts,
@@ -156,16 +166,45 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                         delegate: SliverChildBuilderDelegate(
                           (context, index) => _ContactCard(
                             contact: state.contacts[index],
+                            currentUserId: currentUserId,
                             onTap: () => Navigator.pushNamed(
                               context,
                               AppRoutes.userProfile,
-                              arguments: state.contacts[index].id,
+                              arguments: state.contacts[index].userId, // fixed: use userId
                             ),
                           ),
                           childCount: state.contacts.length,
                         ),
                       ),
                     ),
+
+                  // Contacts load-more indicator (other-user screen only)
+                  if (!widget.isOwner) ...[
+                    if (state.isLoadingMoreContacts)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: const Center(
+                              child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    if (!state.hasMoreContacts &&
+                        !state.isLoadingMoreContacts &&
+                        state.contacts.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          child: Center(
+                            child: Text(
+                              strings.noMoreContacts,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: ColorManager.hintTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
 
                   // ── Requests (owner only, paginated) ──────────────────
                   if (widget.isOwner) ...[
@@ -196,9 +235,9 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                               return _RequestCard(
                                 request: request,
                                 onAccept: () => bloc.add(RespondToRequest(
-                                    senderId: request.id, status: 'Accepted')),
+                                    senderId: request.id, status: 'Accepted', userId: widget.userId)),
                                 onReject: () => bloc.add(RespondToRequest(
-                                    senderId: request.id, status: 'Rejected')),
+                                    senderId: request.id, status: 'Rejected', userId: widget.userId)),
                               );
                             },
                             childCount: state.requests.length,
@@ -209,8 +248,8 @@ class _ConnectionsViewState extends State<_ConnectionsView> {
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 16.h),
-                            child:
-                                const Center(child: CircularProgressIndicator()),
+                            child: const Center(
+                                child: CircularProgressIndicator()),
                           ),
                         ),
                       if (!state.hasMoreRequests &&
@@ -297,17 +336,149 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ── Contact Card ───────────────────────────────────────────────────────────────
+// ── Contact Card (updated to use UserContactItem) ───────────────────────────
+
+// class _ContactCard extends StatelessWidget {
+//   final UserContactItem contact;
+//   final String currentUserId;
+//   final VoidCallback onTap;
+
+//   const _ContactCard({
+//     required this.contact,
+//     required this.currentUserId,
+//     required this.onTap,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     final strings = S.of(context);
+//     final isCurrentUser = contact.userId == currentUserId;
+
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: Container(
+//         margin: EdgeInsets.only(bottom: 16.h),
+//         decoration: BoxDecoration(
+//           color: theme.colorScheme.surface,
+//           borderRadius: BorderRadius.circular(12.r),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.05),
+//               blurRadius: 8.r,
+//               offset: Offset(0, 2.h),
+//             ),
+//           ],
+//         ),
+//         child: Padding(
+//           padding: EdgeInsets.all(16.r),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Row(
+//                 crossAxisAlignment: CrossAxisAlignment.center,
+//                 children: [
+//                   CustomAvatar(
+//                     imageUrl: contact.profilePictureUrl,
+//                     name: contact.fullName,
+//                     radius: 32.r,
+//                   ),
+//                   SizedBox(width: 16.w),
+//                   Expanded(
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           contact.fullName,
+//                           style: theme.textTheme.titleMedium
+//                               ?.copyWith(fontWeight: FontWeight.w700),
+//                           maxLines: 1,
+//                           overflow: TextOverflow.ellipsis,
+//                         ),
+//                         if (contact.bio != null) ...[
+//                           SizedBox(height: 4.h),
+//                           Text(
+//                             contact.bio!,
+//                             style: theme.textTheme.bodySmall,
+//                             maxLines: 1,
+//                             overflow: TextOverflow.ellipsis,
+//                           ),
+//                         ],
+//                       ],
+//                     ),
+//                   ),
+//                   Icon(
+//                     Icons.chevron_right_rounded,
+//                     color: theme.colorScheme.onTertiaryContainer,
+//                     size: 22.sp,
+//                   ),
+//                 ],
+//               ),
+//               if (!isCurrentUser) ...[
+//                 SizedBox(height: 16.h),
+//                 Row(
+//                   children: [
+//                     Expanded(
+//                       child: ConnectButton(
+//                         connectionStatus: contact.connectionStatus,
+//                         onPressed: () {
+//                           final status = contact.connectionStatus;
+//                           if (status == null) {
+//                             context.read<ConnectionsBloc>().add(
+//                                   SendConnectionRequestToContact(
+//                                       contact.userId),
+//                                 );
+//                           } else if (status == 'Accepted') {
+//                             context.read<ConnectionsBloc>().add(
+//                                   RemoveContact(contact.userId),
+//                                 );
+//                           }
+//                         },
+//                         connectText: strings.connect,
+//                         pendingText: strings.pending,
+//                         removeContactText: strings.remove,
+//                       ),
+//                     ),
+//                     SizedBox(width: 12.w),
+//                     Expanded(
+//                       child: FollowButton(
+//                         isFollowing: contact.isFollowedByMe,
+//                         onPressed: () {
+//                           context.read<ConnectionsBloc>().add(
+//                                 ToggleFollowContact(contact.userId),
+//                               );
+//                         },
+//                         followingText: strings.following,
+//                         followText: strings.follow,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _ContactCard extends StatelessWidget {
-  final ContactItem contact;
+  final UserContactItem contact;
+  final String currentUserId;
   final VoidCallback onTap;
-  const _ContactCard({required this.contact, required this.onTap});
+
+  const _ContactCard({
+    required this.contact,
+    required this.currentUserId,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final strings = S.of(context);
+    final isCurrentUser = contact.userId == currentUserId;
 
     return GestureDetector(
       onTap: onTap,
@@ -326,57 +497,89 @@ class _ContactCard extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.all(16.r),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CustomAvatar(
-                      imageUrl: contact.imageUrl,
-                      name: contact.title,
-                      radius: 32.r),
-                  if (contact.isOnline)
-                    Positioned(
-                      right: 1,
-                      bottom: 1,
-                      child: Container(
-                        width: 13.w,
-                        height: 13.w,
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: theme.colorScheme.surface, width: 2),
+                    imageUrl: contact.profilePictureUrl,
+                    name: contact.fullName,
+                    radius: 32.r,
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          contact.fullName,
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
+                        if (contact.bio != null) ...[
+                          SizedBox(height: 4.h),
+                          Text(
+                            contact.bio!,
+                            style: theme.textTheme.bodySmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
                     ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: theme.colorScheme.onTertiaryContainer,
+                    size: 22.sp,
+                  ),
                 ],
               ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              if (!isCurrentUser) ...[
+                SizedBox(height: 16.h),
+                Row(
                   children: [
-                    Text(
-                      contact.title,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (contact.isOnline) ...[
-                      SizedBox(height: 4.h),
-                      Text(
-                        strings.online,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.green, fontWeight: FontWeight.w500),
+                    Expanded(
+                      child: ConnectButton(
+                        connectionStatus: contact.connectionStatus,
+                        onPressed: () {
+                          final status = contact.connectionStatus;
+                          if (status == null) {
+                            context.read<ConnectionsBloc>().add(
+                                  SendConnectionRequestToContact(
+                                      contact.userId),
+                                );
+                          } else if (status == 'Accepted') {
+                            context.read<ConnectionsBloc>().add(
+                                  RemoveContact(contact.userId),
+                                );
+                          }
+                        },
+                        connectText: strings.connect,
+                        pendingText: strings.pending,
+                        removeContactText: strings.remove,
                       ),
-                    ],
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: FollowButton(
+                        isFollowing: contact.isFollowedByMe,
+                        onPressed: () {
+                          context.read<ConnectionsBloc>().add(
+                                ToggleFollowContact(contact.userId),
+                              );
+                        },
+                        followingText: strings.following,
+                        followText: strings.follow,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              Icon(Icons.chevron_right_rounded,
-                  color: theme.colorScheme.onTertiaryContainer, size: 22.sp),
+              ],
             ],
           ),
         ),
@@ -384,7 +587,6 @@ class _ContactCard extends StatelessWidget {
     );
   }
 }
-
 // ── Request Card ───────────────────────────────────────────────────────────────
 
 class _RequestCard extends StatelessWidget {
@@ -438,13 +640,13 @@ class _RequestCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      strings.wantsToConnect,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onTertiaryContainer,
-                          fontWeight: FontWeight.w500),
-                    ),
+                    // SizedBox(height: 4.h),
+                    // Text(
+                    //   strings.wantsToConnect,
+                    //   style: theme.textTheme.bodyMedium?.copyWith(
+                    //       color: theme.colorScheme.onTertiaryContainer,
+                    //       fontWeight: FontWeight.w500),
+                    // ),
                     SizedBox(height: 16.h),
                     Row(
                       children: [

@@ -102,7 +102,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
 
   DateTime _buildStartDateTime(DateTime pickedDay) {
     final now = DateTime.now();
-    final isToday = pickedDay.year == now.year &&
+    final isToday =
+        pickedDay.year == now.year &&
         pickedDay.month == now.month &&
         pickedDay.day == now.day;
     return isToday
@@ -114,7 +115,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     if (_startDate == null) {
       return DateTime(pickedDay.year, pickedDay.month, pickedDay.day);
     }
-    final isSameDay = pickedDay.year == _startDate!.year &&
+    final isSameDay =
+        pickedDay.year == _startDate!.year &&
         pickedDay.month == _startDate!.month &&
         pickedDay.day == _startDate!.day;
     return isSameDay
@@ -167,15 +169,18 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
       builder: (_) => Container(
         padding: EdgeInsets.all(20.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.image,
-                  color: Theme.of(context).colorScheme.primary),
+              leading: Icon(
+                Icons.image,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: Text(strings.pickImage),
               onTap: () {
                 Navigator.pop(context);
@@ -183,8 +188,10 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.video_library,
-                  color: Theme.of(context).colorScheme.primary),
+              leading: Icon(
+                Icons.video_library,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: Text(strings.pickVideo),
               onTap: () {
                 Navigator.pop(context);
@@ -200,8 +207,10 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
   // ─── Error helper ──────────────────────────────────────────────────────────
 
   Future<void> _showError(String message) async {
-    final msg =
-        await TranslateErrorHelper.translateErrorKeyAsync(context, message);
+    final msg = await TranslateErrorHelper.translateErrorKeyAsync(
+      context,
+      message,
+    );
     Fluttertoast.showToast(
       msg: msg,
       backgroundColor: Colors.red,
@@ -231,45 +240,47 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     }
 
     final sportId = EnumMapper.getSportId(
-          EnumMapper.fromLabel(
-                EnumMapper.sportLabels(),
-                _sportNotifier.value!,
-              ) ??
-              EnumMapper.sportLabels().keys.first,
-        );
+      EnumMapper.fromLabel(EnumMapper.sportLabels(), _sportNotifier.value!) ??
+          EnumMapper.sportLabels().keys.first,
+    );
 
     final price = _calculatePrice(strings);
-    final audienceIds =
-        TargetAudienceMapper.labelsToIds(_selectedAudienceLabels, strings)
-          ..sort();
+    final audienceIds = TargetAudienceMapper.labelsToIds(
+      _selectedAudienceLabels,
+      strings,
+    )..sort();
 
     if (_isEditing) {
-      context.read<AdsBloc>().add(UpdateAd(
-            adId: widget.existingAd!.id,
-            title: title,
-            description: description,
-            mediaFilePath: _selectedFile?.path,
-            price: price,
-            actionUrl: _actionUrlController.text.trim(),
-            actionText: _actionTextController.text.trim(),
-            startDate: _startDate!,
-            endDate: _endDate!,
-            sportTypeId: sportId,
-            targetAudiences: audienceIds,
-          ));
+      context.read<AdsBloc>().add(
+        UpdateAd(
+          adId: widget.existingAd!.id,
+          title: title,
+          description: description,
+          mediaFilePath: _selectedFile?.path,
+          price: price,
+          actionUrl: _actionUrlController.text.trim(),
+          actionText: _actionTextController.text.trim(),
+          startDate: _startDate!,
+          endDate: _endDate!,
+          sportTypeId: sportId,
+          targetAudiences: audienceIds,
+        ),
+      );
     } else {
-      context.read<AdsBloc>().add(CreateAd(
-            title: title,
-            description: description,
-            mediaFilePath: _selectedFile?.path,
-            price: price,
-            actionUrl: _actionUrlController.text.trim(),
-            actionText: _actionTextController.text.trim(),
-            startDate: _startDate!,
-            endDate: _endDate!,
-            sportTypeId: sportId,
-            targetAudiences: audienceIds,
-          ));
+      context.read<AdsBloc>().add(
+        CreateAd(
+          title: title,
+          description: description,
+          mediaFilePath: _selectedFile?.path,
+          price: price,
+          actionUrl: _actionUrlController.text.trim(),
+          actionText: _actionTextController.text.trim(),
+          startDate: _startDate!,
+          endDate: _endDate!,
+          sportTypeId: sportId,
+          targetAudiences: audienceIds,
+        ),
+      );
     }
   }
 
@@ -327,7 +338,9 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            _isEditing ? strings.editAdvertisement : strings.createAdvertisement,
+            _isEditing
+                ? strings.editAdvertisement
+                : strings.createAdvertisement,
             style: TextStyle(
               color: theme.onSurface,
               fontSize: 18.sp,
@@ -368,8 +381,9 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               _sectionLabel(strings.titleRequired),
               SizedBox(height: 8.h),
               AuthTextField(
-                  controller: _titleController, 
-                  label: strings.enterAdTitle),
+                controller: _titleController,
+                label: strings.enterAdTitle,
+              ),
               SizedBox(height: 20.h),
 
               // ── Description ────────────────────────────────────────────────
@@ -389,6 +403,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                   labelText: strings.sportProfession,
                   value: sport,
                   options: RegisterLists.sportNameOptions(strings),
+                  borderColor: theme.outline.withOpacity(0.4),
+
                   onChanged: (val) => _sportNotifier.value = val,
                   validator: (_) => null,
                 ),
@@ -402,6 +418,8 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 labelText: strings.whoShouldSeeThisAd,
                 value: _selectedAudienceLabels,
                 options: TargetAudienceMapper.allLabels(strings),
+                borderColor: theme.outline.withOpacity(0.4),
+
                 onChanged: (selected) {
                   setState(() => _selectedAudienceLabels = selected);
                 },
@@ -433,48 +451,15 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 ],
               ),
 
-              // // ── Price display ──────────────────────────────────────────────
-              // if (_startDate != null && _endDate != null)
-              //   Padding(
-              //     padding: EdgeInsets.only(top: 12.h),
-              //     child: Container(
-              //       padding: EdgeInsets.symmetric(
-              //           horizontal: 16.w, vertical: 12.h),
-              //       decoration: BoxDecoration(
-              //         color: theme.primary.withOpacity(0.08),
-              //         borderRadius: BorderRadius.circular(10.r),
-              //       ),
-              //       child: Row(
-              //         children: [
-              //           Icon(Icons.monetization_on_outlined,
-              //               color: theme.primary),
-              //           SizedBox(width: 8.w),
-              //           Text(
-              //             strings.estimatedCost(
-              //               _calculatePrice(strings).toStringAsFixed(0),
-              //             ),
-              //             style: TextStyle(
-              //               fontSize: 14.sp,
-              //               fontWeight: FontWeight.w600,
-              //               color: theme.primary,
-              //             ),
-              //           ),
-              //           SizedBox(width: 4.w),
-              //           Text(strings.pricePerDay('5'),
-              //               style: TextStyle(
-              //                   fontSize: 12.sp, color: Colors.grey[600])),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
               SizedBox(height: 20.h),
 
               // ── Action URL ─────────────────────────────────────────────────
               _sectionLabel(strings.actionUrlOptional),
               SizedBox(height: 8.h),
               AuthTextField(
-                  controller: _actionUrlController, 
-                  label: strings.urlPlaceholder),
+                controller: _actionUrlController,
+                label: strings.urlPlaceholder,
+              ),
               SizedBox(height: 20.h),
 
               // ── CTA text ───────────────────────────────────────────────────
@@ -512,10 +497,12 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     if (_selectedFile != null) {
       return Stack(
         children: [
-          Image.file(_selectedFile!,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover),
+          Image.file(
+            _selectedFile!,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
           _clearMediaButton(),
         ],
       );
@@ -537,7 +524,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                   child: CircularProgressIndicator(
                     value: progress.expectedTotalBytes != null
                         ? progress.cumulativeBytesLoaded /
-                            progress.expectedTotalBytes!
+                              progress.expectedTotalBytes!
                         : null,
                   ),
                 ),
@@ -556,9 +543,10 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                 strings.tapToChangeMedia,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500),
+                  color: Colors.white,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -579,7 +567,9 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
         child: Container(
           padding: EdgeInsets.all(4.w),
           decoration: const BoxDecoration(
-              color: Colors.black54, shape: BoxShape.circle),
+            color: Colors.black54,
+            shape: BoxShape.circle,
+          ),
           child: Icon(Icons.close, color: Colors.white, size: 20.sp),
         ),
       ),
@@ -590,17 +580,21 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.cloud_upload_outlined,
-            size: 60.sp, color: Colors.grey[600]),
+        Icon(Icons.cloud_upload_outlined, size: 60.sp, color: Colors.grey[600]),
         SizedBox(height: 12.h),
-        Text(strings.uploadImageOrVideo,
-            style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500)),
+        Text(
+          strings.uploadImageOrVideo,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         SizedBox(height: 4.h),
-        Text(strings.optional,
-            style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
+        Text(
+          strings.optional,
+          style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+        ),
       ],
     );
   }
@@ -646,13 +640,18 @@ class _DatePickerTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label,
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
+            Text(
+              label,
+              style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+            ),
             SizedBox(height: 4.h),
             Row(
               children: [
-                Icon(Icons.calendar_today_outlined,
-                    size: 16.sp, color: theme.primary),
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16.sp,
+                  color: theme.primary,
+                ),
                 SizedBox(width: 6.w),
                 Text(
                   date != null

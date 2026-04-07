@@ -37,7 +37,15 @@ class ProfileRepo {
 
   Future<List<ContactItem>> getContacts({String? userId}) =>
       _dataSource.getContacts(userId: userId);
-
+Future<({List<UserContactItem> items, bool hasNextPage})> getUserConnections({
+  required String userId,
+  int pageNumber = 1,
+  int pageSize = 20,
+}) => _dataSource.getUserConnections(
+      userId: userId,
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+    );
   // ── Achievements ─────────────────────────────────────────────────────────────
 
   Future<List<Achievement>> getAchievements({

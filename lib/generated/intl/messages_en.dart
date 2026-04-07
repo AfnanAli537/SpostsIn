@@ -813,6 +813,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "No lessons available",
     ),
     "noLikesYet": MessageLookupByLibrary.simpleMessage("No likes yet"),
+    "noMoreContacts": MessageLookupByLibrary.simpleMessage("No more contacts"),
     "noMoreRequests": MessageLookupByLibrary.simpleMessage("No More Requests"),
     "noOpportunities": MessageLookupByLibrary.simpleMessage("No Opportunities"),
     "noOpportunitiesAvailable": MessageLookupByLibrary.simpleMessage(

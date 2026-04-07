@@ -389,7 +389,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     try {
       final response = await _apiClient.get(
         Endpoints.createdCourses,
-        params: {'userId':userId, 'page': page, 'size': pageSize},
+        params: {'userId': userId, 'page': page, 'size': pageSize},
       );
 
       if (response.statusCode == 200) {
@@ -594,6 +594,31 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
+  /// GET /api/Social/{userId}/connections
+  @override
+  Future<({List<UserContactItem> items, bool hasNextPage})> getUserConnections({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userConnections.replaceFirst('{userId}', userId),
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map((json) => UserContactItem.fromJson(json as Map<String, dynamic>))
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
   // ── Analyzed Videos (mock) ───────────────────────────────────────────────────
 
   Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(String userId) async {

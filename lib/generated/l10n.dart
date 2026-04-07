@@ -4588,6 +4588,16 @@ class S {
     );
   }
 
+  /// `No more contacts`
+  String get noMoreContacts {
+    return Intl.message(
+      'No more contacts',
+      name: 'noMoreContacts',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Online`
   String get online {
     return Intl.message('Online', name: 'online', desc: '', args: []);

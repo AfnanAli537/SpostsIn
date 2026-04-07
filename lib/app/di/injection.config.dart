@@ -231,9 +231,6 @@ extension GetItInjectableX on _i174.GetIt {
         remoteDataSource: gh<_i661.ChatRemoteDataSource>(),
       ),
     );
-    gh.factory<_i691.ConnectionsBloc>(
-      () => _i691.ConnectionsBloc(gh<_i752.ProfileRepo>()),
-    );
     gh.factory<_i86.ProfileBloc>(
       () => _i86.ProfileBloc(gh<_i752.ProfileRepo>()),
     );
@@ -261,6 +258,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i567.CoursesBloc>(
       () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i691.ConnectionsBloc>(
+      () => _i691.ConnectionsBloc(
+        gh<_i752.ProfileRepo>(),
+        gh<_i414.SharedPref>(),
+      ),
     );
     gh.factory<_i324.ChatBloc>(
       () => _i324.ChatBloc(
