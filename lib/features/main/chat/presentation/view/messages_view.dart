@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_list_section.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/contacts_section.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/messages_header.dart';
 import 'package:sports_in/features/main/chat/presentation/view/create_group_view.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/chat_history_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/chatbot_onboarding_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart';
 
 class MessagesView extends StatefulWidget {
   const MessagesView({super.key});
@@ -32,6 +36,35 @@ class _MessagesViewState extends State<MessagesView> {
       ..add(HubConnectEvent());
   }
 
+// Inside _MessagesViewState
+Future<void> _handleChatbotNavigation() async {
+  final prefs = await SharedPreferences.getInstance();
+  final bool hasSeenOnboarding = prefs.getBool('has_seen_chatbot_onboarding') ?? false;
+
+  if (!mounted) return;
+  if (hasSeenOnboarding) {
+    // Navigator.pushNamed(context, ChatHistoryScreen.routeName);
+     Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) 
+      // =>BlocProvider<ChatbotBloc>(
+      //   // Use your dependency injection to create the bloc instance
+      //   create: (context) => getIt<ChatbotBloc>(),
+      //   child: const ChatHistoryScreen(),
+      => const ChatHistoryScreen()
+      // ),
+      ),
+    );
+  } 
+  else {
+    // Save that they've seen it now (or do this inside the Onboarding screen's "Continue" button)
+    // await prefs.setBool('has_seen_chatbot_onboarding', true);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChatbotOnboardingScreen()),
+    );
+  }
+}
   @override
   void dispose() {
     _searchController.dispose();
@@ -45,12 +78,26 @@ class _MessagesViewState extends State<MessagesView> {
 
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 90.h),
-        child: FloatingActionButton(
-          heroTag: 'main_create_group_fab', // now explicitly unique
-          onPressed: () {
-            showCreateGroupBottomSheet(context);
-          },
-          child: const Icon(Icons.add),
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+        children: [
+          // New Chatbot FAB (Top)
+          FloatingActionButton(
+            heroTag: 'chatbot_fab',
+            // backgroundColor: const Color(0xFF1A1A2E), // Matching chatbot theme
+            onPressed: _handleChatbotNavigation,
+            child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+          ),
+          
+          SizedBox(height: 12.h), // Space between buttons
+            FloatingActionButton(
+              heroTag: 'main_create_group_fab', // now explicitly unique
+              onPressed: () {
+                showCreateGroupBottomSheet(context);
+              },
+              child: const Icon(Icons.add),
+            ),
+          ],
         ),
       ),
       body: Container(
@@ -129,6 +176,8 @@ class _MessagesViewState extends State<MessagesView> {
       ),
     );
   }
+  
+  Future<void> getIt() async {}
 }
 
 class _SignalRStatusBanner extends StatelessWidget {

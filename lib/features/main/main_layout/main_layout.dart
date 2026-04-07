@@ -5,6 +5,8 @@ import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart';
 import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/presentation/view/messages_view.dart';
+import 'package:sports_in/features/main/chat_bot/data/repo/chatbot_repo.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart';
 import 'package:sports_in/features/main/home/view/presentation/home_screen.dart';
 import 'package:sports_in/features/main/home/view/widgets/buttom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,9 +35,18 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   late final List<Widget> _pages = [
     const HomePage(),
     const SearchScreen(),
-    BlocProvider<ChatBloc>(
-      create: (_) =>
-          ChatBloc(repo: getIt<ChatRepository>(), hub: getIt<ChatHubService>()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<ChatBloc>(
+          create: (_) => ChatBloc(
+            repo: getIt<ChatRepository>(),
+            hub: getIt<ChatHubService>(),
+          ),
+        ),
+        BlocProvider<ChatbotBloc>(
+        create: (_) =>ChatbotBloc(repository: getIt<ChatbotRepository>()),
+      ),
+      ],
       child: const MessagesView(),
     ),
     const MyProfileScreen(),
