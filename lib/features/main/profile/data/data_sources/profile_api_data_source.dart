@@ -609,7 +609,63 @@ class ApiProfileDataSource implements IProfileDataSource {
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
         final items = (data['items'] as List<dynamic>? ?? [])
-            .map((json) => UserContactItem.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) => UserContactItem.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<({List<UserContactItem> items, bool hasNextPage})> getFollowers({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userFollowers.replaceFirst('{userId}', userId),
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map(
+              (json) => UserContactItem.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<({List<UserContactItem> items, bool hasNextPage})> getFollowing({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userFollowing.replaceFirst('{userId}', userId),
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map(
+              (json) => UserContactItem.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
         final hasNextPage = data['hasNextPage'] as bool? ?? false;
         return (items: items, hasNextPage: hasNextPage);

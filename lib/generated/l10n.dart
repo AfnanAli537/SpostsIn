@@ -4578,6 +4578,26 @@ class S {
     );
   }
 
+  /// `No followers yet`
+  String get noFollowersYet {
+    return Intl.message(
+      'No followers yet',
+      name: 'noFollowersYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No following yet`
+  String get noFollowingYet {
+    return Intl.message(
+      'No following yet',
+      name: 'noFollowingYet',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Wants to connect with you`
   String get wantsToConnect {
     return Intl.message(

@@ -245,6 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               profile: profile,
               isOwnProfile: isOwnProfile,
               theme: theme,
+              context: context,
               string: string,
               isFollowing: profile.isFollowing,
 

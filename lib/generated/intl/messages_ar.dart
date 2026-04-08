@@ -778,6 +778,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "noEnrolleesYet": MessageLookupByLibrary.simpleMessage(
       "لا يوجد مشتركين بعد",
     ),
+    "noFollowersYet": MessageLookupByLibrary.simpleMessage(
+      "لا يوجد متابعين بعد",
+    ),
+    "noFollowingYet": MessageLookupByLibrary.simpleMessage(
+      "لا يوجد متابعة بعد",
+    ),
     "noInactiveAds": MessageLookupByLibrary.simpleMessage(
       "لا توجد إعلانات غير نشطة",
     ),

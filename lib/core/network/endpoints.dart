@@ -33,13 +33,13 @@ static const String getPostById = '/api/Posts/{id}';
 
   //Profile Endpoints
   static const String getProfile =
-      "/api/Profile/{userId}"; //(get) profile by userId as a parameter
+      "/api/Profile/{userId}";
   static const String updateProfile =
-      "/api/Profile/Update"; //(put) update the profile take the date from the get and put it in the update body as default value the Request body is the same as the responce body from the profile get
+      "/api/Profile/Update"; 
   static const String myActiveOpportunities =
-      "/api/Opportunity/my-active"; //(get) takes page and pageSize parameters and get list of my active opportunities
+      "/api/Opportunity/my-active";
   static const String getCourses =
-      "/api/Profile/courses"; //keep for the courses the mock data for now
+      "/api/Profile/courses"; 
   static const String sendConnectionRequest = '/api/Social/connect';
   static const String removeContact = '/api/Social/connect/{targetId}';
   static const String respondConnection = '/api/Social/respond-connection';
@@ -51,15 +51,15 @@ static const String getPostById = '/api/Posts/{id}';
 
   // Achievements Endpoints
   static const String getAchievements =
-      "/api/Achievements/user/{userId}"; //(get) Achievements, have parameter for userId and also uses pagination, takes page and size
+      "/api/Achievements/user/{userId}"; 
   static const String getAchievement =
-      "/api/Achievements/{id}"; //(get) one Achievement, have parameter id for achievement details screen
+      "/api/Achievements/{id}"; 
   static const String createAchievement =
-      "/api/Achievements"; //(post) one Achievement, the request body takes Title* (string), Description* (string), AchievementDate (string($date-time)), and MediaFile (string($binary)) takes an image
+      "/api/Achievements"; 
   static const String updateAchievement =
-      "/api/Achievements/{id}"; //(put) one Achievement, have parameter achievement id and the request body takes Title* (string), Description* (string), AchievementDate (string($date-time)), and MediaFile (string($binary)) takes an image
+      "/api/Achievements/{id}"; 
   static const String deleteAchievement =
-      "/api/Achievements/{id}"; //(delete) have parameter id of the achievement
+      "/api/Achievements/{id}";
 
   //opportunities Endpoints
   static const String getOpportunity = "/api/Opportunity";
@@ -78,11 +78,13 @@ static const String getPostById = '/api/Posts/{id}';
   static const String getAnalyzedVideos =
       "/api/Profile/analyzed-videos"; //leave as mock data for now
   static const String getInterests =
-      "/api/Profile/interests"; //there is no end points but I will put an actual users with there id and role in order to try to navigate to an actual different users by using the get profile endpoint to also view the follow and connect status
+      "/api/Profile/interests";
   static const String toggleFollow =
-      "/api/Social/follow/{targetId}"; //(post) takes the targetId  as a parameter
+      "/api/Social/follow/{targetId}"; 
   static const String toggleConnect =
-      "/api/Social/connect"; //(post) takes the { "receiverId": "string" } in the request body and the connection now in pendding state so there is 3 states in totle (not connect, pending, connected)
+      "/api/Social/connect"; 
+  static const String userFollowers = '/api/Social/{userId}/followers';
+  static const String userFollowing = '/api/Social/{userId}/following';
   //payment
   static const String search = "/api/Search/explore";
   //payment

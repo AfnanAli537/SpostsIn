@@ -732,6 +732,8 @@
   "noMoreRequests": "لا توجد المزيد من طلبات الاتصال",
   "myContacts": "جهات اتصالي",
   "noContactsYet": "لا توجد جهات اتصال بعد",
+  "noFollowersYet": "لا يوجد متابعين بعد",
+  "noFollowingYet": "لا يوجد متابعة بعد",
   "wantsToConnect": "يريد الاتصال بك",
   "online": "متصل",
   "lessonOrderSaved": "تم حفظ ترتيب الدروس",

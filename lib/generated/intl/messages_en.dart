@@ -803,6 +803,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "No description available",
     ),
     "noEnrolleesYet": MessageLookupByLibrary.simpleMessage("No enrollees yet"),
+    "noFollowersYet": MessageLookupByLibrary.simpleMessage("No followers yet"),
+    "noFollowingYet": MessageLookupByLibrary.simpleMessage("No following yet"),
     "noInactiveAds": MessageLookupByLibrary.simpleMessage(
       "No inactive advertisements",
     ),

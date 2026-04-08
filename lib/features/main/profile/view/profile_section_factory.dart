@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/features/main/profile/view/presentation/followers_screen.dart';
+import 'package:sports_in/features/main/profile/view/presentation/following_screen.dart';
 import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
 import 'package:sports_in/features/main/profile/view/widgets/empty_section.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -29,31 +31,46 @@ class ProfileSectionFactory {
       case UserType.player:
         if (profile.playerData != null) {
           return PlayerDataSection(
-              data: profile.playerData!, theme: theme, string: string);
+            data: profile.playerData!,
+            theme: theme,
+            string: string,
+          );
         }
         break;
       case UserType.coach:
         if (profile.coachData != null) {
           return CoachDataSection(
-              data: profile.coachData!, theme: theme, string: string);
+            data: profile.coachData!,
+            theme: theme,
+            string: string,
+          );
         }
         break;
       case UserType.scout:
         if (profile.scoutData != null) {
           return ScoutDataSection(
-              data: profile.scoutData!, theme: theme, string: string);
+            data: profile.scoutData!,
+            theme: theme,
+            string: string,
+          );
         }
         break;
       case UserType.club:
         if (profile.clubData != null) {
           return ClubDataSection(
-              data: profile.clubData!, theme: theme, string: string);
+            data: profile.clubData!,
+            theme: theme,
+            string: string,
+          );
         }
         break;
       case UserType.institute:
         if (profile.instituteData != null) {
           return InstituteDataSection(
-              data: profile.instituteData!, theme: theme, string: string);
+            data: profile.instituteData!,
+            theme: theme,
+            string: string,
+          );
         }
         break;
       case UserType.other:
@@ -90,26 +107,30 @@ class ProfileSectionFactory {
 
     // ── Posts ────────────────────────────────────────────────────────────────
     if (profile.posts.isNotEmpty) {
-      sections.add(PostsSection(
-        posts: profile.posts,
-        onShowAll: onPostsShowAll,
-        onPostTap: onPostTap,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        PostsSection(
+          posts: profile.posts,
+          onShowAll: onPostsShowAll,
+          onPostTap: onPostTap,
+          theme: theme,
+          string: string,
+        ),
+      );
     } else {
       sections.add(EmptySection(title: string.posts, message: string.noPosts));
     }
     // ── Advertisements ───────────────────────────────────────────────────────
     if (profile.ads.isNotEmpty) {
-      sections.add(AdsSection(
-        ads: profile.ads,
-        isOwner: isOwnProfile,
-        onShowAll: onAdsShowAll,
-        onAdTap: onAdTap,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        AdsSection(
+          ads: profile.ads,
+          isOwner: isOwnProfile,
+          onShowAll: onAdsShowAll,
+          onAdTap: onAdTap,
+          theme: theme,
+          string: string,
+        ),
+      );
     }
     // ── Opportunities ────────────────────────────────────────────────────────
     if (profile.opportunities != null &&
@@ -117,21 +138,27 @@ class ProfileSectionFactory {
         (profile.userType == UserType.coach ||
             profile.userType == UserType.scout ||
             profile.userType == UserType.club)) {
-      sections.add(OpportunitiesSection(
-        opportunities: profile.opportunities!,
-        onShowAll: onOpportunitiesShowAll,
-        onOpportunityTap: onOpportunityTap,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        OpportunitiesSection(
+          opportunities: profile.opportunities!,
+          onShowAll: onOpportunitiesShowAll,
+          onOpportunityTap: onOpportunityTap,
+          theme: theme,
+          string: string,
+        ),
+      );
     } else if (profile.opportunities != null &&
         profile.opportunities!.isEmpty &&
         (profile.userType == UserType.coach ||
             profile.userType == UserType.scout ||
             profile.userType == UserType.institute ||
             profile.userType == UserType.club)) {
-      sections.add(EmptySection(
-          title: string.opportunities, message: string.noOpportunities));
+      sections.add(
+        EmptySection(
+          title: string.opportunities,
+          message: string.noOpportunities,
+        ),
+      );
     }
 
     // ── Courses ──────────────────────────────────────────────────────────────
@@ -140,59 +167,70 @@ class ProfileSectionFactory {
         (profile.userType == UserType.club ||
             profile.userType == UserType.coach ||
             profile.userType == UserType.institute)) {
-      sections.add(CoursesSection(
-        courses: profile.courses!,
-        onShowAll: onCoursesShowAll,
-        onCourseTap: onCourseTap,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        CoursesSection(
+          courses: profile.courses!,
+          onShowAll: onCoursesShowAll,
+          onCourseTap: onCourseTap,
+          theme: theme,
+          string: string,
+        ),
+      );
     } else if (profile.courses != null &&
         profile.courses!.isEmpty &&
         (profile.userType == UserType.club ||
             profile.userType == UserType.coach ||
             profile.userType == UserType.institute)) {
       sections.add(
-          EmptySection(title: string.courses, message: string.noCourses));
+        EmptySection(title: string.courses, message: string.noCourses),
+      );
     }
 
     // ── Achievements ─────────────────────────────────────────────────────────
     if (profile.achievements.isNotEmpty) {
-      sections.add(AchievementsSection(
-        achievements: profile.achievements,
-        userId: profile.id,
-        isCurrentUser: isOwnProfile,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        AchievementsSection(
+          achievements: profile.achievements,
+          userId: profile.id,
+          isCurrentUser: isOwnProfile,
+          theme: theme,
+          string: string,
+        ),
+      );
     } else {
-      sections.add(EmptySection(
-          title: string.achievements, message: string.noAchievements));
+      sections.add(
+        EmptySection(
+          title: string.achievements,
+          message: string.noAchievements,
+        ),
+      );
     }
 
     // ── Analyzed videos ──────────────────────────────────────────────────────
     if (profile.analyzedVideos.isNotEmpty) {
-      sections.add(AnalyzedVideosSection(
-        videos: profile.analyzedVideos,
-        onShowAll: onVideosShowAll,
-        onVideoTap: onVideoTap,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        AnalyzedVideosSection(
+          videos: profile.analyzedVideos,
+          onShowAll: onVideosShowAll,
+          onVideoTap: onVideoTap,
+          theme: theme,
+          string: string,
+        ),
+      );
     }
-
-
 
     // ── Interests ────────────────────────────────────────────────────────────
     if (profile.interests.isNotEmpty) {
-      sections.add(InterestsSection(
-        interests: profile.interests,
-        onShowAll: onInterestsShowAll,
-        onFollowToggle: onFollowToggle,
-        onInterestTap: onInterestTap,
-        theme: theme,
-        string: string,
-      ));
+      sections.add(
+        InterestsSection(
+          interests: profile.interests,
+          onShowAll: onInterestsShowAll,
+          onFollowToggle: onFollowToggle,
+          onInterestTap: onInterestTap,
+          theme: theme,
+          string: string,
+        ),
+      );
     }
 
     return sections;
@@ -202,6 +240,7 @@ class ProfileSectionFactory {
     required ProfileModel profile,
     required bool isOwnProfile,
     required ThemeData theme,
+    required BuildContext context,
     required S string,
     bool isFollowing = false,
     VoidCallback? onPostsShowAll,
@@ -233,8 +272,22 @@ class ProfileSectionFactory {
     sections.add(
       ProfileStatsWidget(
         stats: profile.stats,
-        onFollowersPressed: () {},
-        onFollowingPressed: () {},
+        onFollowersPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FollowersScreen(userId: profile.id),
+            ),
+          );
+        },
+        onFollowingPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FollowingScreen(userId: profile.id),
+            ),
+          );
+        },
         onConnectionsPressed: onConnectionsPressed,
         onAnalyzedPeoplePressed: () {},
         theme: theme,
@@ -274,28 +327,30 @@ class ProfileSectionFactory {
       );
     }
 
-    sections.addAll(buildOtherSections(
-      profile: profile,
-      isOwnProfile: isOwnProfile,
-      theme: theme,
-      string: string,
-      onPostsShowAll: onPostsShowAll,
-      onOpportunitiesShowAll: onOpportunitiesShowAll,
-      onCoursesShowAll: onCoursesShowAll,
-      onAchievementsShowAll: onAchievementsShowAll,
-      onVideosShowAll: onVideosShowAll,
-      onInterestsShowAll: onInterestsShowAll,
-      onAdsShowAll: onAdsShowAll,
-      onAdTap: onAdTap,
-      onPostTap: onPostTap,
-      onOpportunityTap: onOpportunityTap,
-      onCourseTap: onCourseTap,
-      onAchievementTap: onAchievementTap,
-      onVideoTap: onVideoTap,
-      onConnectToggle: onConnectToggle,
-      onFollowToggle: onFollowToggle,
-      onInterestTap: onInterestTap,
-    ));
+    sections.addAll(
+      buildOtherSections(
+        profile: profile,
+        isOwnProfile: isOwnProfile,
+        theme: theme,
+        string: string,
+        onPostsShowAll: onPostsShowAll,
+        onOpportunitiesShowAll: onOpportunitiesShowAll,
+        onCoursesShowAll: onCoursesShowAll,
+        onAchievementsShowAll: onAchievementsShowAll,
+        onVideosShowAll: onVideosShowAll,
+        onInterestsShowAll: onInterestsShowAll,
+        onAdsShowAll: onAdsShowAll,
+        onAdTap: onAdTap,
+        onPostTap: onPostTap,
+        onOpportunityTap: onOpportunityTap,
+        onCourseTap: onCourseTap,
+        onAchievementTap: onAchievementTap,
+        onVideoTap: onVideoTap,
+        onConnectToggle: onConnectToggle,
+        onFollowToggle: onFollowToggle,
+        onInterestTap: onInterestTap,
+      ),
+    );
 
     return sections;
   }
