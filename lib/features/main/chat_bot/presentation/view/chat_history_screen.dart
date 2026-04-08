@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/features/main/chat_bot/data/models/chatbot_models.dart';
-import 'package:sports_in/features/main/chat_bot/presentation/chat_window_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view/chat_window_screen.dart';
 import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart';
-import 'package:sports_in/features/main/chat_bot/presentation/widgets/session_tile.dart';
-
+import 'package:sports_in/features/main/chat_bot/presentation/view/widgets/session_tile.dart';
 
 class ChatHistoryScreen extends StatefulWidget {
   const ChatHistoryScreen({super.key});
@@ -20,6 +18,10 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
   @override
   void initState() {
     super.initState();
+    _loadSessions();
+  }
+
+  void _loadSessions() {
     context.read<ChatbotBloc>().add(LoadSessionsEvent());
   }
 
@@ -29,8 +31,20 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
     } else {
       context.read<ChatbotBloc>().add(StartNewChatEvent());
     }
-    Navigator.pushNamed(context, ChatWindowScreen.routeName,
-        arguments: sessionId);
+
+    final chatbotBloc = context.read<ChatbotBloc>();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider<ChatbotBloc>.value(
+          value: chatbotBloc,
+          child: const ChatWindowScreen(),
+        ),
+      ),
+    ).then((_) {
+      if (mounted) _loadSessions();
+    });
   }
 
   @override
@@ -58,10 +72,16 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
               SnackBar(content: Text(state.message)),
             );
           }
-          if (state is SessionDeleted || state is SessionRenamed) {
-            // Sessions already refreshed in bloc
-          }
         },
+        // ✅ Only rebuild for session-related states
+        // Ignores MessagesLoaded / MessageSent / SendingMessage
+        // so the history list never goes blank mid-chat
+        buildWhen: (_, current) =>
+            current is SessionsLoading ||
+            current is SessionsLoaded ||
+            current is SessionDeleted ||
+            current is SessionRenamed ||
+            current is SessionsError,
         builder: (context, state) {
           if (state is SessionsLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -72,7 +92,6 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
           if (state is SessionDeleted) sessions = state.sessions;
           if (state is SessionRenamed) sessions = state.sessions;
 
-          // Split into active (last 24h) and ended
           final now = DateTime.now();
           final active = sessions
               .where((s) => now.difference(s.createdAt).inHours < 24)
@@ -85,14 +104,14 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             children: [
               if (active.isNotEmpty) ...[
-                _SectionLabel(label: 'Active Chats'),
+                const _SectionLabel(label: 'Active Chats'),
                 const SizedBox(height: 8),
                 ...active.map((s) => SessionTile(
                       session: s,
                       onTap: () => _openChat(context, sessionId: s.sessionId),
-                      onDelete: () => context.read<ChatbotBloc>().add(
-                            DeleteSessionEvent(sessionId: s.sessionId),
-                          ),
+                      onDelete: () => context
+                          .read<ChatbotBloc>()
+                          .add(DeleteSessionEvent(sessionId: s.sessionId)),
                       onRename: (name) => context.read<ChatbotBloc>().add(
                             RenameSessionEvent(
                                 sessionId: s.sessionId, newName: name),
@@ -101,14 +120,14 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                 const SizedBox(height: 16),
               ],
               if (ended.isNotEmpty) ...[
-                _SectionLabel(label: 'Ended Chats'),
+                const _SectionLabel(label: 'Ended Chats'),
                 const SizedBox(height: 8),
                 ...ended.map((s) => SessionTile(
                       session: s,
                       onTap: () => _openChat(context, sessionId: s.sessionId),
-                      onDelete: () => context.read<ChatbotBloc>().add(
-                            DeleteSessionEvent(sessionId: s.sessionId),
-                          ),
+                      onDelete: () => context
+                          .read<ChatbotBloc>()
+                          .add(DeleteSessionEvent(sessionId: s.sessionId)),
                       onRename: (name) => context.read<ChatbotBloc>().add(
                             RenameSessionEvent(
                                 sessionId: s.sessionId, newName: name),
@@ -116,7 +135,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
                     )),
                 const SizedBox(height: 16),
               ],
-              if (sessions.isEmpty)
+              if (sessions.isEmpty && state is SessionsLoaded)
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.only(top: 80),
@@ -131,8 +150,6 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
           );
         },
       ),
-
-      // ─── Bottom Button ───────────────────────────────────────────────────
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
         child: SizedBox(

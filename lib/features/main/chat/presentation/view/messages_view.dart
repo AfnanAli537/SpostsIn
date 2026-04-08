@@ -8,8 +8,8 @@ import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart'
 import 'package:sports_in/features/main/chat/presentation/view/widgets/contacts_section.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/messages_header.dart';
 import 'package:sports_in/features/main/chat/presentation/view/create_group_view.dart';
-import 'package:sports_in/features/main/chat_bot/presentation/chat_history_screen.dart';
-import 'package:sports_in/features/main/chat_bot/presentation/chatbot_onboarding_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view/chat_history_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view/chatbot_onboarding_screen.dart';
 import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart';
 
 class MessagesView extends StatefulWidget {
@@ -26,45 +26,45 @@ class _MessagesViewState extends State<MessagesView> {
   void initState() {
     super.initState();
     final bloc = context.read<ChatBloc>();
-
-    /// 1- load the chats
-    /// 2- load the contacts
-    /// 3- connect to the hub and register the callbacks for the incoming messages
     bloc
       ..add(LoadChatsEvent())
       ..add(LoadContactsEvent())
       ..add(HubConnectEvent());
   }
 
-// Inside _MessagesViewState
-Future<void> _handleChatbotNavigation() async {
-  final prefs = await SharedPreferences.getInstance();
-  final bool hasSeenOnboarding = prefs.getBool('has_seen_chatbot_onboarding') ?? false;
+  Future<void> _handleChatbotNavigation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool hasSeenOnboarding =
+        prefs.getBool('has_seen_chatbot_onboarding') ?? false;
 
-  if (!mounted) return;
-  if (hasSeenOnboarding) {
-    // Navigator.pushNamed(context, ChatHistoryScreen.routeName);
-     Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) 
-      // =>BlocProvider<ChatbotBloc>(
-      //   // Use your dependency injection to create the bloc instance
-      //   create: (context) => getIt<ChatbotBloc>(),
-      //   child: const ChatHistoryScreen(),
-      => const ChatHistoryScreen()
-      // ),
-      ),
-    );
-  } 
-  else {
-    // Save that they've seen it now (or do this inside the Onboarding screen's "Continue" button)
-    // await prefs.setBool('has_seen_chatbot_onboarding', true);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ChatbotOnboardingScreen()),
-    );
+    if (!mounted) return;
+
+    // ✅ Grab the existing ChatbotBloc from the current context BEFORE pushing
+    final chatbotBloc = context.read<ChatbotBloc>();
+
+    if (hasSeenOnboarding) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider<ChatbotBloc>.value(
+            value: chatbotBloc, // ✅ pass the existing instance, don't create new
+            child: const ChatHistoryScreen(),
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider<ChatbotBloc>.value(
+            value: chatbotBloc, // ✅ onboarding also needs the bloc for the next screen
+            child: const ChatbotOnboardingScreen(),
+          ),
+        ),
+      );
+    }
   }
-}
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -75,26 +75,20 @@ Future<void> _handleChatbotNavigation() async {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 90.h),
         child: Column(
-            mainAxisSize: MainAxisSize.min,
-        children: [
-          // New Chatbot FAB (Top)
-          FloatingActionButton(
-            heroTag: 'chatbot_fab',
-            // backgroundColor: const Color(0xFF1A1A2E), // Matching chatbot theme
-            onPressed: _handleChatbotNavigation,
-            child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
-          ),
-          
-          SizedBox(height: 12.h), // Space between buttons
+          mainAxisSize: MainAxisSize.min,
+          children: [
             FloatingActionButton(
-              heroTag: 'main_create_group_fab', // now explicitly unique
-              onPressed: () {
-                showCreateGroupBottomSheet(context);
-              },
+              heroTag: 'chatbot_fab',
+              onPressed: _handleChatbotNavigation,
+              child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+            ),
+            SizedBox(height: 12.h),
+            FloatingActionButton(
+              heroTag: 'main_create_group_fab',
+              onPressed: () => showCreateGroupBottomSheet(context),
               child: const Icon(Icons.add),
             ),
           ],
@@ -116,25 +110,23 @@ Future<void> _handleChatbotNavigation() async {
               p.hubError != c.hubError,
           builder: (context, state) {
             final showHubBanner = !state.hubConnected || state.hubReconnecting;
-
-            // Decide which chats to show (normal vs search)
             final isSearching = (state.searchQuery ?? '').isNotEmpty;
             final chats = isSearching
                 ? state.searchResult
-                      .map(
-                        (s) => ChatModel(
-                          id: s.id,
-                          title: s.title,
-                          groupPhoto: s.imageUrl,
-                          isGroup: s.type.toLowerCase() == 'group',
-                          members: const [],
-                          lastMessage: null,
-                          lastMessageTime: null,
-                          unreadCount: 0,
-                          isOnline: s.isOnline,
-                        ),
-                      )
-                      .toList()
+                    .map(
+                      (s) => ChatModel(
+                        id: s.id,
+                        title: s.title,
+                        groupPhoto: s.imageUrl,
+                        isGroup: s.type.toLowerCase() == 'group',
+                        members: const [],
+                        lastMessage: null,
+                        lastMessageTime: null,
+                        unreadCount: 0,
+                        isOnline: s.isOnline,
+                      ),
+                    )
+                    .toList()
                 : state.chats;
 
             return Column(
@@ -176,13 +168,10 @@ Future<void> _handleChatbotNavigation() async {
       ),
     );
   }
-  
-  Future<void> getIt() async {}
 }
 
 class _SignalRStatusBanner extends StatelessWidget {
   const _SignalRStatusBanner({required this.state});
-
   final ChatState state;
 
   @override
@@ -210,7 +199,7 @@ class _SignalRStatusBanner extends StatelessWidget {
                   SizedBox(
                     width: 18.w,
                     height: 18.h,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: const CircularProgressIndicator(strokeWidth: 2),
                   )
                 else
                   Icon(
@@ -226,8 +215,8 @@ class _SignalRStatusBanner extends StatelessWidget {
                     isReconnecting
                         ? 'Reconnecting…'
                         : (hasError
-                              ? 'Connection failed. Tap to retry'
-                              : 'Disconnected. Tap to reconnect'),
+                            ? 'Connection failed. Tap to retry'
+                            : 'Disconnected. Tap to reconnect'),
                     style: TextStyle(
                       fontSize: 13.sp,
                       color: hasError

@@ -18,7 +18,7 @@ import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profil
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
 import 'package:sports_in/features/main/search/view/presentation/search_screen.dart';
 import 'package:sports_in/features/notitification/data/service/notifaction_service.dart';
-import 'package:sports_in/features/notitification/presentation/notifi_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view/notifi_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 
 class CustomBottomNav extends StatefulWidget {

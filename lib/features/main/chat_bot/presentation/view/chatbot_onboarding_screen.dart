@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sports_in/features/main/chat_bot/presentation/chat_history_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view/chat_history_screen.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart';
 
 class ChatbotOnboardingScreen extends StatelessWidget {
   const ChatbotOnboardingScreen({super.key});
@@ -18,8 +20,6 @@ class ChatbotOnboardingScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-
-              // ─── Title ──────────────────────────────────────────────────
               Text(
                 'You AI Assistant',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -36,43 +36,32 @@ class ChatbotOnboardingScreen extends StatelessWidget {
                       height: 1.5,
                     ),
               ),
-
               const SizedBox(height: 48),
-
-              // ─── Robot Illustration ─────────────────────────────────────
-              Expanded(
-                child: Center(
-                  child: _RobotIllustration(),
-                ),
-              ),
-
+              const Expanded(child: Center(child: _RobotIllustration())),
               const SizedBox(height: 48),
-
-              // ─── Continue Button ────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  // onPressed: () => Navigator.pushReplacementNamed(
-                  //   context,
-                  //   ChatHistoryScreen.routeName,
-                  // ),
-                  // In ChatbotOnboardingScreen
-onPressed: () async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setBool('has_seen_chatbot_onboarding', true);
-  
-  if (context.mounted) {
-     Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) 
-      => const ChatHistoryScreen()
-  
-      ),
-    );
-    // Navigator.pushReplacementNamed(context, ChatHistoryScreen.routeName);
-  }
-},
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('has_seen_chatbot_onboarding', true);
+
+                    if (!context.mounted) return;
+
+                    // ✅ Grab bloc before pushing so it survives the new route
+                    final chatbotBloc = context.read<ChatbotBloc>();
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider<ChatbotBloc>.value(
+                          value: chatbotBloc,
+                          child: const ChatHistoryScreen(),
+                        ),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1A1A2E),
                     foregroundColor: Colors.white,
@@ -106,8 +95,9 @@ onPressed: () async {
   }
 }
 
-// ─── Simple Robot Illustration ────────────────────────────────────────────────
 class _RobotIllustration extends StatelessWidget {
+  const _RobotIllustration();
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -116,7 +106,6 @@ class _RobotIllustration extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Body
           Positioned(
             bottom: 20,
             child: Container(
@@ -128,7 +117,6 @@ class _RobotIllustration extends StatelessWidget {
               ),
             ),
           ),
-          // Head
           Positioned(
             top: 20,
             child: Container(
@@ -138,23 +126,12 @@ class _RobotIllustration extends StatelessWidget {
                 color: const Color(0xFF1A1A2E),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Eyes
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _Eye(),
-                      const SizedBox(width: 14),
-                      _Eye(),
-                    ],
-                  ),
-                ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [_Eye(), SizedBox(width: 14), _Eye()],
               ),
             ),
           ),
-          // Chat bubble
           Positioned(
             top: 10,
             right: 0,
@@ -164,22 +141,15 @@ class _RobotIllustration extends StatelessWidget {
                 color: const Color(0xFFD4F5C4),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
-                Icons.chat_bubble_outline,
-                color: Color(0xFF2E7D32),
-                size: 20,
-              ),
+              child: const Icon(Icons.chat_bubble_outline,
+                  color: Color(0xFF2E7D32), size: 20),
             ),
           ),
-          // Gear
-          Positioned(
+          const Positioned(
             top: 50,
             left: 10,
-            child: Icon(
-              Icons.settings,
-              color: const Color(0xFFE8F5E9),
-              size: 28,
-            ),
+            child: Icon(Icons.settings,
+                color: Color(0xFFE8F5E9), size: 28),
           ),
         ],
       ),
@@ -188,6 +158,8 @@ class _RobotIllustration extends StatelessWidget {
 }
 
 class _Eye extends StatelessWidget {
+  const _Eye();
+
   @override
   Widget build(BuildContext context) {
     return Container(

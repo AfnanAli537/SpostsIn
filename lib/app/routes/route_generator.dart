@@ -37,7 +37,7 @@ import 'package:sports_in/features/main/profile/view/presentation/edit_profile_r
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
-import 'package:sports_in/features/notitification/presentation/post_detail_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view/post_detail_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/features/payment/presentation/subscription_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';

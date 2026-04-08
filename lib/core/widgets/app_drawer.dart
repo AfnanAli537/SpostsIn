@@ -8,7 +8,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
-import 'package:sports_in/features/notitification/presentation/notifi_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view/notifi_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';

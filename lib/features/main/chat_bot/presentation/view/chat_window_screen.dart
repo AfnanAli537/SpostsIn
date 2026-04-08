@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/features/main/chat_bot/data/models/chatbot_models.dart';
 import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart';
-import 'package:sports_in/features/main/chat_bot/presentation/widgets/chat_bubble.dart';
+import 'package:sports_in/features/main/chat_bot/presentation/view/widgets/chat_bubble.dart';
 
 
 class ChatWindowScreen extends StatefulWidget {
@@ -88,10 +88,10 @@ class _ChatWindowScreenState extends State<ChatWindowScreen> {
             ),
           ],
         ),
-        actions: const [
-          Icon(Icons.more_horiz, color: Color(0xFF1A1A2E)),
-          SizedBox(width: 12),
-        ],
+        // actions: const [
+        //   Icon(Icons.more_horiz, color: Color(0xFF1A1A2E)),
+        //   SizedBox(width: 12),
+        // ],
       ),
       body: BlocConsumer<ChatbotBloc, ChatbotState>(
         listener: (context, state) {
