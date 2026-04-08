@@ -42,7 +42,7 @@ class ProfileModel {
     required this.interests,
     this.opportunities,
     this.courses,
-    this.ads = const [],          // ← default empty; optional for callers
+    this.ads = const [], // ← default empty; optional for callers
     this.playerData,
     this.coachData,
     this.scoutData,
@@ -88,15 +88,14 @@ class ProfileModel {
           [],
       opportunities: json['opportunities'] != null
           ? (json['opportunities'] as List)
-              .map((e) => Opportunity.fromJson(e))
-              .toList()
+                .map((e) => Opportunity.fromJson(e))
+                .toList()
           : null,
       courses: json['courses'] != null
           ? (json['courses'] as List).map((e) => Course.fromJson(e)).toList()
           : null,
-      ads: (json['ads'] as List?)
-              ?.map((e) => ProfileAd.fromJson(e))
-              .toList() ??
+      ads:
+          (json['ads'] as List?)?.map((e) => ProfileAd.fromJson(e)).toList() ??
           [],
       playerData: userType == UserType.player && json['playerData'] != null
           ? PlayerSpecificData.fromJson(json['playerData'])
@@ -182,7 +181,7 @@ class ProfileModel {
     List<Interest>? interests,
     List<Opportunity>? opportunities,
     List<Course>? courses,
-    List<ProfileAd>? ads,             // ← new
+    List<ProfileAd>? ads, // ← new
     PlayerSpecificData? playerData,
     CoachSpecificData? coachData,
     ScoutSpecificData? scoutData,
@@ -208,7 +207,7 @@ class ProfileModel {
       interests: interests ?? this.interests,
       opportunities: opportunities ?? this.opportunities,
       courses: courses ?? this.courses,
-      ads: ads ?? this.ads,             // ← new
+      ads: ads ?? this.ads, // ← new
       playerData: playerData ?? this.playerData,
       coachData: coachData ?? this.coachData,
       scoutData: scoutData ?? this.scoutData,
@@ -246,7 +245,8 @@ class ProfileStats {
       followers: json['followers']?.toString() ?? '0',
       following: json['following']?.toString() ?? '0',
       connections: json['connections']?.toString() ?? '0',
-      analyzedPeople: json['analyzedPeople']?.toString() ??
+      analyzedPeople:
+          json['analyzedPeople']?.toString() ??
           json['analyzed_people']?.toString() ??
           '0',
     );
@@ -319,11 +319,11 @@ class ProfileAd {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'mediaUrl': mediaUrl,
-        'isActive': isActive,
-      };
+    'id': id,
+    'title': title,
+    'mediaUrl': mediaUrl,
+    'isActive': isActive,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -575,7 +575,8 @@ class PlayerSpecificData {
       weight: json['weight']?.toString(),
       preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
-      specializedSport: EnumMapper.sportIdToLabel(json['sports']) ??
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
           json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
@@ -616,7 +617,8 @@ class CoachSpecificData {
 
   factory CoachSpecificData.fromJson(Map<String, dynamic> json) {
     return CoachSpecificData(
-      specializedSport: EnumMapper.sportIdToLabel(json['sports']) ??
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
           json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
@@ -654,7 +656,8 @@ class ScoutSpecificData {
 
   factory ScoutSpecificData.fromJson(Map<String, dynamic> json) {
     return ScoutSpecificData(
-      specializedSport: EnumMapper.sportIdToLabel(json['sports']) ??
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
           json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
@@ -795,6 +798,7 @@ class ContactItem {
     );
   }
 }
+
 class UserContactItem {
   final String userId;
   final String fullName;
@@ -802,7 +806,8 @@ class UserContactItem {
   final String userType; // e.g., "User"
   final String? bio;
   final bool isFollowedByMe;
-  final String? connectionStatus; // or maybe an enum, depending on possible values
+  final String?
+  connectionStatus; // or maybe an enum, depending on possible values
 
   const UserContactItem({
     required this.userId,
@@ -823,6 +828,26 @@ class UserContactItem {
       bio: json['bio'] as String?,
       isFollowedByMe: json['isFollowedByMe'] as bool? ?? false,
       connectionStatus: json['connectionStatus'] as String?,
+    );
+  }
+  UserContactItem copyWith({
+    String? userId,
+    String? fullName,
+    String? profilePictureUrl,
+    String? userType,
+    String? bio,
+    bool? isFollowedByMe,
+    String? connectionStatus,
+  }) {
+    return UserContactItem(
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      userType: userType ?? this.userType,
+      bio: bio ?? this.bio,
+      isFollowedByMe: isFollowedByMe ?? this.isFollowedByMe,
+      connectionStatus:
+          connectionStatus,
     );
   }
 }

@@ -81,10 +81,8 @@ import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart'
     as _i752;
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart'
     as _i691;
-import 'package:sports_in/features/main/profile/view_model/follower_bloc/follow_bloc.dart'
-    as _i25;
-import 'package:sports_in/features/main/profile/view_model/following_bloc/follow_bloc.dart'
-    as _i661;
+import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart'
+    as _i111;
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart'
     as _i86;
 import 'package:sports_in/features/main/search/data/data_sources/mock_search_data_source.dart'
@@ -235,11 +233,8 @@ extension GetItInjectableX on _i174.GetIt {
         remoteDataSource: gh<_i661.ChatRemoteDataSource>(),
       ),
     );
-    gh.factory<_i25.FollowersBloc>(
-      () => _i25.FollowersBloc(gh<_i752.ProfileRepo>()),
-    );
-    gh.factory<_i661.FollowingBloc>(
-      () => _i661.FollowingBloc(gh<_i752.ProfileRepo>()),
+    gh.factory<_i111.FollowListBloc>(
+      () => _i111.FollowListBloc(gh<_i752.ProfileRepo>()),
     );
     gh.factory<_i86.ProfileBloc>(
       () => _i86.ProfileBloc(gh<_i752.ProfileRepo>()),

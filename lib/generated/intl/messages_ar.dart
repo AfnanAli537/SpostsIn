@@ -563,6 +563,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "firstName": MessageLookupByLibrary.simpleMessage("الاسم الأول"),
     "follow": MessageLookupByLibrary.simpleMessage("تابع"),
+    "followBack": MessageLookupByLibrary.simpleMessage("رد المتابعة"),
     "followError": MessageLookupByLibrary.simpleMessage("فشلت المتابعة"),
     "followSuccess": MessageLookupByLibrary.simpleMessage(
       "تمت المتابعة بنجاح!",

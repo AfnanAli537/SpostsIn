@@ -1854,6 +1854,11 @@ class S {
     return Intl.message('Follow', name: 'follow', desc: '', args: []);
   }
 
+  /// `Follow Back`
+  String get followBack {
+    return Intl.message('Follow Back', name: 'followBack', desc: '', args: []);
+  }
+
   /// `Connected`
   String get connected {
     return Intl.message('Connected', name: 'connected', desc: '', args: []);
