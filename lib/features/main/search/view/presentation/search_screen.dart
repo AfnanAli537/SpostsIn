@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -90,8 +91,7 @@ class _SearchViewState extends State<_SearchView> {
       ),
     );
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
@@ -111,7 +111,7 @@ class _SearchViewState extends State<_SearchView> {
     final positionOptionsWithClear = [...positionOptions, clearLabel];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
@@ -119,36 +119,45 @@ class _SearchViewState extends State<_SearchView> {
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
             child: Column(
               children: [
-                // ── Top Search Bar (with clear icon) ─────────────────
+                // ── Top Search Bar ──────────────────────────────────────
                 TextField(
                   controller: _searchController,
                   onTapOutside: (event) => _searchFocusNode.unfocus(),
-                  onChanged: (_) => setState(() {}), // rebuild to show/hide clear icon
+                  onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
                     hintText: string.search,
-                    prefixIcon: const Icon(Icons.search),
+                    hintStyle: TextStyle(color: theme.hintColor),
+                    prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: Icon(Icons.clear, color: theme.iconTheme.color),
                             onPressed: () {
                               _searchController.clear();
                               setState(() {});
                             },
                           )
-                        : const Icon(Icons.tune),
+                        : Icon(Icons.tune, color: theme.iconTheme.color),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.r),
-                      borderSide: const BorderSide(color: Color(0xFF2E3E4C)),
+                      borderSide: BorderSide(color: theme.dividerColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                      borderSide: BorderSide(color: theme.dividerColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                      borderSide: BorderSide(color: theme.primaryColor, width: 2),
                     ),
                   ),
                 ),
                 SizedBox(height: 24.h),
 
-                // ── Filter Section ───────────────────────────────────
+                // ── Filter Section ───────────────────────────────────────
                 Container(
                   padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF4F6F6),
+                    color: theme.colorScheme.onError.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(30.r),
                   ),
                   child: Column(
@@ -158,10 +167,11 @@ class _SearchViewState extends State<_SearchView> {
                       _buildSectionLabel(string.age, theme),
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Colors.black,
-                          inactiveTrackColor: Colors.black12,
-                          thumbColor: Colors.black,
+                          activeTrackColor: theme.colorScheme.primary,
+                          inactiveTrackColor: theme.disabledColor,
+                          thumbColor: theme.colorScheme.primary,
                           trackHeight: 2.0,
+                          overlayColor: theme.primaryColor.withOpacity(0.2),
                         ),
                         child: RangeSlider(
                           values: RangeValues(_minAge, _maxAge),
@@ -173,18 +183,21 @@ class _SearchViewState extends State<_SearchView> {
                           }),
                         ),
                       ),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [Text("18"), Text("99")],
+                        children: [
+                          Text("18", style: TextStyle(color: theme.colorScheme.onTertiaryContainer)),
+                          Text("99", style: TextStyle(color: theme.colorScheme.onTertiaryContainer)),
+                        ],
                       ),
                       SizedBox(height: 16.h),
 
-                      // Location Dropdown (with clear option)
+                      // Location Dropdown
                       AppDropdownOverlay(
                         labelText: string.location,
                         value: _selectedLocation,
                         options: locationOptionsWithClear,
-                        borderColor: const Color(0xFF2E3E4C),
+                        borderColor: theme.dividerColor,
                         onChanged: (val) => setState(() {
                           if (val == clearLabel) {
                             _selectedLocation = null;
@@ -195,12 +208,12 @@ class _SearchViewState extends State<_SearchView> {
                       ),
                       SizedBox(height: 16.h),
 
-                      // User Type Dropdown (with clear option)
+                      // User Type Dropdown
                       AppDropdownOverlay(
                         labelText: string.userType,
                         value: _selectedUserType?.label,
                         options: userTypeOptionsWithClear,
-                        borderColor: const Color(0xFF2E3E4C),
+                        borderColor: theme.dividerColor,
                         onChanged: (label) => setState(() {
                           if (label == clearLabel) {
                             _selectedUserType = null;
@@ -213,31 +226,31 @@ class _SearchViewState extends State<_SearchView> {
                       ),
                       SizedBox(height: 16.h),
 
-                      // Sport Dropdown (with clear option)
+                      // Sport Dropdown
                       AppDropdownOverlay(
                         labelText: string.sport,
                         value: _selectedSportLabel,
                         options: sportOptionsWithClear,
-                        borderColor: const Color(0xFF2E3E4C),
+                        borderColor: theme.dividerColor,
                         onChanged: (val) => setState(() {
                           if (val == clearLabel) {
                             _selectedSportLabel = null;
-                            _selectedPosition = null; // also clear position
+                            _selectedPosition = null;
                           } else {
                             _selectedSportLabel = val;
-                            _selectedPosition = null; // reset position on sport change
+                            _selectedPosition = null;
                           }
                         }),
                       ),
                       SizedBox(height: 16.h),
 
-                      // Position Dropdown (conditional, with clear option)
+                      // Position Dropdown (conditional)
                       if (hasPositions) ...[
                         AppDropdownOverlay(
                           labelText: string.position,
                           value: _selectedPosition,
                           options: positionOptionsWithClear,
-                          borderColor: const Color(0xFF2E3E4C),
+                          borderColor: theme.dividerColor,
                           onChanged: (val) => setState(() {
                             if (val == clearLabel) {
                               _selectedPosition = null;
@@ -251,27 +264,12 @@ class _SearchViewState extends State<_SearchView> {
 
                       SizedBox(height: 24.h),
 
-                      // Search Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _performSearch,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1B2B39),
-                            padding: EdgeInsets.symmetric(vertical: 16.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                          ),
-                          child: Text(
-                            string.search,
-                            style: TextStyle(
-                              color: theme.colorScheme.secondary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
+                      // ── Search Button (using CustomElevatedButton) ──────
+                      CustomElevatedButton(
+                        text: string.search,
+                        onPressed: _performSearch,
+                        enabled: true,
+                        isLoading: false,
                       ),
                     ],
                   ),
@@ -291,6 +289,7 @@ class _SearchViewState extends State<_SearchView> {
         label,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w600,
+          color: theme.colorScheme.onSurface,
         ),
       ),
     );
