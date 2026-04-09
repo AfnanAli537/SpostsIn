@@ -80,11 +80,23 @@ class _MessagesViewState extends State<MessagesView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // FloatingActionButton(
+            //   heroTag: 'chatbot_fab',
+            //   onPressed: _handleChatbotNavigation,
+            //   child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+            // ),
             FloatingActionButton(
-              heroTag: 'chatbot_fab',
-              onPressed: _handleChatbotNavigation,
-              child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
-            ),
+  heroTag: 'chatbot_fab',
+  backgroundColor: Colors.grey,
+  onPressed: _handleChatbotNavigation,
+  child: Padding(
+    padding: EdgeInsets.all(6.r),
+    child: Image.asset(
+      'assets/images/chatbot_robot.png',
+      fit: BoxFit.contain,
+    ),
+  ),
+),
             SizedBox(height: 12.h),
             FloatingActionButton(
               heroTag: 'main_create_group_fab',

@@ -130,6 +130,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "This ad will appear in the feed again.",
     ),
     "active": MessageLookupByLibrary.simpleMessage("Active"),
+    "activeChats": MessageLookupByLibrary.simpleMessage("Active Chats"),
     "activities": MessageLookupByLibrary.simpleMessage("Activities"),
     "adActivated": MessageLookupByLibrary.simpleMessage("Ad activated"),
     "adCreatedPendingPayment": MessageLookupByLibrary.simpleMessage(
@@ -172,6 +173,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "advertisements": MessageLookupByLibrary.simpleMessage("Advertisements"),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
+    "aiAssistantSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Using this software you can ask questions and receive articles using artificial intelligence assistant.",
+    ),
+    "aiAssistantTitle": MessageLookupByLibrary.simpleMessage(
+      "Your AI Assistant",
+    ),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "allTimeRevenue": MessageLookupByLibrary.simpleMessage("All-Time Revenue"),
@@ -231,6 +238,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Be the first to create a post!",
     ),
     "bio": MessageLookupByLibrary.simpleMessage("Description"),
+    "botMessage": MessageLookupByLibrary.simpleMessage("Bot message"),
     "campaignDurationRequired": MessageLookupByLibrary.simpleMessage(
       "Campaign Duration *",
     ),
@@ -355,9 +363,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteAdConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this advertisement?",
     ),
+    "deleteChat": MessageLookupByLibrary.simpleMessage("Delete Chat"),
     "deleteComment": MessageLookupByLibrary.simpleMessage("Delete Comment"),
     "deleteCommentConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this comment?",
+    ),
+    "deleteConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this chat?",
     ),
     "deleteCourse": MessageLookupByLibrary.simpleMessage("Delete Course"),
     "deleteCourseConfirmation": MessageLookupByLibrary.simpleMessage(
@@ -434,6 +446,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Password is required",
     ),
     "endDate": MessageLookupByLibrary.simpleMessage("End Date"),
+    "endedChats": MessageLookupByLibrary.simpleMessage("Ended Chats"),
     "engagement": MessageLookupByLibrary.simpleMessage("Engagement"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "enroll": MessageLookupByLibrary.simpleMessage("Enroll"),
@@ -482,6 +495,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterLessonTitleHint": MessageLookupByLibrary.simpleMessage(
       "Enter lesson title",
     ),
+    "enterNewName": MessageLookupByLibrary.simpleMessage("Enter new name"),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
       "Enter your new password",
     ),
@@ -790,6 +804,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "No Available Courses",
     ),
     "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
+    "noChatsYet": MessageLookupByLibrary.simpleMessage(
+      "No chats yet.\nStart a new conversation!",
+    ),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage("No comments yet"),
     "noConnectionRequests": MessageLookupByLibrary.simpleMessage(
       "No Connection Requests",
@@ -882,6 +899,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Connect & Communicate",
     ),
     "online": MessageLookupByLibrary.simpleMessage("Online"),
+    "onlineStatus": MessageLookupByLibrary.simpleMessage("● Online"),
     "oopsSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "Oops! Something went wrong",
     ),
@@ -1074,6 +1092,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "reject": MessageLookupByLibrary.simpleMessage("Reject"),
     "rejected": MessageLookupByLibrary.simpleMessage("Rejected"),
     "remove": MessageLookupByLibrary.simpleMessage("Remove"),
+    "rename": MessageLookupByLibrary.simpleMessage("Rename"),
+    "renameChat": MessageLookupByLibrary.simpleMessage("Rename Chat"),
     "replaceVideo": MessageLookupByLibrary.simpleMessage("Replace Video"),
     "requestCancelled": MessageLookupByLibrary.simpleMessage(
       "Request was cancelled.",
@@ -1103,6 +1123,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Save Achievement",
     ),
     "savingChanges": MessageLookupByLibrary.simpleMessage("Saving changes..."),
+    "sayHello": MessageLookupByLibrary.simpleMessage("Say hello to SportsIn! "),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
@@ -1131,6 +1152,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "serviceUnavailable": MessageLookupByLibrary.simpleMessage(
       "Service temporarily unavailable",
     ),
+    "sessionAvatarLabel": MessageLookupByLibrary.simpleMessage("S"),
     "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "settings": MessageLookupByLibrary.simpleMessage("Setting"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
@@ -1163,6 +1185,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "sponsor": MessageLookupByLibrary.simpleMessage("Sponsor"),
     "sport": MessageLookupByLibrary.simpleMessage("Sport"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("Sport profession"),
+    "sportsinTitle": MessageLookupByLibrary.simpleMessage("SportsIn"),
+    "startAnotherChat": MessageLookupByLibrary.simpleMessage(
+      "Start Another Chat With SportsIn",
+    ),
     "startDate": MessageLookupByLibrary.simpleMessage("Start Date"),
     "startSearching": MessageLookupByLibrary.simpleMessage("Start searching"),
     "strongPassword": MessageLookupByLibrary.simpleMessage(
@@ -1227,6 +1253,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "tapToChange": MessageLookupByLibrary.simpleMessage("Tap to Change"),
     "tapToChangeMedia": MessageLookupByLibrary.simpleMessage(
       "Tap to change media",
+    ),
+    "tapToContinue": MessageLookupByLibrary.simpleMessage(
+      "Tap to continue this chat...",
     ),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Tap to select from gallery",
@@ -1312,6 +1341,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "useInfoTitle": MessageLookupByLibrary.simpleMessage(
       "How We Use Your Information",
     ),
+    "userMessage": MessageLookupByLibrary.simpleMessage("User message"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
     "userType": MessageLookupByLibrary.simpleMessage("User Type"),
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
@@ -1365,6 +1395,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "whoShouldSeeThisAd": MessageLookupByLibrary.simpleMessage(
       "Who should see this ad?",
+    ),
+    "writeMessageHint": MessageLookupByLibrary.simpleMessage(
+      "Write your message",
     ),
     "year": MessageLookupByLibrary.simpleMessage("Year"),
     "yearsAgo": m33,
