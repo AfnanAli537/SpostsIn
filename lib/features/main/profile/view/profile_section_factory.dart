@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/profile/view/presentation/follow_list_screen.dart';
 import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart';
 import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
 import 'package:sports_in/features/main/profile/view/widgets/empty_section.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analyzed_users_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/main/profile/view/widgets/profile_stats_widget.dart';
 import 'package:sports_in/core/widgets/connect_button.dart';
@@ -272,6 +276,7 @@ class ProfileSectionFactory {
     sections.add(
       ProfileStatsWidget(
         stats: profile.stats,
+        isCurrentUser: isOwnProfile,
         onFollowersPressed: () {
           Navigator.push(
             context,
@@ -295,7 +300,18 @@ class ProfileSectionFactory {
           );
         },
         onConnectionsPressed: onConnectionsPressed,
-        onAnalyzedPeoplePressed: () {},
+        onAnalyzedPeoplePressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AnalysisBloc>()
+                        ..add(const LoadAnalyzedUsers()),
+                      child: const AnalyzedUsersScreen(),
+                    ),
+                  ),
+                );
+              },
         theme: theme,
         string: string,
       ),

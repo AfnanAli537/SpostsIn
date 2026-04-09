@@ -1,0 +1,39 @@
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+
+abstract class IAnalysisDataSource {
+  /// GET /api/Analysis/my-analyzed-users
+  Future<AnalyzedUsersPage> getMyAnalyzedUsers({int page = 1, int size = 10});
+
+  /// GET /api/Analysis/target-analyses/{targetUserId}
+  Future<AnalysisListPage> getTargetAnalyses({
+    required String targetUserId,
+    bool? isPaid,
+    int page = 1,
+    int size = 10,
+  });
+
+  /// GET /api/Analysis/my-self-analyses
+  Future<AnalysisListPage> getMySelfAnalyses({int page = 1, int size = 10});
+
+  /// GET /api/Analysis/search/library
+  Future<AnalysisListPage> searchLibrary({
+    String? term,
+    String? type,
+    int page = 1,
+    int size = 10,
+  });
+
+  /// GET /api/Analysis/search/public
+  Future<AnalysisListPage> searchPublic({
+    String? term,
+    String? type,
+    int page = 1,
+    int size = 10,
+  });
+
+  /// GET /api/Analysis/report/{id}
+  Future<AnalysisReportModel> getReport(String id);
+
+  /// DELETE /api/Analysis/{id}
+  Future<void> deleteAnalysis(String id);
+}

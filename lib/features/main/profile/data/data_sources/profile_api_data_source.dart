@@ -58,7 +58,7 @@ class ApiProfileDataSource implements IProfileDataSource {
         final results = await Future.wait([
           getPosts(targetUserId: userId, page: 1, size: 3),
           getAchievements(userId: userId, page: 1, size: 3),
-          _getAnalyzedVideos(userId),
+          _getAnalyzedVideos(userId, json['isOwner'] == true),
           (profile.userType == UserType.coach ||
                   profile.userType == UserType.scout ||
                   profile.userType == UserType.club)
@@ -675,20 +675,38 @@ class ApiProfileDataSource implements IProfileDataSource {
       throw ApiErrorHandler.handleDioError(e);
     }
   }
-  // ── Analyzed Videos (mock) ───────────────────────────────────────────────────
+  // ── Analyzed Videos  ───────────────────────────────────────────────────
 
-  Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return [
-      AnalyzedVideoReport(
-        id: 'vid_1',
-        thumbnailUrl: 'https://picsum.photos/400/200?random=18',
-        duration: '17:45',
-        speed: '3990/6000',
-        distance: '6h/8h',
-        calories: '156/900kcal',
-      ),
-    ];
+
+  Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(
+    String userId,
+    bool isOwner,
+  ) async {
+    try {
+      // Own profile  → library  (all analyses I created, of anyone)
+      // Other profile → public   (public self-analyses by that user)
+      final endpoint = isOwner
+          ? '/api/Analysis/search/library'
+          : '/api/Analysis/search/public';
+
+      final response = await _apiClient.get(
+        endpoint,
+        params: {'page': 1, 'size': 3},
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = data['items'] as List<dynamic>? ?? [];
+        return items
+            .map((json) =>
+                AnalyzedVideoReport.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error loading analyzed videos: $e');
+      return [];
+    }
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────────

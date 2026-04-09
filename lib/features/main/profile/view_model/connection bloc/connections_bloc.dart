@@ -19,7 +19,8 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   // ignore: unused_field
   String? _viewingUserId;
 
-  ConnectionsBloc(this._repository, this._sharedPref) : super(ConnectionsInitial()) {
+  ConnectionsBloc(this._repository, this._sharedPref)
+    : super(ConnectionsInitial()) {
     on<LoadConnections>(_onLoadConnections);
     on<LoadMoreContacts>(_onLoadMoreContacts);
     on<LoadMoreRequests>(_onLoadMoreRequests);
@@ -53,12 +54,14 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
           pageNumber: 1,
           pageSize: _kPageSize,
         );
-        emit(ConnectionsLoaded(
-          contacts: result.items,
-          requests: const [],
-          hasMoreContacts: result.hasNextPage,
-          currentContactPage: 1,
-        ));
+        emit(
+          ConnectionsLoaded(
+            contacts: result.items,
+            requests: const [],
+            hasMoreContacts: result.hasNextPage,
+            currentContactPage: 1,
+          ),
+        );
       } else {
         // Owner – contacts + requests
         final contacts = await _repository.getUserConnections(
@@ -70,15 +73,19 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
           pageNumber: 1,
           pageSize: _kPageSize,
         );
-        emit(ConnectionsLoaded(
-          contacts: contacts.items,
-          requests: requestResult.items,
-          hasMoreRequests: requestResult.hasNextPage,
-          currentRequestPage: 1,
-        ));
+        emit(
+          ConnectionsLoaded(
+            contacts: contacts.items,
+            requests: requestResult.items,
+            hasMoreRequests: requestResult.hasNextPage,
+            currentRequestPage: 1,
+          ),
+        );
       }
     } catch (e) {
-      emit(ConnectionsError(message: e is ApiException ? e.message : e.toString()));
+      emit(
+        ConnectionsError(message: e is ApiException ? e.message : e.toString()),
+      );
     }
   }
 
@@ -86,13 +93,94 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   Future<void> _onLoadMoreContacts(
     LoadMoreContacts event,
     Emitter<ConnectionsState> emit,
-  ) async { /* ... keep existing implementation ... */ }
+  ) async {
+    final currentState = state;
+    if (currentState is! ConnectionsLoaded) return;
+    if (!currentState.hasMoreContacts || currentState.isLoadingMoreContacts)
+      return;
+
+    if (_viewingUserId == null) return;
+
+    emit(currentState.copyWith(isLoadingMoreContacts: true));
+
+    try {
+      final nextPage = currentState.currentContactPage + 1;
+      final result = await _repository.getUserConnections(
+        userId: _viewingUserId!,
+        pageNumber: nextPage,
+        pageSize: _kPageSize,
+      );
+
+      final latestState = state;
+      if (latestState is! ConnectionsLoaded) return;
+
+      emit(
+        latestState.copyWith(
+          contacts: [...latestState.contacts, ...result.items],
+          hasMoreContacts: result.hasNextPage,
+          isLoadingMoreContacts: false,
+          currentContactPage: nextPage,
+        ),
+      );
+    } catch (e) {
+      final latestState = state;
+      if (latestState is ConnectionsLoaded) {
+        emit(latestState.copyWith(isLoadingMoreContacts: false));
+      }
+      emit(
+        ConnectionsActionError(
+          message: 'Failed to load more contacts. Please try again.',
+        ),
+      );
+    }
+  }
 
   // ── Load more requests (unchanged) ──────────────────────────────────────
   Future<void> _onLoadMoreRequests(
     LoadMoreRequests event,
     Emitter<ConnectionsState> emit,
-  ) async { /* ... keep existing implementation ... */ }
+  ) async {
+    final currentState = state;
+    if (currentState is! ConnectionsLoaded) return;
+    if (!currentState.hasMoreRequests || currentState.isLoadingMoreRequests) {
+      return;
+    }
+
+    emit(currentState.copyWith(isLoadingMoreRequests: true));
+
+    try {
+      final nextPage = currentState.currentRequestPage + 1;
+      final result = await _repository.getConnectionRequests(
+        pageNumber: nextPage,
+        pageSize: _kPageSize,
+      );
+
+      final latestState = state;
+      if (latestState is! ConnectionsLoaded) return;
+
+      emit(
+        latestState.copyWith(
+          requests: [...latestState.requests, ...result.items],
+          hasMoreRequests: result.hasNextPage,
+          isLoadingMoreRequests: false,
+          currentRequestPage: nextPage,
+        ),
+      );
+    } catch (e) {
+      final latestState = state;
+      if (latestState is ConnectionsLoaded) {
+        emit(latestState.copyWith(isLoadingMoreRequests: false));
+      }
+      emit(
+        ConnectionsActionError(
+          message: 'Failed to load more requests. Please try again.',
+        ),
+      );
+      if (state is! ConnectionsLoaded) {
+        emit(currentState.copyWith(isLoadingMoreRequests: false));
+      }
+    }
+  }
 
   // ── Respond to request (FIXED: refresh contacts with correct userId) ────
   Future<void> _onRespondToRequest(
@@ -102,8 +190,9 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
     final currentState = state;
     if (currentState is ConnectionsLoaded) {
       // Optimistically remove request
-      final updatedRequests =
-          currentState.requests.where((r) => r.id != event.senderId).toList();
+      final updatedRequests = currentState.requests
+          .where((r) => r.id != event.senderId)
+          .toList();
       emit(currentState.copyWith(requests: updatedRequests));
 
       try {
@@ -123,18 +212,23 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
 
           final latestState = state;
           if (latestState is ConnectionsLoaded) {
-            emit(latestState.copyWith(
-              contacts: contactsResult.items,
-              hasMoreContacts: contactsResult.hasNextPage,
-              currentContactPage: 1,
-            ));
+            emit(
+              latestState.copyWith(
+                contacts: contactsResult.items,
+                hasMoreContacts: contactsResult.hasNextPage,
+                currentContactPage: 1,
+              ),
+            );
           }
         }
       } catch (e) {
         // Rollback on error
         emit(currentState);
-        emit(ConnectionsActionError(
-            message: 'Failed to respond to request. Please try again.'));
+        emit(
+          ConnectionsActionError(
+            message: 'Failed to respond to request. Please try again.',
+          ),
+        );
         emit(currentState.copyWith(requests: updatedRequests));
       }
       return;
@@ -147,8 +241,11 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
         status: event.status,
       );
     } catch (e) {
-      emit(ConnectionsActionError(
-          message: 'Failed to respond to request. Please try again.'));
+      emit(
+        ConnectionsActionError(
+          message: 'Failed to respond to request. Please try again.',
+        ),
+      );
     }
   }
 
@@ -244,7 +341,9 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
     } catch (e) {
       // Rollback on error
       emit(currentState);
-      emit(ConnectionsActionError(message: 'Failed to send connection request.'));
+      emit(
+        ConnectionsActionError(message: 'Failed to send connection request.'),
+      );
       emit(currentState.copyWith(contacts: updatedContacts));
     }
   }

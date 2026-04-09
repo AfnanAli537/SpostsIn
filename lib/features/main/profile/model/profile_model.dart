@@ -364,48 +364,59 @@ class Achievement {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 class AnalyzedVideoReport {
   final String id;
-  final String thumbnailUrl;
-  final String duration;
-  final String speed;
-  final String distance;
-  final String calories;
+  final String type; // "Goalkeeper" | "Passing" | "Dribbling" | "Match"
+  final String createdAt;
+  final String originalVideoUrl;
+  final String? analyzedVideoUrl;
+  final bool isPaid;
+  final String playerName;
+  final String? playerAvatar;
+  final String analystName;
 
-  AnalyzedVideoReport({
+  const AnalyzedVideoReport({
     required this.id,
-    required this.thumbnailUrl,
-    required this.duration,
-    required this.speed,
-    required this.distance,
-    required this.calories,
+    required this.type,
+    required this.createdAt,
+    required this.originalVideoUrl,
+    this.analyzedVideoUrl,
+    required this.isPaid,
+    required this.playerName,
+    this.playerAvatar,
+    required this.analystName,
   });
 
+  /// Parses one item from /api/Analysis/search/library or /search/public
   factory AnalyzedVideoReport.fromJson(Map<String, dynamic> json) {
+    final player = json['player'] as Map<String, dynamic>? ?? {};
+    final analyst = json['analyst'] as Map<String, dynamic>? ?? {};
     return AnalyzedVideoReport(
-      id: json['id'] ?? '',
-      thumbnailUrl: json['thumbnailUrl'] ?? json['thumbnail_url'] ?? '',
-      duration: json['duration'] ?? '',
-      speed: json['speed'] ?? '',
-      distance: json['distance'] ?? '',
-      calories: json['calories'] ?? '',
+      id: json['id'] as String,
+      type: json['type'] as String,
+      createdAt: json['createdAt'] as String,
+      originalVideoUrl: json['originalVideoUrl'] as String,
+      analyzedVideoUrl: json['analyzedVideoUrl'] as String?,
+      isPaid: json['isPaid'] as bool,
+      playerName: player['fullName'] as String? ?? '',
+      playerAvatar: player['profilePicture'] as String?,
+      analystName: analyst['fullName'] as String? ?? '',
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'thumbnailUrl': thumbnailUrl,
-      'duration': duration,
-      'speed': speed,
-      'distance': distance,
-      'calories': calories,
+      'type': type,
+      'createdAt': createdAt,
+      'originalVideoUrl': originalVideoUrl,
+      'analyzedVideoUrl': analyzedVideoUrl,
+      'isPaid': isPaid,
+      'playerName': playerName,
+      'playerAvatar': playerAvatar,
+      'analystName': analystName,
     };
   }
 }
-
 // ─────────────────────────────────────────────────────────────────────────────
 
 class Interest {

@@ -17,6 +17,9 @@ import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/connections_screen.dart';
 import 'package:sports_in/features/main/profile/view/profile_section_factory.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_library_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile bloc/profile_bloc.dart';
 import '../../view_model/profile bloc/profile_event.dart';
@@ -385,8 +388,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onAchievementTap: (achievement) {},
 
               // ── Videos ────────────────────────────────────────────────────
-              onVideosShowAll: () {},
-              onVideoTap: (video) {},
+              onVideosShowAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AnalysisBloc>()
+                        ..add(LoadAnalysisSearch(
+                          isLibrary: profile.isOwner,
+                        )),
+                      child: AnalysisLibraryScreen(
+                        isLibrary: profile.isOwner,
+                        title: profile.isOwner
+                            ? 'My Analysis Library'
+                            : 'Public Analyses',
+                      ),
+                    ),
+                  ),
+                );
+              },
+              onVideoTap: (video) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AnalysisBloc>()
+                        ..add(LoadAnalysisReport(video.id)),
+                      child: AnalysisReportScreen(analysisId: video.id),
+                    ),
+                  ),
+                );
+              },
 
               // ── Interests ─────────────────────────────────────────────────
               onInterestsShowAll: () {},

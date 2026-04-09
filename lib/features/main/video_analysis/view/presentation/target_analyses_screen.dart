@@ -1,0 +1,282 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/view/widgets/analysis_list_item_card.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
+
+class TargetAnalysesScreen extends StatefulWidget {
+  final String targetUserId;
+  final String targetName;
+  final String? targetAvatar;
+
+  const TargetAnalysesScreen({
+    super.key,
+    required this.targetUserId,
+    required this.targetName,
+    this.targetAvatar,
+  });
+
+  @override
+  State<TargetAnalysesScreen> createState() => _TargetAnalysesScreenState();
+}
+
+class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
+  final _scrollController = ScrollController();
+  bool? _selectedFilter; // null = all
+
+  final _filterOptions = [
+    (label: 'All', value: null as bool?),
+    (label: 'Analyzed', value: true as bool?),
+    (label: 'Pending', value: false as bool?),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<AnalysisBloc>().add(const LoadMoreTargetAnalyses());
+    }
+  }
+
+  void _applyFilter(bool? value) {
+    if (_selectedFilter == value) return;
+    setState(() => _selectedFilter = value);
+    context.read<AnalysisBloc>().add(FilterTargetAnalyses(isPaid: value));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, _) => [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 140.h,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding:
+                  EdgeInsets.symmetric(horizontal: 56.w, vertical: 12.h),
+              title: Text(widget.targetName,
+                  style: TextStyle(
+                      fontSize: 14.sp, fontWeight: FontWeight.bold)),
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.secondary,
+                    ],
+                  ),
+                ),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20.h),
+                    child: CircleAvatar(
+                      radius: 32.r,
+                      backgroundImage: widget.targetAvatar != null
+                          ? NetworkImage(widget.targetAvatar!)
+                          : null,
+                      backgroundColor: Colors.white24,
+                      child: widget.targetAvatar == null
+                          ? Text(
+                              widget.targetName.isNotEmpty
+                                  ? widget.targetName[0].toUpperCase()
+                                  : '?',
+                              style: TextStyle(
+                                  fontSize: 22.sp, color: Colors.white),
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: _buildFilterRow(theme)),
+        ],
+        body: BlocConsumer<AnalysisBloc, AnalysisState>(
+          listener: (context, state) {
+            if (state is AnalysisDeleteSuccess) {
+              // Reload after delete
+              context.read<AnalysisBloc>().add(
+                    LoadTargetAnalyses(targetUserId: widget.targetUserId),
+                  );
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Analysis deleted')),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is TargetAnalysesLoading) return _buildShimmer();
+            if (state is TargetAnalysesError) {
+              return _buildError(context, state.message);
+            }
+            if (state is TargetAnalysesLoaded) {
+              if (state.items.isEmpty) return _buildEmpty(theme);
+              return _buildList(context, state);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterRow(ThemeData theme) => Container(
+        height: 44.h,
+        margin: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: _filterOptions.length,
+          separatorBuilder: (_, __) => SizedBox(width: 8.w),
+          itemBuilder: (context, i) {
+            final opt = _filterOptions[i];
+            final selected = _selectedFilter == opt.value;
+            return FilterChip(
+              label: Text(opt.label),
+              selected: selected,
+              onSelected: (_) => _applyFilter(opt.value),
+              selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+              checkmarkColor: theme.colorScheme.primary,
+              labelStyle: TextStyle(
+                fontSize: 12.sp,
+                fontWeight:
+                    selected ? FontWeight.w600 : FontWeight.normal,
+                color: selected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+              ),
+            );
+          },
+        ),
+      );
+
+  Widget _buildList(BuildContext context, TargetAnalysesLoaded state) =>
+      ListView.builder(
+        controller: _scrollController,
+        padding: EdgeInsets.only(top: 4.h, bottom: 24.h),
+        itemCount: state.items.length +
+            (state is TargetAnalysesLoadingMore ? 1 : 0),
+        itemBuilder: (context, i) {
+          if (i == state.items.length) {
+            return Center(
+                child: Padding(
+                    padding: EdgeInsets.all(16.h),
+                    child: const CircularProgressIndicator()));
+          }
+          final item = state.items[i];
+          return AnalysisListItemCard(
+            item: item,
+            onTap: () => _openReport(context, item.id),
+            onDelete: () => _confirmDelete(context, item.id),
+          );
+        },
+      );
+
+  void _openReport(BuildContext context, String id) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => getIt<AnalysisBloc>()..add(LoadAnalysisReport(id)),
+          child: AnalysisReportScreen(analysisId: id),
+        ),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, String id) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete Analysis'),
+        content:
+            const Text('Are you sure you want to delete this analysis?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AnalysisBloc>().add(DeleteAnalysis(id));
+            },
+            child: Text('Delete',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmer() => Skeletonizer(
+        enabled: true,
+        child: ListView.builder(
+          padding: EdgeInsets.only(top: 4.h),
+          itemCount: 4,
+          itemBuilder: (_, __) => Container(
+            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+            height: 200.h,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildError(BuildContext context, String message) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline,
+                size: 52.sp, color: Theme.of(context).colorScheme.error),
+            SizedBox(height: 12.h),
+            Text(message, textAlign: TextAlign.center),
+            SizedBox(height: 16.h),
+            ElevatedButton(
+              onPressed: () => context.read<AnalysisBloc>().add(
+                    LoadTargetAnalyses(targetUserId: widget.targetUserId),
+                  ),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildEmpty(ThemeData theme) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.videocam_off_outlined,
+                size: 64.sp,
+                color: theme.colorScheme.onSurface.withOpacity(0.25)),
+            SizedBox(height: 16.h),
+            Text('No analyses found',
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: theme.colorScheme.onSurface.withOpacity(0.5))),
+          ],
+        ),
+      );
+}
