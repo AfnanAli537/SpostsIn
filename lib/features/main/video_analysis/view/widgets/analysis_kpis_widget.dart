@@ -21,35 +21,49 @@ class _KpiTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: color.withOpacity(0.2)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey[100]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20.sp, color: color),
+          Container(
+            padding: EdgeInsets.all(6.w),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 18.sp, color: color),
+          ),
           const Spacer(),
           Text(
             value,
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+              color: Colors.black,
             ),
           ),
-          SizedBox(height: 2.h),
           Text(
             label,
             style: TextStyle(
-              fontSize: 10.sp,
-              color: theme.colorScheme.onSurface.withOpacity(0.55),
+              fontSize: 11.sp,
+              color: Colors.grey[500],
+              fontWeight: FontWeight.w500,
             ),
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -57,7 +71,6 @@ class _KpiTile extends StatelessWidget {
     );
   }
 }
-
 Widget _kpiGrid(List<_KpiTile> tiles) => GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -301,67 +314,41 @@ class _PossessionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final total = team1 + team2;
-    final t1Ratio = total == 0 ? 0.5 : team1 / total;
+    final t1Ratio = team1 / (team1 + team2);
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Team 1',
-                style: TextStyle(
-                    fontSize: 12.sp, fontWeight: FontWeight.w600)),
-            Text('Possession',
-                style: TextStyle(
-                    fontSize: 11.sp,
-                    color: theme.colorScheme.onSurface.withOpacity(0.5))),
-            Text('Team 2',
-                style: TextStyle(
-                    fontSize: 12.sp, fontWeight: FontWeight.w600)),
-          ],
-        ),
-        SizedBox(height: 6.h),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.r),
-          child: SizedBox(
-            height: 14.h,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: (t1Ratio * 100).round(),
-                  child: Container(color: const Color(0xFF1565C0)),
-                ),
-                Expanded(
-                  flex: ((1 - t1Ratio) * 100).round(),
-                  child: Container(color: const Color(0xFFE53935)),
-                ),
-              ],
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('T1: ${team1.toStringAsFixed(0)}%', style: _posStyle(const Color(0xFF1565C0))),
+              Text('Possession', style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+              Text('T2: ${team2.toStringAsFixed(0)}%', style: _posStyle(const Color(0xFFE53935))),
+            ],
+          ),
+          SizedBox(height: 10.h),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10.r),
+            child: LinearProgressIndicator(
+              value: t1Ratio,
+              minHeight: 8.h,
+              backgroundColor: const Color(0xFFE53935),
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF1565C0)),
             ),
           ),
-        ),
-        SizedBox(height: 4.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('${team1.toStringAsFixed(0)}%',
-                style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1565C0))),
-            Text('${team2.toStringAsFixed(0)}%',
-                style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFFE53935))),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
-}
 
+  TextStyle _posStyle(Color color) => TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: color);
+}
 class _TeamComparisonGrid extends StatelessWidget {
   final MatchKpis kpis;
 

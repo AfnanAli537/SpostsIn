@@ -1303,6 +1303,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewAnalyticsDashboard": MessageLookupByLibrary.simpleMessage(
       "عرض لوحة التحكم التحليلية",
     ),
+    "viewReport": MessageLookupByLibrary.simpleMessage("عرض التقرير"),
     "views": MessageLookupByLibrary.simpleMessage("مشاهدات"),
     "vodafone_appbar_title": MessageLookupByLibrary.simpleMessage(
       "أدخل تفاصيل البطاقة",

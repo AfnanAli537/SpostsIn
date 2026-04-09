@@ -574,14 +574,14 @@ class CoursesTabState extends State<CoursesTab>
           ),
         ),
         SizedBox(
-          height: 330.h,
+          height: 310.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             itemCount: display.length,
             itemBuilder: (context, i) => Container(
-              width: 300.w,
+              width: 320.w,
               margin: EdgeInsets.only(right: 16.w),
               child: CourseCard(
                 course: display[i],
@@ -654,14 +654,14 @@ class CoursesTabState extends State<CoursesTab>
           ),
         ),
         SizedBox(
-          height: 300.h,
+          height: 310.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             itemCount: display.length,
             itemBuilder: (context, i) => Container(
-              width: 300.w,
+              width: 320.w,
               margin: EdgeInsets.only(right: 16.w),
               child: CourseCard(
                 course: display[i],

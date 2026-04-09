@@ -5163,6 +5163,11 @@ class S {
     );
   }
 
+  /// `View Report`
+  String get viewReport {
+    return Intl.message('View Report', name: 'viewReport', desc: '', args: []);
+  }
+
   /// `Analytics Overview`
   String get analyticsOverview {
     return Intl.message(

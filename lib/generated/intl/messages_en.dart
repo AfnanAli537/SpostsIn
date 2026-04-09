@@ -1330,6 +1330,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewAnalyticsDashboard": MessageLookupByLibrary.simpleMessage(
       "View Analytics Dashboard",
     ),
+    "viewReport": MessageLookupByLibrary.simpleMessage("View Report"),
     "views": MessageLookupByLibrary.simpleMessage("Views"),
     "vodafone_appbar_title": MessageLookupByLibrary.simpleMessage(
       "Enter Card Details",

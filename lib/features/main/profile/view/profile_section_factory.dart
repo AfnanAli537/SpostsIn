@@ -5,6 +5,7 @@ import 'package:sports_in/features/main/profile/view/presentation/follow_list_sc
 import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart';
 import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
 import 'package:sports_in/features/main/profile/view/widgets/empty_section.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analyzed_users_screen.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -102,7 +103,7 @@ class ProfileSectionFactory {
     Function(Opportunity)? onOpportunityTap,
     Function(Course)? onCourseTap,
     Function(Achievement)? onAchievementTap,
-    Function(AnalyzedVideoReport)? onVideoTap,
+    Function(AnalysisListItemModel)? onVideoTap,
     Function(Interest)? onConnectToggle,
     Function(Interest)? onFollowToggle,
     Function(Interest)? onInterestTap,
@@ -212,16 +213,15 @@ class ProfileSectionFactory {
 
     // ── Analyzed videos ──────────────────────────────────────────────────────
     if (profile.analyzedVideos.isNotEmpty) {
-      sections.add(
-        AnalyzedVideosSection(
-          videos: profile.analyzedVideos,
-          onShowAll: onVideosShowAll,
-          onVideoTap: onVideoTap,
-          theme: theme,
-          string: string,
-        ),
-      );
-    }
+  sections.add(
+    AnalyzedVideosSection(
+      videos: profile.analyzedVideos, // This is now List<AnalysisListItemModel>
+      onShowAll: onVideosShowAll,
+      onVideoTap: (item) => onVideoTap?.call(item),
+      title: string.analyzedVideosReports,
+    ),
+  );
+}
 
     // ── Interests ────────────────────────────────────────────────────────────
     if (profile.interests.isNotEmpty) {
@@ -261,7 +261,7 @@ class ProfileSectionFactory {
     Function(Opportunity)? onOpportunityTap,
     Function(Course)? onCourseTap,
     Function(Achievement)? onAchievementTap,
-    Function(AnalyzedVideoReport)? onVideoTap,
+    Function(AnalysisListItemModel)? onVideoTap,
     Function(Interest)? onConnectToggle,
     Function(Interest)? onFollowToggle,
     Function(Interest)? onInterestTap,

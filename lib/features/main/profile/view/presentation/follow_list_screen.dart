@@ -118,6 +118,7 @@ class _FollowListViewState extends State<FollowListView> {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) => _FollowCard(
+                            type: widget.type,
                             contact: state.items[index],
                             currentUserId: currentUserId,
                             onTap: () => Navigator.pushNamed(
@@ -191,12 +192,14 @@ class _FollowListViewState extends State<FollowListView> {
 
 // ── Card widget that uses FollowListBloc for actions ──────────────────────────
 class _FollowCard extends StatelessWidget {
+  final FollowListType type;
   final UserContactItem contact;
   final String currentUserId;
   final String? followText;
   final VoidCallback onTap;
 
   const _FollowCard({
+    required this.type,
     required this.contact,
     required this.currentUserId,
     this.followText,
@@ -309,7 +312,7 @@ class _FollowCard extends StatelessWidget {
                           );
                         },
                         followingText: strings.following,
-                        followText: strings.follow,
+                        followText: type == FollowListType.followers ? strings.followBack : strings.follow,
                       ),
                     ),
                   ],

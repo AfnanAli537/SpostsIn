@@ -132,7 +132,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
   Widget _buildList(BuildContext context, AnalysisSearchLoaded state) =>
       ListView.builder(
         controller: _scrollController,
-        padding: EdgeInsets.only(top: 4.h, bottom: 24.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w),
         itemCount: state.items.length +
             (state is AnalysisSearchLoadingMore ? 1 : 0),
         itemBuilder: (context, i) {
@@ -294,7 +294,6 @@ class _SearchBar extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Type filter row
 // ─────────────────────────────────────────────────────────────────────────────
-
 class _TypeFilterRow extends StatelessWidget {
   final String? selected;
   final List<String> types;
@@ -309,55 +308,52 @@ class _TypeFilterRow extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Container(
-        height: 44.h,
-        margin: EdgeInsets.symmetric(vertical: 6.h),
+  Widget build(BuildContext context) {
+    // Combine "All" with the rest of the types for easy indexing
+    final allOptions = [null, ...types];
+
+    return Container(
+      height: 38.h, // Matches your target UI height
+      margin: EdgeInsets.only(bottom: 8.h),
+      child: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            // "All" chip
-            Padding(
-              padding: EdgeInsets.only(right: 8.w),
-              child: FilterChip(
-                label: const Text('All'),
-                selected: selected == null,
-                onSelected: (_) => onSelect(null),
-                selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-                checkmarkColor: theme.colorScheme.primary,
-                labelStyle: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: selected == null
-                      ? FontWeight.w600
-                      : FontWeight.normal,
-                  color: selected == null
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface,
-                ),
-              ),
+        scrollDirection: Axis.horizontal,
+        itemCount: allOptions.length,
+        separatorBuilder: (_, __) => SizedBox(width: 8.w),
+        itemBuilder: (context, i) {
+          final option = allOptions[i];
+          final isSelected = selected == option;
+
+          return ChoiceChip(
+            // Theming attributes from your target UI
+            shadowColor: theme.colorScheme.onError.withOpacity(0.1),
+            elevation: 3,
+            pressElevation: 0,
+            
+            label: Text(option ?? 'All'),
+            selected: isSelected,
+            onSelected: (_) => onSelect(option),
+            
+            // Colors and Styles
+            selectedColor: theme.colorScheme.primary,
+            backgroundColor: theme.colorScheme.onError.withOpacity(0.2),
+            labelStyle: TextStyle(
+              fontSize: 12.sp,
+              color: isSelected 
+                  ? theme.colorScheme.onPrimary 
+                  : theme.colorScheme.onSecondary,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
-            ...types.map(
-              (t) => Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: FilterChip(
-                  label: Text(t),
-                  selected: selected == t,
-                  onSelected: (_) => onSelect(t),
-                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-                  checkmarkColor: theme.colorScheme.primary,
-                  labelStyle: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: selected == t
-                        ? FontWeight.w600
-                        : FontWeight.normal,
-                    color: selected == t
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurface,
-                  ),
-                ),
-              ),
+            
+            // Shape and Border
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.r),
             ),
-          ],
-        ),
-      );
+            side: BorderSide.none,
+            showCheckmark: false,
+          );
+        },
+      ),
+    );
+  }
 }

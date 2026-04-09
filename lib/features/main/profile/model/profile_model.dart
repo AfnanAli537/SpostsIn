@@ -1,4 +1,5 @@
 import 'package:sports_in/core/mappers/enum_mapper.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 
 class ProfileModel {
   final String id;
@@ -10,7 +11,7 @@ class ProfileModel {
   final ProfileStats stats;
   final List<Post> posts;
   final List<Achievement> achievements;
-  final List<AnalyzedVideoReport> analyzedVideos;
+  final List<AnalysisListItemModel> analyzedVideos;
   final List<Interest> interests;
   final List<Opportunity>? opportunities;
   final List<Course>? courses;
@@ -78,7 +79,7 @@ class ProfileModel {
           [],
       analyzedVideos:
           (json['analyzedVideos'] as List?)
-              ?.map((e) => AnalyzedVideoReport.fromJson(e))
+              ?.map((e) => AnalysisListItemModel.fromJson(e))
               .toList() ??
           [],
       interests:
@@ -177,7 +178,7 @@ class ProfileModel {
     ProfileStats? stats,
     List<Post>? posts,
     List<Achievement>? achievements,
-    List<AnalyzedVideoReport>? analyzedVideos,
+    List<AnalysisListItemModel>? analyzedVideos,
     List<Interest>? interests,
     List<Opportunity>? opportunities,
     List<Course>? courses,
@@ -363,61 +364,6 @@ class Achievement {
     };
   }
 }
-
-class AnalyzedVideoReport {
-  final String id;
-  final String type; // "Goalkeeper" | "Passing" | "Dribbling" | "Match"
-  final String createdAt;
-  final String originalVideoUrl;
-  final String? analyzedVideoUrl;
-  final bool isPaid;
-  final String playerName;
-  final String? playerAvatar;
-  final String analystName;
-
-  const AnalyzedVideoReport({
-    required this.id,
-    required this.type,
-    required this.createdAt,
-    required this.originalVideoUrl,
-    this.analyzedVideoUrl,
-    required this.isPaid,
-    required this.playerName,
-    this.playerAvatar,
-    required this.analystName,
-  });
-
-  /// Parses one item from /api/Analysis/search/library or /search/public
-  factory AnalyzedVideoReport.fromJson(Map<String, dynamic> json) {
-    final player = json['player'] as Map<String, dynamic>? ?? {};
-    final analyst = json['analyst'] as Map<String, dynamic>? ?? {};
-    return AnalyzedVideoReport(
-      id: json['id'] as String,
-      type: json['type'] as String,
-      createdAt: json['createdAt'] as String,
-      originalVideoUrl: json['originalVideoUrl'] as String,
-      analyzedVideoUrl: json['analyzedVideoUrl'] as String?,
-      isPaid: json['isPaid'] as bool,
-      playerName: player['fullName'] as String? ?? '',
-      playerAvatar: player['profilePicture'] as String?,
-      analystName: analyst['fullName'] as String? ?? '',
-    );
-  }
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'type': type,
-      'createdAt': createdAt,
-      'originalVideoUrl': originalVideoUrl,
-      'analyzedVideoUrl': analyzedVideoUrl,
-      'isPaid': isPaid,
-      'playerName': playerName,
-      'playerAvatar': playerAvatar,
-      'analystName': analystName,
-    };
-  }
-}
-// ─────────────────────────────────────────────────────────────────────────────
 
 class Interest {
   final String id;

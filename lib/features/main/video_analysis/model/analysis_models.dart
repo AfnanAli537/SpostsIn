@@ -115,6 +115,19 @@ class AnalysisListItemModel {
         analyst:
             AnalysisUserRef.fromJson(json['analyst'] as Map<String, dynamic>),
       );
+        Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type,
+      'createdAt': createdAt,
+      'originalVideoUrl': originalVideoUrl,
+      'analyzedVideoUrl': analyzedVideoUrl,
+      'isPaid': isPaid,
+      'player': player,
+      // 'playerAvatar': playerAvatar,
+      'analyst': analyst,
+    };
+  }
 }
 
 class AnalysisListPage {

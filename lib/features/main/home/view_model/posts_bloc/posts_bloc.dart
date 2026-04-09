@@ -34,74 +34,65 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   bool _hasNextPage = true;
   bool _isFetching = false;
   final int pageSize = 10;
+Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
+  try {
+    emit(PostsLoading());
+    _posts.clear();
+    _currentPage = 1;
+    _hasNextPage = true;
 
-  Future<void> _onFetchPosts(FetchPosts event, Emitter<PostsState> emit) async {
-    try {
-      emit(PostsLoading());
+    final fetchedPosts = await postRepo.getAllPosts(
+      pageNumber: 1,
+      pageSize: pageSize,
+    );
 
-      _posts.clear();
-      _currentPage = 1;
-      _hasNextPage = true;
+    _posts.addAll(_deduplicatePosts(fetchedPosts));  // ← Deduplicate
+    _hasNextPage = fetchedPosts.length == pageSize;
 
-      final fetchedPosts = await postRepo.getAllPosts(
-        pageNumber: 1,
-        pageSize: pageSize,
-      );
-
-      _posts.addAll(fetchedPosts);
-      _hasNextPage = fetchedPosts.length == pageSize;
-
-      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-    } catch (e) {
-      emit(
-        PostsError(
-          'Failed to fetch posts: ${e is ApiException ? e.message : e.toString()}',
-        ),
-      );
-    }
+    emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
+  } catch (e) {
+    emit(PostsError('Failed to fetch posts: ${e is ApiException ? e.message : e.toString()}'));
   }
+}
 
-  Future<void> _onLoadMorePosts(
-    LoadMorePosts event,
-    Emitter<PostsState> emit,
-  ) async {
-    if (_isFetching || !_hasNextPage) return;
+// ✅ Fix _onLoadMorePosts
+Future<void> _onLoadMorePosts(LoadMorePosts event, Emitter<PostsState> emit) async {
+  if (_isFetching || !_hasNextPage) return;
+  
+  _isFetching = true;
+  final currentState = state;
+  if (currentState is! PostsLoaded) return;
 
-    _isFetching = true;
+  try {
+    emit(PostsLoadingMore(currentState.posts));
 
-    final currentState = state;
-    if (currentState is! PostsLoaded) return;
+    final nextPage = _currentPage + 1;
+    final fetchedPosts = await postRepo.getAllPosts(
+      pageNumber: nextPage,
+      pageSize: pageSize,
+    );
 
-    try {
-      emit(PostsLoadingMore(currentState.posts));
+    // Filter out duplicates
+    final newPosts = fetchedPosts.where((newPost) =>
+      !_posts.any((existing) => existing.id == newPost.id)
+    ).toList();
 
-      final nextPage = _currentPage + 1;
+    _posts.addAll(newPosts);
+    
+    _currentPage = nextPage;
+    _hasNextPage = fetchedPosts.length == pageSize;
 
-      final fetchedPosts = await postRepo.getAllPosts(
-        pageNumber: nextPage,
-        pageSize: pageSize,
-      );
-
-      final newPosts = fetchedPosts.where((newPost) =>
-        !_posts.any((existing) => existing.id == newPost.id)
-      ).toList();
-
-      _posts.addAll(newPosts);
-
-      _currentPage = nextPage;
-      _hasNextPage = fetchedPosts.length == pageSize;
-
-      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
-    } catch (e) {
-      emit(
-        PostsError(
-          'Failed to load more posts: ${e is ApiException ? e.message : e.toString()}',
-        ),
-      );
-    } finally {
-      _isFetching = false;
-    }
-  }Future<void> _onFetchSinglePost(
+    // ✅ Emit deduplicated list
+    emit(PostsLoaded(
+      posts: _deduplicatePosts(List.from(_posts)),
+      hasNextPage: _hasNextPage,
+    ));
+  } catch (e) {
+    emit(PostsError('Failed to load more posts: ${e is ApiException ? e.message : e.toString()}'));
+  } finally {
+    _isFetching = false;
+  }
+}    Future<void> _onFetchSinglePost(
   FetchSinglePost event,
   Emitter<PostsState> emit,
 ) async {
@@ -283,12 +274,13 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       );
 
       final index = _posts.indexWhere((p) => p.id == tempId);
-      if (index != -1) {
-        _posts[index] = uploadedPost;
-      }
+    if (index != -1) {
+      _posts[index] = uploadedPost;
+    }
+      
       emit(
         PostsLoaded(
-          posts: List.from(_posts),
+          posts: _deduplicatePosts(List.from(_posts)),
           hasNextPage: _hasNextPage,
           isUploading: false,
         ),
@@ -301,7 +293,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       log("Upload failed: ${e is ApiException ? e.message : e.toString()}");
       _posts.removeWhere((p) => p.id == tempId);
 
-      emit(PostsLoaded(posts: List.from(_posts), hasNextPage: _hasNextPage));
+      emit(PostsLoaded(posts: _deduplicatePosts(List.from(_posts)), hasNextPage: _hasNextPage));
 
       emit(
         PostsError(
@@ -357,7 +349,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
 
         emit(
           PostsLoaded(
-            posts: updatedPosts,
+            posts: _deduplicatePosts(List.from(updatedPosts)),
             hasNextPage: currentState.hasNextPage,
           ),
         );
@@ -468,4 +460,12 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
       }
     }
   }
+List<PostModel> _deduplicatePosts(List<PostModel> posts) {
+  final seen = <String>{};
+  return posts.where((post) {
+    if (seen.contains(post.id)) return false;
+    seen.add(post.id);
+    return true;
+  }).toList();
+}
 }

@@ -8,6 +8,7 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import '../interface/i_profile_data_source.dart';
 import '../../model/profile_model.dart';
 
@@ -76,7 +77,7 @@ class ApiProfileDataSource implements IProfileDataSource {
         return profile.copyWith(
           posts: results[0] as List<Post>,
           achievements: results[1] as List<Achievement>,
-          analyzedVideos: results[2] as List<AnalyzedVideoReport>,
+          analyzedVideos: results[2] as List<AnalysisListItemModel>,
           opportunities: results[3] as List<Opportunity>,
           courses: results[4] as List<Course>,
           interests: results[5] as List<Interest>,
@@ -678,7 +679,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   // ── Analyzed Videos  ───────────────────────────────────────────────────
 
 
-  Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(
+  Future<List<AnalysisListItemModel>> _getAnalyzedVideos(
     String userId,
     bool isOwner,
   ) async {
@@ -699,7 +700,7 @@ class ApiProfileDataSource implements IProfileDataSource {
         final items = data['items'] as List<dynamic>? ?? [];
         return items
             .map((json) =>
-                AnalyzedVideoReport.fromJson(json as Map<String, dynamic>))
+                AnalysisListItemModel.fromJson(json as Map<String, dynamic>))
             .toList();
       }
       return [];

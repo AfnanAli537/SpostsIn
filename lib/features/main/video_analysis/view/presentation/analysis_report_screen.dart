@@ -14,18 +14,28 @@ class AnalysisReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Analysis Report',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: BlocBuilder<AnalysisBloc, AnalysisState>(
         builder: (context, state) {
-          if (state is AnalysisReportLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is AnalysisReportError) {
-            return _buildError(context, state.message);
-          }
-          if (state is AnalysisReportLoaded) {
-            return _buildContent(context, state.report);
-          }
+          if (state is AnalysisReportLoading) return const Center(child: CircularProgressIndicator());
+          if (state is AnalysisReportError) return _buildError(context, state.message);
+          if (state is AnalysisReportLoaded) return _buildContent(context, state.report);
           return const SizedBox.shrink();
         },
       ),
@@ -35,65 +45,74 @@ class AnalysisReportScreen extends StatelessWidget {
   Widget _buildContent(BuildContext context, AnalysisReportModel report) {
     final theme = Theme.of(context);
 
-    return CustomScrollView(
-      slivers: [
-        // ── Video hero app bar ─────────────────────────────────────────────
-        SliverAppBar(
-          expandedHeight: 260.h,
-          pinned: true,
-          flexibleSpace: FlexibleSpaceBar(
-            background: _VideoPlayerView(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. Video Section
+          Container(
+            height: 220.h,
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.r),
+              color: Colors.black,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: _VideoPlayerView(
               videoUrl: report.analyzedVideoUrl ?? report.originalVideoUrl,
               isAnalyzed: report.analyzedVideoUrl != null,
             ),
           ),
-        ),
 
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          Padding(
+            padding: EdgeInsets.all(16.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Header ──────────────────────────────────────────────────
+                // 2. Info Row
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AnalysisTypeBadge(type: report.type),
-                    const Spacer(),
                     Text(
                       _formatDate(report.createdAt),
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
-                      ),
+                      style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                     ),
                   ],
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 16.h),
 
-                // ── Player / Analyst ─────────────────────────────────────────
-                _PersonRow(report: report, theme: theme),
-                SizedBox(height: 20.h),
+                // 3. Simple Participant Row
+                Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: _PersonRow(report: report, theme: theme),
+                ),
+                
+                SizedBox(height: 24.h),
 
-                // ── KPI title ────────────────────────────────────────────────
+                // 4. KPI Section
                 Text(
-                  'Performance Metrics',
+                  'Performance Summary',
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 17.sp,
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                    color: Colors.black,
                   ),
                 ),
                 SizedBox(height: 12.h),
-
-                // ── Type-aware KPIs ──────────────────────────────────────────
                 AnalysisKpisWidget(kpis: report.kpis, type: report.type),
-                SizedBox(height: 32.h),
+                
+                SizedBox(height: 40.h),
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
