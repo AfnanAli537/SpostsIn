@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared KPI tile — used by Passing, Dribbling, and Goalkeeper grids
+// Shared KPI tile
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _KpiTile extends StatelessWidget {
@@ -84,87 +85,43 @@ Widget _kpiGrid(List<_KpiTile> tiles) => GridView.count(
     );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section header — shared across all KPI sections
-// ─────────────────────────────────────────────────────────────────────────────
-
-// class _SectionHeader extends StatelessWidget {
-//   final String title;
-//   final IconData icon;
-//   final Color color;
-
-//   const _SectionHeader({
-//     required this.title,
-//     required this.icon,
-//     required this.color,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: EdgeInsets.only(bottom: 12.h),
-//       child: Row(children: [
-//         Container(
-//           padding: EdgeInsets.all(6.w),
-//           decoration: BoxDecoration(
-//             color: color.withOpacity(0.12),
-//             borderRadius: BorderRadius.circular(8.r),
-//           ),
-//           child: Icon(icon, size: 16.sp, color: color),
-//         ),
-//         SizedBox(width: 10.w),
-//         Text(
-//           title,
-//           style: TextStyle(
-//             fontSize: 14.sp,
-//             fontWeight: FontWeight.w700,
-//             color: Colors.black87,
-//           ),
-//         ),
-//       ]),
-//     );
-//   }
-// }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GOALKEEPER — grid layout matching passing/dribbling + highlight banner
+// GOALKEEPER
 // ─────────────────────────────────────────────────────────────────────────────
 
 class GoalkeeperKpisWidget extends StatelessWidget {
   final GoalkeeperKpis kpis;
+  final S strings;
 
-  const GoalkeeperKpisWidget({super.key, required this.kpis});
+  const GoalkeeperKpisWidget({super.key, required this.kpis, required this.strings});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Highlight banner: reaction time (most important GK metric) ────────
-        _ReactionTimeBanner(reactionTimeSec: kpis.reactionTimeSec),
+        _ReactionTimeBanner(reactionTimeSec: kpis.reactionTimeSec, strings: strings),
         SizedBox(height: 14.h),
-
-        // ── 2×2 KPI grid ──────────────────────────────────────────────────────
         _kpiGrid([
           _KpiTile(
-            label: 'Max Extension',
+            label: strings.maxExtension,
             value: '${kpis.maxExtensionMeters.toStringAsFixed(2)} m',
             icon: Icons.open_with_rounded,
             color: const Color(0xFF00BFA5),
           ),
           _KpiTile(
-            label: 'Max Velocity',
+            label: strings.maxVelocity,
             value: '${kpis.maxVelocityKmh.toStringAsFixed(1)} km/h',
             icon: Icons.speed_rounded,
             color: const Color(0xFFFF6F00),
           ),
           _KpiTile(
-            label: 'Knee Angle',
+            label: strings.kneeAngle,
             value: '${kpis.deepestKneeAngleDeg.toStringAsFixed(0)}°',
             icon: Icons.rotate_90_degrees_ccw_rounded,
             color: const Color(0xFF6C63FF),
           ),
           _KpiTile(
-            label: 'Reaction Time',
+            label: strings.reactionTimeShort,
             value: '${kpis.reactionTimeSec.toStringAsFixed(3)} s',
             icon: Icons.timer_rounded,
             color: const Color(0xFF1565C0),
@@ -175,18 +132,17 @@ class GoalkeeperKpisWidget extends StatelessWidget {
   }
 }
 
-/// Full-width gradient banner highlighting reaction time
 class _ReactionTimeBanner extends StatelessWidget {
   final double reactionTimeSec;
+  final S strings;
 
-  const _ReactionTimeBanner({required this.reactionTimeSec});
+  const _ReactionTimeBanner({required this.reactionTimeSec, required this.strings});
 
-  /// Qualitative rating based on reaction time
   String get _rating {
-    if (reactionTimeSec < 0.15) return 'Elite';
-    if (reactionTimeSec < 0.22) return 'Good';
-    if (reactionTimeSec < 0.30) return 'Average';
-    return 'Needs Work';
+    if (reactionTimeSec < 0.15) return strings.elite;
+    if (reactionTimeSec < 0.22) return strings.good;
+    if (reactionTimeSec < 0.30) return strings.average;
+    return strings.needsWork;
   }
 
   Color get _ratingColor {
@@ -227,11 +183,8 @@ class _ReactionTimeBanner extends StatelessWidget {
         ),
         SizedBox(width: 14.w),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            'Reaction Time',
-            style:
-                TextStyle(color: Colors.white70, fontSize: 11.sp),
-          ),
+          Text(strings.reactionTime,
+              style: TextStyle(color: Colors.white70, fontSize: 11.sp)),
           SizedBox(height: 2.h),
           Text(
             '${reactionTimeSec.toStringAsFixed(3)} s',
@@ -244,8 +197,7 @@ class _ReactionTimeBanner extends StatelessWidget {
         ]),
         const Spacer(),
         Container(
-          padding:
-              EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           decoration: BoxDecoration(
             color: _ratingColor,
             borderRadius: BorderRadius.circular(20.r),
@@ -269,37 +221,38 @@ class _ReactionTimeBanner extends StatelessWidget {
 
 class PassingKpisWidget extends StatelessWidget {
   final PassingKpis kpis;
+  final S strings;
 
-  const PassingKpisWidget({super.key, required this.kpis});
+  const PassingKpisWidget({super.key, required this.kpis, required this.strings});
 
   @override
   Widget build(BuildContext context) => _kpiGrid([
         _KpiTile(
-          label: 'Drill Duration',
+          label: strings.drillDuration,
           value: '${kpis.drillDurationSeconds}s',
           icon: Icons.hourglass_bottom_rounded,
           color: const Color(0xFF00BFA5),
         ),
         _KpiTile(
-          label: 'Ball Touches',
+          label: strings.ballTouches,
           value: '${kpis.totalBallTouches}',
           icon: Icons.touch_app_rounded,
           color: const Color(0xFF6C63FF),
         ),
         _KpiTile(
-          label: 'Avg Ball Speed',
+          label: strings.avgBallSpeed,
           value: '${kpis.avgBallSpeedKmh.toStringAsFixed(1)} km/h',
           icon: Icons.sports_soccer,
           color: const Color(0xFFFF6F00),
         ),
         _KpiTile(
-          label: 'Avg Player Speed',
+          label: strings.avgPlayerSpeed,
           value: '${kpis.avgPlayerSpeedKmh.toStringAsFixed(1)} km/h',
           icon: Icons.directions_run_rounded,
           color: const Color(0xFF1565C0),
         ),
         _KpiTile(
-          label: 'Avg Knee Angle',
+          label: strings.avgKneeAngle,
           value: '${kpis.avgRKneeAngleDeg.toStringAsFixed(1)}°',
           icon: Icons.rotate_90_degrees_ccw_rounded,
           color: const Color(0xFFE53935),
@@ -319,60 +272,62 @@ class PassingKpisWidget extends StatelessWidget {
 
 class DribblingKpisWidget extends StatelessWidget {
   final DribblingKpis kpis;
+  final S strings;
 
-  const DribblingKpisWidget({super.key, required this.kpis});
+  const DribblingKpisWidget({super.key, required this.kpis, required this.strings});
 
   @override
   Widget build(BuildContext context) => Column(
         children: [
           _kpiGrid([
             _KpiTile(
-              label: 'Drill Duration',
+              label: strings.drillDuration,
               value: '${kpis.drillDurationSeconds}s',
               icon: Icons.hourglass_bottom_rounded,
               color: const Color(0xFF00BFA5),
             ),
             _KpiTile(
-              label: 'Total Touches',
+              label: strings.totalTouches,
               value: '${kpis.totalTouches}',
               icon: Icons.touch_app_rounded,
               color: const Color(0xFF6C63FF),
             ),
             _KpiTile(
-              label: 'Touches / sec',
+              label: strings.touchesPerSec,
               value: kpis.touchesPerSecond.toStringAsFixed(2),
               icon: Icons.repeat_rounded,
               color: const Color(0xFFFF6F00),
             ),
             _KpiTile(
-              label: 'Avg Player Speed',
+              label: strings.avgPlayerSpeed,
               value: '${kpis.avgPlayerSpeedKmh.toStringAsFixed(1)} km/h',
               icon: Icons.directions_run_rounded,
               color: const Color(0xFF1565C0),
             ),
             _KpiTile(
-              label: 'Avg Ball Distance',
+              label: strings.avgBallDistance,
               value: '${kpis.avgBallDistanceMeters.toStringAsFixed(2)} m',
               icon: Icons.sports_soccer,
               color: const Color(0xFFE53935),
             ),
             _KpiTile(
-              label: 'Head Up %',
+              label: strings.headUpPercent,
               value: '${kpis.headUpPercentage.toStringAsFixed(0)}%',
               icon: Icons.visibility_rounded,
               color: const Color(0xFF558B2F),
             ),
           ]),
           SizedBox(height: 12.h),
-          _ConeStatsRow(kpis: kpis),
+          _ConeStatsRow(kpis: kpis, strings: strings),
         ],
       );
 }
 
 class _ConeStatsRow extends StatelessWidget {
   final DribblingKpis kpis;
+  final S strings;
 
-  const _ConeStatsRow({required this.kpis});
+  const _ConeStatsRow({required this.kpis, required this.strings});
 
   @override
   Widget build(BuildContext context) {
@@ -384,17 +339,17 @@ class _ConeStatsRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(14.r),
       ),
       child: Row(children: [
-        _item(context, 'Forward\nPasses', '${kpis.conePassesForward}',
+        _item(context, strings.forwardPasses, '${kpis.conePassesForward}',
             Colors.green),
         _div(),
-        _item(context, 'Backward\nPasses', '${kpis.conePassesBackward}',
+        _item(context, strings.backwardPasses, '${kpis.conePassesBackward}',
             Colors.orange),
         _div(),
-        _item(context, 'Cone Hits', '${kpis.coneHits}', Colors.red),
+        _item(context, strings.coneHits, '${kpis.coneHits}', Colors.red),
         _div(),
         _item(
           context,
-          'Hip Variance',
+          strings.hipVariance,
           '${kpis.hipBounceVarianceMeters.toStringAsFixed(3)} m',
           const Color(0xFF6C63FF),
         ),
@@ -427,58 +382,53 @@ class _ConeStatsRow extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MATCH — Team 1 vs Team 2 arena layout
+// MATCH
 // ─────────────────────────────────────────────────────────────────────────────
 
 class MatchKpisWidget extends StatelessWidget {
   final MatchKpis kpis;
+  final S strings;
 
-  const MatchKpisWidget({super.key, required this.kpis});
+  const MatchKpisWidget({super.key, required this.kpis, required this.strings});
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = Theme.of(context).colorScheme.secondary;
-
     return Column(children: [
-      // ── VS Header ──────────────────────────────────────────────────────────
-      _MatchVsHeader(),
+      _MatchVsHeader(strings: strings),
       SizedBox(height: 14.h),
-
-      // ── Possession bar ─────────────────────────────────────────────────────
       _PossessionBar(
         team1: kpis.team1Possession,
         team2: kpis.team2Possession,
+        strings: strings,
       ),
       SizedBox(height: 14.h),
-
-      // ── Stat rows ──────────────────────────────────────────────────────────
       _StatRow(
         icon: Icons.route_rounded,
-        label: 'Distance Covered',
+        label: strings.distanceCovered,
         v1: '${kpis.team1DistanceCoveredKm.toStringAsFixed(2)} km',
         v2: '${kpis.team2DistanceCoveredKm.toStringAsFixed(2)} km',
         v1Wins: kpis.team1DistanceCoveredKm >= kpis.team2DistanceCoveredKm,
+        strings: strings,
       ),
       SizedBox(height: 8.h),
       _StatRow(
         icon: Icons.speed_rounded,
-        label: 'Top Speed',
+        label: strings.topSpeed,
         v1: '${kpis.team1TopSpeedKmh.toStringAsFixed(1)} km/h',
         v2: '${kpis.team2TopSpeedKmh.toStringAsFixed(1)} km/h',
         v1Wins: kpis.team1TopSpeedKmh >= kpis.team2TopSpeedKmh,
+        strings: strings,
       ),
       SizedBox(height: 14.h),
-
-      // ── Top sprint speed banner ────────────────────────────────────────────
-      _TopSprintBanner(kpis: kpis),
+      _TopSprintBanner(kpis: kpis, strings: strings),
     ]);
   }
 }
 
-// ── VS header card ────────────────────────────────────────────────────────────
-
 class _MatchVsHeader extends StatelessWidget {
+  final S strings;
+
+  const _MatchVsHeader({required this.strings});
 
   @override
   Widget build(BuildContext context) {
@@ -487,18 +437,11 @@ class _MatchVsHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.r),
-        // gradient: LinearGradient(
-        //   colors: [
-        //     primary.withOpacity(0.08),
-        //     secondary.withOpacity(0.08),
-        //   ],
-        // ),
         border: Border.all(
           color: theme.onError.withOpacity(0.2),
         ),
       ),
       child: Row(children: [
-        // Team 1
         Expanded(
           child: Column(children: [
             Container(
@@ -512,7 +455,7 @@ class _MatchVsHeader extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             Text(
-              'Team 1',
+              strings.team1,
               style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
@@ -520,8 +463,6 @@ class _MatchVsHeader extends StatelessWidget {
             ),
           ]),
         ),
-
-        // VS badge
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           decoration: BoxDecoration(
@@ -529,7 +470,7 @@ class _MatchVsHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.r),
           ),
           child: Text(
-            'VS',
+            strings.vs,
             style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w900,
@@ -537,8 +478,6 @@ class _MatchVsHeader extends StatelessWidget {
                 letterSpacing: 2),
           ),
         ),
-
-        // Team 2
         Expanded(
           child: Column(children: [
             Container(
@@ -552,7 +491,7 @@ class _MatchVsHeader extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             Text(
-              'Team 2',
+              strings.team2,
               style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
@@ -565,17 +504,15 @@ class _MatchVsHeader extends StatelessWidget {
   }
 }
 
-// ── Possession bar ────────────────────────────────────────────────────────────
-
 class _PossessionBar extends StatelessWidget {
   final double team1;
   final double team2;
-
+  final S strings;
 
   const _PossessionBar({
     required this.team1,
     required this.team2,
-
+    required this.strings,
   });
 
   @override
@@ -606,12 +543,10 @@ class _PossessionBar extends StatelessWidget {
                 color: theme.primary),
           ),
           Column(children: [
-            Icon(Icons.sports_soccer,
-                size: 16.sp, color: Colors.grey[400]),
+            Icon(Icons.sports_soccer, size: 16.sp, color: Colors.grey[400]),
             SizedBox(height: 2.h),
-            Text('Possession',
-                style:
-                    TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
+            Text(strings.possession,
+                style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
           ]),
           Text(
             '${team2.toStringAsFixed(0)}%',
@@ -625,9 +560,7 @@ class _PossessionBar extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(10.r),
           child: Stack(children: [
-            // Background (team 2)
             Container(height: 10.h, color: theme.onTertiaryContainer),
-            // Foreground (team 1)
             FractionallySizedBox(
               widthFactor: t1Ratio,
               child: Container(
@@ -648,14 +581,13 @@ class _PossessionBar extends StatelessWidget {
   }
 }
 
-// ── Stat comparison row ───────────────────────────────────────────────────────
-
 class _StatRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String v1;
   final String v2;
   final bool v1Wins;
+  final S strings;
 
   const _StatRow({
     required this.icon,
@@ -663,6 +595,7 @@ class _StatRow extends StatelessWidget {
     required this.v1,
     required this.v2,
     required this.v1Wins,
+    required this.strings,
   });
 
   @override
@@ -681,7 +614,6 @@ class _StatRow extends StatelessWidget {
         ],
       ),
       child: Row(children: [
-        // Team 1 value
         SizedBox(
           width: 90.w,
           child: Row(children: [
@@ -693,8 +625,7 @@ class _StatRow extends StatelessWidget {
                 v1,
                 style: TextStyle(
                   fontSize: 13.sp,
-                  fontWeight:
-                      v1Wins ? FontWeight.w800 : FontWeight.w500,
+                  fontWeight: v1Wins ? FontWeight.w800 : FontWeight.w500,
                   color: v1Wins ? theme.primary : Colors.grey[500],
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -702,25 +633,18 @@ class _StatRow extends StatelessWidget {
             ),
           ]),
         ),
-
-        // Center label
         Expanded(
           child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon,
-                    size: 14.sp,
-                    color: Colors.grey[400]),
+                Icon(icon, size: 14.sp, color: Colors.grey[400]),
                 SizedBox(width: 4.w),
                 Text(
                   label,
-                  style: TextStyle(
-                      fontSize: 11.sp, color: Colors.grey[500]),
+                  style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
                 ),
               ]),
         ),
-
-        // Team 2 value
         SizedBox(
           width: 90.w,
           child: Row(
@@ -731,8 +655,7 @@ class _StatRow extends StatelessWidget {
                     v2,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      fontWeight:
-                          !v1Wins ? FontWeight.w800 : FontWeight.w500,
+                      fontWeight: !v1Wins ? FontWeight.w800 : FontWeight.w500,
                       color: !v1Wins ? theme.onTertiaryContainer : Colors.grey[500],
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -749,14 +672,11 @@ class _StatRow extends StatelessWidget {
   }
 }
 
-// ── Top sprint speed banner ───────────────────────────────────────────────────
-
 class _TopSprintBanner extends StatelessWidget {
   final MatchKpis kpis;
+  final S strings;
 
-  const _TopSprintBanner({
-    required this.kpis,
-  });
+  const _TopSprintBanner({required this.kpis, required this.strings});
 
   @override
   Widget build(BuildContext context) {
@@ -765,11 +685,6 @@ class _TopSprintBanner extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       decoration: BoxDecoration(
-        // gradient: LinearGradient(
-        //   colors: [primary, secondary],
-        //   begin: Alignment.topLeft,
-        //   end: Alignment.bottomRight,
-        // ),
         color: theme.primary,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
@@ -787,12 +702,11 @@ class _TopSprintBanner extends StatelessWidget {
             color: Colors.white.withOpacity(0.15),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.bolt_rounded,
-              color: Colors.white, size: 26.sp),
+          child: Icon(Icons.bolt_rounded, color: Colors.white, size: 26.sp),
         ),
         SizedBox(width: 14.w),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Top Sprint Speed',
+          Text(strings.topSprintSpeed,
               style: TextStyle(color: Colors.white70, fontSize: 11.sp)),
           SizedBox(height: 2.h),
           Text(
@@ -806,7 +720,7 @@ class _TopSprintBanner extends StatelessWidget {
         ]),
         const Spacer(),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text('Frames',
+          Text(strings.frames,
               style: TextStyle(color: Colors.white60, fontSize: 10.sp)),
           Text('${kpis.totalFrames}',
               style: TextStyle(
@@ -820,27 +734,32 @@ class _TopSprintBanner extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Factory — auto-picks correct widget by type string
+// Factory widget
 // ─────────────────────────────────────────────────────────────────────────────
 
 class AnalysisKpisWidget extends StatelessWidget {
   final AnalysisKpis kpis;
   final String type;
+  final S strings;
 
-  const AnalysisKpisWidget(
-      {super.key, required this.kpis, required this.type});
+  const AnalysisKpisWidget({
+    super.key,
+    required this.kpis,
+    required this.type,
+    required this.strings,
+  });
 
   @override
   Widget build(BuildContext context) {
     switch (type) {
       case 'Goalkeeper':
-        return GoalkeeperKpisWidget(kpis: kpis as GoalkeeperKpis);
+        return GoalkeeperKpisWidget(kpis: kpis as GoalkeeperKpis, strings: strings);
       case 'Passing':
-        return PassingKpisWidget(kpis: kpis as PassingKpis);
+        return PassingKpisWidget(kpis: kpis as PassingKpis, strings: strings);
       case 'Dribbling':
-        return DribblingKpisWidget(kpis: kpis as DribblingKpis);
+        return DribblingKpisWidget(kpis: kpis as DribblingKpis, strings: strings);
       case 'Match':
-        return MatchKpisWidget(kpis: kpis as MatchKpis);
+        return MatchKpisWidget(kpis: kpis as MatchKpis, strings: strings);
       default:
         return const SizedBox.shrink();
     }

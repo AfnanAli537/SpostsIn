@@ -20,6 +20,14 @@ import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.
 import 'package:sports_in/features/main/video_analysis/view/presentation/create_analysis_form_screen.dart';
 import 'package:translator/translator.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'dart:async';
+import 'package:visibility_detector/visibility_detector.dart';
+
+/// Minimum visible fraction (50%) before we start counting view time.
+const double _kVisibleThreshold = 0.5;
+
+/// Seconds of view time required to count the ad as "watched".
+const double _kWatchedThreshold = 3.0;
 
 class PostWidget extends StatefulWidget {
   final PostModel post;
@@ -51,6 +59,14 @@ class _PostWidgetState extends State<PostWidget> {
   String? _targetLanguage;
   late bool _isLiked;
   late int _likesCount;
+  Timer? _viewTimer;
+  double _watchedSeconds = 0;
+  bool _isWatched = false;
+  bool _isVisible = false;
+  double _zoomScale = 1.0;
+
+  static const Duration _reportInterval = Duration(seconds: 5);
+  DateTime? _lastReported;
 
   @override
   void initState() {
@@ -82,6 +98,51 @@ class _PostWidgetState extends State<PostWidget> {
     }
   }
 
+  // ─── Progress tracking Logic ───────────────────────────────────────────────
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (widget.isCurrentUser) return; // Don't track the owner's own views
+
+    final nowVisible = info.visibleFraction >= _kVisibleThreshold;
+
+    if (nowVisible && !_isVisible) {
+      _isVisible = true;
+      _viewTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        _watchedSeconds += 1;
+        if (!_isWatched && _watchedSeconds >= _kWatchedThreshold) {
+          _isWatched = true;
+        }
+        _maybeReport();
+      });
+    } else if (!nowVisible && _isVisible) {
+      _isVisible = false;
+      _viewTimer?.cancel();
+      _viewTimer = null;
+      _sendProgress();
+    }
+  }
+
+  void _maybeReport() {
+    final now = DateTime.now();
+    if (_lastReported == null ||
+        now.difference(_lastReported!) >= _reportInterval) {
+      _lastReported = now;
+      _sendProgress();
+    }
+  }
+
+  void _sendProgress() {
+    if (!mounted) return;
+    context.read<PostsBloc>().add(
+      SendPostProgress(
+        postId: widget.post.id,
+        watchedTime: _watchedSeconds,
+        isWatched: _isWatched,
+        zoomScale: _zoomScale,
+      ),
+    );
+  }
+
   Future<void> _detectLanguage() async {
     try {
       final detection = await _translator.translate(
@@ -99,8 +160,7 @@ class _PostWidgetState extends State<PostWidget> {
       log('Language detection error: $e');
       if (mounted) {
         setState(() {
-          _detectedLanguage =
-              _isArabic(widget.post.description) ? 'ar' : 'en';
+          _detectedLanguage = _isArabic(widget.post.description) ? 'ar' : 'en';
           _targetLanguage = _detectedLanguage == 'ar' ? 'en' : 'ar';
         });
       }
@@ -163,8 +223,9 @@ class _PostWidgetState extends State<PostWidget> {
           final betterPlayerDataSource = BetterPlayerDataSource(
             BetterPlayerDataSourceType.network,
             widget.post.mediaUrl!,
-            cacheConfiguration:
-                const BetterPlayerCacheConfiguration(useCache: true),
+            cacheConfiguration: const BetterPlayerCacheConfiguration(
+              useCache: true,
+            ),
           );
           _betterPlayerController = BetterPlayerController(
             const BetterPlayerConfiguration(
@@ -188,16 +249,8 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   bool _checkIfVideo(String url) {
-    final videoExtensions = [
-      '.mp4',
-      '.mov',
-      '.avi',
-      '.mkv',
-      '.webm',
-      '.m3u8'
-    ];
-    return videoExtensions
-            .any((ext) => url.toLowerCase().contains(ext)) ||
+    final videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm', '.m3u8'];
+    return videoExtensions.any((ext) => url.toLowerCase().contains(ext)) ||
         url.toLowerCase().contains('cloudinary.com/video');
   }
 
@@ -230,9 +283,9 @@ class _PostWidgetState extends State<PostWidget> {
           ? strings.archivePostConfirmation
           : strings.restorePostConfirmation,
       onConfirm: () {
-        context
-            .read<PostsBloc>()
-            .add(TogglePostVisibility(postId: widget.post.id));
+        context.read<PostsBloc>().add(
+          TogglePostVisibility(postId: widget.post.id),
+        );
         widget.onDeleted?.call();
       },
       confirmText: isArchiving ? strings.archive : strings.restore,
@@ -258,13 +311,20 @@ class _PostWidgetState extends State<PostWidget> {
   void _openFullScreenMedia() {
     if (widget.post.mediaUrl == null || widget.post.mediaUrl!.isEmpty) return;
     if (!_isVideo) {
+      // Set zoom scale to 2.0 to indicate interaction
+      setState(() => _zoomScale = 2.0);
+      _sendProgress();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) =>
               FullScreenImageViewer(imageUrl: widget.post.mediaUrl!),
         ),
-      );
+      ).then((_) {
+        // Reset scale when returning
+        setState(() => _zoomScale = 1.0);
+      });
     }
   }
 
@@ -285,15 +345,23 @@ class _PostWidgetState extends State<PostWidget> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _AnalysisTypePickerSheet(
-        videoUrl: videoUrl,
-        targetUserId: userId,
-      ),
+      builder: (_) =>
+          _AnalysisTypePickerSheet(videoUrl: videoUrl, targetUserId: userId),
     );
   }
 
   @override
   void dispose() {
+    _viewTimer?.cancel();
+    // Final report on disposal if there's unsent progress
+    if (!widget.isCurrentUser && _watchedSeconds > 0) {
+      getIt<PostsRepositoryImpl>().sendPostProgress(
+        postId: widget.post.id,
+        watchedTime: _watchedSeconds,
+        isWatched: _isWatched,
+        zoomScale: _zoomScale,
+      );
+    }
     _betterPlayerController?.dispose();
     super.dispose();
   }
@@ -303,11 +371,10 @@ class _PostWidgetState extends State<PostWidget> {
     final strings = S.of(context);
     final theme = Theme.of(context).colorScheme;
 
-    return Card(
+    Widget card = Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -319,38 +386,45 @@ class _PostWidgetState extends State<PostWidget> {
               children: [
                 GestureDetector(
                   onTap: _navigateToAuthorProfile,
-                  child: Row(children: [
-                    CircleAvatar(
-                      radius: 20.r,
-                      backgroundImage:
-                          widget.post.author.profilePictureUrl != null
-                              ? NetworkImage(
-                                  widget.post.author.profilePictureUrl!)
-                              : null,
-                      child:
-                          widget.post.author.profilePictureUrl == null
-                              ? Icon(Icons.person, size: 24.sp)
-                              : null,
-                    ),
-                    SizedBox(width: 12.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.post.author.fullName,
-                          style: TextStyle(
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20.r,
+                        backgroundImage:
+                            widget.post.author.profilePictureUrl != null
+                            ? NetworkImage(
+                                widget.post.author.profilePictureUrl!,
+                              )
+                            : null,
+                        child: widget.post.author.profilePictureUrl == null
+                            ? Icon(Icons.person, size: 24.sp)
+                            : null,
+                      ),
+                      SizedBox(width: 12.w),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.post.author.fullName,
+                            style: TextStyle(
                               fontSize: 16.sp,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          formatTimeAgo(
-                              context, widget.post.createdAt.toUtc()),
-                          style: TextStyle(
-                              fontSize: 12.sp, color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ]),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            formatTimeAgo(
+                              context,
+                              widget.post.createdAt.toUtc(),
+                            ),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
 
                 // ── Popup menu ─────────────────────────────────────────────
@@ -359,7 +433,8 @@ class _PostWidgetState extends State<PostWidget> {
                   child: PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: theme.onSurface),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r)),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
                     onSelected: (value) async {
                       switch (value) {
                         case 'analyze':
@@ -387,48 +462,63 @@ class _PostWidgetState extends State<PostWidget> {
                       if (_hasVideo)
                         PopupMenuItem(
                           value: 'analyze',
-                          child: Row(children: [
-                            Icon(Icons.analytics_outlined, size: 20.sp),
-                            SizedBox(width: 8.w),
-                            Text(strings.analyzeVideo),
-                          ]),
+                          child: Row(
+                            children: [
+                              Icon(Icons.analytics_outlined, size: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text(strings.analyzeVideo),
+                            ],
+                          ),
                         ),
                       if (widget.isCurrentUser) ...[
                         if (widget.post.isActive)
                           PopupMenuItem(
                             value: 'archive',
-                            child: Row(children: [
-                              Icon(Icons.archive_outlined, size: 20.sp),
-                              SizedBox(width: 8.w),
-                              Text(strings.archive),
-                            ]),
+                            child: Row(
+                              children: [
+                                Icon(Icons.archive_outlined, size: 20.sp),
+                                SizedBox(width: 8.w),
+                                Text(strings.archive),
+                              ],
+                            ),
                           )
                         else
                           PopupMenuItem(
                             value: 'restore',
-                            child: Row(children: [
-                              Icon(Icons.restore_outlined, size: 20.sp),
-                              SizedBox(width: 8.w),
-                              Text(strings.restore),
-                            ]),
+                            child: Row(
+                              children: [
+                                Icon(Icons.restore_outlined, size: 20.sp),
+                                SizedBox(width: 8.w),
+                                Text(strings.restore),
+                              ],
+                            ),
                           ),
                         PopupMenuItem(
                           value: 'edit',
-                          child: Row(children: [
-                            Icon(Icons.edit_outlined, size: 20.sp),
-                            SizedBox(width: 8.w),
-                            Text(strings.edit),
-                          ]),
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_outlined, size: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text(strings.edit),
+                            ],
+                          ),
                         ),
                         PopupMenuItem(
                           value: 'delete',
-                          child: Row(children: [
-                            Icon(Icons.delete_outline,
-                                size: 20.sp, color: Colors.red[700]),
-                            SizedBox(width: 8.w),
-                            Text(strings.delete,
-                                style: TextStyle(color: Colors.red[700])),
-                          ]),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.delete_outline,
+                                size: 20.sp,
+                                color: Colors.red[700],
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                strings.delete,
+                                style: TextStyle(color: Colors.red[700]),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ],
@@ -446,10 +536,9 @@ class _PostWidgetState extends State<PostWidget> {
               style: TextStyle(
                 fontSize: 14.sp,
                 height: 1.4,
-                fontStyle:
-                    _showTranslation && _translatedDesc != null
-                        ? FontStyle.italic
-                        : FontStyle.normal,
+                fontStyle: _showTranslation && _translatedDesc != null
+                    ? FontStyle.italic
+                    : FontStyle.normal,
                 color: theme.onSurface,
               ),
               maxLines: 3,
@@ -461,24 +550,27 @@ class _PostWidgetState extends State<PostWidget> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child:
-                          CircularProgressIndicator(strokeWidth: 2))
-                  : Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(
-                        _showTranslation
-                            ? Icons.translate_outlined
-                            : Icons.translate,
-                        size: 14.sp,
-                        color: Colors.blue,
-                      ),
-                      SizedBox(width: 4.w),
-                      Text(
-                        _showTranslation
-                            ? strings.seeOriginal
-                            : strings.translate,
-                        style: const TextStyle(color: Colors.blue),
-                      ),
-                    ]),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _showTranslation
+                              ? Icons.translate_outlined
+                              : Icons.translate,
+                          size: 14.sp,
+                          color: Colors.blue,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          _showTranslation
+                              ? strings.seeOriginal
+                              : strings.translate,
+                          style: const TextStyle(color: Colors.blue),
+                        ),
+                      ],
+                    ),
             ),
 
             // ── Media ─────────────────────────────────────────────────────────
@@ -486,64 +578,81 @@ class _PostWidgetState extends State<PostWidget> {
                 widget.post.mediaUrl!.isNotEmpty)
               GestureDetector(
                 onTap: _openFullScreenMedia,
-                child: Stack(alignment: Alignment.center, children: [
-                  _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
-                  Visibility(
-                    visible: !_isVideo,
-                    child: Positioned(
-                      bottom: 8.h,
-                      right: 8.w,
-                      child: Icon(Icons.fullscreen,
-                          color: ColorManager.borderColor, size: 35.sp),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
+                    Visibility(
+                      visible: !_isVideo,
+                      child: Positioned(
+                        bottom: 8.h,
+                        right: 8.w,
+                        child: Icon(
+                          Icons.fullscreen,
+                          color: ColorManager.borderColor,
+                          size: 35.sp,
+                        ),
+                      ),
                     ),
-                  ),
-                ]),
+                  ],
+                ),
               ),
 
             // ── Actions ───────────────────────────────────────────────────────
             SizedBox(height: 16.h),
-            Row(children: [
-              _buildActionButton(
-                icon: _isLiked
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-                label: _likesCount.toString(),
-                color: _isLiked ? Colors.red : Colors.grey[600],
-                onTap: _handleLike,
-                onLongPress: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (_) => BlocProvider(
-                      create: (_) => LikesBloc(
-                          postRepo: getIt<PostsRepositoryImpl>()),
-                      child: LikesSheet(postId: widget.post.id),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(width: 16.w),
-              _buildActionButton(
-                icon: Icons.comment_outlined,
-                label: _commentsCount.toString(),
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (_) => CommentsBottomSheet(
-                      postId: widget.post.id,
-                      onCommentCountChanged: (newCount) =>
-                          setState(() => _commentsCount = newCount),
-                    ),
-                  );
-                },
-              ),
-            ]),
+            Row(
+              children: [
+                _buildActionButton(
+                  icon: _isLiked ? Icons.favorite : Icons.favorite_border,
+                  label: _likesCount.toString(),
+                  color: _isLiked ? Colors.red : Colors.grey[600],
+                  onTap: _handleLike,
+                  onLongPress: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => BlocProvider(
+                        create: (_) =>
+                            LikesBloc(postRepo: getIt<PostsRepositoryImpl>()),
+                        child: LikesSheet(postId: widget.post.id),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(width: 16.w),
+                _buildActionButton(
+                  icon: Icons.comment_outlined,
+                  label: _commentsCount.toString(),
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => CommentsBottomSheet(
+                        postId: widget.post.id,
+                        onCommentCountChanged: (newCount) =>
+                            setState(() => _commentsCount = newCount),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
+
+    // Wrap with VisibilityDetector only if it's not the current user's post
+    if (!widget.isCurrentUser) {
+      card = VisibilityDetector(
+        key: Key('post_visibility_${widget.post.id}'),
+        onVisibilityChanged: _onVisibilityChanged,
+        child: card,
+      );
+    }
+
+    return card;
   }
 
   Widget _buildActionButton({
@@ -559,13 +668,16 @@ class _PostWidgetState extends State<PostWidget> {
       borderRadius: BorderRadius.circular(20.r),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-        child: Row(children: [
-          Icon(icon, size: 28.sp, color: color ?? Colors.grey[600]),
-          SizedBox(width: 6.w),
-          Text(label,
-              style:
-                  TextStyle(fontSize: 20.sp, color: Colors.grey[600])),
-        ]),
+        child: Row(
+          children: [
+            Icon(icon, size: 28.sp, color: color ?? Colors.grey[600]),
+            SizedBox(width: 6.w),
+            Text(
+              label,
+              style: TextStyle(fontSize: 20.sp, color: Colors.grey[600]),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -610,7 +722,7 @@ class _PostWidgetState extends State<PostWidget> {
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
+                          loadingProgress.expectedTotalBytes!
                     : null,
               ),
             ),
@@ -633,14 +745,26 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
   });
 
   static const _types = [
-    (type: AnalysisType.goalkeeper, icon: Icons.sports_handball_outlined,
-     color: Color(0xFF4FC3F7)),
-    (type: AnalysisType.passing, icon: Icons.compare_arrows_rounded,
-     color: Color(0xFF81C784)),
-    (type: AnalysisType.dribbling, icon: Icons.sports_soccer,
-     color: Color(0xFFFFB74D)),
-    (type: AnalysisType.match, icon: Icons.stadium_outlined,
-     color: Color(0xFFBA68C8)),
+    (
+      type: AnalysisType.goalkeeper,
+      icon: Icons.sports_handball_outlined,
+      color: Color(0xFF4FC3F7),
+    ),
+    (
+      type: AnalysisType.passing,
+      icon: Icons.compare_arrows_rounded,
+      color: Color(0xFF81C784),
+    ),
+    (
+      type: AnalysisType.dribbling,
+      icon: Icons.sports_soccer,
+      color: Color(0xFFFFB74D),
+    ),
+    (
+      type: AnalysisType.match,
+      icon: Icons.stadium_outlined,
+      color: Color(0xFFBA68C8),
+    ),
   ];
 
   @override
@@ -668,43 +792,49 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
               ),
             ),
           ),
-          Row(children: [
-            Icon(Icons.analytics_outlined, color: theme.primary, size: 22.sp),
-            SizedBox(width: 10.w),
-            Text(
-              'Select Analysis Type',
-              style: TextStyle(
+          Row(
+            children: [
+              Icon(Icons.analytics_outlined, color: theme.primary, size: 22.sp),
+              SizedBox(width: 10.w),
+              Text(
+                'Select Analysis Type',
+                style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.w700,
-                  color: theme.onSurface),
-            ),
-          ]),
+                  color: theme.onSurface,
+                ),
+              ),
+            ],
+          ),
           SizedBox(height: 6.h),
           Text(
             'The post video will be used as the source.',
             style: TextStyle(
-                fontSize: 12.sp,
-                color: theme.onSurface.withOpacity(0.5)),
+              fontSize: 12.sp,
+              color: theme.onSurface.withOpacity(0.5),
+            ),
           ),
           SizedBox(height: 20.h),
-          ..._types.map((d) => _TypeTile(
-                type: d.type,
-                icon: d.icon,
-                color: d.color,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateAnalysisFormScreen(
-                        targetUserId: targetUserId,
-                        analysisType: d.type,
-                        prefilledVideoUrl: videoUrl,
-                      ),
+          ..._types.map(
+            (d) => _TypeTile(
+              type: d.type,
+              icon: d.icon,
+              color: d.color,
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CreateAnalysisFormScreen(
+                      targetUserId: targetUserId,
+                      analysisType: d.type,
+                      prefilledVideoUrl: videoUrl,
                     ),
-                  );
-                },
-              )),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -738,38 +868,49 @@ class _TypeTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: color.withOpacity(0.25)),
         ),
-        child: Row(children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8.r),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Icon(icon, size: 20.sp, color: color),
             ),
-            child: Icon(icon, size: 20.sp, color: color),
-          ),
-          SizedBox(width: 14.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(type.label,
+            SizedBox(width: 14.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    type.label,
                     style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: theme.onSurface)),
-                SizedBox(height: 2.h),
-                Text(type.description,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: theme.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    type.description,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                        fontSize: 11.sp,
-                        color: theme.onSurface.withOpacity(0.5))),
-              ],
+                      fontSize: 11.sp,
+                      color: theme.onSurface.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Icon(Icons.arrow_forward_ios,
-              size: 14.sp, color: theme.onSurface.withOpacity(0.35)),
-        ]),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 14.sp,
+              color: theme.onSurface.withOpacity(0.35),
+            ),
+          ],
+        ),
       ),
     );
   }

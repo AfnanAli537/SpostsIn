@@ -1,8 +1,10 @@
+import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:better_player_plus/better_player_plus.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_payment_screen.dart';
 import 'package:sports_in/features/main/video_analysis/view/widgets/analysis_type_badge.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -44,7 +46,8 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
     final dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       videoUrl,
-      cacheConfiguration: const BetterPlayerCacheConfiguration(useCache: true),
+      cacheConfiguration:
+          const BetterPlayerCacheConfiguration(useCache: true),
     );
 
     _betterPlayerController = BetterPlayerController(
@@ -78,10 +81,37 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
     }
   }
 
+  AnalysisType _typeFromString(String type) {
+    switch (type) {
+      case 'Goalkeeper':
+        return AnalysisType.goalkeeper;
+      case 'Passing':
+        return AnalysisType.passing;
+      case 'Dribbling':
+        return AnalysisType.dribbling;
+      default:
+        return AnalysisType.match;
+    }
+  }
+
+  void _navigateToPayment() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AnalysisPaymentScreen(
+          analysisId: widget.item.id,
+          price: 10.0,
+          analysisType: _typeFromString(widget.item.type),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final strings=S.of(context);
+    final strings = S.of(context);
+    final isPaid = widget.item.isPaid;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
@@ -98,24 +128,62 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_buildVideoArea(theme), _buildInfoAndAction(theme,strings)],
+        children: [
+          _buildVideoArea(theme, isPaid, strings),
+          _buildInfoAndAction(theme, strings, isPaid),
+        ],
       ),
     );
   }
 
-  Widget _buildVideoArea(ThemeData theme) {
+  Widget _buildVideoArea(ThemeData theme, bool isPaid, S strings) {
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: _betterPlayerController != null
-            ? BetterPlayer(controller: _betterPlayerController!)
-            : Container(color: theme.colorScheme.surfaceVariant),
+      child: Stack(
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: _betterPlayerController != null
+                ? BetterPlayer(controller: _betterPlayerController!)
+                : Container(color: theme.colorScheme.surfaceVariant),
+          ),
+          if (!isPaid)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.55),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(12.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child:
+                          Icon(Icons.lock_outline, color: Colors.white, size: 30.sp),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      strings.analysisPendingPayment,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoAndAction(ThemeData theme,S strings) {
+  Widget _buildInfoAndAction(ThemeData theme, S strings, bool isPaid) {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -138,56 +206,105 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
           ),
           SizedBox(height: 16.h),
 
-          // Inside _buildInfoAndAction in AnalysisListItemCard
-GestureDetector(
-  onTap: () => _navigateToUserProfile(context, widget.item.player.userId),
-  child: Row(
-    children: [
-      CircleAvatar(
-        radius: 18.r,
-        backgroundImage: (widget.item.player.profilePicture != null)
-            ? NetworkImage(widget.item.player.profilePicture!)
-            : null,
-        child: (widget.item.player.profilePicture == null)
-            ? Icon(Icons.person, size: 20.sp)
-            : null,
-      ),
-      SizedBox(width: 10.w),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Player", style: TextStyle(fontSize: 10.sp, color: Colors.grey)),
-            Text(
-              widget.item.player.fullName,
-              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    ],
-  ),
-),          SizedBox(height: 16.h),
-
-          // Action Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: widget.onTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onSecondaryFixed,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+          // Player info
+          GestureDetector(
+            onTap: () =>
+                _navigateToUserProfile(context, widget.item.player.userId),
+            child: Row(children: [
+              CircleAvatar(
+                radius: 18.r,
+                backgroundImage:
+                    (widget.item.player.profilePicture != null)
+                        ? NetworkImage(widget.item.player.profilePicture!)
+                        : null,
+                child: (widget.item.player.profilePicture == null)
+                    ? Icon(Icons.person, size: 20.sp)
+                    : null,
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(strings.player,
+                        style: TextStyle(
+                            fontSize: 10.sp, color: Colors.grey)),
+                    Text(
+                      widget.item.player.fullName,
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                padding: EdgeInsets.symmetric(vertical: 12.h),
               ),
-              child: Text(
-                strings.viewReport,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
-              ),
-            ),
+            ]),
           ),
+          SizedBox(height: 16.h),
+
+          // Action buttons
+          if (isPaid)
+            // Paid → View Report
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: widget.onTap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onSecondaryFixed,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r)),
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                ),
+                child: Text(
+                  strings.viewReport,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14.sp),
+                ),
+              ),
+            )
+          else
+            // Unpaid → Pay Now
+            Row(children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: widget.onTap,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                        color: theme.colorScheme.outline.withOpacity(0.4)),
+                    foregroundColor:
+                        theme.colorScheme.onSurface.withOpacity(0.6),
+                    padding: EdgeInsets.symmetric(vertical: 11.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r)),
+                  ),
+                  child: Text(strings.viewReport,
+                      style:
+                          TextStyle(fontSize: 13.sp)),
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                flex: 2,
+                child: ElevatedButton.icon(
+                  onPressed: _navigateToPayment,
+                  icon: Icon(Icons.payment_rounded,
+                      size: 16.sp, color: Colors.white),
+                  label: Text(
+                    strings.payNow,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
+                        color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r)),
+                  ),
+                ),
+              ),
+            ]),
         ],
       ),
     );

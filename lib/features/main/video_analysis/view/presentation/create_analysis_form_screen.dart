@@ -17,9 +17,9 @@ import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.d
 import 'package:sports_in/features/main/video_analysis/view_model/create_analysis/create_analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/create_analysis/create_analysis_event.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/create_analysis/create_analysis_state.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 import '../../data/enums/analysis_type.dart';
-
 import '../widgets/analysis_info_bottom_sheet.dart';
 import 'analysis_payment_screen.dart';
 import 'analysis_processing_screen.dart';
@@ -123,16 +123,16 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
           _isUploaded = true;
         });
       } else {
-        _toast('Upload failed. Paste a URL manually.', err: true);
+        _toast(S.of(context).uploadFailedPasteManually, err: true);
       }
     } catch (e) {
-      _toast('Upload error: $e', err: true);
+      _toast(S.of(context).uploadError(e.toString()), err: true);
     } finally {
       setState(() => _isUploadingVideo = false);
     }
   }
 
-  void _showSourceSheet() {
+  void _showSourceSheet(S strings) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -152,7 +152,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
             ListTile(
               leading: Icon(Icons.video_library,
                   color: Theme.of(context).colorScheme.primary),
-              title: const Text('Choose from Gallery'),
+              title: Text(strings.chooseFromGallery),
               onTap: () {
                 Navigator.pop(context);
                 _pickVideo();
@@ -161,7 +161,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
             ListTile(
               leading: Icon(Icons.videocam_outlined,
                   color: Theme.of(context).colorScheme.primary),
-              title: const Text('Record with Camera'),
+              title: Text(strings.recordWithCamera),
               onTap: () {
                 Navigator.pop(context);
                 _pickFromCamera();
@@ -175,12 +175,12 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
 
   // ─── Submit ─────────────────────────────────────────────────────────────────
 
-  void _submit(BuildContext blocCtx) {
+  void _submit(BuildContext blocCtx, S strings) {
     if (!_formKey.currentState!.validate()) return;
 
     final videoUrl = _videoUrlController.text.trim();
     if (videoUrl.isEmpty) {
-      _toast('Please provide a video URL or upload a video.', err: true);
+      _toast(strings.provideVideoUrlOrUpload, err: true);
       return;
     }
 
@@ -188,7 +188,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
     if (_type == AnalysisType.goalkeeper) {
       height = double.tryParse(_heightController.text.trim());
       if (height == null || height < 1.0 || height > 2.5) {
-        _toast('Please enter a valid height (1.0 – 2.5 m).', err: true);
+        _toast(strings.validHeightRange, err: true);
         return;
       }
     }
@@ -210,11 +210,40 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
     );
   }
 
+  // ─── Localized helpers ─────────────────────────────────────────────────────
+
+  String _getLocalizedLabel(AnalysisType type, S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisLabel;
+      case AnalysisType.passing:
+        return strings.passingAnalysisLabel;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisLabel;
+      case AnalysisType.match:
+        return strings.matchAnalysisLabel;
+    }
+  }
+
+  String _getLocalizedVideoInstructions(AnalysisType type, S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperVideoInstructions;
+      case AnalysisType.passing:
+        return strings.passingVideoInstructions;
+      case AnalysisType.dribbling:
+        return strings.dribblingVideoInstructions;
+      case AnalysisType.match:
+        return strings.matchVideoInstructions;
+    }
+  }
+
   // ─── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return BlocProvider(
       create: (_) => CreateAnalysisBloc(getIt<IAnalysisRepo>()),
@@ -222,16 +251,23 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
         builder: (blocCtx) => BlocListener<CreateAnalysisBloc,
             CreateAnalysisState>(
           listener: (ctx, state) async {
-            if (state is CreateAnalysisSuccess) {
+            // ── Optimistic: navigate to processing screen immediately ──────
+            if (state is AnalysisQueued) {
               Navigator.pushReplacement(
                 ctx,
                 MaterialPageRoute(
-                    builder: (_) =>
-                        AnalysisProcessingScreen(type: _type)),
+                  builder: (_) => BlocProvider.value(
+                    // Keep the bloc alive so AnalysisCompleted/Error can
+                    // still be emitted and caught by AnalysisProcessingScreen.
+                    value: ctx.read<CreateAnalysisBloc>(),
+                    child: AnalysisProcessingScreen(type: _type),
+                  ),
+                ),
               );
-            } else if (state is CreateAnalysisRequiresPayment) {
-              // Pass the same bloc instance into payment screen so
-              // ExecutePaidAnalysisEvent fires into the correct sink.
+            }
+
+            // ── Payment required (fast response < 3s) ─────────────────────
+            else if (state is CreateAnalysisRequiresPayment) {
               Navigator.push(
                 ctx,
                 MaterialPageRoute(
@@ -245,7 +281,10 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                   ),
                 ),
               );
-            } else if (state is CreateAnalysisError) {
+            }
+
+            // ── Error ─────────────────────────────────────────────────────
+            else if (state is CreateAnalysisError) {
               final msg =
                   await TranslateErrorHelper.translateErrorKeyAsync(
                       ctx, state.message);
@@ -254,8 +293,8 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
           },
           child: BlocBuilder<CreateAnalysisBloc, CreateAnalysisState>(
             builder: (ctx, state) {
-              final isLoading =
-                  state is CreateAnalysisLoading || _isUploadingVideo;
+              final isLoading = state is CreateAnalysisLoading ||
+                  _isUploadingVideo;
 
               return Scaffold(
                 appBar: AppBar(
@@ -265,7 +304,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                     onPressed: () => Navigator.pop(ctx),
                   ),
                   title: Text(
-                    '${_type.label} Analysis',
+                    strings.analysisTypeTitle(_getLocalizedLabel(_type, strings)),
                     style: TextStyle(
                         color: theme.onSurface,
                         fontSize: 18.sp,
@@ -275,7 +314,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                   actions: [
                     IconButton(
                       icon: Icon(Icons.info_outline, color: theme.primary),
-                      tooltip: 'What to expect',
+                      tooltip: strings.whatToExpect,
                       onPressed: () => showAnalysisInfoSheet(ctx, _type),
                     ),
                   ],
@@ -287,17 +326,20 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _TypeBadge(type: _type),
+                        _TypeBadge(
+                          type: _type,
+                          label: _getLocalizedLabel(_type, strings),
+                        ),
                         SizedBox(height: 24.h),
 
-                        // ── Upload area (hidden when pre-filled) ──────────
+                        // ── Upload area ────────────────────────────────────
                         if (!_hasPrefilledUrl) ...[
-                          _label(ctx, 'Upload or Link Your Video'),
+                          _label(ctx, strings.uploadOrLinkVideo),
                           SizedBox(height: 10.h),
                           GestureDetector(
                             onTap: _isUploadingVideo
                                 ? null
-                                : _showSourceSheet,
+                                : () => _showSourceSheet(strings),
                             child: DottedBorder(
                               options: RoundedRectDottedBorderOptions(
                                 color: _isUploaded
@@ -314,44 +356,43 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                                   height: 150.h,
                                   width: double.infinity,
                                   color: theme.surface,
-                                  child: _videoPreview(theme),
+                                  child: _videoPreview(theme, strings),
                                 ),
                               ),
                             ),
                           ),
                           SizedBox(height: 20.h),
-                          _orDivider(theme),
+                          _orDivider(theme, strings),
                           SizedBox(height: 16.h),
-                          _label(ctx, 'Or Paste a Video URL'),
+                          _label(ctx, strings.orPasteVideoUrl),
                           SizedBox(height: 10.h),
                         ] else ...[
-                          // ── Pre-filled from post ─────────────────────────
-                          _label(ctx, 'Video from Post'),
+                          _label(ctx, strings.videoFromPost),
                           SizedBox(height: 10.h),
                           _PrefilledChip(url: widget.prefilledVideoUrl!),
                           SizedBox(height: 20.h),
                         ],
 
-                        // ── URL field ─────────────────────────────────────
+                        // ── URL field ──────────────────────────────────────
                         AuthTextField(
                           controller: _videoUrlController,
-                          label: 'Video URL (Cloudinary, YouTube, etc.)',
+                          label: strings.videoUrlPlaceholder,
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) {
-                              return 'Please provide a video URL';
+                              return strings.provideVideoUrl;
                             }
                             return null;
                           },
                         ),
                         SizedBox(height: 24.h),
 
-                        // ── Goalkeeper height ─────────────────────────────
+                        // ── Goalkeeper height ──────────────────────────────
                         if (_type == AnalysisType.goalkeeper) ...[
-                          _label(ctx, 'Goalkeeper Height (meters)'),
+                          _label(ctx, strings.goalkeeperHeight),
                           SizedBox(height: 10.h),
                           AuthTextField(
                             controller: _heightController,
-                            label: 'e.g. 1.85',
+                            label: strings.heightExample,
                             keyboardType:
                                 const TextInputType.numberWithOptions(
                                     decimal: true),
@@ -361,11 +402,11 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                             ],
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return 'Height is required for goalkeeper analysis';
+                                return strings.heightRequired;
                               }
                               final h = double.tryParse(v.trim());
                               if (h == null || h < 1.0 || h > 2.5) {
-                                return 'Enter a valid height (1.0 – 2.5 m)';
+                                return strings.validHeightRange;
                               }
                               return null;
                             },
@@ -374,36 +415,42 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                           Row(children: [
                             Icon(Icons.info_outline,
                                 size: 14.sp,
-                                color: theme.onSurface.withOpacity(0.45)),
+                                color:
+                                    theme.onSurface.withOpacity(0.45)),
                             SizedBox(width: 6.w),
                             Expanded(
                               child: Text(
-                                'Height calibrates extension & velocity measurements.',
+                                strings.heightCalibrationInfo,
                                 style: TextStyle(
                                     fontSize: 11.sp,
-                                    color:
-                                        theme.onSurface.withOpacity(0.45)),
+                                    color: theme.onSurface
+                                        .withOpacity(0.45)),
                               ),
                             ),
                           ]),
                           SizedBox(height: 24.h),
                         ],
 
-                        // ── Tips ──────────────────────────────────────────
-                        _QuickTipsCard(type: _type),
+                        // ── Tips ───────────────────────────────────────────
+                        _QuickTipsCard(
+                          type: _type,
+                          instructions: _getLocalizedVideoInstructions(_type, strings),
+                        ),
                         SizedBox(height: 32.h),
 
-                        // ── Submit ────────────────────────────────────────
+                        // ── Submit ─────────────────────────────────────────
                         CustomElevatedButton(
-                          text: 'Start Analysis',
+                          text: isLoading
+                              ? strings.preparing
+                              : strings.startAnalysis,
                           isLoading: isLoading,
                           enabled: !isLoading,
-                          onPressed: () => _submit(ctx),
+                          onPressed: () => _submit(ctx, strings),
                         ),
                         SizedBox(height: 12.h),
                         Center(
                           child: Text(
-                            'If payment is required, you\'ll be prompted before analysis starts.',
+                            strings.analysisNotificationHint,
                             style: TextStyle(
                                 fontSize: 11.sp,
                                 color: theme.onSurface.withOpacity(0.4)),
@@ -425,7 +472,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
 
-  Widget _videoPreview(ColorScheme theme) {
+  Widget _videoPreview(ColorScheme theme, S strings) {
     if (_isUploadingVideo) {
       return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -437,7 +484,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                   strokeWidth: 2.5, color: theme.primary),
             ),
             SizedBox(height: 10.h),
-            Text('Uploading…',
+            Text(strings.uploading,
                 style: TextStyle(
                     fontSize: 13.sp,
                     color: theme.onSurface.withOpacity(0.6))),
@@ -450,7 +497,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
             Icon(Icons.check_circle_outline,
                 size: 36.sp, color: Colors.green),
             SizedBox(height: 8.h),
-            Text('Video uploaded',
+            Text(strings.videoUploaded,
                 style: TextStyle(
                     fontSize: 13.sp,
                     color: Colors.green,
@@ -462,7 +509,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
                 _isUploaded = false;
                 _videoUrlController.clear();
               }),
-              child: Text('Remove',
+              child: Text(strings.remove,
                   style: TextStyle(
                       fontSize: 11.sp,
                       color: theme.primary,
@@ -494,25 +541,25 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
           Icon(Icons.upload_file_outlined,
               size: 40.sp, color: theme.onSurface.withOpacity(0.35)),
           SizedBox(height: 10.h),
-          Text('Tap to upload video',
+          Text(strings.tapToUploadVideo,
               style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
                   color: theme.onSurface.withOpacity(0.5))),
           SizedBox(height: 4.h),
-          Text('MP4 · MOV · AVI',
+          Text(strings.supportedFormats,
               style: TextStyle(
                   fontSize: 11.sp,
                   color: theme.onSurface.withOpacity(0.3))),
         ]);
   }
 
-  Widget _orDivider(ColorScheme theme) => Row(children: [
+  Widget _orDivider(ColorScheme theme, S strings) => Row(children: [
         Expanded(
             child: Divider(color: theme.outline.withOpacity(0.3))),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
-          child: Text('OR PASTE URL',
+          child: Text(strings.orPasteUrlLabel,
               style: TextStyle(
                   fontSize: 11.sp,
                   color: theme.onSurface.withOpacity(0.38),
@@ -531,7 +578,7 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
       );
 }
 
-// ─── Shared sub-widgets ───────────────────────────────────────────────────────
+// ─── Sub-widgets ──────────────────────────────────────────────────────────────
 
 class _PrefilledChip extends StatelessWidget {
   final String url;
@@ -565,7 +612,8 @@ class _PrefilledChip extends StatelessWidget {
 
 class _TypeBadge extends StatelessWidget {
   final AnalysisType type;
-  const _TypeBadge({required this.type});
+  final String label;
+  const _TypeBadge({required this.type, required this.label});
 
   Color get _color {
     switch (type) {
@@ -605,7 +653,7 @@ class _TypeBadge extends StatelessWidget {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(_icon, size: 18.sp, color: _color),
         SizedBox(width: 8.w),
-        Text(type.label,
+        Text(label,
             style: GoogleFonts.poppins(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
@@ -617,11 +665,13 @@ class _TypeBadge extends StatelessWidget {
 
 class _QuickTipsCard extends StatelessWidget {
   final AnalysisType type;
-  const _QuickTipsCard({required this.type});
+  final String instructions;
+  const _QuickTipsCard({required this.type, required this.instructions});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -641,7 +691,7 @@ class _QuickTipsCard extends StatelessWidget {
           Icon(Icons.videocam_outlined,
               size: 18.sp, color: theme.primary),
           SizedBox(width: 8.w),
-          Text('Video Tips',
+          Text(strings.videoTips,
               style: GoogleFonts.poppins(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
@@ -649,7 +699,7 @@ class _QuickTipsCard extends StatelessWidget {
           const Spacer(),
           GestureDetector(
             onTap: () => showAnalysisInfoSheet(context, type),
-            child: Text('More info',
+            child: Text(strings.moreInfo,
                 style: TextStyle(
                     fontSize: 11.sp,
                     color: theme.primary,
@@ -657,7 +707,7 @@ class _QuickTipsCard extends StatelessWidget {
           ),
         ]),
         SizedBox(height: 10.h),
-        Text(type.videoInstructions,
+        Text(instructions,
             style: TextStyle(
                 fontSize: 12.sp,
                 color: theme.onSurface.withOpacity(0.6),

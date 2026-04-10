@@ -6,20 +6,20 @@ class AnalysisTypeBadge extends StatelessWidget {
 
   const AnalysisTypeBadge({super.key, required this.type});
 
-  Color _color() {
-    switch (type) {
-      case 'Goalkeeper':
-        return const Color(0xFF6C63FF);
-      case 'Passing':
-        return const Color(0xFF00BFA5);
-      case 'Dribbling':
-        return const Color(0xFFFF6F00);
-      case 'Match':
-        return const Color(0xFFE53935);
-      default:
-        return Colors.grey;
-    }
-  }
+  // Color _color() {
+  //   switch (type) {
+  //     case 'Goalkeeper':
+  //       return const Color(0xFF6C63FF);
+  //     case 'Passing':
+  //       return const Color(0xFF00BFA5);
+  //     case 'Dribbling':
+  //       return const Color(0xFFFF6F00);
+  //     case 'Match':
+  //       return const Color(0xFFE53935);
+  //     default:
+  //       return Colors.grey;
+  //   }
+  // }
 
   IconData _icon() {
     switch (type) {
@@ -38,7 +38,7 @@ class AnalysisTypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _color();
+    final color = Theme.of(context).colorScheme.primary;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(

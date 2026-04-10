@@ -6,6 +6,7 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view/widgets/analysis_list_item_card.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 /// Shown from the profile "Show All" button on the Analyzed Videos section.
 ///
@@ -34,7 +35,12 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
   final _searchController = TextEditingController();
   String? _selectedType;
 
-  static const _types = ['Goalkeeper', 'Passing', 'Dribbling', 'Match'];
+  List<String> get _types => [
+    S.of(context).goalkeeper,
+    S.of(context).passing,
+    S.of(context).dribbling,
+    S.of(context).match,
+  ];
 
   // Search bar is only meaningful in library mode
   bool get _isLibrary => widget.mode == AnalysisSearchMode.library;
@@ -81,6 +87,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -96,6 +103,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
                     controller: _searchController,
                     onSubmitted: (_) => _search(),
                     theme: theme,
+                    strings: strings,
                   ),
                 ),
               )
@@ -109,6 +117,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
                   types: _types,
                   onSelect: _selectType,
                   theme: theme,
+                  strings: strings,
                 )
               : const SizedBox.shrink(),
           Expanded(
@@ -117,18 +126,21 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
                 if (state is AnalysisDeleteSuccess) {
                   _search();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Analysis deleted')),
+                    SnackBar(
+                      content: Text(strings.analysisDeleted),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                 }
               },
               builder: (context, state) {
                 if (state is AnalysisSearchLoading) return _buildShimmer();
                 if (state is AnalysisSearchError) {
-                  return _buildError(context, state.message);
+                  return _buildError(context, state.message, strings);
                 }
                 if (state is AnalysisSearchLoaded) {
-                  if (state.items.isEmpty) return _buildEmpty(theme);
-                  return _buildList(context, state);
+                  if (state.items.isEmpty) return _buildEmpty(theme, strings);
+                  return _buildList(context, state, strings);
                 }
                 return const SizedBox.shrink();
               },
@@ -139,7 +151,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
     );
   }
 
-  Widget _buildList(BuildContext context, AnalysisSearchLoaded state) =>
+  Widget _buildList(BuildContext context, AnalysisSearchLoaded state, S strings) =>
       ListView.builder(
         controller: _scrollController,
         padding: EdgeInsets.only(top: 4.h, bottom: 24.h),
@@ -169,22 +181,22 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
             ),
             // Delete only available in own library
             onDelete: widget.mode == AnalysisSearchMode.library
-                ? () => _confirmDelete(context, item.id)
+                ? () => _confirmDelete(context, item.id, strings)
                 : null,
           );
         },
       );
 
-  void _confirmDelete(BuildContext context, String id) {
+  void _confirmDelete(BuildContext context, String id, S strings) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete Analysis'),
-        content: const Text('Are you sure you want to delete this analysis?'),
+        title: Text(strings.deleteAnalysis),
+        content: Text(strings.deleteAnalysisConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(strings.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -192,7 +204,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
               context.read<AnalysisBloc>().add(DeleteAnalysis(id));
             },
             child: Text(
-              'Delete',
+              strings.delete,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
@@ -217,7 +229,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
     ),
   );
 
-  Widget _buildError(BuildContext context, String message) => Center(
+  Widget _buildError(BuildContext context, String message, S strings) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -229,12 +241,12 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
         SizedBox(height: 12.h),
         Text(message, textAlign: TextAlign.center),
         SizedBox(height: 16.h),
-        ElevatedButton(onPressed: _search, child: const Text('Retry')),
+        ElevatedButton(onPressed: _search, child: Text(strings.retry)),
       ],
     ),
   );
 
-  Widget _buildEmpty(ThemeData theme) => Center(
+  Widget _buildEmpty(ThemeData theme, S strings) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -245,7 +257,7 @@ class _AnalysisLibraryScreenState extends State<AnalysisLibraryScreen> {
         ),
         SizedBox(height: 16.h),
         Text(
-          'No analyses found',
+          strings.noAnalysesFound,
           style: TextStyle(
             fontSize: 15.sp,
             color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -264,11 +276,13 @@ class _SearchBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onSubmitted;
   final ThemeData theme;
+  final S strings;
 
   const _SearchBar({
     required this.controller,
     required this.onSubmitted,
     required this.theme,
+    required this.strings,
   });
 
   @override
@@ -277,7 +291,7 @@ class _SearchBar extends StatelessWidget {
     onSubmitted: onSubmitted,
     textInputAction: TextInputAction.search,
     decoration: InputDecoration(
-      hintText: 'Search by player name…',
+      hintText: strings.searchByPlayerName,
       hintStyle: TextStyle(
         fontSize: 13.sp,
         color: Colors.grey.withOpacity(0.7),
@@ -303,12 +317,14 @@ class _TypeFilterRow extends StatelessWidget {
   final List<String> types;
   final ValueChanged<String?> onSelect;
   final ThemeData theme;
+  final S strings;
 
   const _TypeFilterRow({
     required this.selected,
     required this.types,
     required this.onSelect,
     required this.theme,
+    required this.strings,
   });
 
   @override
@@ -326,7 +342,7 @@ class _TypeFilterRow extends StatelessWidget {
           final option = allOptions[i];
           final isSelected = selected == option;
           return ChoiceChip(
-            label: Text(option ?? 'All'),
+            label: Text(option ?? strings.all),
             selected: isSelected,
             onSelected: (_) => onSelect(option),
             selectedColor: theme.colorScheme.primary,

@@ -6,6 +6,7 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view/widgets/analysis_list_item_card.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class TargetAnalysesScreen extends StatefulWidget {
   final String targetUserId;
@@ -26,12 +27,6 @@ class TargetAnalysesScreen extends StatefulWidget {
 class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
   final _scrollController = ScrollController();
   bool? _selectedFilter;
-
-  final _filterOptions = [
-    (label: 'All', value: null as bool?),
-    (label: 'Analyzed', value: true as bool?),
-    (label: 'Pending', value: false as bool?),
-  ];
 
   @override
   void initState() {
@@ -61,6 +56,9 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context);
+
+    
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -72,9 +70,8 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Analyzed videos',
+          strings.analyzedVideos,
           style: TextStyle(
-            // color: Colors.black,
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -83,7 +80,7 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
       ),
       body: Column(
         children: [
-          // Profile Header Section (Matches image_bb3904.png)
+          // Profile Header Section
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Row(
@@ -112,7 +109,7 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
           ),
 
           // Filters Section
-          _buildFilterRow(theme),
+          _buildFilterRow(theme, strings),
 
           // List Section
           Expanded(
@@ -123,17 +120,17 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
                     LoadTargetAnalyses(targetUserId: widget.targetUserId),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Analysis deleted')),
+                    SnackBar(content: Text(strings.analysisDeleted)),
                   );
                 }
               },
               builder: (context, state) {
                 if (state is TargetAnalysesLoading) return _buildShimmer();
                 if (state is TargetAnalysesError)
-                  return _buildError(context, state.message);
+                  return _buildError(context, state.message, strings);
                 if (state is TargetAnalysesLoaded) {
-                  if (state.items.isEmpty) return _buildEmpty(theme);
-                  return _buildList(context, state);
+                  if (state.items.isEmpty) return _buildEmpty(theme, strings);
+                  return _buildList(context, state, strings);
                 }
                 return const SizedBox.shrink();
               },
@@ -144,20 +141,26 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
     );
   }
 
-  Widget _buildFilterRow(ThemeData theme) => Container(
+  Widget _buildFilterRow(ThemeData theme, S strings) { 
+    final filterOptions = [
+      (label: strings.all, value: null as bool?),
+      (label: strings.analyzed, value: true as bool?),
+      (label: strings.pending, value: false as bool?),
+    ];
+    return Container(
     height: 38.h,
     margin: EdgeInsets.only(bottom: 8.h),
     child: ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       scrollDirection: Axis.horizontal,
-      itemCount: _filterOptions.length,
+      itemCount: filterOptions.length,
       separatorBuilder: (_, __) => SizedBox(width: 8.w),
       itemBuilder: (context, i) {
-        final opt = _filterOptions[i];
+        final opt = filterOptions[i];
         final selected = _selectedFilter == opt.value;
         return ChoiceChip(
-            shadowColor: theme.colorScheme.onError.withOpacity(0.1),
-            elevation: 3,
+          shadowColor: theme.colorScheme.onError.withOpacity(0.1),
+          elevation: 3,
           label: Text(opt.label),
           selected: selected,
           onSelected: (_) => _applyFilter(opt.value),
@@ -176,9 +179,9 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
         );
       },
     ),
-  );
+  );}
 
-  Widget _buildList(BuildContext context, TargetAnalysesLoaded state) =>
+  Widget _buildList(BuildContext context, TargetAnalysesLoaded state, S strings) =>
       ListView.builder(
         controller: _scrollController,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -191,7 +194,7 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
           return AnalysisListItemCard(
             item: state.items[i],
             onTap: () => _openReport(context, state.items[i].id),
-            onDelete: () => _confirmDelete(context, state.items[i].id),
+            onDelete: () => _confirmDelete(context, state.items[i].id, strings),
           );
         },
       );
@@ -208,16 +211,16 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
     );
   }
 
-  void _confirmDelete(BuildContext context, String id) {
+  void _confirmDelete(BuildContext context, String id, S strings) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete Analysis'),
-        content: const Text('Are you sure you want to delete this analysis?'),
+        title: Text(strings.deleteAnalysis),
+        content: Text(strings.deleteAnalysisConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(strings.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -225,7 +228,7 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
               context.read<AnalysisBloc>().add(DeleteAnalysis(id));
             },
             child: Text(
-              'Delete',
+              strings.delete,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
@@ -250,7 +253,7 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
     ),
   );
 
-  Widget _buildError(BuildContext context, String message) => Center(
+  Widget _buildError(BuildContext context, String message, S strings) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -266,13 +269,13 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
           onPressed: () => context.read<AnalysisBloc>().add(
             LoadTargetAnalyses(targetUserId: widget.targetUserId),
           ),
-          child: const Text('Retry'),
+          child: Text(strings.retry),
         ),
       ],
     ),
   );
 
-  Widget _buildEmpty(ThemeData theme) => Center(
+  Widget _buildEmpty(ThemeData theme, S strings) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -283,7 +286,7 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
         ),
         SizedBox(height: 16.h),
         Text(
-          'No analyses found',
+          strings.noAnalysesFound,
           style: TextStyle(
             fontSize: 15.sp,
             color: theme.colorScheme.onSurface.withOpacity(0.5),

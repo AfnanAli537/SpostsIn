@@ -5847,6 +5847,1276 @@ class S {
   String get unKnown {
     return Intl.message('N/A', name: 'unKnown', desc: '', args: []);
   }
+
+  /// `Passing`
+  String get passing {
+    return Intl.message('Passing', name: 'passing', desc: '', args: []);
+  }
+
+  /// `Dribbling`
+  String get dribbling {
+    return Intl.message('Dribbling', name: 'dribbling', desc: '', args: []);
+  }
+
+  /// `Match`
+  String get match {
+    return Intl.message('Match', name: 'match', desc: '', args: []);
+  }
+
+  /// `Search by player name…`
+  String get searchByPlayerName {
+    return Intl.message(
+      'Search by player name…',
+      name: 'searchByPlayerName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis deleted`
+  String get analysisDeleted {
+    return Intl.message(
+      'Analysis deleted',
+      name: 'analysisDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Analysis`
+  String get deleteAnalysis {
+    return Intl.message(
+      'Delete Analysis',
+      name: 'deleteAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this analysis?`
+  String get deleteAnalysisConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this analysis?',
+      name: 'deleteAnalysisConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No analyses found`
+  String get noAnalysesFound {
+    return Intl.message(
+      'No analyses found',
+      name: 'noAnalysesFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Goalkeeper Analysis`
+  String get goalkeeperAnalysis {
+    return Intl.message(
+      'Goalkeeper Analysis',
+      name: 'goalkeeperAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passing Analysis`
+  String get passingAnalysis {
+    return Intl.message(
+      'Passing Analysis',
+      name: 'passingAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dribbling Analysis`
+  String get dribblingAnalysis {
+    return Intl.message(
+      'Dribbling Analysis',
+      name: 'dribblingAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match Analysis`
+  String get matchAnalysis {
+    return Intl.message(
+      'Match Analysis',
+      name: 'matchAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your video has been saved. Complete payment to run the AI analysis.`
+  String get analysisSavedCompletePayment {
+    return Intl.message(
+      'Your video has been saved. Complete payment to run the AI analysis.',
+      name: 'analysisSavedCompletePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What happens next`
+  String get whatHappensNext {
+    return Intl.message(
+      'What happens next',
+      name: 'whatHappensNext',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment using your preferred method`
+  String get stepCompletePayment {
+    return Intl.message(
+      'Complete payment using your preferred method',
+      name: 'stepCompletePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Our AI engine starts processing your video`
+  String get stepAiProcessing {
+    return Intl.message(
+      'Our AI engine starts processing your video',
+      name: 'stepAiProcessing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report appears in your profile — you'll be notified`
+  String get stepReportNotified {
+    return Intl.message(
+      'Report appears in your profile — you\'ll be notified',
+      name: 'stepReportNotified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Processing...`
+  String get processing {
+    return Intl.message(
+      'Processing...',
+      name: 'processing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis Complete!`
+  String get analysisCompleteTitle {
+    return Intl.message(
+      'Analysis Complete!',
+      name: 'analysisCompleteTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis in Progress`
+  String get analysisInProgressTitle {
+    return Intl.message(
+      'Analysis in Progress',
+      name: 'analysisInProgressTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your {type} report is ready. Find it in your profile under Video Analysis.`
+  String analysisCompleteMessage(String type) {
+    return Intl.message(
+      'Your $type report is ready. Find it in your profile under Video Analysis.',
+      name: 'analysisCompleteMessage',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Your {type} video is being processed by our AI engine. This may take a few minutes.`
+  String analysisInProgressMessage(String type) {
+    return Intl.message(
+      'Your $type video is being processed by our AI engine. This may take a few minutes.',
+      name: 'analysisInProgressMessage',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `{type} analysis is ready! Check your profile.`
+  String analysisReadyToast(String type) {
+    return Intl.message(
+      '$type analysis is ready! Check your profile.',
+      name: 'analysisReadyToast',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Analysis failed: {message}`
+  String analysisFailedToast(String message) {
+    return Intl.message(
+      'Analysis failed: $message',
+      name: 'analysisFailedToast',
+      desc: '',
+      args: [message],
+    );
+  }
+
+  /// `You'll see a toast notification here when your report is ready — no need to wait on this screen.`
+  String get analysisNotificationInfo {
+    return Intl.message(
+      'You\'ll see a toast notification here when your report is ready — no need to wait on this screen.',
+      name: 'analysisNotificationInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go to Profile`
+  String get goToProfileButton {
+    return Intl.message(
+      'Go to Profile',
+      name: 'goToProfileButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to Home`
+  String get backToHomeButton {
+    return Intl.message(
+      'Back to Home',
+      name: 'backToHomeButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Video Report`
+  String get analyzedVideoReport {
+    return Intl.message(
+      'Analyzed Video Report',
+      name: 'analyzedVideoReport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis Pending Payment`
+  String get analysisPendingPayment {
+    return Intl.message(
+      'Analysis Pending Payment',
+      name: 'analysisPendingPayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment to unlock the full AI report and analyzed video.`
+  String get completePaymentToUnlock {
+    return Intl.message(
+      'Complete payment to unlock the full AI report and analyzed video.',
+      name: 'completePaymentToUnlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now to Unlock`
+  String get payNowToUnlock {
+    return Intl.message(
+      'Pay Now to Unlock',
+      name: 'payNowToUnlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Video (Locked)`
+  String get analyzedVideoLocked {
+    return Intl.message(
+      'Analyzed Video (Locked)',
+      name: 'analyzedVideoLocked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI Enhanced Analysis`
+  String get aiEnhancedAnalysis {
+    return Intl.message(
+      'AI Enhanced Analysis',
+      name: 'aiEnhancedAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Original Footage`
+  String get originalFootage {
+    return Intl.message(
+      'Original Footage',
+      name: 'originalFootage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment to view\nthe analyzed video`
+  String get completePaymentToViewAnalyzedVideo {
+    return Intl.message(
+      'Complete payment to view\nthe analyzed video',
+      name: 'completePaymentToViewAnalyzedVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unpaid`
+  String get unpaid {
+    return Intl.message('Unpaid', name: 'unpaid', desc: '', args: []);
+  }
+
+  /// `Analyzed Video`
+  String get analyzedVideo {
+    return Intl.message(
+      'Analyzed Video',
+      name: 'analyzedVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Original Video`
+  String get originalVideo {
+    return Intl.message(
+      'Original Video',
+      name: 'originalVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Analysis`
+  String get videoAnalysis {
+    return Intl.message(
+      'Video Analysis',
+      name: 'videoAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose Analysis Type`
+  String get chooseAnalysisType {
+    return Intl.message(
+      'Choose Analysis Type',
+      name: 'chooseAnalysisType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select the category that matches your training drill.`
+  String get analysisTypeSubtitle {
+    return Intl.message(
+      'Select the category that matches your training drill.',
+      name: 'analysisTypeSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Goalkeeper`
+  String get goalkeeperAnalysisLabel {
+    return Intl.message(
+      'Goalkeeper',
+      name: 'goalkeeperAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze goalkeeper performance`
+  String get goalkeeperAnalysisDescription {
+    return Intl.message(
+      'Analyze goalkeeper performance',
+      name: 'goalkeeperAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passing`
+  String get passingAnalysisLabel {
+    return Intl.message(
+      'Passing',
+      name: 'passingAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze passing accuracy and technique`
+  String get passingAnalysisDescription {
+    return Intl.message(
+      'Analyze passing accuracy and technique',
+      name: 'passingAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dribbling`
+  String get dribblingAnalysisLabel {
+    return Intl.message(
+      'Dribbling',
+      name: 'dribblingAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze dribbling skills and control`
+  String get dribblingAnalysisDescription {
+    return Intl.message(
+      'Analyze dribbling skills and control',
+      name: 'dribblingAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match`
+  String get matchAnalysisLabel {
+    return Intl.message(
+      'Match',
+      name: 'matchAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Full match performance analysis`
+  String get matchAnalysisDescription {
+    return Intl.message(
+      'Full match performance analysis',
+      name: 'matchAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Players`
+  String get analyzedPlayers {
+    return Intl.message(
+      'Analyzed Players',
+      name: 'analyzedPlayers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No analyzed players yet`
+  String get noAnalyzedPlayersYet {
+    return Intl.message(
+      'No analyzed players yet',
+      name: 'noAnalyzedPlayersYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{type} Analysis`
+  String analysisTypeTitle(String type) {
+    return Intl.message(
+      '$type Analysis',
+      name: 'analysisTypeTitle',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `What to expect`
+  String get whatToExpect {
+    return Intl.message(
+      'What to expect',
+      name: 'whatToExpect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload or Link Your Video`
+  String get uploadOrLinkVideo {
+    return Intl.message(
+      'Upload or Link Your Video',
+      name: 'uploadOrLinkVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose from Gallery`
+  String get chooseFromGallery {
+    return Intl.message(
+      'Choose from Gallery',
+      name: 'chooseFromGallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Record with Camera`
+  String get recordWithCamera {
+    return Intl.message(
+      'Record with Camera',
+      name: 'recordWithCamera',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload failed. Paste a URL manually.`
+  String get uploadFailedPasteManually {
+    return Intl.message(
+      'Upload failed. Paste a URL manually.',
+      name: 'uploadFailedPasteManually',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload error: {error}`
+  String uploadError(String error) {
+    return Intl.message(
+      'Upload error: $error',
+      name: 'uploadError',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Or Paste a Video URL`
+  String get orPasteVideoUrl {
+    return Intl.message(
+      'Or Paste a Video URL',
+      name: 'orPasteVideoUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video from Post`
+  String get videoFromPost {
+    return Intl.message(
+      'Video from Post',
+      name: 'videoFromPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video URL (Cloudinary, YouTube, etc.)`
+  String get videoUrlPlaceholder {
+    return Intl.message(
+      'Video URL (Cloudinary, YouTube, etc.)',
+      name: 'videoUrlPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please provide a video URL`
+  String get provideVideoUrl {
+    return Intl.message(
+      'Please provide a video URL',
+      name: 'provideVideoUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please provide a video URL or upload a video.`
+  String get provideVideoUrlOrUpload {
+    return Intl.message(
+      'Please provide a video URL or upload a video.',
+      name: 'provideVideoUrlOrUpload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Goalkeeper Height (meters)`
+  String get goalkeeperHeight {
+    return Intl.message(
+      'Goalkeeper Height (meters)',
+      name: 'goalkeeperHeight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. 1.85`
+  String get heightExample {
+    return Intl.message('e.g. 1.85', name: 'heightExample', desc: '', args: []);
+  }
+
+  /// `Height is required for goalkeeper analysis`
+  String get heightRequired {
+    return Intl.message(
+      'Height is required for goalkeeper analysis',
+      name: 'heightRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid height (1.0 – 2.5 m)`
+  String get validHeightRange {
+    return Intl.message(
+      'Enter a valid height (1.0 – 2.5 m)',
+      name: 'validHeightRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Height calibrates extension & velocity measurements.`
+  String get heightCalibrationInfo {
+    return Intl.message(
+      'Height calibrates extension & velocity measurements.',
+      name: 'heightCalibrationInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preparing…`
+  String get preparing {
+    return Intl.message('Preparing…', name: 'preparing', desc: '', args: []);
+  }
+
+  /// `Start Analysis`
+  String get startAnalysis {
+    return Intl.message(
+      'Start Analysis',
+      name: 'startAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You'll see a notification here when the report is ready.`
+  String get analysisNotificationHint {
+    return Intl.message(
+      'You\'ll see a notification here when the report is ready.',
+      name: 'analysisNotificationHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading…`
+  String get uploading {
+    return Intl.message('Uploading…', name: 'uploading', desc: '', args: []);
+  }
+
+  /// `Video uploaded`
+  String get videoUploaded {
+    return Intl.message(
+      'Video uploaded',
+      name: 'videoUploaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to upload video`
+  String get tapToUploadVideo {
+    return Intl.message(
+      'Tap to upload video',
+      name: 'tapToUploadVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MP4 · MOV · AVI`
+  String get supportedFormats {
+    return Intl.message(
+      'MP4 · MOV · AVI',
+      name: 'supportedFormats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OR PASTE URL`
+  String get orPasteUrlLabel {
+    return Intl.message(
+      'OR PASTE URL',
+      name: 'orPasteUrlLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Tips`
+  String get videoTips {
+    return Intl.message('Video Tips', name: 'videoTips', desc: '', args: []);
+  }
+
+  /// `More info`
+  String get moreInfo {
+    return Intl.message('More info', name: 'moreInfo', desc: '', args: []);
+  }
+
+  /// `Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.`
+  String get goalkeeperVideoInstructions {
+    return Intl.message(
+      'Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.',
+      name: 'goalkeeperVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Record the player's upper body and feet. Show both successful and unsuccessful passes.`
+  String get passingVideoInstructions {
+    return Intl.message(
+      'Record the player\'s upper body and feet. Show both successful and unsuccessful passes.',
+      name: 'passingVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep the camera steady. The player should be visible from waist up.`
+  String get dribblingVideoInstructions {
+    return Intl.message(
+      'Keep the camera steady. The player should be visible from waist up.',
+      name: 'dribblingVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Full match footage preferred. If not available, record key phases.`
+  String get matchVideoInstructions {
+    return Intl.message(
+      'Full match footage preferred. If not available, record key phases.',
+      name: 'matchVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed videos`
+  String get analyzedVideos {
+    return Intl.message(
+      'Analyzed videos',
+      name: 'analyzedVideos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed`
+  String get analyzed {
+    return Intl.message('Analyzed', name: 'analyzed', desc: '', args: []);
+  }
+
+  /// `What will be analyzed`
+  String get whatWillBeAnalyzed {
+    return Intl.message(
+      'What will be analyzed',
+      name: 'whatWillBeAnalyzed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Recording Tips`
+  String get videoRecordingTips {
+    return Intl.message(
+      'Video Recording Tips',
+      name: 'videoRecordingTips',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Example Frame`
+  String get exampleFrame {
+    return Intl.message(
+      'Example Frame',
+      name: 'exampleFrame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Got it`
+  String get gotIt {
+    return Intl.message('Got it', name: 'gotIt', desc: '', args: []);
+  }
+
+  /// `Example: {type} drill`
+  String exampleDrill(String type) {
+    return Intl.message(
+      'Example: $type drill',
+      name: 'exampleDrill',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Reaction Time (seconds)`
+  String get kpiReactionTime {
+    return Intl.message(
+      'Reaction Time (seconds)',
+      name: 'kpiReactionTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum Extension (meters)`
+  String get kpiMaxExtension {
+    return Intl.message(
+      'Maximum Extension (meters)',
+      name: 'kpiMaxExtension',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum Velocity (km/h)`
+  String get kpiMaxVelocity {
+    return Intl.message(
+      'Maximum Velocity (km/h)',
+      name: 'kpiMaxVelocity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deepest Knee Angle (degrees)`
+  String get kpiDeepestKneeAngle {
+    return Intl.message(
+      'Deepest Knee Angle (degrees)',
+      name: 'kpiDeepestKneeAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drill Duration (seconds)`
+  String get kpiDrillDuration {
+    return Intl.message(
+      'Drill Duration (seconds)',
+      name: 'kpiDrillDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Ball Touches`
+  String get kpiTotalBallTouches {
+    return Intl.message(
+      'Total Ball Touches',
+      name: 'kpiTotalBallTouches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Ball Speed (km/h)`
+  String get kpiAverageBallSpeed {
+    return Intl.message(
+      'Average Ball Speed (km/h)',
+      name: 'kpiAverageBallSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Player Speed (km/h)`
+  String get kpiAveragePlayerSpeed {
+    return Intl.message(
+      'Average Player Speed (km/h)',
+      name: 'kpiAveragePlayerSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Right Knee Angle (degrees)`
+  String get kpiRightKneeAngle {
+    return Intl.message(
+      'Right Knee Angle (degrees)',
+      name: 'kpiRightKneeAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Ball Touches & Touches/sec`
+  String get kpiTouchesPerSec {
+    return Intl.message(
+      'Total Ball Touches & Touches/sec',
+      name: 'kpiTouchesPerSec',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Player Speed (km/h)`
+  String get kpiAvgPlayerSpeedDribbling {
+    return Intl.message(
+      'Average Player Speed (km/h)',
+      name: 'kpiAvgPlayerSpeedDribbling',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Ball Distance (meters)`
+  String get kpiAvgBallDistance {
+    return Intl.message(
+      'Average Ball Distance (meters)',
+      name: 'kpiAvgBallDistance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Head-Up Percentage`
+  String get kpiHeadUpPercentage {
+    return Intl.message(
+      'Head-Up Percentage',
+      name: 'kpiHeadUpPercentage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hip Bounce Variance`
+  String get kpiHipBounceVariance {
+    return Intl.message(
+      'Hip Bounce Variance',
+      name: 'kpiHipBounceVariance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cone Passes Forward/Backward & Hits`
+  String get kpiConePasses {
+    return Intl.message(
+      'Cone Passes Forward/Backward & Hits',
+      name: 'kpiConePasses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team Possession (%)`
+  String get kpiTeamPossession {
+    return Intl.message(
+      'Team Possession (%)',
+      name: 'kpiTeamPossession',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Distance Covered per Team (km)`
+  String get kpiDistanceCovered {
+    return Intl.message(
+      'Distance Covered per Team (km)',
+      name: 'kpiDistanceCovered',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Speed per Team (km/h)`
+  String get kpiTopSpeedPerTeam {
+    return Intl.message(
+      'Top Speed per Team (km/h)',
+      name: 'kpiTopSpeedPerTeam',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Sprint Speed overall (km/h)`
+  String get kpiTopSprintSpeedOverall {
+    return Intl.message(
+      'Top Sprint Speed overall (km/h)',
+      name: 'kpiTopSprintSpeedOverall',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Frames Processed`
+  String get kpiTotalFramesProcessed {
+    return Intl.message(
+      'Total Frames Processed',
+      name: 'kpiTotalFramesProcessed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max Extension`
+  String get maxExtension {
+    return Intl.message(
+      'Max Extension',
+      name: 'maxExtension',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max Velocity`
+  String get maxVelocity {
+    return Intl.message(
+      'Max Velocity',
+      name: 'maxVelocity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Knee Angle`
+  String get kneeAngle {
+    return Intl.message('Knee Angle', name: 'kneeAngle', desc: '', args: []);
+  }
+
+  /// `Reaction Time`
+  String get reactionTimeShort {
+    return Intl.message(
+      'Reaction Time',
+      name: 'reactionTimeShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reaction Time`
+  String get reactionTime {
+    return Intl.message(
+      'Reaction Time',
+      name: 'reactionTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Elite`
+  String get elite {
+    return Intl.message('Elite', name: 'elite', desc: '', args: []);
+  }
+
+  /// `Good`
+  String get good {
+    return Intl.message('Good', name: 'good', desc: '', args: []);
+  }
+
+  /// `Average`
+  String get average {
+    return Intl.message('Average', name: 'average', desc: '', args: []);
+  }
+
+  /// `Needs Work`
+  String get needsWork {
+    return Intl.message('Needs Work', name: 'needsWork', desc: '', args: []);
+  }
+
+  /// `Drill Duration`
+  String get drillDuration {
+    return Intl.message(
+      'Drill Duration',
+      name: 'drillDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ball Touches`
+  String get ballTouches {
+    return Intl.message(
+      'Ball Touches',
+      name: 'ballTouches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Ball Speed`
+  String get avgBallSpeed {
+    return Intl.message(
+      'Avg Ball Speed',
+      name: 'avgBallSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Player Speed`
+  String get avgPlayerSpeed {
+    return Intl.message(
+      'Avg Player Speed',
+      name: 'avgPlayerSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Knee Angle`
+  String get avgKneeAngle {
+    return Intl.message(
+      'Avg Knee Angle',
+      name: 'avgKneeAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Touches`
+  String get totalTouches {
+    return Intl.message(
+      'Total Touches',
+      name: 'totalTouches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Touches / sec`
+  String get touchesPerSec {
+    return Intl.message(
+      'Touches / sec',
+      name: 'touchesPerSec',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Ball Distance`
+  String get avgBallDistance {
+    return Intl.message(
+      'Avg Ball Distance',
+      name: 'avgBallDistance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Head Up %`
+  String get headUpPercent {
+    return Intl.message('Head Up %', name: 'headUpPercent', desc: '', args: []);
+  }
+
+  /// `Forward\nPasses`
+  String get forwardPasses {
+    return Intl.message(
+      'Forward\nPasses',
+      name: 'forwardPasses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Backward\nPasses`
+  String get backwardPasses {
+    return Intl.message(
+      'Backward\nPasses',
+      name: 'backwardPasses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cone Hits`
+  String get coneHits {
+    return Intl.message('Cone Hits', name: 'coneHits', desc: '', args: []);
+  }
+
+  /// `Hip Variance`
+  String get hipVariance {
+    return Intl.message(
+      'Hip Variance',
+      name: 'hipVariance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team 1`
+  String get team1 {
+    return Intl.message('Team 1', name: 'team1', desc: '', args: []);
+  }
+
+  /// `Team 2`
+  String get team2 {
+    return Intl.message('Team 2', name: 'team2', desc: '', args: []);
+  }
+
+  /// `VS`
+  String get vs {
+    return Intl.message('VS', name: 'vs', desc: '', args: []);
+  }
+
+  /// `Possession`
+  String get possession {
+    return Intl.message('Possession', name: 'possession', desc: '', args: []);
+  }
+
+  /// `Distance Covered`
+  String get distanceCovered {
+    return Intl.message(
+      'Distance Covered',
+      name: 'distanceCovered',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Speed`
+  String get topSpeed {
+    return Intl.message('Top Speed', name: 'topSpeed', desc: '', args: []);
+  }
+
+  /// `Top Sprint Speed`
+  String get topSprintSpeed {
+    return Intl.message(
+      'Top Sprint Speed',
+      name: 'topSprintSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Frames`
+  String get frames {
+    return Intl.message('Frames', name: 'frames', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

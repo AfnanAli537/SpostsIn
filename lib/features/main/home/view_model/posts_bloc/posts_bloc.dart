@@ -27,6 +27,8 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     on<UpdatePost>(_onUpdatePost);
     on<DeletePost>(_onDeletePost);
     on<TogglePostVisibility>(_onTogglePostVisibility);
+    on<SendPostProgress>(_onSendPostProgress);
+
   }
 
   final List<PostModel> _posts = [];
@@ -468,4 +470,16 @@ List<PostModel> _deduplicatePosts(List<PostModel> posts) {
     return true;
   }).toList();
 }
+
+  Future<void> _onSendPostProgress(
+    SendPostProgress event,
+    Emitter<PostsState> emit,
+  ) async {
+    await postRepo.sendPostProgress(
+      postId: event.postId,
+      watchedTime: event.watchedTime,
+      isWatched: event.isWatched,
+      zoomScale: event.zoomScale,
+    );
+  }
 }

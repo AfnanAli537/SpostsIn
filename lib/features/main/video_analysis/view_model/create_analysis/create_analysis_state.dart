@@ -10,19 +10,31 @@ abstract class CreateAnalysisState extends Equatable {
 
 class CreateAnalysisInitial extends CreateAnalysisState {}
 
+/// Uploading video to Cloudinary or waiting for the POST to be dispatched.
 class CreateAnalysisLoading extends CreateAnalysisState {}
 
-/// Analysis submitted and paid — result available or processing in background.
-class CreateAnalysisSuccess extends CreateAnalysisState {
-  final CreateAnalysisResponse response;
+/// ── OPTIMISTIC STATE ──────────────────────────────────────────────────────────
+/// Emitted ~3 s after the API call is fired, regardless of whether the response
+/// has arrived yet. The screen navigates to AnalysisProcessingScreen immediately.
+/// The API call continues in the background.
+class AnalysisQueued extends CreateAnalysisState {
+  const AnalysisQueued();
+}
 
-  const CreateAnalysisSuccess(this.response);
+/// ── BACKGROUND COMPLETION ────────────────────────────────────────────────────
+/// Emitted when the API response finally arrives successfully (paid, analyzed).
+/// The main layout listener shows a toast. Navigation has already happened.
+class AnalysisCompleted extends CreateAnalysisState {
+  final CreateAnalysisResponse  response;
+
+  const AnalysisCompleted(this.response);
 
   @override
   List<Object?> get props => [response];
 }
 
-/// Backend returned isPaid: false — user must pay before analysis runs.
+/// Backend returned isPaid:false — user must pay before analysis runs.
+/// Emitted immediately (no 3s delay) since the user needs to act.
 class CreateAnalysisRequiresPayment extends CreateAnalysisState {
   final String analysisId;
   final double price;

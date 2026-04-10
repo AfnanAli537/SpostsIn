@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../data/enums/analysis_type.dart';
 import 'create_analysis_form_screen.dart';
 
@@ -41,6 +42,7 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,7 +52,7 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Video Analysis',
+          strings.videoAnalysis,
           style: TextStyle(
             color: theme.onSurface,
             fontSize: 18.sp,
@@ -65,7 +67,7 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Choose Analysis Type',
+              strings.chooseAnalysisType,
               style: GoogleFonts.poppins(
                 fontSize: 22.sp,
                 fontWeight: FontWeight.w700,
@@ -74,7 +76,7 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
             ),
             SizedBox(height: 6.h),
             Text(
-              'Select the category that matches your training drill.',
+              strings.analysisTypeSubtitle,
               style: TextStyle(
                 fontSize: 13.sp,
                 color: theme.onSurface.withOpacity(0.55),
@@ -93,6 +95,8 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
                     icon: d.icon,
                     color: d.color,
                     gradient: d.gradient,
+                    label: _getLocalizedLabel(d.type, strings),
+                    description: _getLocalizedDescription(d.type, strings),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -111,6 +115,32 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
       ),
     );
   }
+
+  String _getLocalizedLabel(AnalysisType type, S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisLabel;
+      case AnalysisType.passing:
+        return strings.passingAnalysisLabel;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisLabel;
+      case AnalysisType.match:
+        return strings.matchAnalysisLabel;
+    }
+  }
+
+  String _getLocalizedDescription(AnalysisType type, S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisDescription;
+      case AnalysisType.passing:
+        return strings.passingAnalysisDescription;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisDescription;
+      case AnalysisType.match:
+        return strings.matchAnalysisDescription;
+    }
+  }
 }
 
 class _TypeCard extends StatelessWidget {
@@ -118,6 +148,8 @@ class _TypeCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final List<Color> gradient;
+  final String label;
+  final String description;
   final VoidCallback onTap;
 
   const _TypeCard({
@@ -125,6 +157,8 @@ class _TypeCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.gradient,
+    required this.label,
+    required this.description,
     required this.onTap,
   });
 
@@ -170,7 +204,7 @@ class _TypeCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                type.label,
+                label,
                 style: GoogleFonts.poppins(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
@@ -179,7 +213,7 @@ class _TypeCard extends StatelessWidget {
               ),
               SizedBox(height: 4.h),
               Text(
-                type.description,
+                description,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

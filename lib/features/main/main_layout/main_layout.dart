@@ -75,11 +75,11 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
   @override
   void dispose() {
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _onItemTapped(int index) {
-    // Unfocus any active text field when switching tabs
     FocusScope.of(context).unfocus();
     setState(() => _currentIndex = index);
   }
@@ -194,7 +194,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
       drawer: const AppDrawer(),
       onDrawerChanged: (isOpen) {
         if (isOpen) {
-          // Dismiss keyboard as soon as the drawer starts opening
           _focusNode.unfocus();
           FocusScope.of(context).unfocus();
         }
@@ -210,7 +209,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
               leading: IconButton(
                 icon: Icon(Icons.menu, color: theme.colorScheme.onSurface),
                 onPressed: () {
-                  // Unfocus before opening drawer so search field is blurred
                   FocusScope.of(context).unfocus();
                   _scaffoldKey.currentState?.openDrawer();
                 },
@@ -252,7 +250,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
               .toList(),
         ),
       ),
-      // ── Fix: hide FAB when keyboard is open ────────────────────────────
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: isKeyboardOpen
           ? null

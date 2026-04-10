@@ -54,4 +54,10 @@ Future<PostModel> getPostById({required String postId});
     required String postId,
     required String commentId,
   });
+    Future<void> sendPostProgress({
+    required String postId,
+    required double watchedTime,
+    required bool isWatched,
+    required double zoomScale,
+  });
 }

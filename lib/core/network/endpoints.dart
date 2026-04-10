@@ -23,8 +23,9 @@ static const String getPostById = '/api/Posts/{id}';
   static const String putComment = "/api/Posts/{id}/comment";
   static const String getLikes = "/api/Posts/{id}/likes";
   static const String getComments = "/api/Posts/{id}/comments";
+  static const String postProgress = "/api/Posts/{id}/progress";
   static const String editComment = "/api/Posts/comments/{commentId}";
-  static const String deletComment = "/api/Posts/comments/{commentId}";
+  static const String deleteComment = "/api/Posts/comments/{commentId}";
 
   static const String sendVerifyRegisterOtp = "/api/Auth/send-gmail-code";
   static const String verifyRegisterOtp = "/api/Auth/confirm-gmail-code";

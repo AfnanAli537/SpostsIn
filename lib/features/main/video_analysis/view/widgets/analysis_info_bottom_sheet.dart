@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../../data/enums/analysis_type.dart';
 
 class AnalysisInfoBottomSheet extends StatelessWidget {
@@ -8,9 +9,86 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
 
   const AnalysisInfoBottomSheet({super.key, required this.type});
 
+  String _getLocalizedTypeLabel(S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisLabel;
+      case AnalysisType.passing:
+        return strings.passingAnalysisLabel;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisLabel;
+      case AnalysisType.match:
+        return strings.matchAnalysisLabel;
+    }
+  }
+
+  String _getLocalizedDescription(S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisDescription;
+      case AnalysisType.passing:
+        return strings.passingAnalysisDescription;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisDescription;
+      case AnalysisType.match:
+        return strings.matchAnalysisDescription;
+    }
+  }
+
+  String _getLocalizedVideoInstructions(S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperVideoInstructions;
+      case AnalysisType.passing:
+        return strings.passingVideoInstructions;
+      case AnalysisType.dribbling:
+        return strings.dribblingVideoInstructions;
+      case AnalysisType.match:
+        return strings.matchVideoInstructions;
+    }
+  }
+
+  List<String> _getLocalizedKpis(S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return [
+          strings.kpiReactionTime,
+          strings.kpiMaxExtension,
+          strings.kpiMaxVelocity,
+          strings.kpiDeepestKneeAngle,
+        ];
+      case AnalysisType.passing:
+        return [
+          strings.kpiDrillDuration,
+          strings.kpiTotalBallTouches,
+          strings.kpiAverageBallSpeed,
+          strings.kpiAveragePlayerSpeed,
+          strings.kpiRightKneeAngle,
+        ];
+      case AnalysisType.dribbling:
+        return [
+          strings.kpiTouchesPerSec,
+          strings.kpiAvgPlayerSpeedDribbling,
+          strings.kpiAvgBallDistance,
+          strings.kpiHeadUpPercentage,
+          strings.kpiHipBounceVariance,
+          strings.kpiConePasses,
+        ];
+      case AnalysisType.match:
+        return [
+          strings.kpiTeamPossession,
+          strings.kpiDistanceCovered,
+          strings.kpiTopSpeedPerTeam,
+          strings.kpiTopSprintSpeedOverall,
+          strings.kpiTotalFramesProcessed,
+        ];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -40,7 +118,7 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
             ),
 
             Text(
-              '${type.label} Analysis',
+              strings.analysisTypeTitle(_getLocalizedTypeLabel(strings)),
               style: GoogleFonts.poppins(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
@@ -49,7 +127,7 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
             Text(
-              type.description,
+              _getLocalizedDescription(strings),
               style: TextStyle(
                 fontSize: 13.sp,
                 color: theme.onSurface.withOpacity(0.65),
@@ -58,12 +136,12 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
             ),
 
             SizedBox(height: 24.h),
-            _SectionHeader(title: 'What will be analyzed'),
+            _SectionHeader(title: strings.whatWillBeAnalyzed),
             SizedBox(height: 10.h),
-            _kpiList(type),
+            _kpiList(_getLocalizedKpis(strings)),
 
             SizedBox(height: 24.h),
-            _SectionHeader(title: 'Video Recording Tips'),
+            _SectionHeader(title: strings.videoRecordingTips),
             SizedBox(height: 10.h),
             Container(
               padding: EdgeInsets.all(16.w),
@@ -75,7 +153,7 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
                 ),
               ),
               child: Text(
-                type.videoInstructions,
+                _getLocalizedVideoInstructions(strings),
                 style: TextStyle(
                   fontSize: 13.sp,
                   color: theme.onSurface.withOpacity(0.75),
@@ -85,9 +163,8 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
             ),
 
             SizedBox(height: 24.h),
-            _SectionHeader(title: 'Example Frame'),
+            _SectionHeader(title: strings.exampleFrame),
             SizedBox(height: 10.h),
-            // Example illustration placeholder
             Container(
               height: 180.h,
               decoration: BoxDecoration(
@@ -99,12 +176,12 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Try to load asset image; show placeholder if missing
                     Image.asset(
                       type.exampleImageAsset,
                       fit: BoxFit.cover,
                       width: double.infinity,
-                      errorBuilder: (_, __, ___) => _ExamplePlaceholder(type),
+                      errorBuilder: (_, __, ___) =>
+                          _ExamplePlaceholder(type, strings),
                     ),
                   ],
                 ),
@@ -124,7 +201,7 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Got it',
+                  strings.gotIt,
                   style: TextStyle(fontSize: 15.sp),
                 ),
               ),
@@ -136,8 +213,7 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _kpiList(AnalysisType type) {
-    final kpis = _kpisFor(type);
+  Widget _kpiList(List<String> kpis) {
     return Column(
       children: kpis
           .map(
@@ -161,43 +237,6 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
           .toList(),
     );
   }
-
-  List<String> _kpisFor(AnalysisType type) {
-    switch (type) {
-      case AnalysisType.goalkeeper:
-        return [
-          'Reaction Time (seconds)',
-          'Maximum Extension (meters)',
-          'Maximum Velocity (km/h)',
-          'Deepest Knee Angle (degrees)',
-        ];
-      case AnalysisType.passing:
-        return [
-          'Drill Duration (seconds)',
-          'Total Ball Touches',
-          'Average Ball Speed (km/h)',
-          'Average Player Speed (km/h)',
-          'Right Knee Angle (degrees)',
-        ];
-      case AnalysisType.dribbling:
-        return [
-          'Total Ball Touches & Touches/sec',
-          'Average Player Speed (km/h)',
-          'Average Ball Distance (meters)',
-          'Head-Up Percentage',
-          'Hip Bounce Variance',
-          'Cone Passes Forward/Backward & Hits',
-        ];
-      case AnalysisType.match:
-        return [
-          'Team Possession (%)',
-          'Distance Covered per Team (km)',
-          'Top Speed per Team (km/h)',
-          'Top Sprint Speed overall (km/h)',
-          'Total Frames Processed',
-        ];
-    }
-  }
 }
 
 class _SectionHeader extends StatelessWidget {
@@ -219,7 +258,8 @@ class _SectionHeader extends StatelessWidget {
 
 class _ExamplePlaceholder extends StatelessWidget {
   final AnalysisType type;
-  const _ExamplePlaceholder(this.type);
+  final S strings;
+  const _ExamplePlaceholder(this.type, this.strings);
 
   IconData get _icon {
     switch (type) {
@@ -234,6 +274,19 @@ class _ExamplePlaceholder extends StatelessWidget {
     }
   }
 
+  String _getLocalizedTypeLabel() {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisLabel;
+      case AnalysisType.passing:
+        return strings.passingAnalysisLabel;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisLabel;
+      case AnalysisType.match:
+        return strings.matchAnalysisLabel;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
@@ -243,7 +296,7 @@ class _ExamplePlaceholder extends StatelessWidget {
         Icon(_icon, size: 48.sp, color: theme.onSurface.withOpacity(0.3)),
         SizedBox(height: 10.h),
         Text(
-          'Example: ${type.label} drill',
+          strings.exampleDrill(_getLocalizedTypeLabel()),
           style: TextStyle(
             fontSize: 12.sp,
             color: theme.onSurface.withOpacity(0.35),

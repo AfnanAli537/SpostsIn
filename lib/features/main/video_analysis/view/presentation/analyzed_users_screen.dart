@@ -6,6 +6,7 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/target_analyses_screen.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 class AnalyzedUsersScreen extends StatefulWidget {
   const AnalyzedUsersScreen({super.key});
@@ -39,10 +40,11 @@ class _AnalyzedUsersScreenState extends State<AnalyzedUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Analyzed Players'),
+        title: Text(strings.analyzedPlayers),
         centerTitle: true,
         elevation: 0,
       ),
@@ -50,10 +52,10 @@ class _AnalyzedUsersScreenState extends State<AnalyzedUsersScreen> {
         builder: (context, state) {
           if (state is AnalyzedUsersLoading) return _buildShimmer(theme);
           if (state is AnalyzedUsersError) {
-            return _buildError(context, state.message);
+            return _buildError(context, state.message, strings);
           }
           if (state is AnalyzedUsersLoaded) {
-            if (state.users.isEmpty) return _buildEmpty(theme);
+            if (state.users.isEmpty) return _buildEmpty(theme, strings);
             return _buildList(context, state);
           }
           return const SizedBox.shrink();
@@ -111,7 +113,7 @@ class _AnalyzedUsersScreenState extends State<AnalyzedUsersScreen> {
         ),
       );
 
-  Widget _buildError(BuildContext context, String message) => Center(
+  Widget _buildError(BuildContext context, String message, S strings) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -124,13 +126,13 @@ class _AnalyzedUsersScreenState extends State<AnalyzedUsersScreen> {
               onPressed: () => context
                   .read<AnalysisBloc>()
                   .add(const LoadAnalyzedUsers()),
-              child: const Text('Retry'),
+              child: Text(strings.retry),
             ),
           ],
         ),
       );
 
-  Widget _buildEmpty(ThemeData theme) => Center(
+  Widget _buildEmpty(ThemeData theme, S strings) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -138,7 +140,7 @@ class _AnalyzedUsersScreenState extends State<AnalyzedUsersScreen> {
                 size: 64.sp,
                 color: theme.colorScheme.onSurface.withOpacity(0.25)),
             SizedBox(height: 16.h),
-            Text('No analyzed players yet',
+            Text(strings.noAnalyzedPlayersYet,
                 style: TextStyle(
                     fontSize: 15.sp,
                     color: theme.colorScheme.onSurface.withOpacity(0.5))),
