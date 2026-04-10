@@ -893,7 +893,40 @@
   "enterNewName": "أدخل الاسم الجديد",
   "rename": "إعادة تسمية",
   "tapToContinue": "اضغط لمتابعة هذه المحادثة...",
-  "sessionAvatarLabel": "S"
+  "sessionAvatarLabel": "S",
+  "notificationTitle": "الإشعارات",
+  "markAllAsRead": "تحديد الكل كمقروء",
+  "noNotificationsYet": "لا توجد إشعارات بعد",
+  "allCaughtUp": "لقد اطلعت على كل شيء!",
+  "requestAccepted": "تم قبول الطلب",
+  "requestDeclined": "تم رفض الطلب",
+
+  "categoryRecent": "الأحدث",
+  "categoryRequests": "الطلبات",
+  "categoryReactions": "التفاعلات",
+  "categoryOpportunities": "الفرص",
+
+  "dateToday": "اليوم",
+  "dateYesterday": "أمس",
+
+  "timeMinutes": "{count} د",
+  "@timeMinutes": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "timeHours": "{count} س",
+  "@timeHours": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "timeDays": "{count} ي",
+  "@timeDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "newBadge": "{count} جديد",
+  "@newBadge": {
+    "placeholders": { "count": { "type": "int" } }
+  }
+
 
 
 }

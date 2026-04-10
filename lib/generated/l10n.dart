@@ -5962,6 +5962,146 @@ class S {
   String get sessionAvatarLabel {
     return Intl.message('S', name: 'sessionAvatarLabel', desc: '', args: []);
   }
+
+  /// `Notification`
+  String get notificationTitle {
+    return Intl.message(
+      'Notification',
+      name: 'notificationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mark all as read`
+  String get markAllAsRead {
+    return Intl.message(
+      'Mark all as read',
+      name: 'markAllAsRead',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No notifications yet`
+  String get noNotificationsYet {
+    return Intl.message(
+      'No notifications yet',
+      name: 'noNotificationsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You're all caught up!`
+  String get allCaughtUp {
+    return Intl.message(
+      'You\'re all caught up!',
+      name: 'allCaughtUp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Accepted`
+  String get requestAccepted {
+    return Intl.message(
+      'Request Accepted',
+      name: 'requestAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Declined`
+  String get requestDeclined {
+    return Intl.message(
+      'Request Declined',
+      name: 'requestDeclined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recent`
+  String get categoryRecent {
+    return Intl.message('Recent', name: 'categoryRecent', desc: '', args: []);
+  }
+
+  /// `Requests`
+  String get categoryRequests {
+    return Intl.message(
+      'Requests',
+      name: 'categoryRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reactions`
+  String get categoryReactions {
+    return Intl.message(
+      'Reactions',
+      name: 'categoryReactions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opportunities`
+  String get categoryOpportunities {
+    return Intl.message(
+      'Opportunities',
+      name: 'categoryOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Today`
+  String get dateToday {
+    return Intl.message('Today', name: 'dateToday', desc: '', args: []);
+  }
+
+  /// `Yesterday`
+  String get dateYesterday {
+    return Intl.message('Yesterday', name: 'dateYesterday', desc: '', args: []);
+  }
+
+  /// `{count}m`
+  String timeMinutes(int count) {
+    return Intl.message(
+      '${count}m',
+      name: 'timeMinutes',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count}h`
+  String timeHours(int count) {
+    return Intl.message(
+      '${count}h',
+      name: 'timeHours',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count}d`
+  String timeDays(int count) {
+    return Intl.message('${count}d', name: 'timeDays', desc: '', args: [count]);
+  }
+
+  /// `{count} new`
+  String newBadge(int count) {
+    return Intl.message(
+      '$count new',
+      name: 'newBadge',
+      desc: '',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

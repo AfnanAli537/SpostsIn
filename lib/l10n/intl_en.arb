@@ -918,7 +918,39 @@
   "enterNewName": "Enter new name",
   "rename": "Rename",
   "tapToContinue": "Tap to continue this chat...",
-  "sessionAvatarLabel": "S"
+  "sessionAvatarLabel": "S",
+  "notificationTitle": "Notification",
+  "markAllAsRead": "Mark all as read",
+  "noNotificationsYet": "No notifications yet",
+  "allCaughtUp": "You're all caught up!",
+  "requestAccepted": "Request Accepted",
+  "requestDeclined": "Request Declined",
+  "categoryRecent": "Recent",
+  "categoryRequests": "Requests",
+  "categoryReactions": "Reactions",
+  "categoryOpportunities": "Opportunities",
 
+  "dateToday": "Today",
+  "dateYesterday": "Yesterday",
 
+  "timeMinutes": "{count}m",
+  "@timeMinutes": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "timeHours": "{count}h",
+  "@timeHours": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "timeDays": "{count}d",
+  "@timeDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "newBadge": "{count} new",
+  "@newBadge": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }
+
+
+
