@@ -58,7 +58,7 @@ class _FawryScreenState extends State<FawryScreen> {
   /// Dispatched by THIS screen once [PaymentInitiatedAwaitingActivation]
   /// is received and the reference code is displayed.
   void _triggerManualActivation(String txId) {
-    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId));
+    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId, targetType: widget.targetType));
   }
 
   void _copyCode() {

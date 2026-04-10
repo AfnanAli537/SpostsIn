@@ -112,4 +112,19 @@ class PostsRepositoryImpl {
       pageSize: pageSize,
     );
   }
+
+  
+  Future<void> sendPostProgress({
+    required String postId,
+    required double watchedTime,
+    required bool isWatched,
+    required double zoomScale,
+  }) async {
+    return await repo.sendPostProgress(
+      postId: postId,
+      watchedTime: watchedTime,
+      isWatched: isWatched,
+      zoomScale: zoomScale,
+    );
+  }
 }

@@ -15,6 +15,7 @@ import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.d
 import 'package:sports_in/features/main/opportunity/view/presentation/upload_opportunity.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view/presentation/achievement/achievement_edit_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_type_selection_screen.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class CreateOptionsBottomSheet extends StatelessWidget {
@@ -182,7 +183,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                   iconColor: const Color(0xFFBCAAA4),
                   title: strings.createAdvertisement,
                   onTap: () {
-                    Navigator.pop(context); // close the bottom sheet first
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -199,10 +200,25 @@ class CreateOptionsBottomSheet extends StatelessWidget {
 
                 // ── Video Analysis ───────────────────────────────────────────
                 buildOptionCard(
-                  icon: Icons.play_arrow,
+                  icon: Icons.play_circle_outline,
                   iconColor: const Color(0xFF9CCC65),
                   title: strings.makeVideoAnalysis,
-                  onTap: () => Navigator.pop(context),
+                  onTap: () async {
+                    // Close bottom sheet first
+                    Navigator.of(context, rootNavigator: true).pop();
+                    final sharedPref = getIt<SharedPref>();
+                    final userId = sharedPref.getUserId();
+                    if (userId == null) return;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AnalysisTypeSelectionScreen(
+                          targetUserId: userId,
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 30.h),
               ],

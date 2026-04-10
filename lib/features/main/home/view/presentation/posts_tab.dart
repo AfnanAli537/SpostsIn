@@ -20,8 +20,7 @@ class PostsTab extends StatefulWidget {
   State<PostsTab> createState() => PostsTabState();
 }
 
-class PostsTabState extends State<PostsTab>
-    with AutomaticKeepAliveClientMixin {
+class PostsTabState extends State<PostsTab> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -40,9 +39,7 @@ class PostsTabState extends State<PostsTab>
       builder: (context, postsState) {
         // ── Loading ─────────────────────────────────────────────────────────
         if (postsState is PostsLoading || postsState is PostsInitial) {
-          return Column(
-            children: List.generate(5, (_) => const PostShimmer()),
-          );
+          return Column(children: List.generate(5, (_) => const PostShimmer()));
         }
 
         // ── Error ───────────────────────────────────────────────────────────
@@ -53,28 +50,34 @@ class PostsTabState extends State<PostsTab>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline,
-                      size: 64.sp, color: Colors.red[300]),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64.sp,
+                    color: Colors.red[300],
+                  ),
                   SizedBox(height: 16.h),
-                  Text(strings.oopsSomethingWentWrong,
-                      style: GoogleFonts.poppins(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800])),
+                  Text(
+                    strings.oopsSomethingWentWrong,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[800],
+                    ),
+                  ),
                   SizedBox(height: 8.h),
-                  Text(postsState.message,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                          fontSize: 14.sp, color: Colors.grey[600])),
+                  Text(
+                    postsState.message,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
                   SizedBox(height: 24.h),
                   ElevatedButton.icon(
                     onPressed: () {
-                      context
-                          .read<PostsBloc>()
-                          .add(const FetchPosts());
-                      context
-                          .read<AdsBloc>()
-                          .add(const FetchAdsFeed());
+                      context.read<PostsBloc>().add(const FetchPosts());
+                      context.read<AdsBloc>().add(const FetchAdsFeed());
                     },
                     icon: const Icon(Icons.refresh),
                     label: Text(strings.retry),
@@ -94,8 +97,6 @@ class PostsTabState extends State<PostsTab>
           final posts = postsState is PostsLoaded
               ? postsState.posts
               : (postsState as PostsLoadingMore).currentPosts;
-          final hasNextPage =
-              postsState is PostsLoaded ? postsState.hasNextPage : true;
           final isLoadingMore = postsState is PostsLoadingMore;
 
           if (posts.isEmpty) {
@@ -104,16 +105,23 @@ class PostsTabState extends State<PostsTab>
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.post_add,
-                        size: 64.sp, color: Colors.grey[400]),
+                    Icon(Icons.post_add, size: 64.sp, color: Colors.grey[400]),
                     SizedBox(height: 16.h),
-                    Text(strings.noPostsYet,
-                        style: GoogleFonts.poppins(
-                            fontSize: 18.sp, color: Colors.grey[600])),
+                    Text(
+                      strings.noPostsYet,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
                     SizedBox(height: 8.h),
-                    Text(strings.beTheFirstToCreatePost,
-                        style: GoogleFonts.poppins(
-                            fontSize: 14.sp, color: Colors.grey[500])),
+                    Text(
+                      strings.beTheFirstToCreatePost,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.sp,
+                        color: Colors.grey[500],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -126,55 +134,49 @@ class PostsTabState extends State<PostsTab>
               final ads = adsState is AdsLoaded
                   ? adsState.ads
                   : adsState is AdsLoadingMore
-                      ? adsState.currentAds
-                      : <dynamic>[];
+                  ? adsState.currentAds
+                  : <dynamic>[];
 
               // Build the interleaved list
               final List<Widget> items = [];
               int adIndex = 0;
 
               for (int i = 0; i < posts.length; i++) {
-                // Load-more trigger
-                if (i == posts.length - 1 &&
-                    hasNextPage &&
-                    !isLoadingMore) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    context
-                        .read<PostsBloc>()
-                        .add(LoadMorePosts());
-                  });
-                }
+                final post = posts[i];
 
-                items.add(PostWidget(
-                    key: ValueKey('post_${posts[i].id}'), post: posts[i]));
+                // ← Debug: Check for duplicates in this loop
+                assert(
+                  !items.any((w) => w.key == ValueKey('post_${post.id}')),
+                  'Duplicate post key detected: ${post.id}',
+                );
 
+                items.add(
+                  PostWidget(key: ValueKey('post_${post.id}'), post: post),
+                );
                 // Inject an ad after every _adInterval posts
-                if ((i + 1) % _adInterval == 0 &&
-                    ads.isNotEmpty) {
+                if ((i + 1) % _adInterval == 0 && ads.isNotEmpty) {
                   final ad = ads[adIndex % ads.length];
                   adIndex++;
                   items.add(
                     BlocProvider.value(
                       value: context.read<AdsBloc>(),
-                      child: AdWidget(
-                        key: ValueKey('ad_${ad.id}_$i'),
-                        ad: ad,
-                      ),
+                      child: AdWidget(key: ValueKey('ad_${ad.id}_$i'), ad: ad),
                     ),
                   );
                 }
               }
 
               if (isLoadingMore) {
-                items.add(const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
-                ));
+                items.add(
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                );
               }
 
               // Show shimmer ad placeholder while ads are loading
-              if (adsState is AdsLoading &&
-                  posts.length >= _adInterval) {
+              if (adsState is AdsLoading && posts.length >= _adInterval) {
                 items.insert(_adInterval, const AdShimmer());
               }
 

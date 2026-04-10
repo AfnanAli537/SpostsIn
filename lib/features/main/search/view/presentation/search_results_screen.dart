@@ -24,7 +24,7 @@ class SearchResultsScreen extends StatefulWidget {
   final String? initialQuery;
   final SearchFilters? initialFilters;
 
-  const SearchResultsScreen({super.key,this.initialQuery, this.initialFilters});
+  const SearchResultsScreen({super.key, this.initialQuery, this.initialFilters});
 
   @override
   State<SearchResultsScreen> createState() => _SearchResultsScreenState();
@@ -32,6 +32,7 @@ class SearchResultsScreen extends StatefulWidget {
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
   late final TextEditingController _searchController;
+  late final ScrollController _scrollController;
 
   String? _selectedLocation;
   String? _selectedSportLabel;
@@ -88,28 +89,37 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         }
       }
     }
-String query = widget.initialQuery ?? '';
-  if (query.isEmpty) {
-    final state = context.read<SearchBloc>().state;
-    if (state is SearchLoaded) {query = state.query;}
-    else if (state is SearchEmpty) {query = state.query;}
-  }
-  _searchController = TextEditingController(text: query);
-    // // Initialize query from bloc state
-    // final state = context.read<SearchBloc>().state;
-    // String initialQuery = '';
-    // if (state is SearchLoaded) {
-    //   initialQuery = state.query;
-    // } else if (state is SearchEmpty) {
-    //   initialQuery = state.query;
-    // }
-    // _searchController = TextEditingController(text: initialQuery);
+
+    String query = widget.initialQuery ?? '';
+    if (query.isEmpty) {
+      final state = context.read<SearchBloc>().state;
+      if (state is SearchLoaded) {
+        query = state.query;
+      } else if (state is SearchEmpty) {
+        query = state.query;
+      }
+    }
+    _searchController = TextEditingController(text: query);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<SearchBloc>().add(LoadMoreResults());
+    }
+  }
+
+  void _resetScroll() {
+    _scrollController.jumpTo(0);
   }
 
   void _navigateToUserProfile(String userId) {
@@ -117,6 +127,7 @@ String query = widget.initialQuery ?? '';
   }
 
   void _performSearch(String query) {
+    _resetScroll();
     context.read<SearchBloc>().add(SearchWithFilters(
           query: query,
           filters: _currentFilters,
@@ -124,6 +135,7 @@ String query = widget.initialQuery ?? '';
   }
 
   void _applyFilters() {
+    _resetScroll();
     context.read<SearchBloc>().add(SearchWithFilters(
           query: _searchController.text,
           filters: _currentFilters,
@@ -139,6 +151,7 @@ String query = widget.initialQuery ?? '';
       _minAge = 18;
       _maxAge = 99;
     });
+    _resetScroll();
     context.read<SearchBloc>().add(SearchWithFilters(
           query: _searchController.text,
           filters: null,
@@ -399,7 +412,7 @@ String query = widget.initialQuery ?? '';
           ),
           SizedBox(height: 8.h),
 
-          // ── Results ───────────────────────────────────────────────
+          // ── Results with pagination ──────────────────────────────
           Expanded(
             child: BlocBuilder<SearchBloc, SearchState>(
               builder: (context, state) {
@@ -452,17 +465,47 @@ String query = widget.initialQuery ?? '';
 
                 if (state is SearchLoaded) {
                   return ListView.separated(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16.w, vertical: 8.h),
-                    itemCount: state.results.length,
+                    controller: _scrollController,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    itemCount: state.results.length + (state.hasMore ? 1 : 0),
                     separatorBuilder: (_, __) => SizedBox(height: 12.h),
                     itemBuilder: (context, index) {
-                      final result = state.results[index];
-                      return SearchResultCard(
-                        result: result,
-                        onTap: () =>
-                            _navigateToUserProfile(result.id),
-                      );
+                      if (index < state.results.length) {
+                        final result = state.results[index];
+                        return SearchResultCard(
+                          result: result,
+                          onTap: () => _navigateToUserProfile(result.id),
+                        );
+                      } else {
+                        // Show loading indicator at the bottom
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                    },
+                  );
+                }
+
+                if (state is SearchLoadingMore) {
+                  return ListView.separated(
+                    controller: _scrollController,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    itemCount: state.currentResults.length + 1,
+                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      if (index < state.currentResults.length) {
+                        final result = state.currentResults[index];
+                        return SearchResultCard(
+                          result: result,
+                          onTap: () => _navigateToUserProfile(result.id),
+                        );
+                      } else {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
                     },
                   );
                 }

@@ -9,6 +9,8 @@ class CheckboxDropdownOverlay extends StatefulWidget {
   final List<String> options;
   final ValueChanged<List<String>> onChanged;
   final String? Function(List<String>?)? validator;
+  final Color? borderColor;
+
 
   const CheckboxDropdownOverlay({
     super.key,
@@ -17,6 +19,7 @@ class CheckboxDropdownOverlay extends StatefulWidget {
     required this.options,
     required this.onChanged,
     this.validator,
+    this.borderColor,
   });
 
   @override
@@ -188,7 +191,8 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
                   labelStyle: theme.textTheme.bodyMedium?.copyWith(
                     color: field.hasError
                         ? ColorManager.error
-                        : ColorManager.darkAccent1,
+                        : (widget.borderColor ??
+                                    ColorManager.darkAccent1),
                   ),
                   errorMaxLines: 3,
                   
@@ -196,7 +200,8 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: ColorManager.darkAccent1,
+                      color: (widget.borderColor ??
+                                    ColorManager.darkAccent1),
                       width: 1.2.w,
                     ),
                   ),
@@ -205,7 +210,8 @@ class _CheckboxDropdownOverlayState extends State<CheckboxDropdownOverlay> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: ColorManager.darkAccent,
+                      color: (widget.borderColor ??
+                                    ColorManager.darkAccent1),
                       width: 1.8.w,
                     ),
                   ),

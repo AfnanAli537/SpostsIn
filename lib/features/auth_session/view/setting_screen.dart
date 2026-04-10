@@ -15,6 +15,8 @@ import 'package:sports_in/features/main/courses/view/presentation/client/course_
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/achievement/achievements_list_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analyzed_users_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/payment/presentation/subscription_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -106,8 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border:
-            Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,17 +133,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   final borderColor = isSelected
                       ? ColorManager.borderCircular
                       : Colors.transparent;
-                  final imagePath =
-                      value == "en" ? IconAssets.us : IconAssets.eg;
+                  final imagePath = value == "en"
+                      ? IconAssets.us
+                      : IconAssets.eg;
                   return Container(
                     padding: EdgeInsets.all(2.w),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border:
-                          Border.all(color: borderColor, width: 1.w),
+                      border: Border.all(color: borderColor, width: 1.w),
                     ),
-                    child: Image.asset(imagePath,
-                        width: 20.w, height: 20.h),
+                    child: Image.asset(imagePath, width: 20.w, height: 20.h),
                   );
                 },
               );
@@ -193,8 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12.r),
-        border:
-            Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -206,14 +205,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(
                   label,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: Colors.grey[600]),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
                 ),
                 SizedBox(height: 2.h),
                 Text(
                   value,
-                  style: theme.textTheme.bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -277,10 +278,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onTap: () => Navigator.pushNamed(
             context,
             AppRoutes.profilePostsListScreen,
-            arguments: {
-              'userId': _currentUserId,
-              'isCurrentUser': true,
-            },
+            arguments: {'userId': _currentUserId, 'isCurrentUser': true},
           ),
           theme: theme,
         ),
@@ -294,8 +292,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: () => Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (_) =>
-                    MyOpportunitiesListScreen(showActiveOnly: true),
+                builder: (_) => MyOpportunitiesListScreen(showActiveOnly: true),
               ),
             ),
             theme: theme,
@@ -311,7 +308,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (_) => BlocProvider(
                 create: (_) => getIt<CoursesBloc>(),
                 child: CourseListScreen(
-                  listType: (_currentUser!.userType == 'Coach' ||
+                  listType:
+                      (_currentUser!.userType == 'Coach' ||
                           // _currentUser!.userType == 'Scout' ||
                           _currentUser!.userType == 'Club')
                       ? CourseListType.created
@@ -337,7 +335,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: string.manageVideoAnalysis,
           icon: Icons.video_library_outlined,
           onTap: () {
-            // TODO: Navigate to video analysis screen
+            Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AnalysisBloc>()
+                        ..add(const LoadAnalyzedUsers()),
+                      child: const AnalyzedUsersScreen(),
+                    ),
+                  ),
+                );
           },
           theme: theme,
         ),
@@ -376,8 +383,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
         ),
         child: Row(
           children: [
@@ -391,8 +397,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            Icon(Icons.chevron_right,
-                color: Colors.grey[400], size: 20.sp),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20.sp),
           ],
         ),
       ),

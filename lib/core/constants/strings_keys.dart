@@ -42,8 +42,7 @@ class StringKeys {
   static const String userNotFound = 'userNotFound';
 
   //cloudenary 
-  static const String uploadPreset = 'Images'; 
-  static const String cloudName = 'dbwnoorb8';
-
+  static const String uploadPreset = 'flutter'; 
+  static const String cloudName = 'dk9y4kl49';
 
 }

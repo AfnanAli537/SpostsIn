@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileStatsWidget extends StatelessWidget {
   final ProfileStats stats;
+  final bool isCurrentUser;
   final VoidCallback? onFollowersPressed;
   final VoidCallback? onFollowingPressed;
   final VoidCallback? onConnectionsPressed;
@@ -16,6 +17,7 @@ class ProfileStatsWidget extends StatelessWidget {
   const ProfileStatsWidget({
     super.key,
     required this.stats,
+    this.isCurrentUser = false,
     this.onFollowersPressed,
     this.onFollowingPressed,
     this.onConnectionsPressed,
@@ -63,13 +65,15 @@ Widget build(BuildContext context) {
             onTap: onConnectionsPressed,
           ),
         ),
+        isCurrentUser?
         Expanded(
           child: _buildStatItem(
             label: string.analyzedPeople,
             value: _formatCount(stats.analyzedPeople),
             onTap: onAnalyzedPeoplePressed,
-          ),
-        ),
+          ))
+          : const SizedBox.shrink(),
+        
       ],
     ),
   );

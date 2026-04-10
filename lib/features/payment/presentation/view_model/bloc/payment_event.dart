@@ -57,11 +57,12 @@ final class InitiatePaymentEvent extends PaymentEvent {
 
 final class ManualActivateEvent extends PaymentEvent {
   final String orderId;
+  final PaymentTargetType targetType;
 
-  const ManualActivateEvent({required this.orderId});
+  const ManualActivateEvent({required this.orderId, required this.targetType});
 
   @override
-  List<Object?> get props => [orderId];
+  List<Object?> get props => [orderId, targetType];
 }
 
 final class ResetPaymentEvent extends PaymentEvent {

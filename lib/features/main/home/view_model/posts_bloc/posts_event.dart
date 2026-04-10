@@ -112,3 +112,19 @@ class FetchSinglePost extends PostsEvent {
   List<Object> get props => [postId];
 }
 
+class SendPostProgress extends PostsEvent {
+  final String postId;
+  final double watchedTime;
+  final bool isWatched;
+  final double zoomScale;
+
+  const SendPostProgress({
+    required this.postId,
+    required this.watchedTime,
+    required this.isWatched,
+    this.zoomScale = 1.0,
+  });
+
+  @override
+  List<Object?> get props => [postId, watchedTime, isWatched];
+}

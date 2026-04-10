@@ -17,6 +17,9 @@ import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/connections_screen.dart';
 import 'package:sports_in/features/main/profile/view/profile_section_factory.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_library_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile bloc/profile_bloc.dart';
 import '../../view_model/profile bloc/profile_event.dart';
@@ -162,16 +165,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline,
-              size: 60.sp, color: theme.colorScheme.error),
+          Icon(
+            Icons.error_outline,
+            size: 60.sp,
+            color: theme.colorScheme.error,
+          ),
           SizedBox(height: 16.h),
           Text(string.profileLoadFailed, textAlign: TextAlign.center),
           SizedBox(height: 8.h),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.colorScheme.primary),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
           ),
           SizedBox(height: 24.h),
           ElevatedButton(
@@ -200,51 +207,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileHeader(
-  profile: profile,
-  isOwnProfile: profile.isOwner,
-  theme: theme,
-  onEditPressed: profile.isOwner
-      ? () => _navigateToEditProfile(context)
-      : null,
-      onchat: !profile.isOwner
-    ? () async {
-        final sharedPref = SharedPref(await SharedPreferences.getInstance());
-        final currentUserId = sharedPref.getUserId();
-        if (currentUserId == null) return;
+              profile: profile,
+              isOwnProfile: profile.isOwner,
+              theme: theme,
+              onEditPressed: profile.isOwner
+                  ? () => _navigateToEditProfile(context)
+                  : null,
+              onchat: !profile.isOwner
+                  ? () async {
+                      final sharedPref = SharedPref(
+                        await SharedPreferences.getInstance(),
+                      );
+                      final currentUserId = sharedPref.getUserId();
+                      if (currentUserId == null) return;
 
-        final chatModel = ChatModel(
-          id: profile.id,
-          title: profile.name,
-          isGroup: false,
-          members: [],
-          lastMessage: null,
-          lastMessageTime: null,
-          unreadCount: 0,
-          isOnline: false,
-          groupPhoto: profile.profileImage,
-        );
+                      final chatModel = ChatModel(
+                        id: profile.id,
+                        title: profile.name,
+                        isGroup: false,
+                        members: [],
+                        lastMessage: null,
+                        lastMessageTime: null,
+                        unreadCount: 0,
+                        isOnline: false,
+                        groupPhoto: profile.profileImage,
+                      );
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider(          // ← create, not .value
-              create: (_) => getIt<ChatBloc>(),     // ← fresh instance
-              child: ChatView(
-                chat: chatModel,
-                currentUserId: currentUserId,
-              ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider(
+                            create: (_) => getIt<ChatBloc>(),
+                            child: ChatView(
+                              chat: chatModel,
+                              currentUserId: currentUserId,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  : null,
             ),
-          ),
-        );
-      }
-    : null,
-),
             ProfileDescription(description: profile.description),
             SizedBox(height: 8.h),
             ...ProfileSectionFactory.buildSections(
               profile: profile,
               isOwnProfile: isOwnProfile,
               theme: theme,
+              context: context,
               string: string,
               isFollowing: profile.isFollowing,
 
@@ -266,20 +276,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final status = profile.connectionStatus;
                 if (status == null) {
                   context.read<ProfileBloc>().add(
-                        SendConnectionRequest(receiverId: profile.id),
-                      );
+                    SendConnectionRequest(receiverId: profile.id),
+                  );
                 } else if (status == 'Accepted') {
                   context.read<ProfileBloc>().add(
-                        RemoveContact(targetId: profile.id),
-                      );
+                    RemoveContact(targetId: profile.id),
+                  );
                 }
               },
 
               // ── Follow button ─────────────────────────────────────────────
               onFollowPressed: () {
                 context.read<ProfileBloc>().add(
-                      ToggleFollow(userId: profile.id),
-                    );
+                  ToggleFollow(userId: profile.id),
+                );
               },
 
               // ── Posts ─────────────────────────────────────────────────────
@@ -320,8 +330,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MyOpportunitiesListScreen(
-                        showActiveOnly: true),
+                    builder: (_) =>
+                        MyOpportunitiesListScreen(showActiveOnly: true),
                   ),
                 );
               },
@@ -384,16 +394,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onAchievementTap: (achievement) {},
 
               // ── Videos ────────────────────────────────────────────────────
-              onVideosShowAll: () {},
-              onVideoTap: (video) {},
+              onVideosShowAll: () {
+                final mode = profile.isOwner
+                    ? AnalysisSearchMode.library
+                    : AnalysisSearchMode.selfAnalyses;
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AnalysisBloc>()
+                        ..add(
+                          LoadAnalysisSearch(
+                            mode: mode,
+                            targetUserId: profile.isOwner ? null : profile.id,
+                          ),
+                        ),
+                      child: AnalysisLibraryScreen(
+                        mode: mode,
+                        targetUserId: profile.isOwner ? null : profile.id,
+                        title: profile.isOwner
+                            ? S.of(context).myAnalysisLibrary
+                            : S.of(context).usersAnalyses(profile.name),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              onVideoTap: (video) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) =>
+                          getIt<AnalysisBloc>()
+                            ..add(LoadAnalysisReport(video.id)),
+                      child: AnalysisReportScreen(analysisId: video.id),
+                    ),
+                  ),
+                );
+              },
 
               // ── Interests ─────────────────────────────────────────────────
               onInterestsShowAll: () {},
               onConnectToggle: (interest) {},
               onFollowToggle: (interest) {
                 context.read<ProfileBloc>().add(
-                      ToggleFollow(userId: interest.id),
-                    );
+                  ToggleFollow(userId: interest.id),
+                );
               },
               onInterestTap: (interest) {
                 _navigateToUserProfile(context, interest.id);

@@ -71,4 +71,21 @@ abstract class IProfileDataSource {
   getConnectionRequests({int pageNumber = 1, int pageSize = 20});
 
   Future<List<ContactItem>> getContacts({String? userId});
+  Future<({List<UserContactItem> items, bool hasNextPage})> getUserConnections({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  });
+
+  Future<({List<UserContactItem> items, bool hasNextPage})> getFollowers({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  });
+
+  Future<({List<UserContactItem> items, bool hasNextPage})> getFollowing({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  });
 }

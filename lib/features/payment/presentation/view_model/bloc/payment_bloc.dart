@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-
+import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/my_subscription_model.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
@@ -14,10 +14,14 @@ part 'payment_state.dart';
 @injectable
 class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final PaymentRepository _repository;
+  final IAnalysisRepo _analysisRepository;
 
-  PaymentBloc({required PaymentRepository repository})
-    : _repository = repository,
-      super(const PaymentInitial()) {
+  PaymentBloc({
+    required PaymentRepository repository,
+    required IAnalysisRepo analysisRepository,
+  })  : _repository = repository,
+        _analysisRepository = analysisRepository,
+        super(const PaymentInitial()) {
     on<FetchPlansEvent>(_onFetchPlans);
     on<SelectPlanEvent>(_onSelectPlan);
     on<FetchMySubscriptionEvent>(_onFetchMySubscription);
@@ -65,11 +69,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         log('[PaymentBloc] no active subscription');
         emit(const NoActiveSubscription());
       } else {
-        log(' [PaymentBloc] subscription: ${sub.planName}');
+        log('[PaymentBloc] subscription: ${sub.planName}');
         emit(MySubscriptionLoaded(sub));
       }
     } catch (e) {
-      log(' [PaymentBloc] FetchMySubscriptionEvent error: $e');
+      log('[PaymentBloc] FetchMySubscriptionEvent error: $e');
       emit(MySubscriptionError(e.toString()));
     }
   }
@@ -79,14 +83,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     Emitter<PaymentState> emit,
   ) {
     if (_selectedPlan == null) {
-      log(
-        '⚠️ [PaymentBloc] SelectPaymentMethodEvent fired but no plan selected',
-      );
-      emit(
-        const PlansError(
-          'Please select a plan before choosing a payment method.',
-        ),
-      );
+      emit(const PlansError('Please select a plan before choosing a payment method.'));
       return;
     }
     log('✅ [PaymentBloc] method selected: ${event.method.displayName}');
@@ -99,58 +96,47 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   ) async {
     emit(const PaymentInitiating());
     try {
-      if (_selectedPlan?.isFree == true) {
-        await _repository.initiatePayment(
-          targetId: event.targetId,
-          targetType: event.targetType,
-          method: event.method,
-        );
-        emit(const ProcessSuccessful());
-        return;
-      }
-
       final response = await _repository.initiatePayment(
         targetId: event.targetId,
         targetType: event.targetType,
         method: event.method,
         mobileNumber: event.mobileNumber,
       );
-      log('✅ [PaymentBloc] initiatePayment response: $response');
-      if (event.method == PaymentMethod.creditCard) {
-        final url = response.paymentUrl;
-        if (url == null || url.isEmpty) {
-          emit(
-            const PaymentInitiateError(
-              'Credit card flow: no redirect URL returned by server.',
-            ),
-          );
-          return;
-        }
-        emit(
-          PaymentRedirectReady(
-            redirectUrl: url,
-            transactionId: response.transactionId ?? '',
-          ),
-        );
-        return;
-      }
-      final txId = response.transactionId;
-      if (txId == null || txId.isEmpty) {
-        emit(
-          const PaymentInitiateError(
-            'No transaction ID returned. Cannot activate subscription.',
-          ),
-        );
+
+      // Free plan
+      if (_selectedPlan?.isFree == true) {
+        emit(ProcessSuccessful(transactionId: response.transactionId));
         return;
       }
 
-      emit(
-        PaymentInitiatedAwaitingActivation(
-          transactionId: txId,
-          method: event.method,
-          referenceCode: response.referenceCode,
-        ),
-      );
+      log('✅ [PaymentBloc] initiatePayment response: $response');
+
+      // Credit card → redirect
+      if (event.method == PaymentMethod.creditCard) {
+        final url = response.paymentUrl;
+        if (url == null || url.isEmpty) {
+          emit(const PaymentInitiateError('Credit card flow: no redirect URL returned.'));
+          return;
+        }
+        emit(PaymentRedirectReady(
+          redirectUrl: url,
+          transactionId: response.transactionId ?? '',
+        ));
+        return;
+      }
+
+      // Fawry / Vodafone → awaiting manual activation
+      final txId = response.transactionId;
+      if (txId == null || txId.isEmpty) {
+        emit(const PaymentInitiateError('No transaction ID returned.'));
+        return;
+      }
+
+      emit(PaymentInitiatedAwaitingActivation(
+        transactionId: txId,
+        method: event.method,
+        referenceCode: response.referenceCode,
+      ));
     } catch (e) {
       log('❌ [PaymentBloc] InitiatePaymentEvent error: $e');
       emit(PaymentInitiateError(e.toString()));
@@ -163,15 +149,26 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   ) async {
     emit(const ManualActivating());
     try {
+      // 1. Activate the order
       await _repository.manualTest(orderId: event.orderId);
-      log(
-        '✅ [PaymentBloc] manual activation success for orderId: ${event.orderId}',
-      );
-      emit(
-        const ManualActivateSuccess(
-          message: 'Subscription activated successfully!',
-        ),
-      );
+      log('✅ [PaymentBloc] manual activation success for orderId: ${event.orderId}');
+
+      // 2. If this is a video analysis payment, execute the analysis
+      //    using the transactionId (= orderId passed from Fawry/Vodafone screen)
+      if (event.targetType == PaymentTargetType.videoAnalysis) {
+        try {
+          await _analysisRepository.executePaidAnalysis(event.orderId);
+          log('✅ [PaymentBloc] executePaidAnalysis success for txId: ${event.orderId}');
+        } catch (e) {
+          // executePaidAnalysis failure is non-fatal — the analysis may still
+          // be queued by the backend webhook. Log and continue to success.
+          log('⚠️ [PaymentBloc] executePaidAnalysis error (non-fatal): $e');
+        }
+      }
+
+      emit(const ManualActivateSuccess(
+        message: 'Payment activated successfully!',
+      ));
     } catch (e) {
       log('❌ [PaymentBloc] ManualActivateEvent error: $e');
       emit(ManualActivateError(e.toString()));

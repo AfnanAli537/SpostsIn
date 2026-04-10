@@ -1,4 +1,5 @@
 import 'package:sports_in/core/mappers/enum_mapper.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 
 class ProfileModel {
   final String id;
@@ -10,7 +11,7 @@ class ProfileModel {
   final ProfileStats stats;
   final List<Post> posts;
   final List<Achievement> achievements;
-  final List<AnalyzedVideoReport> analyzedVideos;
+  final List<AnalysisListItemModel> analyzedVideos;
   final List<Interest> interests;
   final List<Opportunity>? opportunities;
   final List<Course>? courses;
@@ -42,7 +43,7 @@ class ProfileModel {
     required this.interests,
     this.opportunities,
     this.courses,
-    this.ads = const [],          // ← default empty; optional for callers
+    this.ads = const [], // ← default empty; optional for callers
     this.playerData,
     this.coachData,
     this.scoutData,
@@ -78,7 +79,7 @@ class ProfileModel {
           [],
       analyzedVideos:
           (json['analyzedVideos'] as List?)
-              ?.map((e) => AnalyzedVideoReport.fromJson(e))
+              ?.map((e) => AnalysisListItemModel.fromJson(e))
               .toList() ??
           [],
       interests:
@@ -88,15 +89,14 @@ class ProfileModel {
           [],
       opportunities: json['opportunities'] != null
           ? (json['opportunities'] as List)
-              .map((e) => Opportunity.fromJson(e))
-              .toList()
+                .map((e) => Opportunity.fromJson(e))
+                .toList()
           : null,
       courses: json['courses'] != null
           ? (json['courses'] as List).map((e) => Course.fromJson(e)).toList()
           : null,
-      ads: (json['ads'] as List?)
-              ?.map((e) => ProfileAd.fromJson(e))
-              .toList() ??
+      ads:
+          (json['ads'] as List?)?.map((e) => ProfileAd.fromJson(e)).toList() ??
           [],
       playerData: userType == UserType.player && json['playerData'] != null
           ? PlayerSpecificData.fromJson(json['playerData'])
@@ -178,11 +178,11 @@ class ProfileModel {
     ProfileStats? stats,
     List<Post>? posts,
     List<Achievement>? achievements,
-    List<AnalyzedVideoReport>? analyzedVideos,
+    List<AnalysisListItemModel>? analyzedVideos,
     List<Interest>? interests,
     List<Opportunity>? opportunities,
     List<Course>? courses,
-    List<ProfileAd>? ads,             // ← new
+    List<ProfileAd>? ads, // ← new
     PlayerSpecificData? playerData,
     CoachSpecificData? coachData,
     ScoutSpecificData? scoutData,
@@ -208,7 +208,7 @@ class ProfileModel {
       interests: interests ?? this.interests,
       opportunities: opportunities ?? this.opportunities,
       courses: courses ?? this.courses,
-      ads: ads ?? this.ads,             // ← new
+      ads: ads ?? this.ads, // ← new
       playerData: playerData ?? this.playerData,
       coachData: coachData ?? this.coachData,
       scoutData: scoutData ?? this.scoutData,
@@ -246,7 +246,8 @@ class ProfileStats {
       followers: json['followers']?.toString() ?? '0',
       following: json['following']?.toString() ?? '0',
       connections: json['connections']?.toString() ?? '0',
-      analyzedPeople: json['analyzedPeople']?.toString() ??
+      analyzedPeople:
+          json['analyzedPeople']?.toString() ??
           json['analyzed_people']?.toString() ??
           '0',
     );
@@ -319,11 +320,11 @@ class ProfileAd {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'mediaUrl': mediaUrl,
-        'isActive': isActive,
-      };
+    'id': id,
+    'title': title,
+    'mediaUrl': mediaUrl,
+    'isActive': isActive,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -363,50 +364,6 @@ class Achievement {
     };
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-class AnalyzedVideoReport {
-  final String id;
-  final String thumbnailUrl;
-  final String duration;
-  final String speed;
-  final String distance;
-  final String calories;
-
-  AnalyzedVideoReport({
-    required this.id,
-    required this.thumbnailUrl,
-    required this.duration,
-    required this.speed,
-    required this.distance,
-    required this.calories,
-  });
-
-  factory AnalyzedVideoReport.fromJson(Map<String, dynamic> json) {
-    return AnalyzedVideoReport(
-      id: json['id'] ?? '',
-      thumbnailUrl: json['thumbnailUrl'] ?? json['thumbnail_url'] ?? '',
-      duration: json['duration'] ?? '',
-      speed: json['speed'] ?? '',
-      distance: json['distance'] ?? '',
-      calories: json['calories'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'thumbnailUrl': thumbnailUrl,
-      'duration': duration,
-      'speed': speed,
-      'distance': distance,
-      'calories': calories,
-    };
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 class Interest {
   final String id;
@@ -575,7 +532,8 @@ class PlayerSpecificData {
       weight: json['weight']?.toString(),
       preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
-      specializedSport: EnumMapper.sportIdToLabel(json['sports']) ??
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
           json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
@@ -616,7 +574,8 @@ class CoachSpecificData {
 
   factory CoachSpecificData.fromJson(Map<String, dynamic> json) {
     return CoachSpecificData(
-      specializedSport: EnumMapper.sportIdToLabel(json['sports']) ??
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
           json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
@@ -654,7 +613,8 @@ class ScoutSpecificData {
 
   factory ScoutSpecificData.fromJson(Map<String, dynamic> json) {
     return ScoutSpecificData(
-      specializedSport: EnumMapper.sportIdToLabel(json['sports']) ??
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
           json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
@@ -792,6 +752,59 @@ class ContactItem {
       title: json['title'] ?? '',
       imageUrl: json['imageUrl'] as String?,
       isOnline: json['isOnline'] as bool? ?? false,
+    );
+  }
+}
+
+class UserContactItem {
+  final String userId;
+  final String fullName;
+  final String? profilePictureUrl;
+  final String userType; // e.g., "User"
+  final String? bio;
+  final bool isFollowedByMe;
+  final String?
+  connectionStatus; // or maybe an enum, depending on possible values
+
+  const UserContactItem({
+    required this.userId,
+    required this.fullName,
+    this.profilePictureUrl,
+    required this.userType,
+    this.bio,
+    required this.isFollowedByMe,
+    this.connectionStatus,
+  });
+
+  factory UserContactItem.fromJson(Map<String, dynamic> json) {
+    return UserContactItem(
+      userId: json['userId'] ?? '',
+      fullName: json['fullName'] ?? '',
+      profilePictureUrl: json['profilePictureUrl'] as String?,
+      userType: json['userType'] ?? '',
+      bio: json['bio'] as String?,
+      isFollowedByMe: json['isFollowedByMe'] as bool? ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
+    );
+  }
+  UserContactItem copyWith({
+    String? userId,
+    String? fullName,
+    String? profilePictureUrl,
+    String? userType,
+    String? bio,
+    bool? isFollowedByMe,
+    String? connectionStatus,
+  }) {
+    return UserContactItem(
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      userType: userType ?? this.userType,
+      bio: bio ?? this.bio,
+      isFollowedByMe: isFollowedByMe ?? this.isFollowedByMe,
+      connectionStatus:
+          connectionStatus,
     );
   }
 }

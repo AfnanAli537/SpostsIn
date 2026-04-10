@@ -89,16 +89,26 @@ import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart'
     as _i752;
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart'
     as _i691;
+import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart'
+    as _i111;
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart'
     as _i86;
-import 'package:sports_in/features/main/search/data/data_sources/mock_search_data_source.dart'
-    as _i1019;
+import 'package:sports_in/features/main/search/data/data_sources/search_api_data_source.dart'
+    as _i486;
 import 'package:sports_in/features/main/search/data/interface/i_search_data_source.dart'
     as _i109;
 import 'package:sports_in/features/main/search/data/repo/search_repo.dart'
     as _i514;
 import 'package:sports_in/features/main/search/view_model/search_bloc.dart'
     as _i803;
+import 'package:sports_in/features/main/video_analysis/data/data_sources/analysis_api_data_source.dart'
+    as _i190;
+import 'package:sports_in/features/main/video_analysis/data/interface/i_analysis_data_source.dart'
+    as _i311;
+import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart'
+    as _i352;
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart'
+    as _i251;
 import 'package:sports_in/features/notitification/data/data_source/notifi_data_source_impl.dart'
     as _i577;
 import 'package:sports_in/features/notitification/data/interface/notifi_interface.dart'
@@ -206,19 +216,19 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
     );
-    gh.factory<_i971.PaymentBloc>(
-      () => _i971.PaymentBloc(repository: gh<_i221.PaymentRepository>()),
-    );
     gh.factory<_i1047.OpportunityBloc>(
       () => _i1047.OpportunityBloc(
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
       ),
     );
+    gh.lazySingleton<_i109.ISearchDataSource>(
+      () => _i486.SearchDataSource(gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i658.IAdsDataSource>(
       () => _i823.AdRemoteDataSource(gh<_i694.ApiClient>()),
     );
-    gh.lazySingleton<_i109.ISearchDataSource>(
-      () => _i1019.SearchDataSource(gh<_i694.ApiClient>()),
+    gh.lazySingleton<_i311.IAnalysisDataSource>(
+      () => _i190.AnalysisApiDataSource(gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i592.ICourseDataSource>(
       () => _i8.CourseRemoteDataSource(gh<_i694.ApiClient>()),
@@ -242,11 +252,14 @@ extension GetItInjectableX on _i174.GetIt {
         remoteDataSource: gh<_i661.ChatRemoteDataSource>(),
       ),
     );
-    gh.factory<_i691.ConnectionsBloc>(
-      () => _i691.ConnectionsBloc(gh<_i752.ProfileRepo>()),
+    gh.factory<_i111.FollowListBloc>(
+      () => _i111.FollowListBloc(gh<_i752.ProfileRepo>()),
     );
     gh.factory<_i86.ProfileBloc>(
       () => _i86.ProfileBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.lazySingleton<_i352.IAnalysisRepo>(
+      () => _i352.AnalysisRepo(gh<_i311.IAnalysisDataSource>()),
     );
     gh.factory<_i45.PostsBloc>(
       () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
@@ -266,6 +279,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i259.AdsBloc>(
       () => _i259.AdsBloc(adsRepo: gh<_i277.AdsRepositoryImpl>()),
     );
+    gh.factory<_i971.PaymentBloc>(
+      () => _i971.PaymentBloc(
+        repository: gh<_i221.PaymentRepository>(),
+        analysisRepository: gh<_i352.IAnalysisRepo>(),
+      ),
+    );
+    gh.factory<_i251.AnalysisBloc>(
+      () => _i251.AnalysisBloc(gh<_i352.IAnalysisRepo>()),
     gh.factory<_i982.ChatbotBloc>(
       () => _i982.ChatbotBloc(repository: gh<_i1050.ChatbotRepository>()),
     );
@@ -280,6 +301,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i567.CoursesBloc>(
       () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i691.ConnectionsBloc>(
+      () => _i691.ConnectionsBloc(
+        gh<_i752.ProfileRepo>(),
+        gh<_i414.SharedPref>(),
+      ),
     );
     gh.factory<_i324.ChatBloc>(
       () => _i324.ChatBloc(

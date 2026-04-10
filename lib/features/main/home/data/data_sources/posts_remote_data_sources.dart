@@ -232,7 +232,7 @@ Future<PostModel> getPostById({required String postId}) async {
     required String commentId,
   }) async {
     try {
-      final url = Endpoints.deletComment
+      final url = Endpoints.deleteComment
           .replaceFirst('{id}', postId)
           .replaceFirst('{commentId}', commentId);
 
@@ -335,6 +335,25 @@ Future<PostModel> getPostById({required String postId}) async {
     } on DioException catch (e) {
       log(' Error toggling post visibility: ${e.message}');
       throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> sendPostProgress({
+    required String postId,
+    required double watchedTime,
+    required bool isWatched,
+    required double zoomScale,
+  }) async {
+    try {
+      final url = Endpoints.postProgress.replaceFirst('{id}', postId);
+      await apiClient.post(url, data: {
+        'watchedTime': watchedTime,
+        'isWatched': isWatched,
+        'zoomScale': zoomScale,
+      });
+    } on DioException catch (e) {
+      log('Failed to send post progress: ${e.message}');
     }
   }
 }

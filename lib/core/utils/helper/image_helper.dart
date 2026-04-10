@@ -18,7 +18,7 @@ class CloudinaryService {
       final formData = FormData.fromMap({
         'file': await MultipartFile.fromFile(file.path),
         'upload_preset': StringKeys.uploadPreset,
-        'folder': 'users/avatars',
+        // 'folder': 'users/avatars',
       });
 
       final response = await dio.post(url, data: formData);

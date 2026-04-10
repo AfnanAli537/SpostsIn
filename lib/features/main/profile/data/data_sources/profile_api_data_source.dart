@@ -8,6 +8,7 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import '../interface/i_profile_data_source.dart';
 import '../../model/profile_model.dart';
 
@@ -58,7 +59,7 @@ class ApiProfileDataSource implements IProfileDataSource {
         final results = await Future.wait([
           getPosts(targetUserId: userId, page: 1, size: 3),
           getAchievements(userId: userId, page: 1, size: 3),
-          _getAnalyzedVideos(userId),
+          _getAnalyzedVideos(userId, json['isOwner'] == true),
           (profile.userType == UserType.coach ||
                   profile.userType == UserType.scout ||
                   profile.userType == UserType.club)
@@ -76,7 +77,7 @@ class ApiProfileDataSource implements IProfileDataSource {
         return profile.copyWith(
           posts: results[0] as List<Post>,
           achievements: results[1] as List<Achievement>,
-          analyzedVideos: results[2] as List<AnalyzedVideoReport>,
+          analyzedVideos: results[2] as List<AnalysisListItemModel>,
           opportunities: results[3] as List<Opportunity>,
           courses: results[4] as List<Course>,
           interests: results[5] as List<Interest>,
@@ -389,7 +390,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     try {
       final response = await _apiClient.get(
         Endpoints.createdCourses,
-        params: {'userId':userId, 'page': page, 'size': pageSize},
+        params: {'userId': userId, 'page': page, 'size': pageSize},
       );
 
       if (response.statusCode == 200) {
@@ -594,22 +595,131 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
 
-  // ── Analyzed Videos (mock) ───────────────────────────────────────────────────
-
-  Future<List<AnalyzedVideoReport>> _getAnalyzedVideos(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return [
-      AnalyzedVideoReport(
-        id: 'vid_1',
-        thumbnailUrl: 'https://picsum.photos/400/200?random=18',
-        duration: '17:45',
-        speed: '3990/6000',
-        distance: '6h/8h',
-        calories: '156/900kcal',
-      ),
-    ];
+  /// GET /api/Social/{userId}/connections
+  @override
+  Future<({List<UserContactItem> items, bool hasNextPage})> getUserConnections({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userConnections.replaceFirst('{userId}', userId),
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map(
+              (json) => UserContactItem.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
   }
 
+  @override
+  Future<({List<UserContactItem> items, bool hasNextPage})> getFollowers({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userFollowers.replaceFirst('{userId}', userId),
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map(
+              (json) => UserContactItem.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<({List<UserContactItem> items, bool hasNextPage})> getFollowing({
+    required String userId,
+    int pageNumber = 1,
+    int pageSize = 20,
+  }) async {
+    try {
+      final response = await _apiClient.get(
+        Endpoints.userFollowing.replaceFirst('{userId}', userId),
+        params: {'pageNumber': pageNumber, 'pageSize': pageSize},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map(
+              (json) => UserContactItem.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+        final hasNextPage = data['hasNextPage'] as bool? ?? false;
+        return (items: items, hasNextPage: hasNextPage);
+      }
+      throw ApiErrorHandler.handleDioError(_badResponse(response));
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+  // ── Analyzed Videos  ───────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// In api_profile_data_source.dart make TWO edits:
+//
+// EDIT 1 — inside getUserProfile(), change the _getAnalyzedVideos call from:
+//
+//   _getAnalyzedVideos(userId),
+//
+// to:
+//
+//   _getAnalyzedVideos(userId, json['isOwner'] == true),
+//
+// EDIT 2 — replace the entire _getAnalyzedVideos method with the one below.
+// ─────────────────────────────────────────────────────────────────────────────
+
+  Future<List<AnalysisListItemModel>> _getAnalyzedVideos(
+    String userId,
+    bool isOwner,
+  ) async {
+    try {
+      final endpoint = isOwner
+          ? '/api/Analysis/search/library'
+          : '/api/Analysis/my-self-analyses';
+
+      final params = isOwner
+          ? {'page': 1, 'size': 3}
+          : {'userId': userId, 'page': 1, 'size': 3};
+
+      final response = await _apiClient.get(endpoint, params: params);
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final items = data['items'] as List<dynamic>? ?? [];
+        return items
+            .map((json) =>
+                AnalysisListItemModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error loading analyzed videos: $e');
+      return [];
+    }
+  }
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
   ProfileModel _apiResponseToProfile(Map<String, dynamic> json) {
