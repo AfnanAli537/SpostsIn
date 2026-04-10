@@ -3,14 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+// ignore: must_be_immutable
 class WebViewScreen extends StatefulWidget {
   final String url;
   final String title;
+  String? prevScreen = null;
 
-  const WebViewScreen({
+  WebViewScreen({
     super.key,
     required this.url,
     required this.title,
+    this.prevScreen,
   });
 
   @override
@@ -28,27 +31,29 @@ class _WebViewScreenState extends State<WebViewScreen> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageStarted: (_) {
-          if (mounted) {
-            setState(() {
-              _isLoading = true;
-              _hasError = false;
-            });
-          }
-        },
-        onPageFinished: (_) {
-          if (mounted) setState(() => _isLoading = false);
-        },
-        onWebResourceError: (_) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-              _hasError = true;
-            });
-          }
-        },
-      ))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) {
+            if (mounted) {
+              setState(() {
+                _isLoading = true;
+                _hasError = false;
+              });
+            }
+          },
+          onPageFinished: (_) {
+            if (mounted) setState(() => _isLoading = false);
+          },
+          onWebResourceError: (_) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+                _hasError = true;
+              });
+            }
+          },
+        ),
+      )
       ..loadRequest(Uri.parse(widget.url));
   }
 
@@ -64,7 +69,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.close, color: theme.onSurface),
-          onPressed: () => Navigator.pop(context),
+          onPressed: widget.prevScreen != null
+              ? () => Navigator.of(context).pushNamedAndRemoveUntil(
+                  widget.prevScreen!,
+                  (route) => false,
+                )
+              : () => Navigator.pop(context),
         ),
         title: Text(
           widget.title,
@@ -106,13 +116,18 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.wifi_off_outlined,
-                        size: 64.sp, color: Colors.grey[400]),
+                    Icon(
+                      Icons.wifi_off_outlined,
+                      size: 64.sp,
+                      color: Colors.grey[400],
+                    ),
                     SizedBox(height: 16.h),
                     Text(
                       strings.failedToLoadPage,
                       style: TextStyle(
-                          fontSize: 16.sp, color: Colors.grey[600]),
+                        fontSize: 16.sp,
+                        color: Colors.grey[600],
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 16.h),

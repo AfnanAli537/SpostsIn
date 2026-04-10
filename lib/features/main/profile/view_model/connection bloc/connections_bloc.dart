@@ -28,6 +28,7 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
       emit(ConnectionsLoading());
 
       if (event.userId != null) {
+        // Viewing another user's profile — contacts only, no requests
         final contacts = await _repository.getContacts(userId: event.userId);
         emit(ConnectionsLoaded(
           contacts: contacts,
@@ -36,6 +37,7 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
           currentRequestPage: 1,
         ));
       } else {
+        // Owner viewing their own screen — contacts + paginated requests
         final contacts = await _repository.getContacts();
         final requestResult = await _repository.getConnectionRequests(
           pageNumber: 1,
@@ -98,39 +100,52 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   }
 
   // ── Respond to a single request ───────────────────────────────────────────────
+  // NOTE: No ConnectionsLoaded guard — works standalone (e.g. from NotificationScreen)
 
   Future<void> _onRespondToRequest(
     RespondToRequest event,
     Emitter<ConnectionsState> emit,
   ) async {
     final currentState = state;
-    if (currentState is! ConnectionsLoaded) return;
 
-    // Optimistic removal
-    final updatedRequests =
-        currentState.requests.where((r) => r.id != event.senderId).toList();
-    emit(currentState.copyWith(requests: updatedRequests));
+    // If we have a loaded state, do the full optimistic update flow
+    if (currentState is ConnectionsLoaded) {
+      final updatedRequests =
+          currentState.requests.where((r) => r.id != event.senderId).toList();
+      emit(currentState.copyWith(requests: updatedRequests));
 
+      try {
+        await _repository.respondConnection(
+          senderId: event.senderId,
+          status: event.status,
+        );
+        if (event.status == 'Accepted') {
+          final contacts = await _repository.getContacts();
+          final latestState = state;
+          if (latestState is ConnectionsLoaded) {
+            emit(latestState.copyWith(contacts: contacts));
+          }
+        }
+      } catch (e) {
+        emit(currentState);
+        emit(ConnectionsActionError(
+            message: 'Failed to respond to request. Please try again.'));
+        emit(currentState.copyWith(requests: updatedRequests));
+      }
+      return;
+    }
+
+    // Standalone mode (e.g. NotificationScreen) — just call the API, no state to update
     try {
       await _repository.respondConnection(
         senderId: event.senderId,
         status: event.status,
       );
-
-      // If accepted, reload contacts so the new contact appears immediately
-      if (event.status == 'Accepted') {
-        final contacts = await _repository.getContacts();
-        final latestState = state;
-        if (latestState is ConnectionsLoaded) {
-          emit(latestState.copyWith(contacts: contacts));
-        }
-      }
     } catch (e) {
-      // Revert on failure
-      emit(currentState);
       emit(ConnectionsActionError(
           message: 'Failed to respond to request. Please try again.'));
-      emit(currentState.copyWith(requests: updatedRequests));
+      // Restore previous state so the snackbar listener fires then clears
+      emit(currentState);
     }
   }
 }

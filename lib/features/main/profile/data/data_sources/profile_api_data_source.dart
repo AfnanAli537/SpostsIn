@@ -389,7 +389,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     try {
       final response = await _apiClient.get(
         Endpoints.createdCourses,
-        params: {'page': page, 'size': pageSize},
+        params: {'userId':userId, 'page': page, 'size': pageSize},
       );
 
       if (response.statusCode == 200) {

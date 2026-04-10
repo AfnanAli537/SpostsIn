@@ -12,25 +12,6 @@ import 'package:sports_in/features/payment/presentation/widgets/processing_dailo
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-/// Fawry reference-code screen.
-///
-/// State flow (now that the bloc no longer auto-dispatches ManualActivate):
-///
-///   [InitiatePaymentEvent dispatched on mount]
-///       ↓
-///   PaymentInitiating  → show processing overlay
-///       ↓
-///   PaymentInitiatedAwaitingActivation
-///       → dismiss overlay, display reference code
-///       → THIS SCREEN dispatches ManualActivateEvent (manual-payment mode)
-///       ↓
-///   ManualActivating   → show processing overlay again
-///       ↓
-///   ManualActivateSuccess
-///       → dismiss overlay, show success dialog
-///       → user stays on screen (they may need the code); back arrow → home
-///
-/// Back arrow and "Done" button both navigate to [AppRoutes.mainLayout].
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
@@ -58,27 +39,26 @@ class _FawryScreenState extends State<FawryScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _initiatePayment());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initiatePayment());
   }
 
   // ── Payment actions ────────────────────────────────────────────────────────
 
   void _initiatePayment() {
-    context.read<PaymentBloc>().add(InitiatePaymentEvent(
-          targetId: widget.plan.id,
-          targetType: widget.targetType,
-          method: PaymentMethod.fawryPay,
-          mobileNumber: widget.mobileNumber,
-        ));
+    context.read<PaymentBloc>().add(
+      InitiatePaymentEvent(
+        targetId: widget.plan.id,
+        targetType: widget.targetType,
+        method: PaymentMethod.fawryPay,
+        mobileNumber: widget.mobileNumber,
+      ),
+    );
   }
 
   /// Dispatched by THIS screen once [PaymentInitiatedAwaitingActivation]
   /// is received and the reference code is displayed.
   void _triggerManualActivation(String txId) {
-    context
-        .read<PaymentBloc>()
-        .add(ManualActivateEvent(orderId: txId));
+    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId));
   }
 
   void _copyCode() {
@@ -92,7 +72,8 @@ class _FawryScreenState extends State<FawryScreen> {
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.r)),
+          borderRadius: BorderRadius.circular(10.r),
+        ),
         margin: EdgeInsets.all(12.w),
       ),
     );
@@ -132,11 +113,9 @@ class _FawryScreenState extends State<FawryScreen> {
   }
 
   void _goHome() {
-    if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.mainLayout,
-      (route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -195,7 +174,8 @@ class _FawryScreenState extends State<FawryScreen> {
                 backgroundColor: Colors.red.shade700,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.r)),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
                 margin: EdgeInsets.all(12.w),
               ),
             );
@@ -212,8 +192,7 @@ class _FawryScreenState extends State<FawryScreen> {
           ),
           title: Text(
             s.fawry_screen_appbar_title,
-            style:
-                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
         ),
@@ -245,9 +224,11 @@ class _FawryScreenState extends State<FawryScreen> {
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
-                                child: Icon(Icons.sync_rounded,
-                                    size: 80.sp,
-                                    color: const Color(0xFF0055A5)),
+                                child: Icon(
+                                  Icons.sync_rounded,
+                                  size: 80.sp,
+                                  color: const Color(0xFF0055A5),
+                                ),
                               ),
                             ),
                           ),
@@ -255,13 +236,18 @@ class _FawryScreenState extends State<FawryScreen> {
                       ),
 
                       SizedBox(height: 28.h),
-                      Text(s.fawry_screen_label,
-                          style: TextStyle(fontSize: 15.sp)),
+                      Text(
+                        s.fawry_screen_label,
+                        style: TextStyle(fontSize: 15.sp),
+                      ),
                       SizedBox(height: 4.h),
-                      Text(s.fawry_screen_terms,
-                          style: TextStyle(
-                              fontSize: 13.sp,
-                              fontStyle: FontStyle.italic)),
+                      Text(
+                        s.fawry_screen_terms,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                       SizedBox(height: 24.h),
 
                       // ── Reference code / spinner / error ──────────────
@@ -284,7 +270,9 @@ class _FawryScreenState extends State<FawryScreen> {
                         Container(
                           width: double.infinity,
                           padding: EdgeInsets.symmetric(
-                              vertical: 28.h, horizontal: 20.w),
+                            vertical: 28.h,
+                            horizontal: 20.w,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.onError,
                             borderRadius: BorderRadius.circular(14.r),
@@ -306,9 +294,10 @@ class _FawryScreenState extends State<FawryScreen> {
                                 s.fawry_screen_pay_instruction,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 13.5.sp,
-                                    color: Colors.black54,
-                                    height: 1.6),
+                                  fontSize: 13.5.sp,
+                                  color: Colors.black54,
+                                  height: 1.6,
+                                ),
                               ),
                             ],
                           ),
@@ -323,135 +312,75 @@ class _FawryScreenState extends State<FawryScreen> {
                           ),
                           child: Column(
                             children: [
-                              Icon(Icons.error_outline,
-                                  color: Colors.red, size: 36.sp),
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: 36.sp,
+                              ),
                               SizedBox(height: 10.h),
-                              Text(s.fawry_screen_failed_code,
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 14.sp)),
+                              Text(
+                                s.fawry_screen_failed_code,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
                               SizedBox(height: 12.h),
                               TextButton(
                                 onPressed: _initiatePayment,
-                                child: Text(s.fawry_screen_retry,
-                                    style: TextStyle(
-                                        color: theme.primary,
-                                        fontSize: 14.sp)),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      SizedBox(height: 20.h),
-
-                      // ── Post-copy reminder banner ──────────────────────
-                      if (_codeCopied && _referenceCode != null) ...[
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(14.w),
-                          decoration: BoxDecoration(
-                            color: theme.primary.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                                color: theme.primary.withOpacity(0.3)),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle_outline,
-                                  color: theme.primary, size: 20.sp),
-                              SizedBox(width: 10.w),
-                              Expanded(
                                 child: Text(
-                                  s.fawry_screen_copied_reminder,
+                                  s.fawry_screen_retry,
                                   style: TextStyle(
-                                      fontSize: 13.sp,
-                                      color: theme.primary,
-                                      height: 1.5),
+                                    color: theme.primary,
+                                    fontSize: 14.sp,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 16.h),
-                      ],
-
-                      SizedBox(height: 80.h),
+                    
                     ],
                   ),
                 ),
               ),
-
               // ── Bottom action buttons ──────────────────────────────────
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Copy button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56.h,
-                      child: ElevatedButton.icon(
-                        onPressed: _referenceCode != null
-                            ? _copyCode
-                            : null,
-                        icon: Icon(
-                          _codeCopied
-                              ? Icons.check
-                              : Icons.copy_rounded,
-                          size: 18.sp,
-                          color: const Color(0xFFCCFF00),
-                        ),
-                        label: Text(
-                          _codeCopied
-                              ? s.fawry_screen_copied_btn
-                              : s.fawry_screen_copy_btn,
-                          style: TextStyle(
-                            color: const Color(0xFFCCFF00),
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _codeCopied
-                              ? theme.primary.withOpacity(0.85)
-                              : theme.primary,
-                          disabledBackgroundColor:
-                              theme.primary.withOpacity(0.4),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10.r)),
-                          elevation: 0,
-                        ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56.h,
+                  child: ElevatedButton.icon(
+                    onPressed: _referenceCode != null ? _copyCode : null,
+                    icon: Icon(
+                      _codeCopied ? Icons.check : Icons.copy_rounded,
+                      size: 18.sp,
+                      color: const Color(0xFFCCFF00),
+                    ),
+                    label: Text(
+                      _codeCopied
+                          ? s.fawry_screen_copied_btn
+                          : s.fawry_screen_copy_btn,
+                      style: TextStyle(
+                        color: const Color(0xFFCCFF00),
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
                       ),
                     ),
-
-                    // "Done" button — appears after copying
-                    if (_codeCopied) ...[
-                      SizedBox(height: 10.h),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48.h,
-                        child: OutlinedButton(
-                          onPressed: _goHome,
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: theme.primary),
-                            foregroundColor: theme.primary,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(10.r)),
-                          ),
-                          child: Text(
-                            s.fawry_screen_done_btn,
-                            style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _codeCopied
+                          ? theme.primary.withOpacity(0.85)
+                          : theme.primary,
+                      disabledBackgroundColor: theme.primary.withOpacity(
+                        0.4,
                       ),
-                    ],
-                  ],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
                 ),
               ),
             ],

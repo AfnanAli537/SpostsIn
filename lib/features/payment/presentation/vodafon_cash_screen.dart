@@ -61,13 +61,13 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   void _onSendPayment() {
     if (!_formKey.currentState!.validate()) return;
     context.read<PaymentBloc>().add(
-          InitiatePaymentEvent(
-            targetId: widget.plan.id,
-            targetType: widget.targetType,
-            method: PaymentMethod.mobileWallet,
-            mobileNumber: _mobileController.text.trim(),
-          ),
-        );
+      InitiatePaymentEvent(
+        targetId: widget.plan.id,
+        targetType: widget.targetType,
+        method: PaymentMethod.mobileWallet,
+        mobileNumber: _mobileController.text.trim(),
+      ),
+    );
   }
 
   void _triggerManualActivation(String txId) {
@@ -103,10 +103,9 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
         transactionId: S.of(context).unKnown,
         onDismissed: () {
           if (mounted) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoutes.mainLayout,
-              (route) => false,
-            );
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
           }
         },
       ),
@@ -162,7 +161,8 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                 backgroundColor: Colors.red.shade700,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.r)),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
                 margin: EdgeInsets.all(12.w),
               ),
             );
@@ -173,12 +173,17 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
+            },
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
-          title: Text(s.vodafone_appbar_title,
-              style: TextStyle(
-                  fontSize: 20.sp, fontWeight: FontWeight.w700)),
+          title: Text(
+            s.vodafone_appbar_title,
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+          ),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -203,68 +208,76 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                         children: [
                           _VodafoneCashIcon(),
                           SizedBox(height: 14.h),
-                          Text(s.vodafone_name,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.sp,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: 'Arial')),
+                          Text(
+                            s.vodafone_name,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Arial',
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
 
                   SizedBox(height: 28.h),
-                  Text(s.vodafone_label,
-                      style: TextStyle(fontSize: 15.sp)),
+                  Text(s.vodafone_label, style: TextStyle(fontSize: 15.sp)),
                   SizedBox(height: 4.h),
-                  Text(s.vodafone_terms,
-                      style: TextStyle(
-                          fontSize: 13.sp,
-                          fontStyle: FontStyle.italic)),
+                  Text(
+                    s.vodafone_terms,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                   SizedBox(height: 20.h),
 
                   // Phone field
                   TextFormField(
                     controller: _mobileController,
-                    onTapOutside: (_) =>
-                        FocusScope.of(context).unfocus(),
+                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
                     keyboardType: TextInputType.phone,
-                    style: TextStyle(
-                        fontSize: 15.sp, color: Colors.black87),
+                    style: TextStyle(fontSize: 15.sp, color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: s.vodafone_hint,
                       hintStyle: TextStyle(
-                          color: theme.onError, fontSize: 14.sp),
+                        color: theme.onError,
+                        fontSize: 14.sp,
+                      ),
                       contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 18.h),
+                        horizontal: 16.w,
+                        vertical: 18.h,
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
-                        borderSide: const BorderSide(
-                            color: Color(0xFFE60000)),
+                        borderSide: const BorderSide(color: Color(0xFFE60000)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
                         borderSide: const BorderSide(
-                            color: Color(0xFFE60000), width: 1.5),
+                          color: Color(0xFFE60000),
+                          width: 1.5,
+                        ),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
-                        borderSide:
-                            const BorderSide(color: Colors.red),
+                        borderSide: const BorderSide(color: Colors.red),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
                         borderSide: const BorderSide(
-                            color: Colors.red, width: 1.5),
+                          color: Colors.red,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
                         return s.vodafone_validation_empty;
                       }
-                      if (!RegExp(r'^01[0125]\d{8}$')
-                          .hasMatch(v.trim())) {
+                      if (!RegExp(r'^01[0125]\d{8}$').hasMatch(v.trim())) {
                         return s.vodafone_validation_invalid;
                       }
                       return null;
@@ -281,11 +294,10 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                       onPressed: _isLoading ? null : _onSendPayment,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primary,
-                        disabledBackgroundColor:
-                            theme.primary.withOpacity(0.6),
+                        disabledBackgroundColor: theme.primary.withOpacity(0.6),
                         shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(10.r)),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
                         elevation: 0,
                       ),
                       child: _isLoading
@@ -293,14 +305,19 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
                               width: 22.w,
                               height: 22.w,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2.w,
-                                  color: const Color(0xFFCCFF00)))
-                          : Text(s.vodafone_send_btn,
+                                strokeWidth: 2.w,
+                                color: const Color(0xFFCCFF00),
+                              ),
+                            )
+                          : Text(
+                              s.vodafone_send_btn,
                               style: TextStyle(
-                                  color: const Color(0xFFCCFF00),
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.3)),
+                                color: const Color(0xFFCCFF00),
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
                     ),
                   ),
                   SizedBox(height: 24.h),
@@ -349,8 +366,11 @@ class _VodafoneCashIcon extends StatelessWidget {
           Positioned(
             top: 2.h,
             right: 7.w,
-            child: Icon(Icons.check_circle,
-                color: const Color(0xFFE60000), size: 26.sp),
+            child: Icon(
+              Icons.check_circle,
+              color: const Color(0xFFE60000),
+              size: 26.sp,
+            ),
           ),
         ],
       ),

@@ -262,6 +262,7 @@ class _UploadContentScreenState extends State<UploadContentScreen> {
                       labelText: strings.sportProfession,
                       value: sport,
                       options: RegisterLists.sportNameOptions(strings),
+                      borderColor: theme.outline.withOpacity(0.4),
                       onChanged: (val) => sportNotifier.value = val,
                       validator: (v) => Validators.validateDropdown(
                         context: context,

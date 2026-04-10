@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -217,9 +218,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          if (label == 'Password')
-            Icon(Icons.chevron_right,
-                color: Colors.grey[400], size: 20.sp),
+          // if (label == 'Password')
+          //   Icon(Icons.chevron_right,
+          //       color: Colors.grey[400], size: 20.sp),
         ],
       ),
     );
@@ -292,7 +293,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: Icons.work_outline,
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(
+              CupertinoPageRoute(
                 builder: (_) =>
                     MyOpportunitiesListScreen(showActiveOnly: true),
               ),
@@ -306,12 +307,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.school_outlined,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
+            CupertinoPageRoute(
               builder: (_) => BlocProvider(
                 create: (_) => getIt<CoursesBloc>(),
                 child: CourseListScreen(
                   listType: (_currentUser!.userType == 'Coach' ||
-                          _currentUser!.userType == 'Scout' ||
+                          // _currentUser!.userType == 'Scout' ||
                           _currentUser!.userType == 'Club')
                       ? CourseListType.created
                       : CourseListType.enrolled,
@@ -327,7 +328,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.campaign_outlined,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const MyAdsScreen()),
+            CupertinoPageRoute(builder: (_) => const MyAdsScreen()),
           ),
           theme: theme,
         ),
@@ -346,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.emoji_events_outlined,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
+            CupertinoPageRoute(
               builder: (_) => AchievementsListScreen(
                 userId: _currentUser!.userId!,
                 isCurrentUser: true,

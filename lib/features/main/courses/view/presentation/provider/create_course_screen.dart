@@ -299,6 +299,15 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                       SizedBox(height: 20.h),
 
                       // Sport dropdown
+                      Text(
+                        string.sport,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: theme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
                       ValueListenableBuilder<String?>(
                         valueListenable: _sportNotifier,
                         builder: (context, sport, _) {
@@ -306,6 +315,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                             labelText: string.selectSport,
                             value: sport,
                             options: RegisterLists.sportNameOptions(string),
+                            borderColor: theme.outline.withOpacity(0.4),
                             onChanged: (val) => _sportNotifier.value = val,
                           );
                         },

@@ -161,7 +161,12 @@ static const String createGroup ="/api/Chat/group/create";
 static const String editMessage ="/api/Chat/message/edit/{id}";
 static const String deleteMessage ="/api/Chat/message/delete/{id}";
 
-
+// ─── Chatbot ──────────────────────────────────────────────────────────────────
+static const String chatbotAsk             = '/api/Chatbot/ask';
+static const String chatbotGetSessions     = '/api/Chatbot/get-sessions';
+static const String chatbotGetMessages     = '/api/Chatbot/get-messages/{sessionId}';
+static const String chatbotDeleteSession   = '/api/Chatbot/delete-session/{sessionId}';
+static const String chatbotRenameSession   = '/api/Chatbot/rename-session/{sessionId}';
 
 
 }

@@ -130,6 +130,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "سيظهر هذا الإعلان في الخلاصة مرة أخرى.",
     ),
     "active": MessageLookupByLibrary.simpleMessage("نشط"),
+    "activeChats": MessageLookupByLibrary.simpleMessage("المحادثات النشطة"),
     "activities": MessageLookupByLibrary.simpleMessage("الأنشطة"),
     "adActivated": MessageLookupByLibrary.simpleMessage("تم تنشيط الإعلان"),
     "adCreatedPendingPayment": MessageLookupByLibrary.simpleMessage(
@@ -172,6 +173,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "advertisements": MessageLookupByLibrary.simpleMessage("إعلانات"),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
+    "aiAssistantSubtitle": MessageLookupByLibrary.simpleMessage(
+      "باستخدام هذا البرنامج يمكنك طرح الأسئلة والحصول على مقالات باستخدام مساعد الذكاء الاصطناعي.",
+    ),
+    "aiAssistantTitle": MessageLookupByLibrary.simpleMessage("مساعدك الذكي"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
     "all": MessageLookupByLibrary.simpleMessage("الكل"),
     "allTimeRevenue": MessageLookupByLibrary.simpleMessage("إجمالي الإيرادات"),
@@ -229,6 +234,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "كن أول من ينشر منشوراً!",
     ),
     "bio": MessageLookupByLibrary.simpleMessage("الوصف"),
+    "botMessage": MessageLookupByLibrary.simpleMessage("رسالة البوت"),
     "campaignDurationRequired": MessageLookupByLibrary.simpleMessage(
       "مدة الحملة *",
     ),
@@ -341,9 +347,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteAdConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذا الإعلان؟",
     ),
+    "deleteChat": MessageLookupByLibrary.simpleMessage("حذف المحادثة"),
     "deleteComment": MessageLookupByLibrary.simpleMessage("حذف التعليق"),
     "deleteCommentConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذا التعليق؟",
+    ),
+    "deleteConfirmation": MessageLookupByLibrary.simpleMessage(
+      "هل أنت متأكد أنك تريد حذف هذه المحادثة؟",
     ),
     "deleteCourse": MessageLookupByLibrary.simpleMessage("حذف الدورة"),
     "deleteCourseConfirmation": MessageLookupByLibrary.simpleMessage(
@@ -408,6 +418,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "emptyPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور مطلوبة"),
     "endDate": MessageLookupByLibrary.simpleMessage("تاريخ الانتهاء"),
+    "endedChats": MessageLookupByLibrary.simpleMessage("المحادثات المنتهية"),
     "engagement": MessageLookupByLibrary.simpleMessage("التفاعل"),
     "english": MessageLookupByLibrary.simpleMessage("الإنجليزية"),
     "enroll": MessageLookupByLibrary.simpleMessage("اشتراك"),
@@ -454,6 +465,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterLessonTitleHint": MessageLookupByLibrary.simpleMessage(
       "أدخل عنوان الدرس",
     ),
+    "enterNewName": MessageLookupByLibrary.simpleMessage("أدخل الاسم الجديد"),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
       "أدخل كلمة المرور الجديدة",
     ),
@@ -759,6 +771,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "لا توجد دورات متاحة",
     ),
     "noBio": MessageLookupByLibrary.simpleMessage("لا وصف"),
+    "noChatsYet": MessageLookupByLibrary.simpleMessage(
+      "لا توجد محادثات بعد.\nابدأ محادثة جديدة!",
+    ),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage(
       "لا توجد تعليقات بعد",
     ),
@@ -853,6 +868,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "onboarding5Title": MessageLookupByLibrary.simpleMessage("تواصل وتفاعل"),
     "online": MessageLookupByLibrary.simpleMessage("متصل"),
+    "onlineStatus": MessageLookupByLibrary.simpleMessage("● متصل"),
     "oopsSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "عذراً! حدث خطأ ما",
     ),
@@ -1040,6 +1056,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "reject": MessageLookupByLibrary.simpleMessage("رفض"),
     "rejected": MessageLookupByLibrary.simpleMessage("مرفوض"),
     "remove": MessageLookupByLibrary.simpleMessage("إزالة"),
+    "rename": MessageLookupByLibrary.simpleMessage("إعادة تسمية"),
+    "renameChat": MessageLookupByLibrary.simpleMessage("إعادة تسمية المحادثة"),
     "replaceVideo": MessageLookupByLibrary.simpleMessage("استبدال الفيديو"),
     "requestCancelled": MessageLookupByLibrary.simpleMessage("تم إلغاء الطلب."),
     "requirements": MessageLookupByLibrary.simpleMessage("المتطلبات"),
@@ -1071,6 +1089,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "savingChanges": MessageLookupByLibrary.simpleMessage(
       "جاري حفظ التغييرات...",
     ),
+    "sayHello": MessageLookupByLibrary.simpleMessage("قل مرحباً لـ SportsIn! "),
     "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
     "search": MessageLookupByLibrary.simpleMessage("أبحث"),
     "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
@@ -1098,6 +1117,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "serviceUnavailable": MessageLookupByLibrary.simpleMessage(
       "الخدمة غير متاحة مؤقتاً",
     ),
+    "sessionAvatarLabel": MessageLookupByLibrary.simpleMessage("S"),
     "setter": MessageLookupByLibrary.simpleMessage("موزع (Setter)"),
     "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
@@ -1132,6 +1152,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "sponsor": MessageLookupByLibrary.simpleMessage("راعي"),
     "sport": MessageLookupByLibrary.simpleMessage("الرياضة"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("المهنة الرياضية"),
+    "sportsinTitle": MessageLookupByLibrary.simpleMessage("SportsIn"),
+    "startAnotherChat": MessageLookupByLibrary.simpleMessage(
+      "ابدأ محادثة أخرى مع SportsIn",
+    ),
     "startDate": MessageLookupByLibrary.simpleMessage("تاريخ البدء"),
     "startSearching": MessageLookupByLibrary.simpleMessage("ابدأ البحث"),
     "strongPassword": MessageLookupByLibrary.simpleMessage(
@@ -1194,6 +1218,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "tapToChange": MessageLookupByLibrary.simpleMessage("اضغط للاختيار"),
     "tapToChangeMedia": MessageLookupByLibrary.simpleMessage(
       "اضغط لتغيير الوسائط",
+    ),
+    "tapToContinue": MessageLookupByLibrary.simpleMessage(
+      "اضغط لمتابعة هذه المحادثة...",
     ),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "اضغط للاختيار من المعرض",
@@ -1277,6 +1304,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "useInfoTitle": MessageLookupByLibrary.simpleMessage(
       "كيفية استخدام معلوماتك",
     ),
+    "userMessage": MessageLookupByLibrary.simpleMessage("رسالة المستخدم"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
     "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
     "validEmail": MessageLookupByLibrary.simpleMessage(
@@ -1327,6 +1355,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whoShouldSeeThisAd": MessageLookupByLibrary.simpleMessage(
       "من يجب أن يرى هذا الإعلان؟",
     ),
+    "writeMessageHint": MessageLookupByLibrary.simpleMessage("اكتب رسالتك"),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
     "yearsAgo": m33,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),

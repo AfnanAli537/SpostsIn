@@ -7,6 +7,7 @@ class ProfileHeader extends StatelessWidget {
   final ProfileModel profile;
   final bool isOwnProfile;
   final VoidCallback? onEditPressed;
+  final VoidCallback? onchat;
   final ThemeData theme;
 
   const ProfileHeader({
@@ -14,6 +15,7 @@ class ProfileHeader extends StatelessWidget {
     required this.profile,
     required this.isOwnProfile,
     this.onEditPressed, 
+    this.onchat, 
     required this.theme,
   });
 
@@ -88,6 +90,44 @@ class ProfileHeader extends StatelessWidget {
                               ),
                               Icon(
                                 Icons.edit,
+                                  color: theme.colorScheme.surface,
+                                size: 16.sp,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if(!isOwnProfile && onchat != null)
+                      GestureDetector(
+                        onTap:
+                            onchat, 
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 8.h,
+                          ), 
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize
+                                .min, 
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                // 'Edit',
+                                S.of(context).chat,
+                                style: TextStyle(
+                                  color: theme.colorScheme.surface,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8.w,
+                              ),
+                              Icon(
+                                Icons.chat,
                                   color: theme.colorScheme.surface,
                                 size: 16.sp,
                               ),

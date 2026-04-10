@@ -865,5 +865,35 @@
   "adSavedAsDraft": "تم حفظ الإعلان كمسودة — لم ينشر",
   "completePaymentToActivate": "أكمل الدفع لتفعيل هذا الإعلان في الخلاصة.",
   "paymentComingSoon": "الدفع قريباً",
-  "payNow": "ادفع الآن"
+  "payNow": "ادفع الآن",
+  
+  "@@locale": "ar",
+  "userMessage": "رسالة المستخدم",
+  "@userMessage": {
+    "description": "تسمية دلالية لرسالة أرسلها المستخدم في فقاعة المحادثة"
+  },
+  "botMessage": "رسالة البوت",
+  "@botMessage": {
+    "description": "تسمية دلالية لرسالة أرسلها البوت في فقاعة المحادثة"
+  },
+
+  "aiAssistantTitle": "مساعدك الذكي",
+  "aiAssistantSubtitle": "باستخدام هذا البرنامج يمكنك طرح الأسئلة والحصول على مقالات باستخدام مساعد الذكاء الاصطناعي.",
+  "sportsinTitle": "SportsIn",
+  "onlineStatus": "● متصل",
+  "writeMessageHint": "اكتب رسالتك",
+  "sayHello": "قل مرحباً لـ SportsIn! ",
+  "activeChats": "المحادثات النشطة",
+  "endedChats": "المحادثات المنتهية",
+  "noChatsYet": "لا توجد محادثات بعد.\nابدأ محادثة جديدة!",
+  "startAnotherChat": "ابدأ محادثة أخرى مع SportsIn",
+  "deleteChat": "حذف المحادثة",
+  "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه المحادثة؟",
+  "renameChat": "إعادة تسمية المحادثة",
+  "enterNewName": "أدخل الاسم الجديد",
+  "rename": "إعادة تسمية",
+  "tapToContinue": "اضغط لمتابعة هذه المحادثة...",
+  "sessionAvatarLabel": "S"
+
+
 }

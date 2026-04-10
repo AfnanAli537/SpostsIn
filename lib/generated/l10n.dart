@@ -5807,6 +5807,161 @@ class S {
   String get unKnown {
     return Intl.message('N/A', name: 'unKnown', desc: '', args: []);
   }
+
+  /// `User message`
+  String get userMessage {
+    return Intl.message(
+      'User message',
+      name: 'userMessage',
+      desc: 'Semantics label for a message sent by the user in the chat bubble',
+      args: [],
+    );
+  }
+
+  /// `Bot message`
+  String get botMessage {
+    return Intl.message(
+      'Bot message',
+      name: 'botMessage',
+      desc: 'Semantics label for a message sent by the bot in the chat bubble',
+      args: [],
+    );
+  }
+
+  /// `Your AI Assistant`
+  String get aiAssistantTitle {
+    return Intl.message(
+      'Your AI Assistant',
+      name: 'aiAssistantTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Using this software you can ask questions and receive articles using artificial intelligence assistant.`
+  String get aiAssistantSubtitle {
+    return Intl.message(
+      'Using this software you can ask questions and receive articles using artificial intelligence assistant.',
+      name: 'aiAssistantSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SportsIn`
+  String get sportsinTitle {
+    return Intl.message('SportsIn', name: 'sportsinTitle', desc: '', args: []);
+  }
+
+  /// `● Online`
+  String get onlineStatus {
+    return Intl.message('● Online', name: 'onlineStatus', desc: '', args: []);
+  }
+
+  /// `Write your message`
+  String get writeMessageHint {
+    return Intl.message(
+      'Write your message',
+      name: 'writeMessageHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Say hello to SportsIn! `
+  String get sayHello {
+    return Intl.message(
+      'Say hello to SportsIn! ',
+      name: 'sayHello',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active Chats`
+  String get activeChats {
+    return Intl.message(
+      'Active Chats',
+      name: 'activeChats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ended Chats`
+  String get endedChats {
+    return Intl.message('Ended Chats', name: 'endedChats', desc: '', args: []);
+  }
+
+  /// `No chats yet.\nStart a new conversation!`
+  String get noChatsYet {
+    return Intl.message(
+      'No chats yet.\nStart a new conversation!',
+      name: 'noChatsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Another Chat With SportsIn`
+  String get startAnotherChat {
+    return Intl.message(
+      'Start Another Chat With SportsIn',
+      name: 'startAnotherChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Chat`
+  String get deleteChat {
+    return Intl.message('Delete Chat', name: 'deleteChat', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to delete this chat?`
+  String get deleteConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this chat?',
+      name: 'deleteConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename Chat`
+  String get renameChat {
+    return Intl.message('Rename Chat', name: 'renameChat', desc: '', args: []);
+  }
+
+  /// `Enter new name`
+  String get enterNewName {
+    return Intl.message(
+      'Enter new name',
+      name: 'enterNewName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename`
+  String get rename {
+    return Intl.message('Rename', name: 'rename', desc: '', args: []);
+  }
+
+  /// `Tap to continue this chat...`
+  String get tapToContinue {
+    return Intl.message(
+      'Tap to continue this chat...',
+      name: 'tapToContinue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `S`
+  String get sessionAvatarLabel {
+    return Intl.message('S', name: 'sessionAvatarLabel', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

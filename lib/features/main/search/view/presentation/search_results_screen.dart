@@ -21,9 +21,10 @@ const _sportOptions = [
 ];
 
 class SearchResultsScreen extends StatefulWidget {
+  final String? initialQuery;
   final SearchFilters? initialFilters;
 
-  const SearchResultsScreen({super.key, this.initialFilters});
+  const SearchResultsScreen({super.key,this.initialQuery, this.initialFilters});
 
   @override
   State<SearchResultsScreen> createState() => _SearchResultsScreenState();
@@ -87,16 +88,22 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         }
       }
     }
-
-    // Initialize query from bloc state
+String query = widget.initialQuery ?? '';
+  if (query.isEmpty) {
     final state = context.read<SearchBloc>().state;
-    String initialQuery = '';
-    if (state is SearchLoaded) {
-      initialQuery = state.query;
-    } else if (state is SearchEmpty) {
-      initialQuery = state.query;
-    }
-    _searchController = TextEditingController(text: initialQuery);
+    if (state is SearchLoaded) {query = state.query;}
+    else if (state is SearchEmpty) {query = state.query;}
+  }
+  _searchController = TextEditingController(text: query);
+    // // Initialize query from bloc state
+    // final state = context.read<SearchBloc>().state;
+    // String initialQuery = '';
+    // if (state is SearchLoaded) {
+    //   initialQuery = state.query;
+    // } else if (state is SearchEmpty) {
+    //   initialQuery = state.query;
+    // }
+    // _searchController = TextEditingController(text: initialQuery);
   }
 
   @override

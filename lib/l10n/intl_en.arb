@@ -891,5 +891,34 @@
   "subscription_plan_no_ads": "No Ads",
   "subscription_plan_duration_month": "{count} Days",
   "subscription_plan_duration_year": "{count} Months",
-  "unKnown": "N/A"
+  "unKnown": "N/A",
+  
+  "@@locale": "en",
+  "userMessage": "User message",
+  "@userMessage": {
+    "description": "Semantics label for a message sent by the user in the chat bubble"
+  },
+  "botMessage": "Bot message",
+  "@botMessage": {
+    "description": "Semantics label for a message sent by the bot in the chat bubble"
+  },
+  "aiAssistantTitle": "Your AI Assistant",
+  "aiAssistantSubtitle": "Using this software you can ask questions and receive articles using artificial intelligence assistant.",
+  "sportsinTitle": "SportsIn",
+  "onlineStatus": "● Online",
+  "writeMessageHint": "Write your message",
+  "sayHello": "Say hello to SportsIn! ",
+  "activeChats": "Active Chats",
+  "endedChats": "Ended Chats",
+  "noChatsYet": "No chats yet.\nStart a new conversation!",
+  "startAnotherChat": "Start Another Chat With SportsIn",
+  "deleteChat": "Delete Chat",
+  "deleteConfirmation": "Are you sure you want to delete this chat?",
+  "renameChat": "Rename Chat",
+  "enterNewName": "Enter new name",
+  "rename": "Rename",
+  "tapToContinue": "Tap to continue this chat...",
+  "sessionAvatarLabel": "S"
+
+
 }

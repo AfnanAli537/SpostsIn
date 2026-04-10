@@ -32,14 +32,6 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
-import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart'
-    as _i860;
-import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source_impl.dart'
-    as _i183;
-
-import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
-import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
-    as _i679;
 import 'package:sports_in/features/main/advertisement/data/data_sources/ad_remote_data_source.dart'
     as _i823;
 import 'package:sports_in/features/main/advertisement/data/interface/i_ads_data_source.dart'
@@ -48,6 +40,23 @@ import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.d
     as _i277;
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart'
     as _i259;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart'
+    as _i661;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source_impl.dart'
+    as _i436;
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
+    as _i679;
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart'
+    as _i324;
+import 'package:sports_in/features/main/chat_bot/data/data_source/chatbot_remote_data_source.dart'
+    as _i82;
+import 'package:sports_in/features/main/chat_bot/data/interface/chatbot_interface.dart'
+    as _i130;
+import 'package:sports_in/features/main/chat_bot/data/repo/chatbot_repo.dart'
+    as _i1050;
+import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart'
+    as _i982;
 import 'package:sports_in/features/main/courses/data/data_sources/course_remote_data_source.dart'
     as _i8;
 import 'package:sports_in/features/main/courses/data/interface/i_course_data_source.dart'
@@ -149,8 +158,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i802.PaymentInterface>(
       () => _i505.PaymentRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
-    gh.lazySingleton<_i860.ChatRemoteDataSource>(
-      () => _i183.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
+    gh.lazySingleton<_i661.ChatRemoteDataSource>(
+      () => _i436.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
@@ -165,6 +174,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i78.OpportunityRemoteDataSourceImpl(
         apiClient: gh<_i694.ApiClient>(),
       ),
+    );
+    gh.lazySingleton<_i130.ChatbotRemoteDataSource>(
+      () => _i82.ChatbotRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i470.IAuthDataSource>(
       () => _i172.AuthApiDataSource(gh<_i694.ApiClient>()),
@@ -190,10 +202,6 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
-    gh.lazySingleton<_i503.ChatRepository>(
-      () => _i503.ChatRepository(
-        remoteDataSource: gh<_i860.ChatRemoteDataSource>(),
-      ),
     gh.lazySingleton<_i221.PaymentRepository>(
       () =>
           _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
@@ -229,6 +237,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i277.AdsRepositoryImpl>(
       () => _i277.AdsRepositoryImpl(gh<_i658.IAdsDataSource>()),
     );
+    gh.lazySingleton<_i503.ChatRepository>(
+      () => _i503.ChatRepository(
+        remoteDataSource: gh<_i661.ChatRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i691.ConnectionsBloc>(
       () => _i691.ConnectionsBloc(gh<_i752.ProfileRepo>()),
     );
@@ -237,6 +250,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i45.PostsBloc>(
       () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
+    );
+    gh.lazySingleton<_i1050.ChatbotRepository>(
+      () => _i1050.ChatbotRepository(
+        remoteDataSource: gh<_i130.ChatbotRemoteDataSource>(),
+      ),
     );
     gh.factory<_i987.NotificationBloc>(
       () =>
@@ -247,6 +265,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i259.AdsBloc>(
       () => _i259.AdsBloc(adsRepo: gh<_i277.AdsRepositoryImpl>()),
+    );
+    gh.factory<_i982.ChatbotBloc>(
+      () => _i982.ChatbotBloc(repository: gh<_i1050.ChatbotRepository>()),
     );
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
@@ -259,6 +280,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i567.CoursesBloc>(
       () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i324.ChatBloc>(
+      () => _i324.ChatBloc(
+        repo: gh<_i503.ChatRepository>(),
+        hub: gh<_i679.ChatHubService>(),
+      ),
     );
     gh.factory<_i803.SearchBloc>(
       () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
