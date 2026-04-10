@@ -66,18 +66,29 @@ class LoadAnalysisReport extends AnalysisEvent {
   List<Object?> get props => [id];
 }
 
-// ── Library / Public search (from profile "show all") ─────────────────────────
+// ── Library / SelfAnalyses / Public search ────────────────────────────────────
+//
+// mode = AnalysisSearchMode.library     → /search/library       (own profile show-all)
+// mode = AnalysisSearchMode.selfAnalyses → /my-self-analyses    (other profile show-all)
+// mode = AnalysisSearchMode.public      → /search/public        (search screen tab)
+
+enum AnalysisSearchMode { library, selfAnalyses, public }
 
 class LoadAnalysisSearch extends AnalysisEvent {
-  /// true → /search/library   false → /search/public
-  final bool isLibrary;
+  final AnalysisSearchMode mode;
+
+  /// Required when mode == selfAnalyses
+  final String? targetUserId;
+
+  /// Optional search/filter params (used for library + public)
   final String? term;
   final String? type;
   final int page;
   final int size;
 
   const LoadAnalysisSearch({
-    required this.isLibrary,
+    required this.mode,
+    this.targetUserId,
     this.term,
     this.type,
     this.page = 1,
@@ -85,7 +96,7 @@ class LoadAnalysisSearch extends AnalysisEvent {
   });
 
   @override
-  List<Object?> get props => [isLibrary, term, type, page, size];
+  List<Object?> get props => [mode, targetUserId, term, type, page, size];
 }
 
 class LoadMoreAnalysisSearch extends AnalysisEvent {

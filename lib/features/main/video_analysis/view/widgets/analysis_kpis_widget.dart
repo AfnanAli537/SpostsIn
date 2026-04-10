@@ -85,41 +85,87 @@ Widget _kpiGrid(List<_KpiTile> tiles) => GridView.count(
 // ─────────────────────────────────────────────────────────────────────────────
 // Goalkeeper
 // ─────────────────────────────────────────────────────────────────────────────
-
 class GoalkeeperKpisWidget extends StatelessWidget {
   final GoalkeeperKpis kpis;
 
   const GoalkeeperKpisWidget({super.key, required this.kpis});
 
   @override
-  Widget build(BuildContext context) => _kpiGrid([
-        _KpiTile(
-          label: 'Reaction Time',
-          value: '${kpis.reactionTimeSec.toStringAsFixed(2)}s',
-          icon: Icons.timer_outlined,
-          color: const Color(0xFF6C63FF),
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Horizontal Quick Stats (Inspired by Image 1/2)
+        Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16.r)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _metricItem(Icons.timer, 'Reaction', '${kpis.reactionTimeSec}s', Colors.blue),
+              _metricDivider(),
+              _metricItem(Icons.speed, 'Velocity', '${kpis.maxVelocityKmh}', Colors.orange),
+              _metricDivider(),
+              _metricItem(Icons.height, 'Extension', '${kpis.maxExtensionMeters}m', Colors.green),
+            ],
+          ),
         ),
-        _KpiTile(
-          label: 'Max Extension',
-          value: '${kpis.maxExtensionMeters.toStringAsFixed(2)}m',
-          icon: Icons.open_with_rounded,
-          color: const Color(0xFF00BFA5),
-        ),
-        _KpiTile(
-          label: 'Max Velocity',
-          value: '${kpis.maxVelocityKmh.toStringAsFixed(1)} km/h',
-          icon: Icons.speed_rounded,
-          color: const Color(0xFFFF6F00),
-        ),
-        _KpiTile(
-          label: 'Deepest Knee Angle',
-          value: '${kpis.deepestKneeAngleDeg.toStringAsFixed(0)}°',
-          icon: Icons.rotate_90_degrees_ccw_rounded,
-          color: const Color(0xFFE53935),
-        ),
-      ]);
-}
+        SizedBox(height: 16.h),
+        
+        // Skill Radar Placeholder (Inspired by Image 3 "Role Specific")
+        _SkillRadarCard(title: 'Technical Breakdown'),
+      ],
+    );
+  }
 
+  Widget _metricItem(IconData icon, String label, String val, Color color) => Column(
+    children: [
+      Icon(icon, color: color, size: 20.sp),
+      SizedBox(height: 4.h),
+      Text(val, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
+      Text(label, style: TextStyle(fontSize: 10.sp, color: Colors.grey)),
+    ],
+  );
+
+  Widget _metricDivider() => Container(width: 1, height: 30.h, color: Colors.grey.shade200);
+}
+class _SkillRadarCard extends StatelessWidget {
+  final String title;
+  const _SkillRadarCard({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp)),
+          SizedBox(height: 20.h),
+          Center(
+            child: SizedBox(
+              height: 150.h,
+              // Note: You would typically use a package like 'fl_chart' or 'multi_charts' here
+              // For now, this is a placeholder mimicking the visual look of Image 3
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.radar, size: 120.sp, color: Colors.green.withOpacity(0.1)),
+                  Text('Visual Analysis Data', style: TextStyle(color: Colors.grey, fontSize: 10.sp)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 // ─────────────────────────────────────────────────────────────────────────────
 // Passing
 // ─────────────────────────────────────────────────────────────────────────────

@@ -114,7 +114,7 @@ class AnalysisReportError extends AnalysisState {
   List<Object?> get props => [message];
 }
 
-// ── Library / Public search ───────────────────────────────────────────────────
+// ── Search (library / selfAnalyses / public) ──────────────────────────────────
 
 class AnalysisSearchLoading extends AnalysisState {
   const AnalysisSearchLoading();
@@ -124,17 +124,17 @@ class AnalysisSearchLoaded extends AnalysisState {
   final List<AnalysisListItemModel> items;
   final bool hasMore;
   final int currentPage;
-  final bool isLibrary;
+  final AnalysisSearchMode mode;
 
   const AnalysisSearchLoaded({
     required this.items,
     required this.hasMore,
     required this.currentPage,
-    required this.isLibrary,
+    required this.mode,
   });
 
   @override
-  List<Object?> get props => [items, hasMore, currentPage, isLibrary];
+  List<Object?> get props => [items, hasMore, currentPage, mode];
 }
 
 class AnalysisSearchLoadingMore extends AnalysisSearchLoaded {
@@ -142,7 +142,7 @@ class AnalysisSearchLoadingMore extends AnalysisSearchLoaded {
     required super.items,
     required super.hasMore,
     required super.currentPage,
-    required super.isLibrary,
+    required super.mode,
   });
 }
 

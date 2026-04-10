@@ -13,8 +13,11 @@ part 'analysis_state.dart';
 class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   final IAnalysisRepo _repo;
 
-  // Kept in-memory for load-more context
+  // In-memory context for load-more
   String? _currentTargetUserId;
+  String? _lastSearchTargetUserId;
+  String? _lastSearchTerm;
+  String? _lastSearchType;
 
   AnalysisBloc(this._repo) : super(const AnalysisInitial()) {
     on<LoadAnalyzedUsers>(_onLoadAnalyzedUsers);
@@ -28,7 +31,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     on<DeleteAnalysis>(_onDeleteAnalysis);
   }
 
-  // ── Screen 1 ──────────────────────────────────────────────────────────────
+  // ── Screen 1 — my-analyzed-users ─────────────────────────────────────────
 
   Future<void> _onLoadAnalyzedUsers(
     LoadAnalyzedUsers event,
@@ -47,8 +50,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       ));
     } catch (e) {
       log('Error fetching analyzed users: $e');
-      emit(AnalyzedUsersError(
-          e is ApiException ? e.message : e.toString()));
+      emit(AnalyzedUsersError(e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -75,7 +77,6 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       ));
     } catch (e) {
       log('Error loading more analyzed users: $e');
-      // Restore previous loaded state so the list stays visible
       emit(AnalyzedUsersLoaded(
         users: current.users,
         hasMore: current.hasMore,
@@ -84,7 +85,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     }
   }
 
-  // ── Screen 2 ──────────────────────────────────────────────────────────────
+  // ── Screen 2 — target-analyses ───────────────────────────────────────────
 
   Future<void> _onLoadTargetAnalyses(
     LoadTargetAnalyses event,
@@ -107,8 +108,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       ));
     } catch (e) {
       log('Error fetching target analyses: $e');
-      emit(TargetAnalysesError(
-          e is ApiException ? e.message : e.toString()));
+      emit(TargetAnalysesError(e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -141,7 +141,6 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       ));
     } catch (e) {
       log('Error loading more target analyses: $e');
-      // Restore previous loaded state
       emit(TargetAnalysesLoaded(
         items: current.items,
         hasMore: current.hasMore,
@@ -162,7 +161,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     ));
   }
 
-  // ── Screen 3 ──────────────────────────────────────────────────────────────
+  // ── Screen 3 — report ────────────────────────────────────────────────────
 
   Future<void> _onLoadAnalysisReport(
     LoadAnalysisReport event,
@@ -174,53 +173,42 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       emit(AnalysisReportLoaded(report));
     } catch (e) {
       log('Error fetching analysis report: $e');
-      emit(AnalysisReportError(
-          e is ApiException ? e.message : e.toString()));
+      emit(AnalysisReportError(e is ApiException ? e.message : e.toString()));
     }
   }
 
-  // ── Library / Public search ────────────────────────────────────────────────
-
-  // Tracks last search params for load-more
-  bool? _lastSearchIsLibrary;
-  String? _lastSearchTerm;
-  String? _lastSearchType;
+  // ── Search — library / selfAnalyses / public ─────────────────────────────
 
   Future<void> _onLoadAnalysisSearch(
     LoadAnalysisSearch event,
     Emitter<AnalysisState> emit,
   ) async {
     try {
-      _lastSearchIsLibrary = event.isLibrary;
+      // Cache params for load-more
+      _lastSearchTargetUserId = event.targetUserId;
       _lastSearchTerm = event.term;
       _lastSearchType = event.type;
 
       emit(const AnalysisSearchLoading());
 
-      final page = event.isLibrary
-          ? await _repo.searchLibrary(
-              term: event.term,
-              type: event.type,
-              page: event.page,
-              size: event.size,
-            )
-          : await _repo.searchPublic(
-              term: event.term,
-              type: event.type,
-              page: event.page,
-              size: event.size,
-            );
+      final page = await _fetchSearchPage(
+        mode: event.mode,
+        targetUserId: event.targetUserId,
+        term: event.term,
+        type: event.type,
+        page: event.page,
+        size: event.size,
+      );
 
       emit(AnalysisSearchLoaded(
         items: page.items,
         hasMore: page.hasNextPage,
         currentPage: page.pageNumber,
-        isLibrary: event.isLibrary,
+        mode: event.mode,
       ));
     } catch (e) {
       log('Error loading analysis search: $e');
-      emit(AnalysisSearchError(
-          e is ApiException ? e.message : e.toString()));
+      emit(AnalysisSearchError(e is ApiException ? e.message : e.toString()));
     }
   }
 
@@ -229,35 +217,29 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     Emitter<AnalysisState> emit,
   ) async {
     final current = state;
-    if (current is! AnalysisSearchLoaded ||
-        !current.hasMore ||
-        _lastSearchIsLibrary == null) return;
+    if (current is! AnalysisSearchLoaded || !current.hasMore) return;
 
     try {
       emit(AnalysisSearchLoadingMore(
         items: current.items,
         hasMore: current.hasMore,
         currentPage: current.currentPage,
-        isLibrary: current.isLibrary,
+        mode: current.mode,
       ));
 
-      final page = current.isLibrary
-          ? await _repo.searchLibrary(
-              term: _lastSearchTerm,
-              type: _lastSearchType,
-              page: current.currentPage + 1,
-            )
-          : await _repo.searchPublic(
-              term: _lastSearchTerm,
-              type: _lastSearchType,
-              page: current.currentPage + 1,
-            );
+      final page = await _fetchSearchPage(
+        mode: current.mode,
+        targetUserId: _lastSearchTargetUserId,
+        term: _lastSearchTerm,
+        type: _lastSearchType,
+        page: current.currentPage + 1,
+      );
 
       emit(AnalysisSearchLoaded(
         items: [...current.items, ...page.items],
         hasMore: page.hasNextPage,
         currentPage: page.pageNumber,
-        isLibrary: current.isLibrary,
+        mode: current.mode,
       ));
     } catch (e) {
       log('Error loading more search results: $e');
@@ -265,8 +247,41 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
         items: current.items,
         hasMore: current.hasMore,
         currentPage: current.currentPage,
-        isLibrary: current.isLibrary,
+        mode: current.mode,
       ));
+    }
+  }
+
+  /// Shared fetch helper — routes to the correct repo method by mode.
+  Future<AnalysisListPage> _fetchSearchPage({
+    required AnalysisSearchMode mode,
+    String? targetUserId,
+    String? term,
+    String? type,
+    int page = 1,
+    int size = 10,
+  }) {
+    switch (mode) {
+      case AnalysisSearchMode.library:
+        return _repo.searchLibrary(
+          term: term,
+          type: type,
+          page: page,
+          size: size,
+        );
+      case AnalysisSearchMode.selfAnalyses:
+        return _repo.getMySelfAnalyses(
+          targetUserId: targetUserId!,
+          page: page,
+          size: size,
+        );
+      case AnalysisSearchMode.public:
+        return _repo.searchPublic(
+          term: term,
+          type: type,
+          page: page,
+          size: size,
+        );
     }
   }
 
@@ -281,8 +296,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       emit(AnalysisDeleteSuccess(event.id));
     } catch (e) {
       log('Error deleting analysis: $e');
-      emit(AnalysisDeleteError(
-          e is ApiException ? e.message : e.toString()));
+      emit(AnalysisDeleteError(e is ApiException ? e.message : e.toString()));
     }
   }
 }

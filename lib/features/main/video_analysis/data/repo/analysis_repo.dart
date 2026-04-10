@@ -18,7 +18,12 @@ abstract class IAnalysisRepo {
     int size = 10,
   });
 
-  Future<AnalysisListPage> getMySelfAnalyses({int page = 1, int size = 10});
+  /// Other user's self-analyses — /api/Analysis/my-self-analyses?userId=
+  Future<AnalysisListPage> getMySelfAnalyses({
+    required String targetUserId,
+    int page = 1,
+    int size = 10,
+  });
 
   Future<AnalysisListPage> searchLibrary({
     String? term,
@@ -82,11 +87,16 @@ class AnalysisRepo implements IAnalysisRepo {
 
   @override
   Future<AnalysisListPage> getMySelfAnalyses({
+    required String targetUserId,
     int page = 1,
     int size = 10,
   }) async {
     try {
-      return await _dataSource.getMySelfAnalyses(page: page, size: size);
+      return await _dataSource.getMySelfAnalyses(
+        targetUserId: targetUserId,
+        page: page,
+        size: size,
+      );
     } on DioException catch (e) {
       throw ApiErrorHandler.handleDioError(e);
     }

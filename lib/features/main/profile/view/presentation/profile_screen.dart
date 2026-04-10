@@ -389,19 +389,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // ── Videos ────────────────────────────────────────────────────
               onVideosShowAll: () {
+                final mode = profile.isOwner
+                    ? AnalysisSearchMode.library
+                    : AnalysisSearchMode.selfAnalyses;
+ 
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => BlocProvider(
                       create: (_) => getIt<AnalysisBloc>()
                         ..add(LoadAnalysisSearch(
-                          isLibrary: profile.isOwner,
+                          mode: mode,
+                          targetUserId:
+                              profile.isOwner ? null : profile.id,
                         )),
                       child: AnalysisLibraryScreen(
-                        isLibrary: profile.isOwner,
+                        mode: mode,
+                        targetUserId:
+                            profile.isOwner ? null : profile.id,
                         title: profile.isOwner
                             ? 'My Analysis Library'
-                            : 'Public Analyses',
+                            : '${profile.name}\'s Analyses',
                       ),
                     ),
                   ),

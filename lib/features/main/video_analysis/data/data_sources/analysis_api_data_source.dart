@@ -41,12 +41,13 @@ class AnalysisApiDataSource implements IAnalysisDataSource {
 
   @override
   Future<AnalysisListPage> getMySelfAnalyses({
+    required String targetUserId,
     int page = 1,
     int size = 10,
   }) async {
     final response = await _apiClient.get(
       '/api/Analysis/my-self-analyses',
-      params: {'page': page, 'size': size},
+      params: {'userId': targetUserId, 'page': page, 'size': size},
     );
     return AnalysisListPage.fromJson(response.data as Map<String, dynamic>);
   }

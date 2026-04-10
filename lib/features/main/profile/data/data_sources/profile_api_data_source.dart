@@ -677,23 +677,34 @@ class ApiProfileDataSource implements IProfileDataSource {
     }
   }
   // ── Analyzed Videos  ───────────────────────────────────────────────────
-
+// ─────────────────────────────────────────────────────────────────────────────
+// In api_profile_data_source.dart make TWO edits:
+//
+// EDIT 1 — inside getUserProfile(), change the _getAnalyzedVideos call from:
+//
+//   _getAnalyzedVideos(userId),
+//
+// to:
+//
+//   _getAnalyzedVideos(userId, json['isOwner'] == true),
+//
+// EDIT 2 — replace the entire _getAnalyzedVideos method with the one below.
+// ─────────────────────────────────────────────────────────────────────────────
 
   Future<List<AnalysisListItemModel>> _getAnalyzedVideos(
     String userId,
     bool isOwner,
   ) async {
     try {
-      // Own profile  → library  (all analyses I created, of anyone)
-      // Other profile → public   (public self-analyses by that user)
       final endpoint = isOwner
           ? '/api/Analysis/search/library'
-          : '/api/Analysis/search/public';
+          : '/api/Analysis/my-self-analyses';
 
-      final response = await _apiClient.get(
-        endpoint,
-        params: {'page': 1, 'size': 3},
-      );
+      final params = isOwner
+          ? {'page': 1, 'size': 3}
+          : {'userId': userId, 'page': 1, 'size': 3};
+
+      final response = await _apiClient.get(endpoint, params: params);
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
@@ -709,7 +720,6 @@ class ApiProfileDataSource implements IProfileDataSource {
       return [];
     }
   }
-
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
   ProfileModel _apiResponseToProfile(Map<String, dynamic> json) {

@@ -12,8 +12,12 @@ abstract class IAnalysisDataSource {
     int size = 10,
   });
 
-  /// GET /api/Analysis/my-self-analyses
-  Future<AnalysisListPage> getMySelfAnalyses({int page = 1, int size = 10});
+  /// GET /api/Analysis/my-self-analyses?userId=
+  Future<AnalysisListPage> getMySelfAnalyses({
+    required String targetUserId,
+    int page = 1,
+    int size = 10,
+  });
 
   /// GET /api/Analysis/search/library
   Future<AnalysisListPage> searchLibrary({
