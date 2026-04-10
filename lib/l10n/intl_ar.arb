@@ -1051,5 +1051,67 @@
     }
   },
   "people": "أشخاص"
+  
+  "@@locale": "ar",
+  "userMessage": "رسالة المستخدم",
+  "@userMessage": {
+    "description": "تسمية دلالية لرسالة أرسلها المستخدم في فقاعة المحادثة"
+  },
+  "botMessage": "رسالة البوت",
+  "@botMessage": {
+    "description": "تسمية دلالية لرسالة أرسلها البوت في فقاعة المحادثة"
+  },
+
+  "aiAssistantTitle": "مساعدك الذكي",
+  "aiAssistantSubtitle": "باستخدام هذا البرنامج يمكنك طرح الأسئلة والحصول على مقالات باستخدام مساعد الذكاء الاصطناعي.",
+  "sportsinTitle": "SportsIn",
+  "onlineStatus": "● متصل",
+  "writeMessageHint": "اكتب رسالتك",
+  "sayHello": "قل مرحباً لـ SportsIn! ",
+  "activeChats": "المحادثات النشطة",
+  "endedChats": "المحادثات المنتهية",
+  "noChatsYet": "لا توجد محادثات بعد.\nابدأ محادثة جديدة!",
+  "startAnotherChat": "ابدأ محادثة أخرى مع SportsIn",
+  "deleteChat": "حذف المحادثة",
+  "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه المحادثة؟",
+  "renameChat": "إعادة تسمية المحادثة",
+  "enterNewName": "أدخل الاسم الجديد",
+  "rename": "إعادة تسمية",
+  "tapToContinue": "اضغط لمتابعة هذه المحادثة...",
+  "sessionAvatarLabel": "S",
+  "notificationTitle": "الإشعارات",
+  "markAllAsRead": "تحديد الكل كمقروء",
+  "noNotificationsYet": "لا توجد إشعارات بعد",
+  "allCaughtUp": "لقد اطلعت على كل شيء!",
+  "requestAccepted": "تم قبول الطلب",
+  "requestDeclined": "تم رفض الطلب",
+
+  "categoryRecent": "الأحدث",
+  "categoryRequests": "الطلبات",
+  "categoryReactions": "التفاعلات",
+  "categoryOpportunities": "الفرص",
+
+  "dateToday": "اليوم",
+  "dateYesterday": "أمس",
+
+  "timeMinutes": "{count} د",
+  "@timeMinutes": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "timeHours": "{count} س",
+  "@timeHours": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "timeDays": "{count} ي",
+  "@timeDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "newBadge": "{count} جديد",
+  "@newBadge": {
+    "placeholders": { "count": { "type": "int" } }
+  }
+
+
 
 }

@@ -113,6 +113,47 @@ class MessageLookup extends MessageLookupByLibrary {
       "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
 
   static String m41(count) =>
+  static String m18(count) => "${count} new";
+
+  static String m19(searchTerm) => "No courses found for \"${searchTerm}\"";
+
+  static String m20(month) => "No data available for ${month}";
+
+  static String m21(id) => "Transaction ID: ${id}";
+
+  static String m22(percentage) => "${percentage}% Complete";
+
+  static String m23(value) => "${value}%";
+
+  static String m24(percentage) => "${percentage}% watched";
+
+  static String m25(price) => "${price} EGP";
+
+  static String m26(price) => "(${price} EGP per day)";
+
+  static String m27(count) =>
+      "${Intl.plural(count, one: '${count} second ago', other: '${count} seconds ago')}";
+
+  static String m28(field) => "Please select a ${field}";
+
+  static String m29(count) => "${count} Ads / month";
+
+  static String m30(count) => "${count} Days";
+
+  static String m31(count) => "${count} Months";
+
+  static String m32(count) => "${count} Videos / month";
+
+  static String m33(count) => "${count}d";
+
+  static String m34(count) => "${count}h";
+
+  static String m35(count) => "${count}m";
+
+  static String m36(count) =>
+      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+
+  static String m37(count) =>
       "${Intl.plural(count, one: '${count} year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -148,6 +189,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "This ad will appear in the feed again.",
     ),
     "active": MessageLookupByLibrary.simpleMessage("Active"),
+    "activeChats": MessageLookupByLibrary.simpleMessage("Active Chats"),
     "activities": MessageLookupByLibrary.simpleMessage("Activities"),
     "adActivated": MessageLookupByLibrary.simpleMessage("Ad activated"),
     "adCreatedPendingPayment": MessageLookupByLibrary.simpleMessage(
@@ -192,9 +234,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
     "aiEnhancedAnalysis": MessageLookupByLibrary.simpleMessage(
       "AI Enhanced Analysis",
+    "aiAssistantSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Using this software you can ask questions and receive articles using artificial intelligence assistant.",
+    ),
+    "aiAssistantTitle": MessageLookupByLibrary.simpleMessage(
+      "Your AI Assistant",
     ),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "all": MessageLookupByLibrary.simpleMessage("All"),
+    "allCaughtUp": MessageLookupByLibrary.simpleMessage(
+      "You\'re all caught up!",
+    ),
     "allTimeRevenue": MessageLookupByLibrary.simpleMessage("All-Time Revenue"),
     "alreadyApplied": MessageLookupByLibrary.simpleMessage("Already Applied"),
     "alreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
@@ -299,11 +349,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "Be the first to create a post!",
     ),
     "bio": MessageLookupByLibrary.simpleMessage("Description"),
+    "botMessage": MessageLookupByLibrary.simpleMessage("Bot message"),
     "campaignDurationRequired": MessageLookupByLibrary.simpleMessage(
       "Campaign Duration *",
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "cancelEdit": MessageLookupByLibrary.simpleMessage("Cancel Edit"),
+    "categoryOpportunities": MessageLookupByLibrary.simpleMessage(
+      "Opportunities",
+    ),
+    "categoryReactions": MessageLookupByLibrary.simpleMessage("Reactions"),
+    "categoryRecent": MessageLookupByLibrary.simpleMessage("Recent"),
+    "categoryRequests": MessageLookupByLibrary.simpleMessage("Requests"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
     "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Change Password"),
@@ -423,6 +480,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
     "date": MessageLookupByLibrary.simpleMessage("Date"),
+    "dateToday": MessageLookupByLibrary.simpleMessage("Today"),
+    "dateYesterday": MessageLookupByLibrary.simpleMessage("Yesterday"),
     "date_label": MessageLookupByLibrary.simpleMessage("Date"),
     "daysAgo": m6,
     "deactivate": MessageLookupByLibrary.simpleMessage("Deactivate"),
@@ -440,9 +499,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteAnalysisConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this analysis?",
     ),
+    "deleteChat": MessageLookupByLibrary.simpleMessage("Delete Chat"),
     "deleteComment": MessageLookupByLibrary.simpleMessage("Delete Comment"),
     "deleteCommentConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this comment?",
+    ),
+    "deleteConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this chat?",
     ),
     "deleteCourse": MessageLookupByLibrary.simpleMessage("Delete Course"),
     "deleteCourseConfirmation": MessageLookupByLibrary.simpleMessage(
@@ -533,6 +596,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Password is required",
     ),
     "endDate": MessageLookupByLibrary.simpleMessage("End Date"),
+    "endedChats": MessageLookupByLibrary.simpleMessage("Ended Chats"),
     "engagement": MessageLookupByLibrary.simpleMessage("Engagement"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "enroll": MessageLookupByLibrary.simpleMessage("Enroll"),
@@ -581,6 +645,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterLessonTitleHint": MessageLookupByLibrary.simpleMessage(
       "Enter lesson title",
     ),
+    "enterNewName": MessageLookupByLibrary.simpleMessage("Enter new name"),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
       "Enter your new password",
     ),
@@ -936,6 +1001,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Full match footage preferred. If not available, record key phases.",
     ),
     "maxExtension": MessageLookupByLibrary.simpleMessage("Max Extension"),
+    "markAllAsRead": MessageLookupByLibrary.simpleMessage("Mark all as read"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage("Max 500MB"),
     "maxVelocity": MessageLookupByLibrary.simpleMessage("Max Velocity"),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
@@ -969,6 +1035,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "name": MessageLookupByLibrary.simpleMessage("name"),
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
     "needsWork": MessageLookupByLibrary.simpleMessage("Needs Work"),
+    "newBadge": m18,
     "newConnectionRequests": MessageLookupByLibrary.simpleMessage(
       "New Connection Requests",
     ),
@@ -1004,6 +1071,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "No Available Courses",
     ),
     "noBio": MessageLookupByLibrary.simpleMessage("No bio"),
+    "noChatsYet": MessageLookupByLibrary.simpleMessage(
+      "No chats yet.\nStart a new conversation!",
+    ),
     "noCommentsYet": MessageLookupByLibrary.simpleMessage("No comments yet"),
     "noConnectionRequests": MessageLookupByLibrary.simpleMessage(
       "No Connection Requests",
@@ -1013,6 +1083,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "noCoursesFound": MessageLookupByLibrary.simpleMessage("No courses found"),
     "noCoursesFoundFor": m24,
     "noDataForMonth": m25,
+    "noCoursesFoundFor": m19,
+    "noDataForMonth": m20,
     "noDescriptionAvailable": MessageLookupByLibrary.simpleMessage(
       "No description available",
     ),
@@ -1031,6 +1103,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noLikesYet": MessageLookupByLibrary.simpleMessage("No likes yet"),
     "noMoreContacts": MessageLookupByLibrary.simpleMessage("No more contacts"),
     "noMoreRequests": MessageLookupByLibrary.simpleMessage("No More Requests"),
+    "noNotificationsYet": MessageLookupByLibrary.simpleMessage(
+      "No notifications yet",
+    ),
     "noOpportunities": MessageLookupByLibrary.simpleMessage("No Opportunities"),
     "noOpportunitiesAvailable": MessageLookupByLibrary.simpleMessage(
       "No opportunities available",
@@ -1060,6 +1135,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
+    "notificationTitle": MessageLookupByLibrary.simpleMessage("Notification"),
     "notifications": MessageLookupByLibrary.simpleMessage("Notification"),
     "november": MessageLookupByLibrary.simpleMessage("November"),
     "number": MessageLookupByLibrary.simpleMessage("number"),
@@ -1099,6 +1175,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Connect & Communicate",
     ),
     "online": MessageLookupByLibrary.simpleMessage("Online"),
+    "onlineStatus": MessageLookupByLibrary.simpleMessage("● Online"),
     "oopsSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "Oops! Something went wrong",
     ),
@@ -1198,6 +1275,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "percentComplete": m27,
     "percentage": m28,
     "percentageWatched": m29,
+    "payment_success_transaction_id": m21,
+    "pending": MessageLookupByLibrary.simpleMessage("Pending"),
+    "percentComplete": m22,
+    "percentage": m23,
+    "percentageWatched": m24,
     "performanceOverview": MessageLookupByLibrary.simpleMessage(
       "Performance Overview",
     ),
@@ -1281,6 +1363,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "priceEGP": m30,
     "priceEGPtxt": MessageLookupByLibrary.simpleMessage("Price (EGP)"),
     "pricePerDay": m31,
+    "priceEGP": m25,
+    "priceEGPtxt": MessageLookupByLibrary.simpleMessage("Price (EGP)"),
+    "pricePerDay": m26,
     "priceRequired": MessageLookupByLibrary.simpleMessage("Price is required"),
     "privacyPolicyTitle": MessageLookupByLibrary.simpleMessage(
       "Privacy & Policy",
@@ -1325,10 +1410,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "reject": MessageLookupByLibrary.simpleMessage("Reject"),
     "rejected": MessageLookupByLibrary.simpleMessage("Rejected"),
     "remove": MessageLookupByLibrary.simpleMessage("Remove"),
+    "rename": MessageLookupByLibrary.simpleMessage("Rename"),
+    "renameChat": MessageLookupByLibrary.simpleMessage("Rename Chat"),
     "replaceVideo": MessageLookupByLibrary.simpleMessage("Replace Video"),
+    "requestAccepted": MessageLookupByLibrary.simpleMessage("Request Accepted"),
     "requestCancelled": MessageLookupByLibrary.simpleMessage(
       "Request was cancelled.",
     ),
+    "requestDeclined": MessageLookupByLibrary.simpleMessage("Request Declined"),
     "requirements": MessageLookupByLibrary.simpleMessage("Requirements"),
     "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
     "resetPasswordFailure": MessageLookupByLibrary.simpleMessage(
@@ -1354,6 +1443,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Save Achievement",
     ),
     "savingChanges": MessageLookupByLibrary.simpleMessage("Saving changes..."),
+    "sayHello": MessageLookupByLibrary.simpleMessage("Say hello to SportsIn! "),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchByPlayerName": MessageLookupByLibrary.simpleMessage(
@@ -1361,6 +1451,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
     "secondsAgo": m32,
+    "secondsAgo": m27,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("See Original"),
     "select": MessageLookupByLibrary.simpleMessage("Select"),
     "selectAnalysisType": MessageLookupByLibrary.simpleMessage(
@@ -1371,6 +1462,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectEndDate": MessageLookupByLibrary.simpleMessage("Select End Date"),
     "selectField": m33,
+    "selectField": m28,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
     "selectSport": MessageLookupByLibrary.simpleMessage("Select Sport"),
     "selectSports": MessageLookupByLibrary.simpleMessage("Select a Sport"),
@@ -1388,6 +1480,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "serviceUnavailable": MessageLookupByLibrary.simpleMessage(
       "Service temporarily unavailable",
     ),
+    "sessionAvatarLabel": MessageLookupByLibrary.simpleMessage("S"),
     "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "settings": MessageLookupByLibrary.simpleMessage("Setting"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
@@ -1421,6 +1514,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "sport": MessageLookupByLibrary.simpleMessage("Sport"),
     "sportProfession": MessageLookupByLibrary.simpleMessage("Sport profession"),
     "startAnalysis": MessageLookupByLibrary.simpleMessage("Start Analysis"),
+    "sportsinTitle": MessageLookupByLibrary.simpleMessage("SportsIn"),
+    "startAnotherChat": MessageLookupByLibrary.simpleMessage(
+      "Start Another Chat With SportsIn",
+    ),
     "startDate": MessageLookupByLibrary.simpleMessage("Start Date"),
     "startSearching": MessageLookupByLibrary.simpleMessage("Start searching"),
     "stepAiProcessing": MessageLookupByLibrary.simpleMessage(
@@ -1438,6 +1535,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscription": MessageLookupByLibrary.simpleMessage("Subscription"),
     "subscription_btn": MessageLookupByLibrary.simpleMessage("SUBSCRIBE NOW"),
     "subscription_plan_ads_month": m34,
+    "subscription_plan_ads_month": m29,
     "subscription_plan_basic_stats": MessageLookupByLibrary.simpleMessage(
       "Basic Stats",
     ),
@@ -1452,6 +1550,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "subscription_plan_duration_month": m35,
     "subscription_plan_duration_year": m36,
+    "subscription_plan_duration_month": m30,
+    "subscription_plan_duration_year": m31,
     "subscription_plan_forever": MessageLookupByLibrary.simpleMessage(
       "forever",
     ),
@@ -1475,6 +1575,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Unlimited Videos",
     ),
     "subscription_plan_videos_month": m37,
+    "subscription_plan_videos_month": m32,
     "subscription_renewal_note": MessageLookupByLibrary.simpleMessage(
       "This is an automatically renewed subscription.\nYou can cancel anytime in settings.",
     ),
@@ -1496,6 +1597,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "tapToChangeMedia": MessageLookupByLibrary.simpleMessage(
       "Tap to change media",
     ),
+    "tapToContinue": MessageLookupByLibrary.simpleMessage(
+      "Tap to continue this chat...",
+    ),
     "tapToSelectFromGallery": MessageLookupByLibrary.simpleMessage(
       "Tap to select from gallery",
     ),
@@ -1508,6 +1612,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "team1": MessageLookupByLibrary.simpleMessage("Team 1"),
     "team2": MessageLookupByLibrary.simpleMessage("Team 2"),
     "theme": MessageLookupByLibrary.simpleMessage("Light"),
+    "timeDays": m33,
+    "timeHours": m34,
+    "timeMinutes": m35,
     "timeSpent": MessageLookupByLibrary.simpleMessage("Time Spent"),
     "title": MessageLookupByLibrary.simpleMessage("Title"),
     "titleCannotBeEmpty": MessageLookupByLibrary.simpleMessage(
@@ -1598,6 +1705,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "useInfoTitle": MessageLookupByLibrary.simpleMessage(
       "How We Use Your Information",
     ),
+    "userMessage": MessageLookupByLibrary.simpleMessage("User message"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
     "userType": MessageLookupByLibrary.simpleMessage("User Type"),
     "usersAnalyses": m39,
@@ -1660,6 +1768,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("Weekly Breakdown"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("Weekly Details"),
     "weeksAgo": m40,
+    "weeksAgo": m36,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "whatHappensNext": MessageLookupByLibrary.simpleMessage(
@@ -1675,8 +1784,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "whoShouldSeeThisAd": MessageLookupByLibrary.simpleMessage(
       "Who should see this ad?",
     ),
+    "writeMessageHint": MessageLookupByLibrary.simpleMessage(
+      "Write your message",
+    ),
     "year": MessageLookupByLibrary.simpleMessage("Year"),
     "yearsAgo": m41,
+    "yearsAgo": m37,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",
     ),

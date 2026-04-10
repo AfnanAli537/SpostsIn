@@ -49,6 +49,14 @@ import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
     as _i679;
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart'
     as _i324;
+import 'package:sports_in/features/main/chat_bot/data/data_source/chatbot_remote_data_source.dart'
+    as _i82;
+import 'package:sports_in/features/main/chat_bot/data/interface/chatbot_interface.dart'
+    as _i130;
+import 'package:sports_in/features/main/chat_bot/data/repo/chatbot_repo.dart'
+    as _i1050;
+import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart'
+    as _i982;
 import 'package:sports_in/features/main/courses/data/data_sources/course_remote_data_source.dart'
     as _i8;
 import 'package:sports_in/features/main/courses/data/interface/i_course_data_source.dart'
@@ -177,6 +185,9 @@ extension GetItInjectableX on _i174.GetIt {
         apiClient: gh<_i694.ApiClient>(),
       ),
     );
+    gh.lazySingleton<_i130.ChatbotRemoteDataSource>(
+      () => _i82.ChatbotRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i470.IAuthDataSource>(
       () => _i172.AuthApiDataSource(gh<_i694.ApiClient>()),
     );
@@ -253,6 +264,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i45.PostsBloc>(
       () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
     );
+    gh.lazySingleton<_i1050.ChatbotRepository>(
+      () => _i1050.ChatbotRepository(
+        remoteDataSource: gh<_i130.ChatbotRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i987.NotificationBloc>(
       () =>
           _i987.NotificationBloc(repository: gh<_i62.NotificationRepository>()),
@@ -271,6 +287,8 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i251.AnalysisBloc>(
       () => _i251.AnalysisBloc(gh<_i352.IAnalysisRepo>()),
+    gh.factory<_i982.ChatbotBloc>(
+      () => _i982.ChatbotBloc(repository: gh<_i1050.ChatbotRepository>()),
     );
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
