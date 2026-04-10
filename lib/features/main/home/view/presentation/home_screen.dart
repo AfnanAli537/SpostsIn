@@ -25,6 +25,8 @@ import 'package:sports_in/features/main/opportunity/data/data_source/opportunity
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_list.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class HomePage extends StatefulWidget {
@@ -93,7 +95,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final strings = S.of(context);
-
+    final theme = Theme.of(context);
     return FutureBuilder<LoginResponse?>(
       future: _userFuture,
       builder: (context, snapshot) {
@@ -107,7 +109,11 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red[300]),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64.sp,
+                    color: Colors.red[300],
+                  ),
                   SizedBox(height: 16.h),
                   Text('${strings.error}: ${snapshot.error}'),
                   SizedBox(height: 16.h),
@@ -170,9 +176,9 @@ class _HomePageState extends State<HomePage> {
             ),
             // ── Ads BLoC — feeds AdWidget cards inside PostsTab ──────────────
             BlocProvider(
-              create: (_) => AdsBloc(
-                adsRepo: getIt<AdsRepositoryImpl>(),
-              )..add(const FetchAdsFeed()),
+              create: (_) =>
+                  AdsBloc(adsRepo: getIt<AdsRepositoryImpl>())
+                    ..add(const FetchAdsFeed()),
             ),
             BlocProvider(
               create: (_) => OpportunityBloc(
@@ -198,11 +204,32 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.all(16.w),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 25.r,
-                            backgroundColor: Colors.grey[300],
-                            child: Icon(Icons.person,
-                                color: Colors.white, size: 30.sp),
+                          BlocBuilder<ProfileBloc, ProfileState>(
+                            buildWhen: (prev, curr) =>
+                                curr is ProfileLoaded || curr is ProfileLoading,
+                            builder: (context, state) {
+                              String? imageUrl;
+                              if (state is ProfileLoaded) {
+                                imageUrl = state.profile.profileImage;
+                              }
+
+                              return CircleAvatar(
+                                radius: 22.r,
+                                backgroundColor:
+                                    theme.colorScheme.onError,
+                                backgroundImage:
+                                    (imageUrl != null && imageUrl.isNotEmpty)
+                                    ? NetworkImage(imageUrl)
+                                    : null,
+                                child: (imageUrl == null || imageUrl.isEmpty)
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 24.r,
+                                        color: theme.colorScheme.primary,
+                                      )
+                                    : null,
+                              );
+                            },
                           ),
                           SizedBox(width: 12.w),
                           Column(
@@ -219,9 +246,9 @@ class _HomePageState extends State<HomePage> {
                               Text(
                                 strings.happyToSeeYouToday,
                                 style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                             ],
@@ -246,20 +273,18 @@ class _HomePageState extends State<HomePage> {
                                 label: Text(tab.getName(strings)),
                                 selected: isSelected,
                                 onSelected: (_) => _onTabTapped(tab),
-                                selectedColor:
-                                    Theme.of(context).colorScheme.primary,
-                                checkmarkColor:
-                                    Theme.of(context).colorScheme.secondary,
+                                selectedColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
+                                checkmarkColor: Theme.of(
+                                  context,
+                                ).colorScheme.secondary,
                                 labelStyle: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 14.sp,
                                   color: isSelected
-                                      ? Theme.of(context)
-                                          .colorScheme
-                                          .secondary
-                                      : Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                             );
@@ -272,8 +297,7 @@ class _HomePageState extends State<HomePage> {
                   // ── Tab content ───────────────────────────────────────────
                   BuildContent(
                     currentTab: _currentTab,
-                    onTabChange: (tab) =>
-                        setState(() => _currentTab = tab),
+                    onTabChange: (tab) => setState(() => _currentTab = tab),
                     forYouKey: _forYouKey,
                     postsKey: _postsKey,
                     coursesKey: _coursesKey,

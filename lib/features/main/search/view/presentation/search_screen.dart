@@ -67,6 +67,7 @@ class _SearchViewState extends State<_SearchView>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final string = S.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -100,7 +101,7 @@ class _SearchViewState extends State<_SearchView>
                       children: [
                         Icon(Icons.people_outline_rounded, size: 16.sp),
                         SizedBox(width: 6.w),
-                        const Text('People'),
+                        Text(string.people),
                       ],
                     ),
                   ),
@@ -110,7 +111,7 @@ class _SearchViewState extends State<_SearchView>
                       children: [
                         Icon(Icons.sports_soccer_rounded, size: 16.sp),
                         SizedBox(width: 6.w),
-                        const Text('Video Analysis'),
+                        Text(string.videoAnalysis),
                       ],
                     ),
                   ),

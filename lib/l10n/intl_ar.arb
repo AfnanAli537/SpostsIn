@@ -1040,5 +1040,16 @@
   "distanceCovered": "المسافة المقطوعة",
   "topSpeed": "السرعة القصوى",
   "topSprintSpeed": "أقصى سرعة ركض",
-  "frames": "الإطارات"
+  "frames": "الإطارات",
+  "selectAnalysisType": "اختر نوع التحليل",
+  "postVideoSourceHint": "سيتم استخدام فيديو المنشور كمصدر.",
+  "myAnalysisLibrary": "مكتبة التحليلات الخاصة بي",
+  "usersAnalyses": "تحليلات {name}",
+  "@usersAnalyses": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "people": "أشخاص"
+
 }

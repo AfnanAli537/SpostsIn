@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -11,30 +12,31 @@ class _KpiTile extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
-  final Color color;
+  // final Color color;
 
   const _KpiTile({
     required this.label,
     required this.value,
     required this.icon,
-    required this.color,
+    // required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.onPrimary,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: theme.onSurface.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey[100]!),
+        border: Border.all(color: theme.onPrimary.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,10 +45,10 @@ class _KpiTile extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(6.w),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: theme.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 18.sp, color: color),
+            child: Icon(icon, size: 18.sp, color: theme.onTertiaryContainer),
           ),
           const Spacer(),
           Text(
@@ -54,14 +56,14 @@ class _KpiTile extends StatelessWidget {
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: theme.onSurface,
             ),
           ),
           Text(
             label,
             style: TextStyle(
               fontSize: 11.sp,
-              color: Colors.grey[500],
+              color: theme.onError,
               fontWeight: FontWeight.w500,
             ),
             maxLines: 1,
@@ -106,25 +108,25 @@ class GoalkeeperKpisWidget extends StatelessWidget {
             label: strings.maxExtension,
             value: '${kpis.maxExtensionMeters.toStringAsFixed(2)} m',
             icon: Icons.open_with_rounded,
-            color: const Color(0xFF00BFA5),
+            // color: const Color(0xFF00BFA5),
           ),
           _KpiTile(
             label: strings.maxVelocity,
             value: '${kpis.maxVelocityKmh.toStringAsFixed(1)} km/h',
             icon: Icons.speed_rounded,
-            color: const Color(0xFFFF6F00),
+            // color: const Color(0xFFFF6F00),
           ),
           _KpiTile(
             label: strings.kneeAngle,
             value: '${kpis.deepestKneeAngleDeg.toStringAsFixed(0)}°',
             icon: Icons.rotate_90_degrees_ccw_rounded,
-            color: const Color(0xFF6C63FF),
+            // color: const Color(0xFF6C63FF),
           ),
           _KpiTile(
             label: strings.reactionTimeShort,
             value: '${kpis.reactionTimeSec.toStringAsFixed(3)} s',
             icon: Icons.timer_rounded,
-            color: const Color(0xFF1565C0),
+            // color: const Color(0xFF1565C0),
           ),
         ]),
       ],
@@ -154,12 +156,13 @@ class _ReactionTimeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1565C0), Color(0xFF4FC3F7)],
+        gradient: LinearGradient(
+          colors: [theme.primary, theme.primary.withOpacity(0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -231,38 +234,38 @@ class PassingKpisWidget extends StatelessWidget {
           label: strings.drillDuration,
           value: '${kpis.drillDurationSeconds}s',
           icon: Icons.hourglass_bottom_rounded,
-          color: const Color(0xFF00BFA5),
+          // color: const Color(0xFF00BFA5),
         ),
         _KpiTile(
           label: strings.ballTouches,
           value: '${kpis.totalBallTouches}',
           icon: Icons.touch_app_rounded,
-          color: const Color(0xFF6C63FF),
+          // color: const Color(0xFF6C63FF),
         ),
         _KpiTile(
           label: strings.avgBallSpeed,
           value: '${kpis.avgBallSpeedKmh.toStringAsFixed(1)} km/h',
           icon: Icons.sports_soccer,
-          color: const Color(0xFFFF6F00),
+          // color: const Color(0xFFFF6F00),
         ),
         _KpiTile(
           label: strings.avgPlayerSpeed,
           value: '${kpis.avgPlayerSpeedKmh.toStringAsFixed(1)} km/h',
           icon: Icons.directions_run_rounded,
-          color: const Color(0xFF1565C0),
+          // color: const Color(0xFF1565C0),
         ),
         _KpiTile(
           label: strings.avgKneeAngle,
           value: '${kpis.avgRKneeAngleDeg.toStringAsFixed(1)}°',
           icon: Icons.rotate_90_degrees_ccw_rounded,
-          color: const Color(0xFFE53935),
+          // color: const Color(0xFFE53935),
         ),
-        _KpiTile(
-          label: '',
-          value: '',
-          icon: Icons.bar_chart_rounded,
-          color: Colors.transparent,
-        ),
+        // _KpiTile(
+        //   label: '',
+        //   value: '',
+        //   icon: Icons.bar_chart_rounded,
+        //   // color: Colors.transparent,
+        // ),
       ]);
 }
 
@@ -284,37 +287,37 @@ class DribblingKpisWidget extends StatelessWidget {
               label: strings.drillDuration,
               value: '${kpis.drillDurationSeconds}s',
               icon: Icons.hourglass_bottom_rounded,
-              color: const Color(0xFF00BFA5),
+              // color: const Color(0xFF00BFA5),
             ),
             _KpiTile(
               label: strings.totalTouches,
               value: '${kpis.totalTouches}',
               icon: Icons.touch_app_rounded,
-              color: const Color(0xFF6C63FF),
+              // color: const Color(0xFF6C63FF),
             ),
             _KpiTile(
               label: strings.touchesPerSec,
               value: kpis.touchesPerSecond.toStringAsFixed(2),
               icon: Icons.repeat_rounded,
-              color: const Color(0xFFFF6F00),
+              // color: const Color(0xFFFF6F00),
             ),
             _KpiTile(
               label: strings.avgPlayerSpeed,
               value: '${kpis.avgPlayerSpeedKmh.toStringAsFixed(1)} km/h',
               icon: Icons.directions_run_rounded,
-              color: const Color(0xFF1565C0),
+              // color: const Color(0xFF1565C0),
             ),
             _KpiTile(
               label: strings.avgBallDistance,
               value: '${kpis.avgBallDistanceMeters.toStringAsFixed(2)} m',
               icon: Icons.sports_soccer,
-              color: const Color(0xFFE53935),
+              // color: const Color(0xFFE53935),
             ),
             _KpiTile(
               label: strings.headUpPercent,
               value: '${kpis.headUpPercentage.toStringAsFixed(0)}%',
               icon: Icons.visibility_rounded,
-              color: const Color(0xFF558B2F),
+              // color: const Color(0xFF558B2F),
             ),
           ]),
           SizedBox(height: 12.h),
@@ -340,18 +343,18 @@ class _ConeStatsRow extends StatelessWidget {
       ),
       child: Row(children: [
         _item(context, strings.forwardPasses, '${kpis.conePassesForward}',
-            Colors.green),
+            ColorManager.success),
         _div(),
         _item(context, strings.backwardPasses, '${kpis.conePassesBackward}',
-            Colors.orange),
+            ColorManager.warning),
         _div(),
-        _item(context, strings.coneHits, '${kpis.coneHits}', Colors.red),
+        _item(context, strings.coneHits, '${kpis.coneHits}', ColorManager.errorColor),
         _div(),
         _item(
           context,
           strings.hipVariance,
           '${kpis.hipBounceVarianceMeters.toStringAsFixed(3)} m',
-          const Color(0xFF6C63FF),
+          theme.colorScheme.primary
         ),
       ]),
     );
@@ -466,7 +469,7 @@ class _MatchVsHeader extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: theme.onError.withOpacity(0.3),
             borderRadius: BorderRadius.circular(20.r),
           ),
           child: Text(
@@ -474,7 +477,7 @@ class _MatchVsHeader extends StatelessWidget {
             style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w900,
-                color: Colors.grey[600],
+                color: theme.onError.withOpacity(0.8),
                 letterSpacing: 2),
           ),
         ),
@@ -524,11 +527,11 @@ class _PossessionBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.onPrimary,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: theme.onSurface.withOpacity(0.04),
               blurRadius: 10,
               offset: const Offset(0, 4)),
         ],
@@ -543,10 +546,10 @@ class _PossessionBar extends StatelessWidget {
                 color: theme.primary),
           ),
           Column(children: [
-            Icon(Icons.sports_soccer, size: 16.sp, color: Colors.grey[400]),
+            Icon(Icons.sports_soccer, size: 16.sp, color: theme.onError.withOpacity(0.6)),
             SizedBox(height: 2.h),
             Text(strings.possession,
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey[500])),
+                style: TextStyle(fontSize: 11.sp, color: theme.onError.withOpacity(0.5))),
           ]),
           Text(
             '${team2.toStringAsFixed(0)}%',
@@ -604,11 +607,11 @@ class _StatRow extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.onPrimary,
         borderRadius: BorderRadius.circular(14.r),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: theme.onSurface.withOpacity(0.03),
               blurRadius: 8,
               offset: const Offset(0, 3)),
         ],
@@ -626,7 +629,7 @@ class _StatRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: v1Wins ? FontWeight.w800 : FontWeight.w500,
-                  color: v1Wins ? theme.primary : Colors.grey[500],
+                  color: v1Wins ? theme.primary : theme.onError.withOpacity(0.5),
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -637,11 +640,11 @@ class _StatRow extends StatelessWidget {
           child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 14.sp, color: Colors.grey[400]),
+                Icon(icon, size: 14.sp, color: theme.onError.withOpacity(0.6)),
                 SizedBox(width: 4.w),
                 Text(
                   label,
-                  style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+                  style: TextStyle(fontSize: 11.sp, color: theme.onError.withOpacity(0.5)),
                 ),
               ]),
         ),
@@ -656,7 +659,7 @@ class _StatRow extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: !v1Wins ? FontWeight.w800 : FontWeight.w500,
-                      color: !v1Wins ? theme.onTertiaryContainer : Colors.grey[500],
+                      color: !v1Wins ? theme.onTertiaryContainer : theme.onError.withOpacity(0.5),
                     ),
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
@@ -699,20 +702,20 @@ class _TopSprintBanner extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(10.w),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: theme.onPrimary.withOpacity(0.15),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.bolt_rounded, color: Colors.white, size: 26.sp),
+          child: Icon(Icons.bolt_rounded, color: theme.onPrimary, size: 26.sp),
         ),
         SizedBox(width: 14.w),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(strings.topSprintSpeed,
-              style: TextStyle(color: Colors.white70, fontSize: 11.sp)),
+              style: TextStyle(color: theme.onPrimary.withOpacity(0.7), fontSize: 11.sp)),
           SizedBox(height: 2.h),
           Text(
             '${kpis.topSprintSpeed.toStringAsFixed(1)} km/h',
             style: TextStyle(
-                color: Colors.white,
+                color: theme.onPrimary,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5),
@@ -721,10 +724,10 @@ class _TopSprintBanner extends StatelessWidget {
         const Spacer(),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Text(strings.frames,
-              style: TextStyle(color: Colors.white60, fontSize: 10.sp)),
+              style: TextStyle(color: theme.onPrimary.withOpacity(0.6), fontSize: 10.sp)),
           Text('${kpis.totalFrames}',
               style: TextStyle(
-                  color: Colors.white,
+                  color: theme.onPrimary,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700)),
         ]),

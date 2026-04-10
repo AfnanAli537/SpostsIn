@@ -7117,6 +7117,51 @@ class S {
   String get frames {
     return Intl.message('Frames', name: 'frames', desc: '', args: []);
   }
+
+  /// `Select Analysis Type`
+  String get selectAnalysisType {
+    return Intl.message(
+      'Select Analysis Type',
+      name: 'selectAnalysisType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The post video will be used as the source.`
+  String get postVideoSourceHint {
+    return Intl.message(
+      'The post video will be used as the source.',
+      name: 'postVideoSourceHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Analysis Library`
+  String get myAnalysisLibrary {
+    return Intl.message(
+      'My Analysis Library',
+      name: 'myAnalysisLibrary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name}'s Analyses`
+  String usersAnalyses(String name) {
+    return Intl.message(
+      '$name\'s Analyses',
+      name: 'usersAnalyses',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `People`
+  String get people {
+    return Intl.message('People', name: 'people', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -643,21 +643,22 @@ class _TypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: _color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: _color.withOpacity(0.3)),
+        border: Border.all(color: theme.primary.withOpacity(0.3)),
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(_icon, size: 18.sp, color: _color),
+        Icon(_icon, size: 18.sp, color: theme.primary),
         SizedBox(width: 8.w),
         Text(label,
             style: GoogleFonts.poppins(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
-                color: _color)),
+                color: theme.primary)),
       ]),
     );
   }

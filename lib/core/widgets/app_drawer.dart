@@ -8,6 +8,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/features/notitification/presentation/notifi_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -38,8 +40,10 @@ class AppDrawer extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.notifications_none_rounded,
                   title: string.notifications,
-                  onTap: (){Navigator.pop(context);
-                  _openNotifications(context);},
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openNotifications(context);
+                  },
                   theme: theme,
                 ),
                 SizedBox(height: 12.h),
@@ -85,25 +89,18 @@ class AppDrawer extends StatelessWidget {
   }
 
   Widget _buildProfileHeader(ThemeData theme, S string) {
-    // We use FutureBuilder to fetch data directly from SharedPref
     return FutureBuilder<LoginResponse?>(
       future: getIt<SharedPref>().getUserFromPrefs(),
       builder: (context, snapshot) {
         final bool isLoading =
             snapshot.connectionState == ConnectionState.waiting;
         final user = snapshot.data;
-
-        // Extract data or use defaults
         String name = user?.name != null
             ? user!.name!.firstName
             : (isLoading ? "Loading Name..." : "Guest User");
 
         String role =
             user?.userType ?? (isLoading ? "Loading Role..." : "No Role");
-
-        // Note: Your SharedPref model doesn't currently save image URL.
-        // If you add it to SharedPref, you can retrieve it here.
-        String? imageUrl;
 
         return Container(
           width: double.infinity,
@@ -119,55 +116,48 @@ class AppDrawer extends StatelessWidget {
                 enabled: isLoading,
                 containersColor: theme.colorScheme.onPrimary.withOpacity(0.2),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 35.r,
-                      backgroundImage: imageUrl != null && imageUrl.isNotEmpty
-                          ? NetworkImage(imageUrl)
-                          : null,
-                      backgroundColor: theme.colorScheme.onPrimary.withOpacity(
-                        0.1,
-                      ),
-                      child:
-                          (imageUrl == null || imageUrl.isEmpty) && !isLoading
-                          ? Icon(
-                              Icons.person,
-                              color: theme.colorScheme.onPrimary,
-                            )
-                          : null,
+                    BlocBuilder<ProfileBloc, ProfileState>(
+                      buildWhen: (prev, curr) =>
+                          curr is ProfileLoaded || curr is ProfileLoading,
+                      builder: (context, state) {
+                        String? imageUrl;
+                        if (state is ProfileLoaded) {
+                          imageUrl = state.profile.profileImage;
+                        }
+
+                        return CircleAvatar(
+                          radius: 35.r,
+                          backgroundColor: theme.colorScheme.onPrimary
+                              .withOpacity(0.2),
+                          backgroundImage:
+                              (imageUrl != null && imageUrl.isNotEmpty)
+                              ? NetworkImage(imageUrl)
+                              : null,
+                          child: (imageUrl == null || imageUrl.isEmpty)
+                              ? Icon(
+                                  Icons.person,
+                                  size: 40.r,
+                                  color: theme.colorScheme.onPrimary,
+                                )
+                              : null,
+                        );
+                      },
                     ),
                     SizedBox(height: 16.h),
                     Text(
                       name,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4.h),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.person_outline,
-                          color: theme.colorScheme.onPrimary.withOpacity(0.6),
-                          size: 14.sp,
-                        ),
-                        SizedBox(width: 4.w),
-                        Expanded(
-                          child: Text(
-                            role,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimary.withOpacity(
-                                0.6,
-                              ),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      role,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onPrimary.withOpacity(0.8),
+                      ),
                     ),
                   ],
                 ),
@@ -178,7 +168,6 @@ class AppDrawer extends StatelessWidget {
       },
     );
   }
-
   // ... rest of the helper methods (_buildMenuItem, _buildThemeToggle, etc. remain the same)
 
   Widget _buildMenuItem({

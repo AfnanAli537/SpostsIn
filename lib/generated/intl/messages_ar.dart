@@ -107,10 +107,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m38(error) => "خطأ في الرفع: ${error}";
 
-  static String m39(count) =>
-      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+  static String m39(name) => "تحليلات ${name}";
 
   static String m40(count) =>
+      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+
+  static String m41(count) =>
       "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ ${count} سنوات', many: 'منذ ${count} سنة', other: 'منذ ${count} سنة')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -929,6 +931,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "moreInfo": MessageLookupByLibrary.simpleMessage("مزيد من المعلومات"),
     "morocco": MessageLookupByLibrary.simpleMessage("المغرب"),
     "myAdvertisements": MessageLookupByLibrary.simpleMessage("إعلاناتي"),
+    "myAnalysisLibrary": MessageLookupByLibrary.simpleMessage(
+      "مكتبة التحليلات الخاصة بي",
+    ),
     "myContacts": MessageLookupByLibrary.simpleMessage("جهات اتصالي"),
     "myCourses": MessageLookupByLibrary.simpleMessage("دوراتي"),
     "myOpportunities": MessageLookupByLibrary.simpleMessage("فرصي"),
@@ -1167,6 +1172,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "payment_success_transaction_id": m26,
     "pending": MessageLookupByLibrary.simpleMessage("معلق"),
+    "people": MessageLookupByLibrary.simpleMessage("أشخاص"),
     "percentComplete": m27,
     "percentage": m28,
     "percentageWatched": m29,
@@ -1235,6 +1241,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postUploadedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم رفع المنشور بنجاح!",
+    ),
+    "postVideoSourceHint": MessageLookupByLibrary.simpleMessage(
+      "سيتم استخدام فيديو المنشور كمصدر.",
     ),
     "posts": MessageLookupByLibrary.simpleMessage("المنشورات"),
     "powerForward": MessageLookupByLibrary.simpleMessage(
@@ -1325,6 +1334,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "secondsAgo": m32,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("رؤية النص الأصلي"),
     "select": MessageLookupByLibrary.simpleMessage("اختر"),
+    "selectAnalysisType": MessageLookupByLibrary.simpleMessage(
+      "اختر نوع التحليل",
+    ),
     "selectEndDate": MessageLookupByLibrary.simpleMessage(
       "اختر تاريخ الانتهاء",
     ),
@@ -1554,6 +1566,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
     "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
+    "usersAnalyses": m39,
     "validEmail": MessageLookupByLibrary.simpleMessage(
       "أدخل بريدًا إلكترونيًا صالحًا",
     ),
@@ -1610,7 +1623,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("تمت المشاهدة"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("تفاصيل الأسبوع"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("التفاصيل الأسبوعية"),
-    "weeksAgo": m39,
+    "weeksAgo": m40,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
     "whatHappensNext": MessageLookupByLibrary.simpleMessage(
@@ -1625,7 +1638,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "من يجب أن يرى هذا الإعلان؟",
     ),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
-    "yearsAgo": m40,
+    "yearsAgo": m41,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),
     "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(

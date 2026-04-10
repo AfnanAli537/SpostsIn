@@ -107,10 +107,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m38(error) => "Upload error: ${error}";
 
-  static String m39(count) =>
-      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+  static String m39(name) => "${name}\'s Analyses";
 
   static String m40(count) =>
+      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+
+  static String m41(count) =>
       "${Intl.plural(count, one: '${count} year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -957,6 +959,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "myAdvertisements": MessageLookupByLibrary.simpleMessage(
       "My Advertisements",
     ),
+    "myAnalysisLibrary": MessageLookupByLibrary.simpleMessage(
+      "My Analysis Library",
+    ),
     "myContacts": MessageLookupByLibrary.simpleMessage("My Contacts"),
     "myCourses": MessageLookupByLibrary.simpleMessage("My Courses"),
     "myOpportunities": MessageLookupByLibrary.simpleMessage("Opportunities"),
@@ -1189,6 +1194,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "payment_success_transaction_id": m26,
     "pending": MessageLookupByLibrary.simpleMessage("Pending"),
+    "people": MessageLookupByLibrary.simpleMessage("People"),
     "percentComplete": m27,
     "percentage": m28,
     "percentageWatched": m29,
@@ -1264,6 +1270,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postUploadedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Post uploaded successfully!",
+    ),
+    "postVideoSourceHint": MessageLookupByLibrary.simpleMessage(
+      "The post video will be used as the source.",
     ),
     "posts": MessageLookupByLibrary.simpleMessage("Posts"),
     "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
@@ -1354,6 +1363,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "secondsAgo": m32,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("See Original"),
     "select": MessageLookupByLibrary.simpleMessage("Select"),
+    "selectAnalysisType": MessageLookupByLibrary.simpleMessage(
+      "Select Analysis Type",
+    ),
     "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
       "Please select at least one sport",
     ),
@@ -1588,6 +1600,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
     "userType": MessageLookupByLibrary.simpleMessage("User Type"),
+    "usersAnalyses": m39,
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
     "validHeightRange": MessageLookupByLibrary.simpleMessage(
       "Enter a valid height (1.0 – 2.5 m)",
@@ -1646,7 +1659,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("Watched"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("Weekly Breakdown"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("Weekly Details"),
-    "weeksAgo": m39,
+    "weeksAgo": m40,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "whatHappensNext": MessageLookupByLibrary.simpleMessage(
@@ -1663,7 +1676,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Who should see this ad?",
     ),
     "year": MessageLookupByLibrary.simpleMessage("Year"),
-    "yearsAgo": m40,
+    "yearsAgo": m41,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",
     ),

@@ -16,26 +16,26 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
     (
       type: AnalysisType.goalkeeper,
       icon: Icons.sports_handball_outlined,
-      color: Color(0xFF4FC3F7),
-      gradient: [Color(0xFF0288D1), Color(0xFF4FC3F7)],
+      // color: Color(0xFF4FC3F7),
+      // gradient: [Color(0xFF0288D1), Color(0xFF4FC3F7)],
     ),
     (
       type: AnalysisType.passing,
       icon: Icons.compare_arrows_rounded,
-      color: Color(0xFF81C784),
-      gradient: [Color(0xFF388E3C), Color(0xFF81C784)],
+      // color: Color(0xFF81C784),
+      // gradient: [Color(0xFF388E3C), Color(0xFF81C784)],
     ),
     (
       type: AnalysisType.dribbling,
       icon: Icons.sports_soccer,
-      color: Color(0xFFFFB74D),
-      gradient: [Color(0xFFF57C00), Color(0xFFFFB74D)],
+      // color: Color(0xFFFFB74D),
+      // gradient: [Color(0xFFF57C00), Color(0xFFFFB74D)],
     ),
     (
       type: AnalysisType.match,
       icon: Icons.stadium_outlined,
-      color: Color(0xFFBA68C8),
-      gradient: [Color(0xFF7B1FA2), Color(0xFFBA68C8)],
+      // color: Color(0xFFBA68C8),
+      // gradient: [Color(0xFF7B1FA2), Color(0xFFBA68C8)],
     ),
   ];
 
@@ -93,8 +93,8 @@ class AnalysisTypeSelectionScreen extends StatelessWidget {
                   return _TypeCard(
                     type: d.type,
                     icon: d.icon,
-                    color: d.color,
-                    gradient: d.gradient,
+                    color: theme.primary,
+                    // gradient: d.gradient,
                     label: _getLocalizedLabel(d.type, strings),
                     description: _getLocalizedDescription(d.type, strings),
                     onTap: () => Navigator.push(
@@ -147,7 +147,7 @@ class _TypeCard extends StatelessWidget {
   final AnalysisType type;
   final IconData icon;
   final Color color;
-  final List<Color> gradient;
+  // final List<Color> gradient;
   final String label;
   final String description;
   final VoidCallback onTap;
@@ -156,7 +156,7 @@ class _TypeCard extends StatelessWidget {
     required this.type,
     required this.icon,
     required this.color,
-    required this.gradient,
+    // required this.gradient,
     required this.label,
     required this.description,
     required this.onTap,
@@ -187,20 +187,20 @@ class _TypeCard extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(20.w),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 52.w,
                 height: 52.w,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: gradient,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  // gradient: LinearGradient(
+                  //   colors: gradient,
+                  //   begin: Alignment.topLeft,
+                  //   end: Alignment.bottomRight,
+                  // ),
                   borderRadius: BorderRadius.circular(14.r),
                 ),
-                child: Icon(icon, color: Colors.white, size: 26.sp),
+                child: Icon(icon, color: theme.onTertiaryContainer, size: 26.sp),
               ),
               const Spacer(),
               Text(
@@ -216,6 +216,7 @@ class _TypeCard extends StatelessWidget {
                 description,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 11.sp,
                   color: theme.onSurface.withOpacity(0.5),

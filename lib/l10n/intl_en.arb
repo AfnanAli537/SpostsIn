@@ -1068,5 +1068,15 @@
   "distanceCovered": "Distance Covered",
   "topSpeed": "Top Speed",
   "topSprintSpeed": "Top Sprint Speed",
-  "frames": "Frames"
+  "frames": "Frames",
+  "selectAnalysisType": "Select Analysis Type",
+  "postVideoSourceHint": "The post video will be used as the source.",
+  "myAnalysisLibrary": "My Analysis Library",
+  "usersAnalyses": "{name}'s Analyses",
+  "@usersAnalyses": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "people": "People"
 }

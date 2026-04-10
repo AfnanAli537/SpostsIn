@@ -334,19 +334,16 @@ class _PostWidgetState extends State<PostWidget> {
     final videoUrl = widget.post.mediaUrl;
     if (videoUrl == null || videoUrl.isEmpty) return;
 
-    // final sharedPref = getIt<SharedPref>();
-    // final userId = sharedPref.getUserId();
-    // if (userId == null) return;
     final userId = widget.post.author.userId;
 
-    // Show type selection bottom sheet — user picks Goalkeeper/Passing/Dribbling/Match.
-    // Then navigate straight to the form with the video URL pre-filled.
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) =>
-          _AnalysisTypePickerSheet(videoUrl: videoUrl, targetUserId: userId),
+      builder: (context) => _AnalysisTypePickerSheet(
+        videoUrl: videoUrl,
+        targetUserId: userId,
+      ),
     );
   }
 
@@ -745,31 +742,55 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
   });
 
   static const _types = [
-    (
-      type: AnalysisType.goalkeeper,
-      icon: Icons.sports_handball_outlined,
-      color: Color(0xFF4FC3F7),
-    ),
-    (
-      type: AnalysisType.passing,
-      icon: Icons.compare_arrows_rounded,
-      color: Color(0xFF81C784),
-    ),
-    (
-      type: AnalysisType.dribbling,
-      icon: Icons.sports_soccer,
-      color: Color(0xFFFFB74D),
-    ),
-    (
-      type: AnalysisType.match,
-      icon: Icons.stadium_outlined,
-      color: Color(0xFFBA68C8),
-    ),
+    AnalysisType.goalkeeper,
+    AnalysisType.passing,
+    AnalysisType.dribbling,
+    AnalysisType.match,
   ];
+
+  IconData _iconForType(AnalysisType type) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return Icons.sports_handball_outlined;
+      case AnalysisType.passing:
+        return Icons.compare_arrows_rounded;
+      case AnalysisType.dribbling:
+        return Icons.sports_soccer;
+      case AnalysisType.match:
+        return Icons.stadium_outlined;
+    }
+  }
+
+  String _labelForType(AnalysisType type, S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisLabel;
+      case AnalysisType.passing:
+        return strings.passingAnalysisLabel;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisLabel;
+      case AnalysisType.match:
+        return strings.matchAnalysisLabel;
+    }
+  }
+
+  String _descriptionForType(AnalysisType type, S strings) {
+    switch (type) {
+      case AnalysisType.goalkeeper:
+        return strings.goalkeeperAnalysisDescription;
+      case AnalysisType.passing:
+        return strings.passingAnalysisDescription;
+      case AnalysisType.dribbling:
+        return strings.dribblingAnalysisDescription;
+      case AnalysisType.match:
+        return strings.matchAnalysisDescription;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final strings = S.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -797,7 +818,7 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
               Icon(Icons.analytics_outlined, color: theme.primary, size: 22.sp),
               SizedBox(width: 10.w),
               Text(
-                'Select Analysis Type',
+                strings.selectAnalysisType,
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.w700,
@@ -808,7 +829,7 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
           ),
           SizedBox(height: 6.h),
           Text(
-            'The post video will be used as the source.',
+            strings.postVideoSourceHint,
             style: TextStyle(
               fontSize: 12.sp,
               color: theme.onSurface.withOpacity(0.5),
@@ -816,10 +837,11 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
           ),
           SizedBox(height: 20.h),
           ..._types.map(
-            (d) => _TypeTile(
-              type: d.type,
-              icon: d.icon,
-              color: d.color,
+            (type) => _TypeTile(
+              type: type,
+              icon: _iconForType(type),
+              label: _labelForType(type, strings),
+              description: _descriptionForType(type, strings),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -827,7 +849,7 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => CreateAnalysisFormScreen(
                       targetUserId: targetUserId,
-                      analysisType: d.type,
+                      analysisType: type,
                       prefilledVideoUrl: videoUrl,
                     ),
                   ),
@@ -844,13 +866,15 @@ class _AnalysisTypePickerSheet extends StatelessWidget {
 class _TypeTile extends StatelessWidget {
   final AnalysisType type;
   final IconData icon;
-  final Color color;
+  final String label;
+  final String description;
   final VoidCallback onTap;
 
   const _TypeTile({
     required this.type,
     required this.icon,
-    required this.color,
+    required this.label,
+    required this.description,
     required this.onTap,
   });
 
@@ -864,19 +888,19 @@ class _TypeTile extends StatelessWidget {
         margin: EdgeInsets.only(bottom: 10.h),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.07),
+          color: theme.primary.withOpacity(0.07),
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: color.withOpacity(0.25)),
+          border: Border.all(color: theme.primary.withOpacity(0.25)),
         ),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: theme.primary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Icon(icon, size: 20.sp, color: color),
+              child: Icon(icon, size: 20.sp, color: theme.onTertiaryContainer),
             ),
             SizedBox(width: 14.w),
             Expanded(
@@ -884,7 +908,7 @@ class _TypeTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    type.label,
+                    label,
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
@@ -893,7 +917,7 @@ class _TypeTile extends StatelessWidget {
                   ),
                   SizedBox(height: 2.h),
                   Text(
-                    type.description,
+                    description,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

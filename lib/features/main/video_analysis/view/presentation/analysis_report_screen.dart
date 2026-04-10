@@ -218,6 +218,7 @@ class _AnalysisVideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -254,8 +255,8 @@ class _AnalysisVideoCard extends StatelessWidget {
                 color: isLocked
                     ? Colors.grey
                     : isAnalyzed
-                        ? Colors.green
-                        : Colors.blue,
+                        ? theme.colorScheme.onTertiaryContainer
+                        : theme.colorScheme.primary,
               ),
               SizedBox(width: 8.w),
               Text(
