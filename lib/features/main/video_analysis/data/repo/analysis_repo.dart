@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/video_analysis/data/interface/i_analysis_data_source.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+import 'package:sports_in/features/main/video_analysis/model/create_analysis_response.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Abstract
@@ -42,6 +43,28 @@ abstract class IAnalysisRepo {
   Future<AnalysisReportModel> getReport(String id);
 
   Future<void> deleteAnalysis(String id);
+Future<CreateAnalysisResponse> analyzeGoalkeeper({
+    required String targetUserId,
+    required String videoUrl,
+    required double keeperHeightM,
+  });
+
+  Future<CreateAnalysisResponse> analyzePassing({
+    required String targetUserId,
+    required String videoUrl,
+  });
+
+  Future<CreateAnalysisResponse> analyzeDribbling({
+    required String targetUserId,
+    required String videoUrl,
+  });
+
+  Future<CreateAnalysisResponse> analyzeMatch({
+    required String targetUserId,
+    required String videoUrl,
+  });
+
+  Future<void> executePaidAnalysis(String gatewayTransactionId);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -153,6 +176,76 @@ class AnalysisRepo implements IAnalysisRepo {
   Future<void> deleteAnalysis(String id) async {
     try {
       await _dataSource.deleteAnalysis(id);
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+@override
+  Future<CreateAnalysisResponse> analyzeGoalkeeper({
+    required String targetUserId,
+    required String videoUrl,
+    required double keeperHeightM,
+  }) async {
+    try {
+      return await _dataSource.analyzeGoalkeeper(
+        targetUserId: targetUserId,
+        videoUrl: videoUrl,
+        keeperHeightM: keeperHeightM,
+      );
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<CreateAnalysisResponse> analyzePassing({
+    required String targetUserId,
+    required String videoUrl,
+  }) async {
+    try {
+      return await _dataSource.analyzePassing(
+        targetUserId: targetUserId,
+        videoUrl: videoUrl,
+      );
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<CreateAnalysisResponse> analyzeDribbling({
+    required String targetUserId,
+    required String videoUrl,
+  }) async {
+    try {
+      return await _dataSource.analyzeDribbling(
+        targetUserId: targetUserId,
+        videoUrl: videoUrl,
+      );
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<CreateAnalysisResponse> analyzeMatch({
+    required String targetUserId,
+    required String videoUrl,
+  }) async {
+    try {
+      return await _dataSource.analyzeMatch(
+        targetUserId: targetUserId,
+        videoUrl: videoUrl,
+      );
+    } on DioException catch (e) {
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> executePaidAnalysis(String gatewayTransactionId) async {
+    try {
+      await _dataSource.executePaidAnalysis(gatewayTransactionId);
     } on DioException catch (e) {
       throw ApiErrorHandler.handleDioError(e);
     }

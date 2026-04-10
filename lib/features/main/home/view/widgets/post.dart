@@ -16,6 +16,8 @@ import 'package:sports_in/features/main/home/view/presentation/likes.dart';
 import 'package:sports_in/features/main/home/view/widgets/full_screen_image.dart';
 import 'package:sports_in/features/main/home/view_model/likes_bloc/likes_bloc.dart';
 import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/create_analysis_form_screen.dart';
 import 'package:translator/translator.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -87,7 +89,6 @@ class _PostWidgetState extends State<PostWidget> {
         from: 'auto',
         to: 'en',
       );
-
       if (mounted) {
         setState(() {
           _detectedLanguage = detection.sourceLanguage.code;
@@ -98,7 +99,8 @@ class _PostWidgetState extends State<PostWidget> {
       log('Language detection error: $e');
       if (mounted) {
         setState(() {
-          _detectedLanguage = _isArabic(widget.post.description) ? 'ar' : 'en';
+          _detectedLanguage =
+              _isArabic(widget.post.description) ? 'ar' : 'en';
           _targetLanguage = _detectedLanguage == 'ar' ? 'en' : 'ar';
         });
       }
@@ -115,7 +117,6 @@ class _PostWidgetState extends State<PostWidget> {
       setState(() => _showTranslation = true);
       return;
     }
-
     setState(() => _isTranslating = true);
     try {
       final translation = await _translator.translate(
@@ -123,7 +124,6 @@ class _PostWidgetState extends State<PostWidget> {
         from: _detectedLanguage ?? 'auto',
         to: _targetLanguage!,
       );
-
       if (mounted) {
         setState(() {
           _translatedDesc = translation.text;
@@ -160,15 +160,12 @@ class _PostWidgetState extends State<PostWidget> {
           _videoError = null;
         });
         try {
-          BetterPlayerDataSource betterPlayerDataSource =
-              BetterPlayerDataSource(
-                BetterPlayerDataSourceType.network,
-                widget.post.mediaUrl!,
-                cacheConfiguration: const BetterPlayerCacheConfiguration(
-                  useCache: true,
-                ),
-              );
-
+          final betterPlayerDataSource = BetterPlayerDataSource(
+            BetterPlayerDataSourceType.network,
+            widget.post.mediaUrl!,
+            cacheConfiguration:
+                const BetterPlayerCacheConfiguration(useCache: true),
+          );
           _betterPlayerController = BetterPlayerController(
             const BetterPlayerConfiguration(
               autoPlay: false,
@@ -177,7 +174,6 @@ class _PostWidgetState extends State<PostWidget> {
             ),
             betterPlayerDataSource: betterPlayerDataSource,
           );
-
           if (mounted) setState(() => _isInitializing = false);
         } catch (e) {
           if (mounted) {
@@ -192,8 +188,16 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   bool _checkIfVideo(String url) {
-    final videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm', '.m3u8'];
-    return videoExtensions.any((ext) => url.toLowerCase().contains(ext)) ||
+    final videoExtensions = [
+      '.mp4',
+      '.mov',
+      '.avi',
+      '.mkv',
+      '.webm',
+      '.m3u8'
+    ];
+    return videoExtensions
+            .any((ext) => url.toLowerCase().contains(ext)) ||
         url.toLowerCase().contains('cloudinary.com/video');
   }
 
@@ -204,7 +208,6 @@ class _PostWidgetState extends State<PostWidget> {
 
   void _showDeleteConfirmation() {
     final strings = S.of(context);
-
     ConfirmationDialog.show(
       context: context,
       title: strings.deletePost,
@@ -217,20 +220,25 @@ class _PostWidgetState extends State<PostWidget> {
       isDestructive: true,
     );
   }
+
   void _showToggleConfirmation({required bool isArchiving}) {
     final strings = S.of(context);
-
     ConfirmationDialog.show(
       context: context,
-      title: isArchiving?strings.archivePost:strings.restorePost,
-      message: isArchiving?strings.archivePostConfirmation:strings.restorePostConfirmation,
+      title: isArchiving ? strings.archivePost : strings.restorePost,
+      message: isArchiving
+          ? strings.archivePostConfirmation
+          : strings.restorePostConfirmation,
       onConfirm: () {
-        context.read<PostsBloc>().add(TogglePostVisibility(postId: widget.post.id));
+        context
+            .read<PostsBloc>()
+            .add(TogglePostVisibility(postId: widget.post.id));
         widget.onDeleted?.call();
       },
-      confirmText: isArchiving?strings.archive:strings.restore,
+      confirmText: isArchiving ? strings.archive : strings.restore,
     );
   }
+
   void _navigateToAuthorProfile() {
     Navigator.pushNamed(
       context,
@@ -249,16 +257,39 @@ class _PostWidgetState extends State<PostWidget> {
 
   void _openFullScreenMedia() {
     if (widget.post.mediaUrl == null || widget.post.mediaUrl!.isEmpty) return;
-
     if (!_isVideo) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
+          builder: (_) =>
               FullScreenImageViewer(imageUrl: widget.post.mediaUrl!),
         ),
       );
     }
+  }
+
+  // ─── Analyze video from post ─────────────────────────────────────────────
+
+  Future<void> _analyzePostVideo() async {
+    final videoUrl = widget.post.mediaUrl;
+    if (videoUrl == null || videoUrl.isEmpty) return;
+
+    // final sharedPref = getIt<SharedPref>();
+    // final userId = sharedPref.getUserId();
+    // if (userId == null) return;
+    final userId = widget.post.author.userId;
+
+    // Show type selection bottom sheet — user picks Goalkeeper/Passing/Dribbling/Match.
+    // Then navigate straight to the form with the video URL pre-filled.
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AnalysisTypePickerSheet(
+        videoUrl: videoUrl,
+        targetUserId: userId,
+      ),
+    );
   }
 
   @override
@@ -275,152 +306,129 @@ class _PostWidgetState extends State<PostWidget> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Header ──────────────────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
                   onTap: _navigateToAuthorProfile,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 20.r,
-                            backgroundImage:
-                                widget.post.author.profilePictureUrl != null
-                                ? NetworkImage(
-                                    widget.post.author.profilePictureUrl!,
-                                  )
-                                : null,
-                            child: widget.post.author.profilePictureUrl == null
-                                ? Icon(Icons.person, size: 24.sp)
-                                : null,
-                          ),
-
-                          SizedBox(width: 12.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.post.author.fullName,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                formatTimeAgo(
-                                  context,
-                                  widget.post.createdAt.toUtc(),
-                                ),
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  child: Row(children: [
+                    CircleAvatar(
+                      radius: 20.r,
+                      backgroundImage:
+                          widget.post.author.profilePictureUrl != null
+                              ? NetworkImage(
+                                  widget.post.author.profilePictureUrl!)
+                              : null,
+                      child:
+                          widget.post.author.profilePictureUrl == null
+                              ? Icon(Icons.person, size: 24.sp)
+                              : null,
+                    ),
+                    SizedBox(width: 12.w),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.post.author.fullName,
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          formatTimeAgo(
+                              context, widget.post.createdAt.toUtc()),
+                          style: TextStyle(
+                              fontSize: 12.sp, color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  ]),
                 ),
+
+                // ── Popup menu ─────────────────────────────────────────────
                 Visibility(
-                  visible: widget.isCurrentUser || _isVideo,
+                  visible: widget.isCurrentUser || _hasVideo,
                   child: PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: theme.onSurface),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
+                        borderRadius: BorderRadius.circular(12.r)),
                     onSelected: (value) async {
-                      if (value == 'analyze') {
-                        Fluttertoast.showToast(
-                          msg: strings.analyzeVideoComingSoon,
-                        );
-                      } else if (value == 'edit') {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.profilePostsEditScreen,
-                          arguments: widget.post,
-                        );
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmation();
-                      }
-                      else if (value == 'archive') {
-                        _showToggleConfirmation(isArchiving: true);
-                      }
-                      else if (value == 'restore') {
-                        _showToggleConfirmation(isArchiving: false);
+                      switch (value) {
+                        case 'analyze':
+                          await _analyzePostVideo();
+                          break;
+                        case 'edit':
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.profilePostsEditScreen,
+                            arguments: widget.post,
+                          );
+                          break;
+                        case 'delete':
+                          _showDeleteConfirmation();
+                          break;
+                        case 'archive':
+                          _showToggleConfirmation(isArchiving: true);
+                          break;
+                        case 'restore':
+                          _showToggleConfirmation(isArchiving: false);
+                          break;
                       }
                     },
                     itemBuilder: (context) => [
                       if (_hasVideo)
                         PopupMenuItem(
                           value: 'analyze',
-                          child: Row(
-                            children: [
-                              Icon(Icons.analytics_outlined, size: 20.sp),
-                              SizedBox(width: 8.w),
-                              Text(strings.analyzeVideo),
-                            ],
-                          ),
+                          child: Row(children: [
+                            Icon(Icons.analytics_outlined, size: 20.sp),
+                            SizedBox(width: 8.w),
+                            Text(strings.analyzeVideo),
+                          ]),
                         ),
                       if (widget.isCurrentUser) ...[
-                        if(widget.post.isActive)
-                        PopupMenuItem(
-                          value: 'archive',
-                          child: Row(
-                            children: [
+                        if (widget.post.isActive)
+                          PopupMenuItem(
+                            value: 'archive',
+                            child: Row(children: [
                               Icon(Icons.archive_outlined, size: 20.sp),
                               SizedBox(width: 8.w),
                               Text(strings.archive),
-                            ],
-                          ),
-                        )else
-                        PopupMenuItem(
-                          value: 'restore',
-                          child: Row(
-                            children: [
+                            ]),
+                          )
+                        else
+                          PopupMenuItem(
+                            value: 'restore',
+                            child: Row(children: [
                               Icon(Icons.restore_outlined, size: 20.sp),
                               SizedBox(width: 8.w),
                               Text(strings.restore),
-                            ],
+                            ]),
                           ),
-                        ),
                         PopupMenuItem(
                           value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_outlined, size: 20.sp),
-                              SizedBox(width: 8.w),
-                              Text(strings.edit),
-                            ],
-                          ),
+                          child: Row(children: [
+                            Icon(Icons.edit_outlined, size: 20.sp),
+                            SizedBox(width: 8.w),
+                            Text(strings.edit),
+                          ]),
                         ),
                         PopupMenuItem(
                           value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.delete_outline,
-                                size: 20.sp,
-                                color: Colors.red[700],
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                strings.delete,
-                                style: TextStyle(color: Colors.red[700]),
-                              ),
-                            ],
-                          ),
+                          child: Row(children: [
+                            Icon(Icons.delete_outline,
+                                size: 20.sp, color: Colors.red[700]),
+                            SizedBox(width: 8.w),
+                            Text(strings.delete,
+                                style: TextStyle(color: Colors.red[700])),
+                          ]),
                         ),
                       ],
                     ],
@@ -428,6 +436,8 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
               ],
             ),
+
+            // ── Body ─────────────────────────────────────────────────────────
             SizedBox(height: 16.h),
             Text(
               _showTranslation && _translatedDesc != null
@@ -436,9 +446,10 @@ class _PostWidgetState extends State<PostWidget> {
               style: TextStyle(
                 fontSize: 14.sp,
                 height: 1.4,
-                fontStyle: _showTranslation && _translatedDesc != null
-                    ? FontStyle.italic
-                    : FontStyle.normal,
+                fontStyle:
+                    _showTranslation && _translatedDesc != null
+                        ? FontStyle.italic
+                        : FontStyle.normal,
                 color: theme.onSurface,
               ),
               maxLines: 3,
@@ -450,90 +461,85 @@ class _PostWidgetState extends State<PostWidget> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _showTranslation
-                              ? Icons.translate_outlined
-                              : Icons.translate,
-                          size: 14.sp,
-                          color: Colors.blue,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          _showTranslation
-                              ? strings.seeOriginal
-                              : strings.translate,
-                          style: const TextStyle(color: Colors.blue),
-                        ),
-                      ],
-                    ),
+                      child:
+                          CircularProgressIndicator(strokeWidth: 2))
+                  : Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(
+                        _showTranslation
+                            ? Icons.translate_outlined
+                            : Icons.translate,
+                        size: 14.sp,
+                        color: Colors.blue,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        _showTranslation
+                            ? strings.seeOriginal
+                            : strings.translate,
+                        style: const TextStyle(color: Colors.blue),
+                      ),
+                    ]),
             ),
+
+            // ── Media ─────────────────────────────────────────────────────────
             if (widget.post.mediaUrl != null &&
                 widget.post.mediaUrl!.isNotEmpty)
               GestureDetector(
                 onTap: _openFullScreenMedia,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
-                    Visibility(
-                      visible: !_isVideo,
-                      child: Positioned(
-                        bottom: 8.h,
-                        right: 8.w,
-                        child: Icon(
-                          Icons.fullscreen,
-                          color: ColorManager.borderColor,
-                          size: 35.sp,
-                        ),
-                      ),
+                child: Stack(alignment: Alignment.center, children: [
+                  _isVideo ? _buildVideoPlayer() : _buildImageWidget(),
+                  Visibility(
+                    visible: !_isVideo,
+                    child: Positioned(
+                      bottom: 8.h,
+                      right: 8.w,
+                      child: Icon(Icons.fullscreen,
+                          color: ColorManager.borderColor, size: 35.sp),
                     ),
-                  ],
-                ),
+                  ),
+                ]),
               ),
+
+            // ── Actions ───────────────────────────────────────────────────────
             SizedBox(height: 16.h),
-            Row(
-              children: [
-                _buildActionButton(
-                  icon: _isLiked ? Icons.favorite : Icons.favorite_border,
-                  label: _likesCount.toString(),
-                  color: _isLiked ? Colors.red : Colors.grey[600],
-                  onTap: _handleLike,
-                  onLongPress: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) => BlocProvider(
-                        create: (_) =>
-                            LikesBloc(postRepo: getIt<PostsRepositoryImpl>()),
-                        child: LikesSheet(postId: widget.post.id),
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(width: 16.w),
-                _buildActionButton(
-                  icon: Icons.comment_outlined,
-                  label: _commentsCount.toString(),
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => CommentsBottomSheet(
-                        postId: widget.post.id,
-                        onCommentCountChanged: (newCount) =>
-                            setState(() => _commentsCount = newCount),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+            Row(children: [
+              _buildActionButton(
+                icon: _isLiked
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                label: _likesCount.toString(),
+                color: _isLiked ? Colors.red : Colors.grey[600],
+                onTap: _handleLike,
+                onLongPress: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => BlocProvider(
+                      create: (_) => LikesBloc(
+                          postRepo: getIt<PostsRepositoryImpl>()),
+                      child: LikesSheet(postId: widget.post.id),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: 16.w),
+              _buildActionButton(
+                icon: Icons.comment_outlined,
+                label: _commentsCount.toString(),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => CommentsBottomSheet(
+                      postId: widget.post.id,
+                      onCommentCountChanged: (newCount) =>
+                          setState(() => _commentsCount = newCount),
+                    ),
+                  );
+                },
+              ),
+            ]),
           ],
         ),
       ),
@@ -553,16 +559,13 @@ class _PostWidgetState extends State<PostWidget> {
       borderRadius: BorderRadius.circular(20.r),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-        child: Row(
-          children: [
-            Icon(icon, size: 28.sp, color: color ?? Colors.grey[600]),
-            SizedBox(width: 6.w),
-            Text(
-              label,
-              style: TextStyle(fontSize: 20.sp, color: Colors.grey[600]),
-            ),
-          ],
-        ),
+        child: Row(children: [
+          Icon(icon, size: 28.sp, color: color ?? Colors.grey[600]),
+          SizedBox(width: 6.w),
+          Text(label,
+              style:
+                  TextStyle(fontSize: 20.sp, color: Colors.grey[600])),
+        ]),
       ),
     );
   }
@@ -581,39 +584,193 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
- Widget _buildImageWidget() {
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(8.r),
-    child: Image.network(
-      widget.post.mediaUrl!,
-      width: double.infinity,
-      height: 200.h,
-      fit: BoxFit.cover,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (wasSynchronouslyLoaded) return child;
-        return AnimatedOpacity(
-          opacity: frame == null ? 0 : 1,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          child: child,
-        );
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          color: Colors.grey[300],
-          height: 200.h,
-          child: Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
+  Widget _buildImageWidget() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.r),
+      child: Image.network(
+        widget.post.mediaUrl!,
+        width: double.infinity,
+        height: 200.h,
+        fit: BoxFit.cover,
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded) return child;
+          return AnimatedOpacity(
+            opacity: frame == null ? 0 : 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: child,
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: Colors.grey[300],
+            height: 200.h,
+            child: Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ─── Analysis type picker bottom sheet (from post) ────────────────────────────
+
+class _AnalysisTypePickerSheet extends StatelessWidget {
+  final String videoUrl;
+  final String targetUserId;
+
+  const _AnalysisTypePickerSheet({
+    required this.videoUrl,
+    required this.targetUserId,
+  });
+
+  static const _types = [
+    (type: AnalysisType.goalkeeper, icon: Icons.sports_handball_outlined,
+     color: Color(0xFF4FC3F7)),
+    (type: AnalysisType.passing, icon: Icons.compare_arrows_rounded,
+     color: Color(0xFF81C784)),
+    (type: AnalysisType.dribbling, icon: Icons.sports_soccer,
+     color: Color(0xFFFFB74D)),
+    (type: AnalysisType.match, icon: Icons.stadium_outlined,
+     color: Color(0xFFBA68C8)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      ),
+      padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 44.w,
+              height: 4.h,
+              margin: EdgeInsets.only(bottom: 20.h),
+              decoration: BoxDecoration(
+                color: theme.onSurface.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
             ),
           ),
-        );
-      },
-    ),
-  );
+          Row(children: [
+            Icon(Icons.analytics_outlined, color: theme.primary, size: 22.sp),
+            SizedBox(width: 10.w),
+            Text(
+              'Select Analysis Type',
+              style: TextStyle(
+                  fontSize: 17.sp,
+                  fontWeight: FontWeight.w700,
+                  color: theme.onSurface),
+            ),
+          ]),
+          SizedBox(height: 6.h),
+          Text(
+            'The post video will be used as the source.',
+            style: TextStyle(
+                fontSize: 12.sp,
+                color: theme.onSurface.withOpacity(0.5)),
+          ),
+          SizedBox(height: 20.h),
+          ..._types.map((d) => _TypeTile(
+                type: d.type,
+                icon: d.icon,
+                color: d.color,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CreateAnalysisFormScreen(
+                        targetUserId: targetUserId,
+                        analysisType: d.type,
+                        prefilledVideoUrl: videoUrl,
+                      ),
+                    ),
+                  );
+                },
+              )),
+        ],
+      ),
+    );
+  }
 }
+
+class _TypeTile extends StatelessWidget {
+  final AnalysisType type;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _TypeTile({
+    required this.type,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12.r),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.07),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: color.withOpacity(0.25)),
+        ),
+        child: Row(children: [
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(icon, size: 20.sp, color: color),
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(type.label,
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: theme.onSurface)),
+                SizedBox(height: 2.h),
+                Text(type.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 11.sp,
+                        color: theme.onSurface.withOpacity(0.5))),
+              ],
+            ),
+          ),
+          Icon(Icons.arrow_forward_ios,
+              size: 14.sp, color: theme.onSurface.withOpacity(0.35)),
+        ]),
+      ),
+    );
+  }
 }

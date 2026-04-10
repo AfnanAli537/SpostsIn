@@ -19,7 +19,7 @@ import 'package:sports_in/features/main/profile/view/presentation/connections_sc
 import 'package:sports_in/features/main/profile/view/profile_section_factory.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_library_screen.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
-import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile bloc/profile_bloc.dart';
 import '../../view_model/profile bloc/profile_event.dart';

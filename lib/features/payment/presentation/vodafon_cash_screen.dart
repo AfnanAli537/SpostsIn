@@ -71,7 +71,7 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
   }
 
   void _triggerManualActivation(String txId) {
-    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId));
+    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId, targetType: widget.targetType));
   }
 
   // ── Dialog helpers ─────────────────────────────────────────────────────────

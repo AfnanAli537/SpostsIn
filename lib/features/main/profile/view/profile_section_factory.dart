@@ -7,7 +7,7 @@ import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
 import 'package:sports_in/features/main/profile/view/widgets/empty_section.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analyzed_users_screen.dart';
-import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/features/main/profile/view/widgets/profile_stats_widget.dart';
 import 'package:sports_in/core/widgets/connect_button.dart';

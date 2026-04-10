@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
-import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/target_analyses_screen.dart';
 
 class AnalyzedUsersScreen extends StatefulWidget {

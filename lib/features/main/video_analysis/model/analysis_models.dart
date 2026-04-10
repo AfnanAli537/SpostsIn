@@ -124,7 +124,6 @@ class AnalysisListItemModel {
       'analyzedVideoUrl': analyzedVideoUrl,
       'isPaid': isPaid,
       'player': player,
-      // 'playerAvatar': playerAvatar,
       'analyst': analyst,
     };
   }

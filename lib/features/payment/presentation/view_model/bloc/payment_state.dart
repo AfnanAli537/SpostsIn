@@ -15,7 +15,12 @@ final class PlansLoading extends PaymentState {
   const PlansLoading();
 }
 final class ProcessSuccessful extends PaymentState {
-  const ProcessSuccessful();
+  final String? transactionId; // Add this
+
+  const ProcessSuccessful({this.transactionId}); // Add to constructor
+
+  @override
+  List<Object?> get props => [transactionId];
 }
 final class PlansLoaded extends PaymentState {
   final List<SubscriptionPlanModel> plans;

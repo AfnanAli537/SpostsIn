@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sports_in/app/di/injection.dart';
-import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view/widgets/analysis_list_item_card.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
 

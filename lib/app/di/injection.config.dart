@@ -99,8 +99,8 @@ import 'package:sports_in/features/main/video_analysis/data/interface/i_analysis
     as _i311;
 import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart'
     as _i352;
-import 'package:sports_in/features/main/video_analysis/view_model/analysis_bloc.dart'
-    as _i199;
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart'
+    as _i251;
 import 'package:sports_in/features/notitification/data/data_source/notifi_data_source_impl.dart'
     as _i577;
 import 'package:sports_in/features/notitification/data/interface/notifi_interface.dart'
@@ -205,9 +205,6 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
     );
-    gh.factory<_i971.PaymentBloc>(
-      () => _i971.PaymentBloc(repository: gh<_i221.PaymentRepository>()),
-    );
     gh.factory<_i1047.OpportunityBloc>(
       () => _i1047.OpportunityBloc(
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
@@ -266,8 +263,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i259.AdsBloc>(
       () => _i259.AdsBloc(adsRepo: gh<_i277.AdsRepositoryImpl>()),
     );
-    gh.factory<_i199.AnalysisBloc>(
-      () => _i199.AnalysisBloc(gh<_i352.IAnalysisRepo>()),
+    gh.factory<_i971.PaymentBloc>(
+      () => _i971.PaymentBloc(
+        repository: gh<_i221.PaymentRepository>(),
+        analysisRepository: gh<_i352.IAnalysisRepo>(),
+      ),
+    );
+    gh.factory<_i251.AnalysisBloc>(
+      () => _i251.AnalysisBloc(gh<_i352.IAnalysisRepo>()),
     );
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),

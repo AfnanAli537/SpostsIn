@@ -1,4 +1,5 @@
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+import 'package:sports_in/features/main/video_analysis/model/create_analysis_response.dart';
 
 abstract class IAnalysisDataSource {
   /// GET /api/Analysis/my-analyzed-users
@@ -40,4 +41,26 @@ abstract class IAnalysisDataSource {
 
   /// DELETE /api/Analysis/{id}
   Future<void> deleteAnalysis(String id);
+  Future<CreateAnalysisResponse> analyzeGoalkeeper({
+    required String targetUserId,
+    required String videoUrl,
+    required double keeperHeightM,
+  });
+
+  Future<CreateAnalysisResponse> analyzePassing({
+    required String targetUserId,
+    required String videoUrl,
+  });
+
+  Future<CreateAnalysisResponse> analyzeDribbling({
+    required String targetUserId,
+    required String videoUrl,
+  });
+
+  Future<CreateAnalysisResponse> analyzeMatch({
+    required String targetUserId,
+    required String videoUrl,
+  });
+
+  Future<void> executePaidAnalysis(String gatewayTransactionId);
 }
