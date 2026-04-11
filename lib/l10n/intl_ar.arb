@@ -1050,7 +1050,7 @@
       "name": { "type": "String" }
     }
   },
-  "people": "أشخاص"
+  "people": "أشخاص",
   
   "@@locale": "ar",
   "userMessage": "رسالة المستخدم",

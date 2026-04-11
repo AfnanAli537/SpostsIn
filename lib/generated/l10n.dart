@@ -6769,12 +6769,6 @@ class S {
       'Right Knee Angle (degrees)',
       name: 'kpiRightKneeAngle',
       desc: '',
-  /// `User message`
-  String get userMessage {
-    return Intl.message(
-      'User message',
-      name: 'userMessage',
-      desc: 'Semantics label for a message sent by the user in the chat bubble',
       args: [],
     );
   }
@@ -6785,12 +6779,6 @@ class S {
       'Total Ball Touches & Touches/sec',
       name: 'kpiTouchesPerSec',
       desc: '',
-  /// `Bot message`
-  String get botMessage {
-    return Intl.message(
-      'Bot message',
-      name: 'botMessage',
-      desc: 'Semantics label for a message sent by the bot in the chat bubble',
       args: [],
     );
   }
@@ -6800,11 +6788,6 @@ class S {
     return Intl.message(
       'Average Player Speed (km/h)',
       name: 'kpiAvgPlayerSpeedDribbling',
-  /// `Your AI Assistant`
-  String get aiAssistantTitle {
-    return Intl.message(
-      'Your AI Assistant',
-      name: 'aiAssistantTitle',
       desc: '',
       args: [],
     );
@@ -6815,11 +6798,6 @@ class S {
     return Intl.message(
       'Average Ball Distance (meters)',
       name: 'kpiAvgBallDistance',
-  /// `Using this software you can ask questions and receive articles using artificial intelligence assistant.`
-  String get aiAssistantSubtitle {
-    return Intl.message(
-      'Using this software you can ask questions and receive articles using artificial intelligence assistant.',
-      name: 'aiAssistantSubtitle',
       desc: '',
       args: [],
     );
@@ -6850,21 +6828,6 @@ class S {
     return Intl.message(
       'Cone Passes Forward/Backward & Hits',
       name: 'kpiConePasses',
-  /// `SportsIn`
-  String get sportsinTitle {
-    return Intl.message('SportsIn', name: 'sportsinTitle', desc: '', args: []);
-  }
-
-  /// `● Online`
-  String get onlineStatus {
-    return Intl.message('● Online', name: 'onlineStatus', desc: '', args: []);
-  }
-
-  /// `Write your message`
-  String get writeMessageHint {
-    return Intl.message(
-      'Write your message',
-      name: 'writeMessageHint',
       desc: '',
       args: [],
     );
@@ -6875,11 +6838,6 @@ class S {
     return Intl.message(
       'Team Possession (%)',
       name: 'kpiTeamPossession',
-  /// `Say hello to SportsIn! `
-  String get sayHello {
-    return Intl.message(
-      'Say hello to SportsIn! ',
-      name: 'sayHello',
       desc: '',
       args: [],
     );
@@ -6890,11 +6848,6 @@ class S {
     return Intl.message(
       'Distance Covered per Team (km)',
       name: 'kpiDistanceCovered',
-  /// `Active Chats`
-  String get activeChats {
-    return Intl.message(
-      'Active Chats',
-      name: 'activeChats',
       desc: '',
       args: [],
     );
@@ -6915,16 +6868,6 @@ class S {
     return Intl.message(
       'Top Sprint Speed overall (km/h)',
       name: 'kpiTopSprintSpeedOverall',
-  /// `Ended Chats`
-  String get endedChats {
-    return Intl.message('Ended Chats', name: 'endedChats', desc: '', args: []);
-  }
-
-  /// `No chats yet.\nStart a new conversation!`
-  String get noChatsYet {
-    return Intl.message(
-      'No chats yet.\nStart a new conversation!',
-      name: 'noChatsYet',
       desc: '',
       args: [],
     );
@@ -6935,11 +6878,6 @@ class S {
     return Intl.message(
       'Total Frames Processed',
       name: 'kpiTotalFramesProcessed',
-  /// `Start Another Chat With SportsIn`
-  String get startAnotherChat {
-    return Intl.message(
-      'Start Another Chat With SportsIn',
-      name: 'startAnotherChat',
       desc: '',
       args: [],
     );
@@ -6960,16 +6898,6 @@ class S {
     return Intl.message(
       'Max Velocity',
       name: 'maxVelocity',
-  /// `Delete Chat`
-  String get deleteChat {
-    return Intl.message('Delete Chat', name: 'deleteChat', desc: '', args: []);
-  }
-
-  /// `Are you sure you want to delete this chat?`
-  String get deleteConfirmation {
-    return Intl.message(
-      'Are you sure you want to delete this chat?',
-      name: 'deleteConfirmation',
       desc: '',
       args: [],
     );
@@ -6995,16 +6923,6 @@ class S {
     return Intl.message(
       'Reaction Time',
       name: 'reactionTime',
-  /// `Rename Chat`
-  String get renameChat {
-    return Intl.message('Rename Chat', name: 'renameChat', desc: '', args: []);
-  }
-
-  /// `Enter new name`
-  String get enterNewName {
-    return Intl.message(
-      'Enter new name',
-      name: 'enterNewName',
       desc: '',
       args: [],
     );
@@ -7035,16 +6953,6 @@ class S {
     return Intl.message(
       'Drill Duration',
       name: 'drillDuration',
-  /// `Rename`
-  String get rename {
-    return Intl.message('Rename', name: 'rename', desc: '', args: []);
-  }
-
-  /// `Tap to continue this chat...`
-  String get tapToContinue {
-    return Intl.message(
-      'Tap to continue this chat...',
-      name: 'tapToContinue',
       desc: '',
       args: [],
     );
@@ -7065,16 +6973,6 @@ class S {
     return Intl.message(
       'Avg Ball Speed',
       name: 'avgBallSpeed',
-  /// `S`
-  String get sessionAvatarLabel {
-    return Intl.message('S', name: 'sessionAvatarLabel', desc: '', args: []);
-  }
-
-  /// `Notification`
-  String get notificationTitle {
-    return Intl.message(
-      'Notification',
-      name: 'notificationTitle',
       desc: '',
       args: [],
     );
@@ -7085,11 +6983,6 @@ class S {
     return Intl.message(
       'Avg Player Speed',
       name: 'avgPlayerSpeed',
-  /// `Mark all as read`
-  String get markAllAsRead {
-    return Intl.message(
-      'Mark all as read',
-      name: 'markAllAsRead',
       desc: '',
       args: [],
     );
@@ -7100,11 +6993,6 @@ class S {
     return Intl.message(
       'Avg Knee Angle',
       name: 'avgKneeAngle',
-  /// `No notifications yet`
-  String get noNotificationsYet {
-    return Intl.message(
-      'No notifications yet',
-      name: 'noNotificationsYet',
       desc: '',
       args: [],
     );
@@ -7115,11 +7003,6 @@ class S {
     return Intl.message(
       'Total Touches',
       name: 'totalTouches',
-  /// `You're all caught up!`
-  String get allCaughtUp {
-    return Intl.message(
-      'You\'re all caught up!',
-      name: 'allCaughtUp',
       desc: '',
       args: [],
     );
@@ -7130,11 +7013,6 @@ class S {
     return Intl.message(
       'Touches / sec',
       name: 'touchesPerSec',
-  /// `Request Accepted`
-  String get requestAccepted {
-    return Intl.message(
-      'Request Accepted',
-      name: 'requestAccepted',
       desc: '',
       args: [],
     );
@@ -7145,11 +7023,6 @@ class S {
     return Intl.message(
       'Avg Ball Distance',
       name: 'avgBallDistance',
-  /// `Request Declined`
-  String get requestDeclined {
-    return Intl.message(
-      'Request Declined',
-      name: 'requestDeclined',
       desc: '',
       args: [],
     );
@@ -7175,16 +7048,6 @@ class S {
     return Intl.message(
       'Backward\nPasses',
       name: 'backwardPasses',
-  /// `Recent`
-  String get categoryRecent {
-    return Intl.message('Recent', name: 'categoryRecent', desc: '', args: []);
-  }
-
-  /// `Requests`
-  String get categoryRequests {
-    return Intl.message(
-      'Requests',
-      name: 'categoryRequests',
       desc: '',
       args: [],
     );
@@ -7200,11 +7063,6 @@ class S {
     return Intl.message(
       'Hip Variance',
       name: 'hipVariance',
-  /// `Reactions`
-  String get categoryReactions {
-    return Intl.message(
-      'Reactions',
-      name: 'categoryReactions',
       desc: '',
       args: [],
     );
@@ -7235,11 +7093,6 @@ class S {
     return Intl.message(
       'Distance Covered',
       name: 'distanceCovered',
-  /// `Opportunities`
-  String get categoryOpportunities {
-    return Intl.message(
-      'Opportunities',
-      name: 'categoryOpportunities',
       desc: '',
       args: [],
     );
@@ -7309,6 +7162,257 @@ class S {
   String get people {
     return Intl.message('People', name: 'people', desc: '', args: []);
   }
+
+  /// `User message`
+  String get userMessage {
+    return Intl.message(
+      'User message',
+      name: 'userMessage',
+      desc: 'Semantics label for a message sent by the user in the chat bubble',
+      args: [],
+    );
+  }
+
+  /// `Bot message`
+  String get botMessage {
+    return Intl.message(
+      'Bot message',
+      name: 'botMessage',
+      desc: 'Semantics label for a message sent by the bot in the chat bubble',
+      args: [],
+    );
+  }
+
+  /// `Your AI Assistant`
+  String get aiAssistantTitle {
+    return Intl.message(
+      'Your AI Assistant',
+      name: 'aiAssistantTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Using this software you can ask questions and receive articles using artificial intelligence assistant.`
+  String get aiAssistantSubtitle {
+    return Intl.message(
+      'Using this software you can ask questions and receive articles using artificial intelligence assistant.',
+      name: 'aiAssistantSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SportsIn`
+  String get sportsinTitle {
+    return Intl.message('SportsIn', name: 'sportsinTitle', desc: '', args: []);
+  }
+
+  /// `● Online`
+  String get onlineStatus {
+    return Intl.message('● Online', name: 'onlineStatus', desc: '', args: []);
+  }
+
+  /// `Write your message`
+  String get writeMessageHint {
+    return Intl.message(
+      'Write your message',
+      name: 'writeMessageHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Say hello to SportsIn! `
+  String get sayHello {
+    return Intl.message(
+      'Say hello to SportsIn! ',
+      name: 'sayHello',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active Chats`
+  String get activeChats {
+    return Intl.message(
+      'Active Chats',
+      name: 'activeChats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ended Chats`
+  String get endedChats {
+    return Intl.message('Ended Chats', name: 'endedChats', desc: '', args: []);
+  }
+
+  /// `No chats yet.\nStart a new conversation!`
+  String get noChatsYet {
+    return Intl.message(
+      'No chats yet.\nStart a new conversation!',
+      name: 'noChatsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Another Chat With SportsIn`
+  String get startAnotherChat {
+    return Intl.message(
+      'Start Another Chat With SportsIn',
+      name: 'startAnotherChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Chat`
+  String get deleteChat {
+    return Intl.message('Delete Chat', name: 'deleteChat', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to delete this chat?`
+  String get deleteConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this chat?',
+      name: 'deleteConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename Chat`
+  String get renameChat {
+    return Intl.message('Rename Chat', name: 'renameChat', desc: '', args: []);
+  }
+
+  /// `Enter new name`
+  String get enterNewName {
+    return Intl.message(
+      'Enter new name',
+      name: 'enterNewName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename`
+  String get rename {
+    return Intl.message('Rename', name: 'rename', desc: '', args: []);
+  }
+
+  /// `Tap to continue this chat...`
+  String get tapToContinue {
+    return Intl.message(
+      'Tap to continue this chat...',
+      name: 'tapToContinue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `S`
+  String get sessionAvatarLabel {
+    return Intl.message('S', name: 'sessionAvatarLabel', desc: '', args: []);
+  }
+
+  /// `Notification`
+  String get notificationTitle {
+    return Intl.message(
+      'Notification',
+      name: 'notificationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mark all as read`
+  String get markAllAsRead {
+    return Intl.message(
+      'Mark all as read',
+      name: 'markAllAsRead',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No notifications yet`
+  String get noNotificationsYet {
+    return Intl.message(
+      'No notifications yet',
+      name: 'noNotificationsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You're all caught up!`
+  String get allCaughtUp {
+    return Intl.message(
+      'You\'re all caught up!',
+      name: 'allCaughtUp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Accepted`
+  String get requestAccepted {
+    return Intl.message(
+      'Request Accepted',
+      name: 'requestAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Declined`
+  String get requestDeclined {
+    return Intl.message(
+      'Request Declined',
+      name: 'requestDeclined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recent`
+  String get categoryRecent {
+    return Intl.message('Recent', name: 'categoryRecent', desc: '', args: []);
+  }
+
+  /// `Requests`
+  String get categoryRequests {
+    return Intl.message(
+      'Requests',
+      name: 'categoryRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reactions`
+  String get categoryReactions {
+    return Intl.message(
+      'Reactions',
+      name: 'categoryReactions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opportunities`
+  String get categoryOpportunities {
+    return Intl.message(
+      'Opportunities',
+      name: 'categoryOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Today`
   String get dateToday {
     return Intl.message('Today', name: 'dateToday', desc: '', args: []);

@@ -114,7 +114,7 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
     final isPaid = widget.item.isPaid;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24.r),

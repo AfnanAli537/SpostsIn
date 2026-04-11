@@ -105,7 +105,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                           buildOptionCard(
                             icon: Icons.school_outlined,
                             iconColor: const Color(0xFF66BB6A),
-                            title: 'Create Course',
+                            title: strings.createCourse,
                             onTap: () {
                               Navigator.pop(context);
                               Navigator.push(

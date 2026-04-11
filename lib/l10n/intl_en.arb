@@ -1078,8 +1078,7 @@
       "name": { "type": "String" }
     }
   },
-  "people": "People"
-}
+  "people": "People",
   
   "@@locale": "en",
   "userMessage": "User message",

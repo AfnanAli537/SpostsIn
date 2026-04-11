@@ -218,11 +218,11 @@ class _AnalysisVideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.surface,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
@@ -253,10 +253,10 @@ class _AnalysisVideoCard extends StatelessWidget {
                         : Icons.video_library,
                 size: 16.sp,
                 color: isLocked
-                    ? Colors.grey
+                    ? theme.onError
                     : isAnalyzed
-                        ? theme.colorScheme.onTertiaryContainer
-                        : theme.colorScheme.primary,
+                        ? theme.onTertiaryContainer
+                        : theme.primary,
               ),
               SizedBox(width: 8.w),
               Text(
@@ -268,7 +268,10 @@ class _AnalysisVideoCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
-                  color: isLocked ? Colors.grey : Colors.black87,
+                  color: isLocked ? theme.onError
+                    : isAnalyzed
+                        ? theme.onTertiaryContainer
+                        : theme.primary,
                 ),
               ),
             ]),
@@ -312,10 +315,11 @@ class _ReportProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.surface,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
