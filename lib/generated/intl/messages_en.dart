@@ -1405,7 +1405,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "searchByPlayerName": MessageLookupByLibrary.simpleMessage(
-      "Search by player name…",
+      "Search by player name",
+    ),
+    "searchByUserName": MessageLookupByLibrary.simpleMessage(
+      "Search by user name",
     ),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
     "secondsAgo": m33,

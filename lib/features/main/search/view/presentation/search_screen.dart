@@ -228,7 +228,7 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
               onTapOutside: (_) => _searchFocusNode.unfocus(),
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText: string.search,
+                hintText: string.searchByUserName,
                 hintStyle: TextStyle(color: theme.hintColor),
                 prefixIcon:
                     Icon(Icons.search, color: theme.iconTheme.color),

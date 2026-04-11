@@ -43,9 +43,7 @@ class PlayerRegisterScreen extends StatelessWidget {
 
   void _onSportChanged(String? selectedSport, S string) {
     sportNotifier.value = selectedSport;
-    if (!RegisterLists.isTeamSport(string, selectedSport)) {
-      positionNotifier.value = null;
-    }
+    positionNotifier.value = null;
   }
 
   void _onRegister(BuildContext context, S string) {

@@ -574,7 +574,7 @@ class CoursesTabState extends State<CoursesTab>
           ),
         ),
         SizedBox(
-          height: 310.h,
+          height: 325.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),

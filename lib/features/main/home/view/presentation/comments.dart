@@ -316,95 +316,142 @@ class _CommentsBottomSheetContentState
         children: [
           GestureDetector(
             onTap: () => _navigateToUserProfile(context, comment.userId),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundImage: comment.profilePictureUrl != null
-                  ? NetworkImage(comment.profilePictureUrl!)
-                  : null,
-              backgroundColor: Colors.grey[300],
-              child: comment.profilePictureUrl == null
-                  ? Text(
-                      (comment.fullName.isNotEmpty ? comment.fullName[0] : 'U')
-                          .toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: theme.onSurface,
-                      ),
-                    )
-                  : null,
-            ),
+            child: _buildAvatarWidget(comment, theme),
           ),
           const SizedBox(width: 12),
-          GestureDetector(
-            onTap: () => _navigateToUserProfile(context, comment.userId),
-            child: Expanded(
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _navigateToUserProfile(context, comment.userId),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text(
-                        comment.fullName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: theme.onSurface,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              comment.fullName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: theme.onSurface,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              formatTimeAgo(context, comment.createdAt.toUtc()),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        formatTimeAgo(context, comment.createdAt.toUtc()),
-                        style: TextStyle(color: theme.onSurface, fontSize: 12),
-                      ),
+                      if (isCurrentUser)
+                        SizedBox(
+                          width: 24,
+                          child: PopupMenuButton<String>(
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(Icons.more_vert, size: 18),
+                            iconColor: Colors.grey[600],
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                _startEdit(comment);
+                              } else if (value == 'delete') {
+                                _showDeleteDialog(context, comment);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.edit, size: 18),
+                                    const SizedBox(width: 8),
+                                    Text(strings.edit),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.delete,
+                                        size: 18, color: Colors.red),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      strings.delete,
+                                      style:
+                                          const TextStyle(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text(
                     comment.text,
-                    style: TextStyle(fontSize: 14, color: theme.onSurface),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.onSurface,
+                      height: 1.4,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          if (isCurrentUser)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
-              onSelected: (value) {
-                if (value == 'edit') {
-                  _startEdit(comment);
-                } else if (value == 'delete') {
-                  _showDeleteDialog(context, comment);
-                }
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.edit, size: 18),
-                      const SizedBox(width: 8),
-                      Text(strings.edit),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.delete, size: 18, color: Colors.red),
-                      const SizedBox(width: 8),
-                      Text(
-                        strings.delete,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
         ],
       ),
     );
+  }
+
+  Widget _buildAvatarWidget(CommentModel comment, ColorScheme theme) {
+    final initials =
+        (comment.fullName.isNotEmpty ? comment.fullName[0] : 'U').toUpperCase();
+
+    if (comment.profilePictureUrl != null &&
+        comment.profilePictureUrl!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: Colors.grey[300],
+        backgroundImage: NetworkImage(comment.profilePictureUrl!),
+        onBackgroundImageError: (exception, stackTrace) {
+          // Fallback to initials if image fails to load
+        },
+        child: Text(
+          initials,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 10,
+          ),
+        ),
+      );
+    } else {
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: Colors.grey[400],
+        child: Text(
+          initials,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
   }
 
   void _startEdit(CommentModel comment) {
@@ -553,7 +600,6 @@ class _CommentsBottomSheetContentState
                                       text: _commentController.text.trim(),
                                     ),
                                   );
-                                  _commentController.clear();
                                 }
                               },
                         child: Text(

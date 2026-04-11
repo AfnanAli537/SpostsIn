@@ -5863,11 +5863,21 @@ class S {
     return Intl.message('Match', name: 'match', desc: '', args: []);
   }
 
-  /// `Search by player name…`
+  /// `Search by player name`
   String get searchByPlayerName {
     return Intl.message(
-      'Search by player name…',
+      'Search by player name',
       name: 'searchByPlayerName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search by user name`
+  String get searchByUserName {
+    return Intl.message(
+      'Search by user name',
+      name: 'searchByUserName',
       desc: '',
       args: [],
     );
