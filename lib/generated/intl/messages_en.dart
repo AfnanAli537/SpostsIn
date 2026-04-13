@@ -244,6 +244,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "analysisSavedCompletePayment": MessageLookupByLibrary.simpleMessage(
       "Your video has been saved. Complete payment to run the AI analysis.",
     ),
+    "analysisStartFailedToast": MessageLookupByLibrary.simpleMessage(
+      "Analysis queued. Report will appear in your profile when ready.",
+    ),
+    "analysisStartedToast": MessageLookupByLibrary.simpleMessage(
+      "Analysis started! Your report will be ready soon.",
+    ),
     "analysisTypeSubtitle": MessageLookupByLibrary.simpleMessage(
       "Select the category that matches your training drill.",
     ),

@@ -326,7 +326,8 @@ class _ReportProfileHeader extends StatelessWidget {
               color: Colors.black.withOpacity(0.05), blurRadius: 10)
         ],
       ),
-      child: Row(children: [
+      child: 
+      Row(children: [
         CircleAvatar(
           radius: 28.r,
           backgroundImage:

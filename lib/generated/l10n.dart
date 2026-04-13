@@ -2829,6 +2829,26 @@ class S {
     );
   }
 
+  /// `Analysis started! Your report will be ready soon.`
+  String get analysisStartedToast {
+    return Intl.message(
+      'Analysis started! Your report will be ready soon.',
+      name: 'analysisStartedToast',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis queued. Report will appear in your profile when ready.`
+  String get analysisStartFailedToast {
+    return Intl.message(
+      'Analysis queued. Report will appear in your profile when ready.',
+      name: 'analysisStartFailedToast',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Archive`
   String get archive {
     return Intl.message('Archive', name: 'archive', desc: '', args: []);

@@ -368,6 +368,8 @@
   "failedToLoadVideo": "Failed to load video",
   "analyzeVideoComingSoon": "Analyze video feature coming soon",
   "analyzeVideo": "Analyze Video",
+  "analysisStartedToast": "Analysis started! Your report will be ready soon.",
+  "analysisStartFailedToast": "Analysis queued. Report will appear in your profile when ready.",
   "archive": "Archive",
   "activate": "Activate",
   "pay": "Pay",

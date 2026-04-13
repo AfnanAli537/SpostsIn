@@ -242,6 +242,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "analysisSavedCompletePayment": MessageLookupByLibrary.simpleMessage(
       "تم حفظ الفيديو الخاص بك. أكمل الدفع لتشغيل تحليل الذكاء الاصطناعي.",
     ),
+    "analysisStartFailedToast": MessageLookupByLibrary.simpleMessage(
+      "تم إضافة التحليل إلى قائمة الانتظار. سيتم عرض التقرير في ملفك الشخصي عندما يكون جاهزًا.",
+    ),
+    "analysisStartedToast": MessageLookupByLibrary.simpleMessage(
+      "تم بدء التحليل! سيكون تقريرك جاهزًا قريبًا.",
+    ),
     "analysisTypeSubtitle": MessageLookupByLibrary.simpleMessage(
       "اختر الفئة التي تناسب تمرينك التدريبي.",
     ),

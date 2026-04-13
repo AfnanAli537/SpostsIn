@@ -345,6 +345,8 @@
   "failedToLoadVideo": "فشل تحميل الفيديو",
   "analyzeVideoComingSoon": "ميزة تحليل الفيديو قريباً",
   "analyzeVideo": "تحليل الفيديو",
+  "analysisStartedToast": "تم بدء التحليل! سيكون تقريرك جاهزًا قريبًا.",
+  "analysisStartFailedToast": "تم إضافة التحليل إلى قائمة الانتظار. سيتم عرض التقرير في ملفك الشخصي عندما يكون جاهزًا.",
   "archive": "أرشفة",
   "pay": "دفع",
   "activate": "تفعيل",
