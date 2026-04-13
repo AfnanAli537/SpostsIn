@@ -51,19 +51,6 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
   void initState() {
     super.initState();
     final playerData = widget.profile.playerData!;
-    
-    // 🔍 Debug logging for sport field issue
-    if (kDebugMode) {
-      debugPrint('═══════════════════════════════════════');
-      debugPrint('🔍 PlayerEditScreen Initialization');
-      debugPrint('═══════════════════════════════════════');
-      debugPrint('playerData.specializedSport: "${playerData.specializedSport}"');
-      debugPrint('playerData.specializedSport type: ${playerData.specializedSport.runtimeType}');
-      debugPrint('playerData.specializedSport isEmpty: ${playerData.specializedSport?.isEmpty}');
-      debugPrint('playerData.specializedSport == null: ${playerData.specializedSport == null}');
-      debugPrint('═══════════════════════════════════════');
-    }
-    
     firstNameController = TextEditingController(text: widget.profile.name.split(' ').first);
     lastNameController = TextEditingController(text: widget.profile.name.split(' ').last);
     heightController = TextEditingController(text: playerData.height?.toString() ?? '');
@@ -121,8 +108,8 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
       return;
     }
 
-    final int? parsedHeight = int.tryParse(heightController.text.trim());
-    final int? parsedWeight = int.tryParse(weightController.text.trim());
+    final double? parsedHeight = double.tryParse(heightController.text.trim());
+    final double? parsedWeight = double.tryParse(weightController.text.trim());
     final int? parsedAge = int.tryParse(ageController.text.trim());
 
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(

@@ -66,8 +66,8 @@ class PlayerRegisterScreen extends StatelessWidget {
 
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
 
-    final int? parsedHeight = int.tryParse(heightController.text.trim());
-    final int? parsedWeight = int.tryParse(weightController.text.trim());
+    final double? parsedHeight = double.tryParse(heightController.text.trim());
+    final double? parsedWeight = double.tryParse(weightController.text.trim());
     final int? parsedAge = int.tryParse(ageController.text.trim());
 
     final player = PlayerModel(

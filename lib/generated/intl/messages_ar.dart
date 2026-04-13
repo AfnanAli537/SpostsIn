@@ -784,6 +784,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidEmailOrPassword": MessageLookupByLibrary.simpleMessage(
       "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
     ),
+    "invalidExperience": MessageLookupByLibrary.simpleMessage(
+      "يجب على سنين الخبرة ان لا تتجاوز ال 60 عاماً",
+    ),
     "invalidField": m16,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال طول صالح (100–250 سم)",
@@ -1371,6 +1374,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "sayHello": MessageLookupByLibrary.simpleMessage("قل مرحباً لـ SportsIn! "),
     "scout": MessageLookupByLibrary.simpleMessage("مستكشف مواهب"),
     "search": MessageLookupByLibrary.simpleMessage("أبحث"),
+    "searchByPlayerInstruction1": MessageLookupByLibrary.simpleMessage(
+      "ابحث عن تحليلات الفيديو العامة",
+    ),
+    "searchByPlayerInstruction2": MessageLookupByLibrary.simpleMessage(
+      "أدخل اسم اللاعب أو عدل حسب نوع التحليل",
+    ),
     "searchByPlayerName": MessageLookupByLibrary.simpleMessage(
       "ابحث باسم اللاعب",
     ),

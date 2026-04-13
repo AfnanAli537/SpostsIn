@@ -428,6 +428,7 @@ class _VideoAnalysisSearchTabState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final strings = S.of(context);
 
     return Column(
       children: [
@@ -440,7 +441,7 @@ class _VideoAnalysisSearchTabState
             onChanged: (_) => setState(() {}),
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
-              hintText: 'Search by player name…',
+              hintText: strings.searchByPlayerName,
               hintStyle: TextStyle(color: theme.hintColor),
               prefixIcon:
                   Icon(Icons.search, color: theme.iconTheme.color),
@@ -485,7 +486,7 @@ class _VideoAnalysisSearchTabState
           child: BlocBuilder<AnalysisBloc, AnalysisState>(
             builder: (context, state) {
               if (state is AnalysisInitial) {
-                return _buildHint(theme);
+                return _buildHint(theme,strings);
               }
               if (state is AnalysisSearchLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -503,7 +504,7 @@ class _VideoAnalysisSearchTabState
                       SizedBox(height: 12.h),
                       ElevatedButton(
                         onPressed: _search,
-                        child: const Text('Retry'),
+                        child: Text(strings.retry),
                       ),
                     ],
                   ),
@@ -520,7 +521,7 @@ class _VideoAnalysisSearchTabState
                             color: theme.colorScheme.onSurface
                                 .withOpacity(0.25)),
                         SizedBox(height: 12.h),
-                        Text('No analyses found',
+                        Text(strings.noAnalysesFound,
                             style: TextStyle(
                                 fontSize: 14.sp,
                                 color: theme.colorScheme.onSurface
@@ -570,7 +571,7 @@ class _VideoAnalysisSearchTabState
     );
   }
 
-  Widget _buildHint(ThemeData theme) => Center(
+  Widget _buildHint(ThemeData theme, S strings) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -581,7 +582,7 @@ class _VideoAnalysisSearchTabState
             ),
             SizedBox(height: 14.h),
             Text(
-              'Search for public video analyses',
+              strings.searchByPlayerInstruction1,
               style: TextStyle(
                 fontSize: 14.sp,
                 color: theme.colorScheme.onSurface.withOpacity(0.45),
@@ -589,7 +590,7 @@ class _VideoAnalysisSearchTabState
             ),
             SizedBox(height: 6.h),
             Text(
-              'Type a player name or filter by analysis type',
+              strings.searchByPlayerInstruction2,
               style: TextStyle(
                 fontSize: 12.sp,
                 color: theme.colorScheme.onSurface.withOpacity(0.3),

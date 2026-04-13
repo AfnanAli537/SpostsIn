@@ -944,10 +944,10 @@ class S {
     );
   }
 
-  /// `Please enter your Experience years.`
+  /// `Please enter a valid Experience years (1-60).`
   String get invalidExperience {
     return Intl.message(
-      'Please enter your Experience years.',
+      'Please enter a valid Experience years (1-60).',
       name: 'invalidExperience',
       desc: '',
       args: [],
@@ -5868,6 +5868,26 @@ class S {
     return Intl.message(
       'Search by player name',
       name: 'searchByPlayerName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search for public video analyses`
+  String get searchByPlayerInstruction1 {
+    return Intl.message(
+      'Search for public video analyses',
+      name: 'searchByPlayerInstruction1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Type a player's name or filter by analysis type`
+  String get searchByPlayerInstruction2 {
+    return Intl.message(
+      'Type a player\'s name or filter by analysis type',
+      name: 'searchByPlayerInstruction2',
       desc: '',
       args: [],
     );

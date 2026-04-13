@@ -816,7 +816,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Invalid email or password.",
     ),
     "invalidExperience": MessageLookupByLibrary.simpleMessage(
-      "Please enter your Experience years.",
+      "Please enter a valid Experience years (1-60).",
     ),
     "invalidField": m16,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
@@ -1404,6 +1404,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "sayHello": MessageLookupByLibrary.simpleMessage("Say hello to SportsIn! "),
     "scout": MessageLookupByLibrary.simpleMessage("Scout"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
+    "searchByPlayerInstruction1": MessageLookupByLibrary.simpleMessage(
+      "Search for public video analyses",
+    ),
+    "searchByPlayerInstruction2": MessageLookupByLibrary.simpleMessage(
+      "Type a player\'s name or filter by analysis type",
+    ),
     "searchByPlayerName": MessageLookupByLibrary.simpleMessage(
       "Search by player name",
     ),
