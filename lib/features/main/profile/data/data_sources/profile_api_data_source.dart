@@ -820,7 +820,7 @@ class ApiProfileDataSource implements IProfileDataSource {
     position: json['position'],
     height: json['height']?.toString(),
     weight: json['weight']?.toString(),
-    preferredFoot: null,
+    // preferredFoot: null,
     age: json['age']?.toString(),
     specializedSport: sportsText ?? json['specialization'],
     yearsOfExperience: json['yearsOfExperience'],

@@ -169,7 +169,7 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
                           ),
                           SizedBox(height: 16.h),
 
-                          // ✅ Bio/Description Field
+                          // Bio/Description Field
                           RegisterTextField(
                             controller: bioController,
                             labelText: string.bio,

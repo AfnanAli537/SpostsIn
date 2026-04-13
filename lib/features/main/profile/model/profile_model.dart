@@ -508,7 +508,7 @@ class PlayerSpecificData {
   final String? position;
   final String? height;
   final String? weight;
-  final String? preferredFoot;
+  // final String? preferredFoot;
   final String? age;
   final String? specializedSport;
   final int? yearsOfExperience;
@@ -519,7 +519,7 @@ class PlayerSpecificData {
     this.position,
     this.height,
     this.weight,
-    this.preferredFoot,
+    // this.preferredFoot,
     this.age,
     this.specializedSport,
     this.yearsOfExperience,
@@ -530,11 +530,11 @@ class PlayerSpecificData {
       position: json['position'],
       height: json['height']?.toString(),
       weight: json['weight']?.toString(),
-      preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
+      // preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
       specializedSport:
-          EnumMapper.sportIdToLabel(json['sports']) ??
-          json['specialized_sport'],
+          EnumMapper.sportIdToLabel(json['sports']),
+          // ??json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       gender: json['gender'],
@@ -546,7 +546,7 @@ class PlayerSpecificData {
       'position': position,
       'height': height,
       'weight': weight,
-      'preferredFoot': preferredFoot,
+      // 'preferredFoot': preferredFoot,
       'age': age,
       'specializedSport': specializedSport,
       'yearsOfExperience': yearsOfExperience,

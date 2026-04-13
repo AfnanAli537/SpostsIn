@@ -236,7 +236,7 @@ class ProfileSectionFactory {
         ),
       );
     }
-
+  sections.add(SizedBox(height: 42.h)); 
     return sections;
   }
 

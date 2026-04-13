@@ -85,7 +85,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
       bio: bioController.text.trim(),
       // gender: genderNotifier.value,
       // location: locationNotifier.value,
-      specialization: sportNameNotifier.value,
+      sports: sportNameNotifier.value != null ? [sportNameNotifier.value!] : null,
       yearsOfExperience: parsedExperience,
     );
 
@@ -161,7 +161,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
                           ),
                           SizedBox(height: 16.h),
 
-                          // ✅ Bio/Description Field
+                          // Bio/Description Field
                           RegisterTextField(
                             controller: bioController,
                             labelText: string.bio,
@@ -213,7 +213,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
                               return CustomElevatedButton(
                                 text: isLoading ? string.loading : string.save,
                                 isLoading: isLoading,
-                                enabled: !isLoading, // ✅ Disable during loading
+                                enabled: !isLoading, // Disable during loading
                                 onPressed: () => _onUpdate(context, string),
                               );
                             },

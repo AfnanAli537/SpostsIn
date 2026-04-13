@@ -24,8 +24,8 @@ class UserModel extends Equatable {
   // Player-specific
   final String? sport;
   final String? position;
-  final int? height;
-  final int? weight;
+  final double? height;
+  final double? weight;
   final int? age;
   final bool? hasClub;
 
@@ -85,8 +85,8 @@ class UserModel extends Equatable {
     String? sport,
     String? position,
     String? birthDate,
-    int? height,
-    int? weight,
+    double? height,
+    double? weight,
     int? age,
     String? nationality,
     bool? hasClub,

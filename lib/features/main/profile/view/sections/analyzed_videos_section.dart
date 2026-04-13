@@ -33,7 +33,7 @@ class AnalyzedVideosSection extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 8.w),
+          padding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 8.h),
           itemCount: videos.length > 2 ? 2 : videos.length,
           itemBuilder: (context, index) {
             final item = videos[index];

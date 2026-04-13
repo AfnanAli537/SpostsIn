@@ -121,7 +121,7 @@
   "enterAge": "Please enter your age",
   "invalidAge": "Please enter a valid age (5-99)",
   "enterExperience": "Please enter your Experience years.",
-  "invalidExperience": "Please enter your Experience years.",
+  "invalidExperience": "Please enter a valid Experience years (1-60).",
   "enterDate": "Please select a date",
   "selectAtLeastOne": "Please select at least one sport",
   "select": "Select",
@@ -901,7 +901,10 @@
   "passing": "Passing",
   "dribbling": "Dribbling",
   "match": "Match",
-  "searchByPlayerName": "Search by player name…",
+  "searchByPlayerName": "Search by player name",
+  "searchByPlayerInstruction1": "Search for public video analyses",
+  "searchByPlayerInstruction2": "Type a player's name or filter by analysis type",
+  "searchByUserName": "Search by user name",
   "analysisDeleted": "Analysis deleted",
   "deleteAnalysis": "Delete Analysis",
   "deleteAnalysisConfirmation": "Are you sure you want to delete this analysis?",
@@ -1078,8 +1081,7 @@
       "name": { "type": "String" }
     }
   },
-  "people": "People"
-}
+  "people": "People",
   
   "@@locale": "en",
   "userMessage": "User message",

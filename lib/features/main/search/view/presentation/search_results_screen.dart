@@ -443,19 +443,19 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       children: [
                         Icon(Icons.search_off,
                             size: 64.sp,
-                            color: theme.colorScheme.onSurfaceVariant),
+                            color: theme.colorScheme.primary),
                         SizedBox(height: 16.h),
                         Text(
                           strings.noResultsFound,
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: theme.colorScheme.onError,
                           ),
                         ),
                         SizedBox(height: 8.h),
                         Text(
                           strings.tryDifferentSearch,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: theme.colorScheme.onError,
                           ),
                         ),
                       ],

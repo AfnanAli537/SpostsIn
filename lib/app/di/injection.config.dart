@@ -287,6 +287,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i251.AnalysisBloc>(
       () => _i251.AnalysisBloc(gh<_i352.IAnalysisRepo>()),
+    );
     gh.factory<_i982.ChatbotBloc>(
       () => _i982.ChatbotBloc(repository: gh<_i1050.ChatbotRepository>()),
     );

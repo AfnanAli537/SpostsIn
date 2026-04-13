@@ -125,7 +125,7 @@
   "enterAge": "يرجى إدخال العمر",
   "invalidAge": "يرجى إدخال عمر صالح (5-99)",
   "enterExperience": "يرجى إدخال عدد سنين الخبرة",
-  "invalidEperience": "يجب على سنين الخبرة ان لا تتجاوز ال 60 عاماً",
+  "invalidExperience": "يجب على سنين الخبرة ان لا تتجاوز ال 60 عاماً",
   "enterDate": "يرجى اختيار التاريخ",
   "select": "اختر",
   "loading": "جار التحميل",
@@ -874,7 +874,10 @@
   "passing": "تمرير",
   "dribbling": "مراوغة",
   "match": "مباراة",
-  "searchByPlayerName": "ابحث باسم اللاعب…",
+  "searchByPlayerName": "ابحث باسم اللاعب",
+  "searchByPlayerInstruction1": "ابحث عن تحليلات الفيديو العامة",
+  "searchByPlayerInstruction2": "أدخل اسم اللاعب أو عدل حسب نوع التحليل",
+  "searchByUserName": "ابحث باسم المستخدم",
   "analysisDeleted": "تم حذف التحليل",
   "deleteAnalysis": "حذف التحليل",
   "deleteAnalysisConfirmation": "هل أنت متأكد من حذف هذا التحليل؟",
@@ -1050,7 +1053,7 @@
       "name": { "type": "String" }
     }
   },
-  "people": "أشخاص"
+  "people": "أشخاص",
   
   "@@locale": "ar",
   "userMessage": "رسالة المستخدم",

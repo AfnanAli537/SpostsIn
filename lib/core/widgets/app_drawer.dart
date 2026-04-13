@@ -10,14 +10,14 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
-import 'package:sports_in/features/notitification/presentation/notifi_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view/notifi_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
-import 'package:sports_in/features/login/model/login_response_model.dart'; // Ensure this is imported
+import 'package:sports_in/features/login/model/login_response_model.dart'; 
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});

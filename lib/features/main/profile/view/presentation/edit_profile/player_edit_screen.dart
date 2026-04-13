@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -50,18 +51,26 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
   void initState() {
     super.initState();
     final playerData = widget.profile.playerData!;
-    
     firstNameController = TextEditingController(text: widget.profile.name.split(' ').first);
     lastNameController = TextEditingController(text: widget.profile.name.split(' ').last);
     heightController = TextEditingController(text: playerData.height?.toString() ?? '');
     weightController = TextEditingController(text: playerData.weight?.toString() ?? '');
     ageController = TextEditingController(text: playerData.age?.toString() ?? '');
     bioController = TextEditingController(text: widget.profile.description);
-    // genderNotifier = ValueNotifier<String?>(null);
-    // locationNotifier = ValueNotifier<String?>(null);
-    sportNameNotifier = ValueNotifier<String?>(playerData.specializedSport);
-    positionNotifier = ValueNotifier<String?>(playerData.position);
-    // hasClubNotifier = ValueNotifier<bool>(false);
+    
+    final normalizedSport = _normalizeSport(playerData.specializedSport);
+    sportNameNotifier = ValueNotifier<String?>(normalizedSport);
+    
+    if (kDebugMode) {
+      debugPrint('✅ sportNameNotifier initialized with: "$normalizedSport"');
+    }
+    
+    final normalizedPosition = _normalizeSport(playerData.position);
+    positionNotifier = ValueNotifier<String?>(normalizedPosition);
+    
+    if (kDebugMode) {
+      debugPrint('✅ positionNotifier initialized with: "$normalizedPosition"');
+    }
   }
 
   @override
@@ -77,11 +86,19 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     super.dispose();
   }
 
+  String? _normalizeSport(String? value) {
+    if (value == null) return null;
+    
+    final trimmed = value.trim();
+    
+    if (trimmed.isEmpty) return null;
+    
+    return trimmed;
+  }
+
   void _onSportChanged(String? selectedSport, S string) {
     sportNameNotifier.value = selectedSport;
-    if (!RegisterLists.isTeamSport(string, selectedSport)) {
-      positionNotifier.value = null;
-    }
+    positionNotifier.value = null;
   }
 
   void _onUpdate(BuildContext context, S string) async {
@@ -91,8 +108,8 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
       return;
     }
 
-    final int? parsedHeight = int.tryParse(heightController.text.trim());
-    final int? parsedWeight = int.tryParse(weightController.text.trim());
+    final double? parsedHeight = double.tryParse(heightController.text.trim());
+    final double? parsedWeight = double.tryParse(weightController.text.trim());
     final int? parsedAge = int.tryParse(ageController.text.trim());
 
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
@@ -187,17 +204,10 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
 
                           SizedBox(height: 16.h),
 
-                          // ✅ Bio/Description Field
                           RegisterTextField(
                             controller: bioController,
                             labelText: string.bio,
                             maxLines: 4,
-                            // validator: (v) {
-                            //   if (v == null || v.trim().isEmpty) {
-                            //     return 'Please enter a bio';
-                            //   }
-                            //   return null;
-                            // },
                           ),
                           SizedBox(height: 16.h),
 
@@ -239,6 +249,10 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                           ValueListenableBuilder<String?>(
                             valueListenable: sportNameNotifier,
                             builder: (context, sport, _) {
+                              if (kDebugMode) {
+                                debugPrint('🏗️ Building sport dropdown - value: "$sport"');
+                              }
+                              
                               return AppDropdownOverlay(
                                 labelText: string.sportProfession,
                                 value: sport,
@@ -300,7 +314,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                               return CustomElevatedButton(
                                 text: isLoading ? string.loading : string.save,
                                 isLoading: isLoading,
-                                enabled: !isLoading, // ✅ Disable during loading
+                                enabled: !isLoading,
                                 onPressed: () => _onUpdate(context, string),
                               );
                             },
