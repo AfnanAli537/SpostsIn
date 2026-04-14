@@ -103,6 +103,10 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
         transactionId: S.of(context).unKnown,
         onDismissed: () {
           if (mounted) {
+            // if(widget.targetType == PaymentTargetType.videoAnalysis) {
+            //   Navigator.of(context).pop(); // Just go back to the video analysis screen
+            //   return;
+            // }
             Navigator.of(
               context,
             ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);

@@ -91,7 +91,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               Container(
                 padding: EdgeInsets.all(16.r),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                  color: theme.colorScheme.primaryContainer.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: theme.colorScheme.primary.withOpacity(0.2),
@@ -130,23 +130,23 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       ],
                     ),
                     SizedBox(height: 4.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.phone_outlined,
-                          size: 16.sp,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          '+20 155 000 0001 (24/7)',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Icon(
+                    //       Icons.phone_outlined,
+                    //       size: 16.sp,
+                    //       color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    //     ),
+                    //     SizedBox(width: 8.w),
+                    //     Text(
+                    //       '+20 155 000 0001 (24/7)',
+                    //       style: theme.textTheme.bodySmall?.copyWith(
+                    //         color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

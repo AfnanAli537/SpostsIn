@@ -12,7 +12,7 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  String _version = '1.0.0';
+  String _version = '...'; // Initial placeholder
   final String _lastUpdated = 'May 15, 2024';
 
   @override
@@ -21,6 +21,7 @@ class _AboutScreenState extends State<AboutScreen> {
     _loadPackageInfo();
   }
 
+  // Accesses the actual version of the app from pubspec.yaml
   Future<void> _loadPackageInfo() async {
     final packageInfo = await PackageInfo.fromPlatform();
     setState(() {
@@ -39,262 +40,219 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final string = S.of(context);
-
+    
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(string.aboutUs),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          string.aboutUs,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.w),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
           children: [
-            // App Logo/Info Card
+            SizedBox(height: 40.h),
+
             Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(24.r),
+              padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16.r),
+                color: theme.colorScheme.primaryContainer.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
                   color: theme.colorScheme.primary.withOpacity(0.2),
-                  width: 2,
                 ),
               ),
               child: Column(
                 children: [
-                  // App Logo/Icon
-                  Container(
-                    padding: EdgeInsets.all(16.r),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.sports_soccer,
-                      size: 48.sp,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  
                   Text(
+                    // App Name
                     'SportsIn',
-                    style: theme.textTheme.headlineMedium?.copyWith(
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  
+                  SizedBox(height: 20.h),
+
+                  // Description
                   Text(
-                    'SportsIn is a sports networking platform for athletes, coaches, and clubs. It aims to connect sports professionals and facilitate collaboration.',
+                    'SportsIn is a sports networking platform for athletes, coaches, clubs, and agents. Our mission is to connect sports professionals and facilitate collaboration.',
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
             ),
-            
-            SizedBox(height: 24.h),
-            
-            // Version Info
-            _buildInfoRow(
-              icon: Icons.info_outline,
+
+            SizedBox(height: 40.h),
+            _buildCustomTile(
               label: 'Version',
-              value: _version,
-              theme: theme,
+              value: _version, // Dynamically loaded version
+              borderColor: theme.colorScheme.onTertiaryContainer,
+              theme: theme.colorScheme,
             ),
             SizedBox(height: 12.h),
-            
-            _buildInfoRow(
-              icon: Icons.update,
+            // Info List Tiles
+            _buildCustomTile(
               label: 'Last Updated',
               value: _lastUpdated,
-              theme: theme,
+              borderColor: theme.colorScheme.onTertiaryContainer,
+              onTap: () => _launchUrl(
+                'https://drive.google.com/drive/folders/1pmlboJSg2-GHS9qh0DOYxhEfo_mDI1If?usp=drive_link',
+              ),
+              theme: theme.colorScheme,
             ),
-            
-            SizedBox(height: 32.h),
-            
-            // Connect with Us
+            SizedBox(height: 12.h),
+            _buildCustomTile(
+              label: 'Privacy Policy',
+              trailingIcon: Icons.arrow_forward,
+              borderColor: theme.colorScheme.onTertiaryContainer,
+              onTap: () => _launchUrl('https://sportsin.com/privacy'),
+              theme: theme.colorScheme,
+            ),
+            SizedBox(height: 12.h),
+
+            _buildCustomTile(
+              label: 'Terms of Service',
+              trailingIcon: Icons.arrow_forward,
+              borderColor: theme.colorScheme.onTertiaryContainer,
+              onTap: () => _launchUrl('https://sportsin.com/terms'),
+              theme: theme.colorScheme,
+            ),
+
+            SizedBox(height: 50.h),
+
+            // Social Header
             Text(
               'Connect with Us',
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16.h),
-            
+
+            SizedBox(height: 30.h),
+
+            // Social Icons Row
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildSocialButton(
-                  icon: Icons.language,
+                _buildSocialIcon(
+                  icon: Icons.language, // Using standard icons for placeholders
                   label: 'Twitter',
-                  color: const Color(0xFF1DA1F2),
+                  bgColor: theme.colorScheme.primary, // Using primary color for Twitter as seen in the image
                   onTap: () => _launchUrl('https://twitter.com/sportsin'),
+                  theme: theme.colorScheme,
                 ),
-                SizedBox(width: 16.w),
-                _buildSocialButton(
+                _buildSocialIcon(
                   icon: Icons.facebook,
                   label: 'Facebook',
-                  color: const Color(0xFF1877F2),
+                  bgColor: theme.colorScheme.primary,
                   onTap: () => _launchUrl('https://facebook.com/sportsin'),
+                  theme: theme.colorScheme,
                 ),
-                SizedBox(width: 16.w),
-                _buildSocialButton(
+                _buildSocialIcon(
                   icon: Icons.camera_alt,
                   label: 'Instagram',
-                  color: const Color(0xFFE4405F),
+                  bgColor: theme.colorScheme.primary,
                   onTap: () => _launchUrl('https://instagram.com/sportsin'),
+                  theme: theme.colorScheme,
                 ),
               ],
             ),
-            
-            SizedBox(height: 32.h),
-            
-            // Legal Links
-            _buildLegalButton(
-              label: 'Privacy Policy',
-              icon: Icons.privacy_tip_outlined,
-              onTap: () => _launchUrl('https://sportsin.com/privacy'),
-              theme: theme,
-            ),
-            SizedBox(height: 12.h),
-            
-            _buildLegalButton(
-              label: 'Terms of Service',
-              icon: Icons.description_outlined,
-              onTap: () => _launchUrl('https://sportsin.com/terms'),
-              theme: theme,
-            ),
-            
-            SizedBox(height: 32.h),
-            
-            // Copyright
-            Text(
-              '© 2024 SportsIn. All rights reserved.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
+            SizedBox(height: 40.h),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow({
-    required IconData icon,
+  // Custom tile builder for the bordered look
+  Widget _buildCustomTile({
+    required ColorScheme theme,
     required String label,
-    required String value,
-    required ThemeData theme,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: theme.colorScheme.primary, size: 24.sp),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Text(
-            value,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
+    String? value,
+    IconData? trailingIcon,
+    required Color borderColor,
+    VoidCallback? onTap,
   }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.r),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: borderColor, width: 1.2),
         ),
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(icon, color: color, size: 28.sp),
-            SizedBox(height: 4.h),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10.sp,
-                color: color,
                 fontWeight: FontWeight.w600,
+                color: theme.onSurface,
               ),
             ),
+            if (value != null)
+              Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: theme.onSurface,
+                ),
+              ),
+            if (trailingIcon != null)
+              Icon(trailingIcon, size: 20.sp, color: theme.onSurface),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLegalButton({
-    required String label,
+  // Custom builder for circular social icons
+  Widget _buildSocialIcon({
+    required ColorScheme theme,
     required IconData icon,
+    required String label,
+    required Color bgColor,
     required VoidCallback onTap,
-    required ThemeData theme,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
-      child: Container(
-        padding: EdgeInsets.all(16.r),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: CircleAvatar(
+            radius: 24.r,
+            backgroundColor: bgColor,
+            child: Icon(icon, color: theme.surface, size: 24.sp),
           ),
         ),
-        child: Row(
-          children: [
-            Icon(icon, color: theme.colorScheme.primary, size: 24.sp),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: Colors.grey[600],
-              size: 20.sp,
-            ),
-          ],
+        SizedBox(height: 12.h),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w600,
+            color: theme.onSurface,
+          ),
         ),
-      ),
+      ],
     );
   }
 }
