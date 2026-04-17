@@ -7,6 +7,10 @@ class ImageAssets {
   static const String onboarding3 = '${base}onboarding3.png';
   static const String onboarding4 = '${base}onboarding4.png';
   static const String onboarding5 = '${base}onboarding5.png';
+  static const String analyzeDrill = '${base}analysis/goalkeeper_example.png';
+  static const String analyzePlayer = '${base}analysis/passing_example.png';
+  static const String analyzeDribbling = '${base}analysis/dribbling_example.png';
+  static const String analyzeMatch = '${base}analysis/match_example.png';
   static const String logo = '${base}logo.png';
 }
 

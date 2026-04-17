@@ -519,6 +519,146 @@ class S {
     return Intl.message('Sudan', name: 'sudan', desc: '', args: []);
   }
 
+  /// `Cairo`
+  String get cairo {
+    return Intl.message('Cairo', name: 'cairo', desc: '', args: []);
+  }
+
+  /// `Giza`
+  String get giza {
+    return Intl.message('Giza', name: 'giza', desc: '', args: []);
+  }
+
+  /// `Alexandria`
+  String get alexandria {
+    return Intl.message('Alexandria', name: 'alexandria', desc: '', args: []);
+  }
+
+  /// `Dakahlia`
+  String get dakahlia {
+    return Intl.message('Dakahlia', name: 'dakahlia', desc: '', args: []);
+  }
+
+  /// `Red Sea`
+  String get redSea {
+    return Intl.message('Red Sea', name: 'redSea', desc: '', args: []);
+  }
+
+  /// `Beheira`
+  String get beheira {
+    return Intl.message('Beheira', name: 'beheira', desc: '', args: []);
+  }
+
+  /// `Fayoum`
+  String get fayoum {
+    return Intl.message('Fayoum', name: 'fayoum', desc: '', args: []);
+  }
+
+  /// `Gharbia`
+  String get gharbia {
+    return Intl.message('Gharbia', name: 'gharbia', desc: '', args: []);
+  }
+
+  /// `Ismailia`
+  String get ismailia {
+    return Intl.message('Ismailia', name: 'ismailia', desc: '', args: []);
+  }
+
+  /// `Monufia`
+  String get monufia {
+    return Intl.message('Monufia', name: 'monufia', desc: '', args: []);
+  }
+
+  /// `Minya`
+  String get minya {
+    return Intl.message('Minya', name: 'minya', desc: '', args: []);
+  }
+
+  /// `Qalyubia`
+  String get qalyubia {
+    return Intl.message('Qalyubia', name: 'qalyubia', desc: '', args: []);
+  }
+
+  /// `New Valley`
+  String get newValley {
+    return Intl.message('New Valley', name: 'newValley', desc: '', args: []);
+  }
+
+  /// `Sharqia`
+  String get sharqia {
+    return Intl.message('Sharqia', name: 'sharqia', desc: '', args: []);
+  }
+
+  /// `Suez`
+  String get suez {
+    return Intl.message('Suez', name: 'suez', desc: '', args: []);
+  }
+
+  /// `Aswan`
+  String get aswan {
+    return Intl.message('Aswan', name: 'aswan', desc: '', args: []);
+  }
+
+  /// `Asyut`
+  String get asyut {
+    return Intl.message('Asyut', name: 'asyut', desc: '', args: []);
+  }
+
+  /// `Beni Suef`
+  String get beniSuef {
+    return Intl.message('Beni Suef', name: 'beniSuef', desc: '', args: []);
+  }
+
+  /// `Port Said`
+  String get portSaid {
+    return Intl.message('Port Said', name: 'portSaid', desc: '', args: []);
+  }
+
+  /// `Damietta`
+  String get damietta {
+    return Intl.message('Damietta', name: 'damietta', desc: '', args: []);
+  }
+
+  /// `South Sinai`
+  String get southSinai {
+    return Intl.message('South Sinai', name: 'southSinai', desc: '', args: []);
+  }
+
+  /// `Kafr El Sheikh`
+  String get kafrElSheikh {
+    return Intl.message(
+      'Kafr El Sheikh',
+      name: 'kafrElSheikh',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Matrouh`
+  String get matrouh {
+    return Intl.message('Matrouh', name: 'matrouh', desc: '', args: []);
+  }
+
+  /// `Luxor`
+  String get luxor {
+    return Intl.message('Luxor', name: 'luxor', desc: '', args: []);
+  }
+
+  /// `Qena`
+  String get qena {
+    return Intl.message('Qena', name: 'qena', desc: '', args: []);
+  }
+
+  /// `North Sinai`
+  String get northSinai {
+    return Intl.message('North Sinai', name: 'northSinai', desc: '', args: []);
+  }
+
+  /// `Sohag`
+  String get sohag {
+    return Intl.message('Sohag', name: 'sohag', desc: '', args: []);
+  }
+
   /// `Select a Sport`
   String get selectSports {
     return Intl.message(
@@ -6633,40 +6773,40 @@ class S {
     return Intl.message('More info', name: 'moreInfo', desc: '', args: []);
   }
 
-  /// `Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.`
+  /// `• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
   String get goalkeeperVideoInstructions {
     return Intl.message(
-      'Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.',
+      '• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
       name: 'goalkeeperVideoInstructions',
       desc: '',
       args: [],
     );
   }
 
-  /// `Record the player's upper body and feet. Show both successful and unsuccessful passes.`
+  /// `• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
   String get passingVideoInstructions {
     return Intl.message(
-      'Record the player\'s upper body and feet. Show both successful and unsuccessful passes.',
+      '• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
       name: 'passingVideoInstructions',
       desc: '',
       args: [],
     );
   }
 
-  /// `Keep the camera steady. The player should be visible from waist up.`
+  /// `• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
   String get dribblingVideoInstructions {
     return Intl.message(
-      'Keep the camera steady. The player should be visible from waist up.',
+      '• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
       name: 'dribblingVideoInstructions',
       desc: '',
       args: [],
     );
   }
 
-  /// `Full match footage preferred. If not available, record key phases.`
+  /// `• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions`
   String get matchVideoInstructions {
     return Intl.message(
-      'Full match footage preferred. If not available, record key phases.',
+      '• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions',
       name: 'matchVideoInstructions',
       desc: '',
       args: [],

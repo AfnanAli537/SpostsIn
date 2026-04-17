@@ -206,6 +206,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aiEnhancedAnalysis": MessageLookupByLibrary.simpleMessage(
       "تحليل محسن بالذكاء الاصطناعي",
     ),
+    "alexandria": MessageLookupByLibrary.simpleMessage("الإسكندرية"),
     "algeria": MessageLookupByLibrary.simpleMessage("الجزائر"),
     "all": MessageLookupByLibrary.simpleMessage("الكل"),
     "allCaughtUp": MessageLookupByLibrary.simpleMessage(
@@ -294,6 +295,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "سيتم أرشفة هذا المنشور وإخفائه من ملفك الشخصي وتدفقك، لكن يمكنك استعادته لاحقاً. هل أنت متأكد من رغبتك في أرشفة هذا المنشور؟",
     ),
     "archivePosts": MessageLookupByLibrary.simpleMessage("المنشورات المؤرشفة"),
+    "aswan": MessageLookupByLibrary.simpleMessage("أسوان"),
+    "asyut": MessageLookupByLibrary.simpleMessage("أسيوط"),
     "august": MessageLookupByLibrary.simpleMessage("أغسطس"),
     "available": MessageLookupByLibrary.simpleMessage("متاح"),
     "availableCourses": MessageLookupByLibrary.simpleMessage("الدورات المتاحة"),
@@ -321,8 +324,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "beTheFirstToCreatePost": MessageLookupByLibrary.simpleMessage(
       "كن أول من ينشر منشوراً!",
     ),
+    "beheira": MessageLookupByLibrary.simpleMessage("البحيرة"),
+    "beniSuef": MessageLookupByLibrary.simpleMessage("بني سويف"),
     "bio": MessageLookupByLibrary.simpleMessage("الوصف"),
     "botMessage": MessageLookupByLibrary.simpleMessage("رسالة البوت"),
+    "cairo": MessageLookupByLibrary.simpleMessage("القاهرة"),
     "campaignDurationRequired": MessageLookupByLibrary.simpleMessage(
       "مدة الحملة *",
     ),
@@ -435,6 +441,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "currentVideo": MessageLookupByLibrary.simpleMessage("الفيديو الحالي"),
     "currentlyInClub": MessageLookupByLibrary.simpleMessage("حاليًا في نادٍ"),
+    "dakahlia": MessageLookupByLibrary.simpleMessage("الدقهلية"),
+    "damietta": MessageLookupByLibrary.simpleMessage("دمياط"),
     "dashboard": MessageLookupByLibrary.simpleMessage("لوحة التحكم"),
     "date": MessageLookupByLibrary.simpleMessage("التاريخ"),
     "dateToday": MessageLookupByLibrary.simpleMessage("اليوم"),
@@ -503,7 +511,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "dribblingAnalysisLabel": MessageLookupByLibrary.simpleMessage("مراوغة"),
     "dribblingVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "أبقِ الكاميرا ثابتة. يجب أن يكون اللاعب مرئياً من الخصر إلى الأعلى.",
+      "• استخدم حامل ثلاثي القوائم – كاميرا ثابتة، خلفية ثابتة\n• احصل على الجسم بالكامل – زاوية واسعة\n• صوّر من الزاوية الجانبية\n• المسافة بين المخاريط 90 سم\n• كاميرا بعيدة بما يكفي لرؤية نقطة البداية وجميع المخاريط واللاعب\n• فقط اللاعب والكرة والمخاريط في الإطار\n• ضع الكاميرا على بُعد 5–7 أمتار، بارتفاع 1.5 م\n• إضاءة جيدة\n• تجنب الملابس الفضفاضة",
     ),
     "drillDuration": MessageLookupByLibrary.simpleMessage("مدة التمرين"),
     "duration": m8,
@@ -689,6 +697,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fawry_screen_terms": MessageLookupByLibrary.simpleMessage(
       "بالمتابعة فإنك توافق على الشروط والأحكام",
     ),
+    "fayoum": MessageLookupByLibrary.simpleMessage("الفيوم"),
     "february": MessageLookupByLibrary.simpleMessage("فبراير"),
     "female": MessageLookupByLibrary.simpleMessage("أنثى"),
     "field": MessageLookupByLibrary.simpleMessage("الحقل"),
@@ -723,6 +732,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "fullName": MessageLookupByLibrary.simpleMessage("الاسم الكامل"),
     "gender": MessageLookupByLibrary.simpleMessage("الجنس"),
     "getStarted": MessageLookupByLibrary.simpleMessage("ابدأ"),
+    "gharbia": MessageLookupByLibrary.simpleMessage("الغربية"),
+    "giza": MessageLookupByLibrary.simpleMessage("الجيزة"),
     "goToProfileButton": MessageLookupByLibrary.simpleMessage(
       "انتقل إلى الملف الشخصي",
     ),
@@ -740,7 +751,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "طول حارس المرمى (متر)",
     ),
     "goalkeeperVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "سجّل من خلف المرمى أو بزاوية جانبية. تأكد من ظهور حارس المرمى بالكامل.",
+      "• استخدم حامل ثلاثي القوائم – حافظ على ثبات الكاميرا تمامًا\n• احصل على الجسم بالكامل – تأكد من أن زاوية الكاميرا واسعة بما يكفي\n• صوّر من الزاوية الجانبية (كما في المثال)\n• يجب أن يكون اللاعب هو الشخص الوحيد في الإطار، وكرة واحدة فقط مرئية\n• ضع الكاميرا على بُعد 5–7 أمتار، بارتفاع الصدر (1.5 م)\n• تأكد من الإضاءة الجيدة\n• تجنب الملابس الفضفاضة – يجب أن تكون مفاصل الركبة والورك واضحة",
     ),
     "good": MessageLookupByLibrary.simpleMessage("جيد"),
     "gotIt": MessageLookupByLibrary.simpleMessage("فهمت"),
@@ -807,10 +818,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidWeight": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال وزن صالح (30–200 كجم)",
     ),
+    "ismailia": MessageLookupByLibrary.simpleMessage("الإسماعيلية"),
     "january": MessageLookupByLibrary.simpleMessage("يناير"),
     "july": MessageLookupByLibrary.simpleMessage("يوليو"),
     "june": MessageLookupByLibrary.simpleMessage("يونيو"),
     "justNow": MessageLookupByLibrary.simpleMessage("الآن"),
+    "kafrElSheikh": MessageLookupByLibrary.simpleMessage("كفر الشيخ"),
     "kneeAngle": MessageLookupByLibrary.simpleMessage("زاوية الركبة"),
     "knowingYourGoal": MessageLookupByLibrary.simpleMessage(
       "معرفة هدفك تساعدنا على تخصيص تجربتك",
@@ -914,6 +927,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل حرف صغير واحد",
     ),
+    "luxor": MessageLookupByLibrary.simpleMessage("الأقصر"),
     "makeVideoAnalysis": MessageLookupByLibrary.simpleMessage(
       "عمل تحليل فيديو",
     ),
@@ -942,8 +956,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "matchAnalysisLabel": MessageLookupByLibrary.simpleMessage("مباراة"),
     "matchVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "يفضل استخدام لقطات المباراة كاملة. إذا لم تتوفر، سجّل المراحل الرئيسية.",
+      "• استخدم حامل ثلاثي القوائم – كاميرا ثابتة، زاوية واسعة\n• صوّر كامل الملعب\n• إضاءة جيدة وأقل قدر من الحركة في الخلفية\n• ارتفاع الكاميرا 1.5 م على الأقل لتجنب العوائق",
     ),
+    "matrouh": MessageLookupByLibrary.simpleMessage("مطروح"),
     "maxExtension": MessageLookupByLibrary.simpleMessage("أقصى امتداد"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage(
       "الحد الأقصى 500 ميجابايت",
@@ -964,8 +979,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "يجب أن تتكون من 8 أحرف على الأقل",
     ),
     "minutesAgo": m22,
+    "minya": MessageLookupByLibrary.simpleMessage("المنيا"),
     "month": MessageLookupByLibrary.simpleMessage("الشهر"),
     "monthsAgo": m23,
+    "monufia": MessageLookupByLibrary.simpleMessage("المنوفية"),
     "moreDetails": MessageLookupByLibrary.simpleMessage("المزيد من التفاصيل"),
     "moreInfo": MessageLookupByLibrary.simpleMessage("مزيد من المعلومات"),
     "morocco": MessageLookupByLibrary.simpleMessage("المغرب"),
@@ -986,6 +1003,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "newCourses": MessageLookupByLibrary.simpleMessage("دورات جديدة"),
     "newPassword": MessageLookupByLibrary.simpleMessage("كلمة المرور الجديدة"),
+    "newValley": MessageLookupByLibrary.simpleMessage("الوادي الجديد"),
     "newVideoSelected": MessageLookupByLibrary.simpleMessage(
       "تم اختيار فيديو جديد",
     ),
@@ -1084,6 +1102,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noUserDataFound": MessageLookupByLibrary.simpleMessage(
       "لم يتم العثور على بيانات المستخدم",
     ),
+    "northSinai": MessageLookupByLibrary.simpleMessage("شمال سيناء"),
     "notDetected": MessageLookupByLibrary.simpleMessage("غير محدد"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage("ليس لديك حساب؟"),
     "notificationTitle": MessageLookupByLibrary.simpleMessage("الإشعارات"),
@@ -1166,7 +1185,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "passingAnalysisLabel": MessageLookupByLibrary.simpleMessage("تمرير"),
     "passingVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "سجّل الجزء العلوي من جسم اللاعب والقدمين. أظهر التمريرات الناجحة وغير الناجحة.",
+      "• استخدم حامل ثلاثي القوائم – حافظ على ثبات الكاميرا\n• احصل على الجسم بالكامل – زاوية واسعة\n• صوّر من الزاوية الجانبية\n• اللاعب في أقصى يمين الإطار، والمدرب في أقصى اليسار\n• رؤية واضحة – فقط اللاعب والمدرب والكرة\n• ضع الكاميرا على بُعد 5–7 أمتار، بارتفاع 1.5 م\n• إضاءة جيدة\n• تجنب الملابس الفضفاضة – وضوح مفاصل الركبة والورك",
     ),
     "password": MessageLookupByLibrary.simpleMessage("كلمة المرور"),
     "passwordHintDesc": MessageLookupByLibrary.simpleMessage(
@@ -1266,6 +1285,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pointGuard": MessageLookupByLibrary.simpleMessage(
       "صانع ألعاب (Point Guard)",
     ),
+    "portSaid": MessageLookupByLibrary.simpleMessage("بورسعيد"),
     "position": MessageLookupByLibrary.simpleMessage("المركز"),
     "possession": MessageLookupByLibrary.simpleMessage("الاستحواذ"),
     "post": MessageLookupByLibrary.simpleMessage("نشر"),
@@ -1326,9 +1346,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "publicOpportunities": MessageLookupByLibrary.simpleMessage("فرصي العامة"),
     "publicPosts": MessageLookupByLibrary.simpleMessage("المنشورات العامة"),
+    "qalyubia": MessageLookupByLibrary.simpleMessage("القليوبية"),
+    "qena": MessageLookupByLibrary.simpleMessage("قنا"),
     "reactionTime": MessageLookupByLibrary.simpleMessage("وقت رد الفعل"),
     "reactionTimeShort": MessageLookupByLibrary.simpleMessage("وقت رد الفعل"),
     "recordWithCamera": MessageLookupByLibrary.simpleMessage("تصوير بالكاميرا"),
+    "redSea": MessageLookupByLibrary.simpleMessage("البحر الأحمر"),
     "register": MessageLookupByLibrary.simpleMessage("تسجيل"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم التسجيل بنجاح!",
@@ -1427,6 +1450,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "نحن لا نشارك بياناتك الشخصية مع أطراف ثالثة إلا في الحالات التالية:\n\n• الامتثال للالتزامات القانونية أو الطلبات الرسمية.\n• لتقديم الخدمات من خلال شركاء موثوقين (مثل خدمات التحليلات أو الإشعارات).",
     ),
     "sharingInfoTitle": MessageLookupByLibrary.simpleMessage("مشاركة معلوماتك"),
+    "sharqia": MessageLookupByLibrary.simpleMessage("الشرقية"),
     "shootingGuard": MessageLookupByLibrary.simpleMessage(
       "مدافع مسدد (Shooting Guard)",
     ),
@@ -1443,9 +1467,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "smallForward": MessageLookupByLibrary.simpleMessage(
       "مهاجم صغير (Small Forward)",
     ),
+    "sohag": MessageLookupByLibrary.simpleMessage("سوهاج"),
     "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
     ),
+    "southSinai": MessageLookupByLibrary.simpleMessage("جنوب سيناء"),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رمز خاص واحد",
     ),
@@ -1523,6 +1549,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "subscription_title": MessageLookupByLibrary.simpleMessage("الوصول المميز"),
     "sudan": MessageLookupByLibrary.simpleMessage("السودان"),
+    "suez": MessageLookupByLibrary.simpleMessage("السويس"),
     "supportedFormats": MessageLookupByLibrary.simpleMessage("MP4 · MOV · AVI"),
     "switchAccount": MessageLookupByLibrary.simpleMessage("تبديل الحساب"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("التايكوندو"),

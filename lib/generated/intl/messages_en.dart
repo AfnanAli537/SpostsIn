@@ -208,6 +208,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "aiEnhancedAnalysis": MessageLookupByLibrary.simpleMessage(
       "AI Enhanced Analysis",
     ),
+    "alexandria": MessageLookupByLibrary.simpleMessage("Alexandria"),
     "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "allCaughtUp": MessageLookupByLibrary.simpleMessage(
@@ -295,6 +296,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?",
     ),
     "archivePosts": MessageLookupByLibrary.simpleMessage("Archive Posts"),
+    "aswan": MessageLookupByLibrary.simpleMessage("Aswan"),
+    "asyut": MessageLookupByLibrary.simpleMessage("Asyut"),
     "august": MessageLookupByLibrary.simpleMessage("August"),
     "available": MessageLookupByLibrary.simpleMessage("Available"),
     "availableCourses": MessageLookupByLibrary.simpleMessage(
@@ -322,8 +325,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "beTheFirstToCreatePost": MessageLookupByLibrary.simpleMessage(
       "Be the first to create a post!",
     ),
+    "beheira": MessageLookupByLibrary.simpleMessage("Beheira"),
+    "beniSuef": MessageLookupByLibrary.simpleMessage("Beni Suef"),
     "bio": MessageLookupByLibrary.simpleMessage("Description"),
     "botMessage": MessageLookupByLibrary.simpleMessage("Bot message"),
+    "cairo": MessageLookupByLibrary.simpleMessage("Cairo"),
     "campaignDurationRequired": MessageLookupByLibrary.simpleMessage(
       "Campaign Duration *",
     ),
@@ -452,6 +458,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "currentlyInClub": MessageLookupByLibrary.simpleMessage(
       "Currently in a Club",
     ),
+    "dakahlia": MessageLookupByLibrary.simpleMessage("Dakahlia"),
+    "damietta": MessageLookupByLibrary.simpleMessage("Damietta"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
     "date": MessageLookupByLibrary.simpleMessage("Date"),
     "dateToday": MessageLookupByLibrary.simpleMessage("Today"),
@@ -532,7 +540,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "dribblingAnalysisLabel": MessageLookupByLibrary.simpleMessage("Dribbling"),
     "dribblingVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Keep the camera steady. The player should be visible from waist up.",
+      "• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
     ),
     "drillDuration": MessageLookupByLibrary.simpleMessage("Drill Duration"),
     "duration": m8,
@@ -722,6 +730,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fawry_screen_terms": MessageLookupByLibrary.simpleMessage(
       "By continuing you agree to our Terms",
     ),
+    "fayoum": MessageLookupByLibrary.simpleMessage("Fayoum"),
     "february": MessageLookupByLibrary.simpleMessage("February"),
     "female": MessageLookupByLibrary.simpleMessage("Female"),
     "field": MessageLookupByLibrary.simpleMessage("field"),
@@ -756,6 +765,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "fullName": MessageLookupByLibrary.simpleMessage("Full Name"),
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
+    "gharbia": MessageLookupByLibrary.simpleMessage("Gharbia"),
+    "giza": MessageLookupByLibrary.simpleMessage("Giza"),
     "goToProfileButton": MessageLookupByLibrary.simpleMessage("Go to Profile"),
     "goalkeeper": MessageLookupByLibrary.simpleMessage("Goalkeeper"),
     "goalkeeperAnalysis": MessageLookupByLibrary.simpleMessage(
@@ -771,7 +782,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Goalkeeper Height (meters)",
     ),
     "goalkeeperVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.",
+      "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
     ),
     "good": MessageLookupByLibrary.simpleMessage("Good"),
     "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
@@ -836,10 +847,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidWeight": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid weight (30–200 kg)",
     ),
+    "ismailia": MessageLookupByLibrary.simpleMessage("Ismailia"),
     "january": MessageLookupByLibrary.simpleMessage("January"),
     "july": MessageLookupByLibrary.simpleMessage("July"),
     "june": MessageLookupByLibrary.simpleMessage("June"),
     "justNow": MessageLookupByLibrary.simpleMessage("Just now"),
+    "kafrElSheikh": MessageLookupByLibrary.simpleMessage("Kafr El Sheikh"),
     "kneeAngle": MessageLookupByLibrary.simpleMessage("Knee Angle"),
     "knowingYourGoal": MessageLookupByLibrary.simpleMessage(
       "Knowing your goal helps us tailor your experience",
@@ -943,6 +956,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 lowercase letter",
     ),
+    "luxor": MessageLookupByLibrary.simpleMessage("Luxor"),
     "makeVideoAnalysis": MessageLookupByLibrary.simpleMessage(
       "Make Video Analysis",
     ),
@@ -973,8 +987,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "matchAnalysisLabel": MessageLookupByLibrary.simpleMessage("Match"),
     "matchVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Full match footage preferred. If not available, record key phases.",
+      "• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions",
     ),
+    "matrouh": MessageLookupByLibrary.simpleMessage("Matrouh"),
     "maxExtension": MessageLookupByLibrary.simpleMessage("Max Extension"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage("Max 500MB"),
     "maxVelocity": MessageLookupByLibrary.simpleMessage("Max Velocity"),
@@ -991,8 +1006,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "At least 8 characters long",
     ),
     "minutesAgo": m22,
+    "minya": MessageLookupByLibrary.simpleMessage("Minya"),
     "month": MessageLookupByLibrary.simpleMessage("Month"),
     "monthsAgo": m23,
+    "monufia": MessageLookupByLibrary.simpleMessage("Monufia"),
     "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "moreInfo": MessageLookupByLibrary.simpleMessage("More info"),
     "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
@@ -1015,6 +1032,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "newCourses": MessageLookupByLibrary.simpleMessage("New Courses"),
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
+    "newValley": MessageLookupByLibrary.simpleMessage("New Valley"),
     "newVideoSelected": MessageLookupByLibrary.simpleMessage(
       "New video selected",
     ),
@@ -1103,6 +1121,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noUserDataFound": MessageLookupByLibrary.simpleMessage(
       "No user data found",
     ),
+    "northSinai": MessageLookupByLibrary.simpleMessage("North Sinai"),
     "notDetected": MessageLookupByLibrary.simpleMessage("Not detected"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
@@ -1187,7 +1206,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "passingAnalysisLabel": MessageLookupByLibrary.simpleMessage("Passing"),
     "passingVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Record the player\'s upper body and feet. Show both successful and unsuccessful passes.",
+      "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
     ),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordHintDesc": MessageLookupByLibrary.simpleMessage(
@@ -1289,6 +1308,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please select a date",
     ),
     "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
+    "portSaid": MessageLookupByLibrary.simpleMessage("Port Said"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
     "possession": MessageLookupByLibrary.simpleMessage("Possession"),
     "post": MessageLookupByLibrary.simpleMessage("Post"),
@@ -1356,11 +1376,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Public Opportunities",
     ),
     "publicPosts": MessageLookupByLibrary.simpleMessage("Public Posts"),
+    "qalyubia": MessageLookupByLibrary.simpleMessage("Qalyubia"),
+    "qena": MessageLookupByLibrary.simpleMessage("Qena"),
     "reactionTime": MessageLookupByLibrary.simpleMessage("Reaction Time"),
     "reactionTimeShort": MessageLookupByLibrary.simpleMessage("Reaction Time"),
     "recordWithCamera": MessageLookupByLibrary.simpleMessage(
       "Record with Camera",
     ),
+    "redSea": MessageLookupByLibrary.simpleMessage("Red Sea"),
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Registered successfully!",
@@ -1460,6 +1483,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sharingInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Sharing Your Information",
     ),
+    "sharqia": MessageLookupByLibrary.simpleMessage("Sharqia"),
     "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
     "showAll": MessageLookupByLibrary.simpleMessage("Show all"),
     "showApplicants": MessageLookupByLibrary.simpleMessage("Show Applicants"),
@@ -1472,9 +1496,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "skills": MessageLookupByLibrary.simpleMessage("Skills"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
     "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
+    "sohag": MessageLookupByLibrary.simpleMessage("Sohag"),
     "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "Something went wrong. Please try again.",
     ),
+    "southSinai": MessageLookupByLibrary.simpleMessage("South Sinai"),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 special character",
     ),
@@ -1554,6 +1580,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Premium Access",
     ),
     "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
+    "suez": MessageLookupByLibrary.simpleMessage("Suez"),
     "supportedFormats": MessageLookupByLibrary.simpleMessage("MP4 · MOV · AVI"),
     "switchAccount": MessageLookupByLibrary.simpleMessage("Switch Account"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("Taekwondo"),

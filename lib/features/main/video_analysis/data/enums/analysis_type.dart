@@ -1,3 +1,5 @@
+import 'package:sports_in/core/constants/assets_manager.dart';
+
 enum AnalysisType {
   goalkeeper,
   passing,
@@ -75,13 +77,13 @@ enum AnalysisType {
   String get exampleImageAsset {
     switch (this) {
       case AnalysisType.goalkeeper:
-        return 'assets/images/analysis/goalkeeper_example.png';
+        return ImageAssets.analyzeDrill;
       case AnalysisType.passing:
-        return 'assets/images/analysis/passing_example.png';
+        return ImageAssets.analyzePlayer;
       case AnalysisType.dribbling:
-        return 'assets/images/analysis/dribbling_example.png';
+        return ImageAssets.analyzeDribbling;
       case AnalysisType.match:
-        return 'assets/images/analysis/match_example.png';
+        return ImageAssets.analyzeMatch;
     }
   }
 }

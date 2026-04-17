@@ -35,18 +35,18 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
     }
   }
 
-  String _getLocalizedVideoInstructions(S strings) {
-    switch (type) {
-      case AnalysisType.goalkeeper:
-        return strings.goalkeeperVideoInstructions;
-      case AnalysisType.passing:
-        return strings.passingVideoInstructions;
-      case AnalysisType.dribbling:
-        return strings.dribblingVideoInstructions;
-      case AnalysisType.match:
-        return strings.matchVideoInstructions;
-    }
+String _getLocalizedVideoInstructions(AnalysisType type, S strings) {
+  switch (type) {
+    case AnalysisType.goalkeeper:
+      return strings.goalkeeperVideoInstructions;
+    case AnalysisType.passing:
+      return strings.passingVideoInstructions;
+    case AnalysisType.dribbling:
+      return strings.dribblingVideoInstructions;
+    case AnalysisType.match:
+      return strings.matchVideoInstructions;
   }
+}
 
   List<String> _getLocalizedKpis(S strings) {
     switch (type) {
@@ -153,7 +153,7 @@ class AnalysisInfoBottomSheet extends StatelessWidget {
                 ),
               ),
               child: Text(
-                _getLocalizedVideoInstructions(strings),
+                _getLocalizedVideoInstructions(type, strings),
                 style: TextStyle(
                   fontSize: 13.sp,
                   color: theme.onSurface.withOpacity(0.75),
