@@ -11,7 +11,6 @@ import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_comments_sheet.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_dashboard_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/ad_likes_sheet.dart';
-import 'package:sports_in/features/main/advertisement/view/presentation/ad_payment_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/web_view_screen.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
 import 'package:sports_in/features/main/advertisement/view_model/likes_bloc/likes_bloc.dart';
@@ -59,8 +58,11 @@ class _AdWidgetState extends State<AdWidget> {
   bool _isWatched = false;
   bool _isVisible = false;
 
+  // Current zoom scale — updated when user pinches an image or enters
+  // video full-screen. Sent with every progress report.
   double _zoomScale = 1.0;
 
+  // Throttle: send progress at most every 5 seconds while visible.
   static const Duration _reportInterval = Duration(seconds: 5);
   DateTime? _lastReported;
 
@@ -70,7 +72,7 @@ class _AdWidgetState extends State<AdWidget> {
   String get _actionLabel =>
       (widget.ad.actionText != null && widget.ad.actionText!.isNotEmpty)
           ? widget.ad.actionText!
-          : S.of(context).learnMore;
+          : 'Learn More';
 
   @override
   void initState() {
@@ -84,11 +86,16 @@ class _AdWidgetState extends State<AdWidget> {
   @override
   void didUpdateWidget(covariant AdWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.ad.isLikedByCurrentUser != oldWidget.ad.isLikedByCurrentUser) {
-      _isLiked = widget.ad.isLikedByCurrentUser;
-    }
-    if (widget.ad.likesCount != oldWidget.ad.likesCount) {
-      _likesCount = widget.ad.likesCount;
+    // Always sync engagement state unconditionally when the ad changes.
+    // Old conditional guards prevented syncing isLikedByCurrentUser when
+    // both old and new had the same value (e.g. both true after a refresh),
+    // causing the heart icon to stay grey even for previously liked ads.
+    if (widget.ad != oldWidget.ad) {
+      setState(() {
+        _isLiked = widget.ad.isLikedByCurrentUser;
+        _likesCount = widget.ad.likesCount;
+        _commentsCount = widget.ad.commentsCount;
+      });
     }
     if (widget.ad.mediaUrl != oldWidget.ad.mediaUrl) {
       _videoController?.dispose();
@@ -128,7 +135,7 @@ class _AdWidgetState extends State<AdWidget> {
         if (mounted) {
           setState(() {
             _isInitializing = false;
-            _videoError = S.of(context).failedToLoadVideo;
+            _videoError = 'Failed to load video';
           });
         }
       }
@@ -143,12 +150,15 @@ class _AdWidgetState extends State<AdWidget> {
 
   // ─── Progress tracking ─────────────────────────────────────────────────────
 
+  /// Called by VisibilityDetector whenever the widget's visible fraction changes.
   void _onVisibilityChanged(VisibilityInfo info) {
+    // Only track for non-owners
     if (widget.isCurrentUser) return;
 
     final nowVisible = info.visibleFraction >= _kVisibleThreshold;
 
     if (nowVisible && !_isVisible) {
+      // Became visible — start 1-second tick timer
       _isVisible = true;
       _viewTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         _watchedSeconds += 1;
@@ -158,6 +168,7 @@ class _AdWidgetState extends State<AdWidget> {
         _maybeReport();
       });
     } else if (!nowVisible && _isVisible) {
+      // Left the viewport — stop timer, send final report
       _isVisible = false;
       _viewTimer?.cancel();
       _viewTimer = null;
@@ -165,6 +176,7 @@ class _AdWidgetState extends State<AdWidget> {
     }
   }
 
+  /// Sends a progress report at most once per [_reportInterval].
   void _maybeReport() {
     final now = DateTime.now();
     if (_lastReported == null ||
@@ -216,6 +228,7 @@ class _AdWidgetState extends State<AdWidget> {
     final url = widget.ad.mediaUrl;
     if (url == null || url.isEmpty || _isVideo) return;
 
+    // Record that the user zoomed/fullscreened — update zoomScale
     setState(() => _zoomScale = 2.0);
     _sendProgress();
 
@@ -224,6 +237,7 @@ class _AdWidgetState extends State<AdWidget> {
       MaterialPageRoute(
           builder: (_) => FullScreenImageViewer(imageUrl: url)),
     ).then((_) {
+      // Reset zoom when they return
       setState(() => _zoomScale = 1.0);
     });
   }
@@ -240,25 +254,12 @@ class _AdWidgetState extends State<AdWidget> {
     );
   }
 
-  // ── Navigate to AdPaymentScreen exactly as it is pushed elsewhere ──────────
-  void _navigateToPayment() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AdPaymentScreen(
-          adId: widget.ad.id,
-          price: widget.ad.price,
-        ),
-      ),
-    );
-  }
-
   void _showDeleteConfirmation() {
     final strings = S.of(context);
     ConfirmationDialog.show(
       context: context,
       title: strings.delete,
-      message: strings.deleteAdConfirmation,
+      message: 'Are you sure you want to delete this advertisement?',
       onConfirm: () {
         context.read<AdsBloc>().add(DeleteAd(adId: widget.ad.id));
         widget.onDeleted?.call();
@@ -269,23 +270,23 @@ class _AdWidgetState extends State<AdWidget> {
   }
 
   void _showToggleConfirmation() {
-    final strings = S.of(context);
     final isActive = widget.ad.isActive;
     ConfirmationDialog.show(
       context: context,
-      title: isActive ? strings.deactivateAd : strings.activateAd,
+      title: isActive ? 'Deactivate Ad' : 'Activate Ad',
       message: isActive
-          ? strings.deactivateAdMessage
-          : strings.activateAdMessage,
+          ? 'This ad will no longer appear in the feed.'
+          : 'This ad will appear in the feed again.',
       onConfirm: () =>
           context.read<AdsBloc>().add(ToggleAdStatus(adId: widget.ad.id)),
-      confirmText: isActive ? strings.deactivate : strings.activate,
+      confirmText: isActive ? 'Deactivate' : 'Activate',
     );
   }
 
   @override
   void dispose() {
     _viewTimer?.cancel();
+    // Send final progress report when the widget is removed
     if (!widget.isCurrentUser && _watchedSeconds > 0) {
       getIt<AdsRepositoryImpl>().sendAdProgress(
         adId: widget.ad.id,
@@ -306,6 +307,7 @@ class _AdWidgetState extends State<AdWidget> {
     final strings = S.of(context);
     final author = widget.ad.author;
 
+    // Wrap in VisibilityDetector for non-owners only
     Widget card = Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       elevation: 2,
@@ -338,7 +340,7 @@ class _AdWidgetState extends State<AdWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            author?.fullName ?? strings.sponsor,
+                            author?.fullName ?? 'Sponsor',
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -351,7 +353,7 @@ class _AdWidgetState extends State<AdWidget> {
                                   size: 12.sp, color: Colors.grey[500]),
                               SizedBox(width: 4.w),
                               Text(
-                                strings.advertisement,
+                                'Advertisement',
                                 style: TextStyle(
                                     fontSize: 12.sp, color: Colors.grey[500]),
                               ),
@@ -382,7 +384,7 @@ class _AdWidgetState extends State<AdWidget> {
                           _showToggleConfirmation();
                           break;
                         case 'pay':
-                          _navigateToPayment(); // ← wired up
+                          // Payment not integrated yet
                           break;
                         case 'delete':
                           _showDeleteConfirmation();
@@ -396,7 +398,7 @@ class _AdWidgetState extends State<AdWidget> {
                           Icon(Icons.analytics_outlined,
                               size: 20.sp, color: theme.primary),
                           SizedBox(width: 8.w),
-                          Text(strings.dashboard,
+                          Text('Dashboard',
                               style: TextStyle(color: theme.primary)),
                         ]),
                       ),
@@ -408,6 +410,7 @@ class _AdWidgetState extends State<AdWidget> {
                           Text(strings.edit),
                         ]),
                       ),
+                      // Show toggle OR pay depending on isPaid
                       if (widget.ad.isPaid)
                         PopupMenuItem(
                           value: 'toggle',
@@ -469,7 +472,7 @@ class _AdWidgetState extends State<AdWidget> {
 
             // ── Unpaid banner (owner only) ───────────────────────────────
             if (widget.isCurrentUser && !widget.ad.isPaid)
-              _buildUnpaidBanner(theme, strings),
+              _buildUnpaidBanner(theme),
 
             // ── Media ───────────────────────────────────────────────────
             if (widget.ad.mediaUrl != null && widget.ad.mediaUrl!.isNotEmpty)
@@ -484,6 +487,7 @@ class _AdWidgetState extends State<AdWidget> {
                           ? _buildVideoPlayer()
                           : _buildImageWidget(),
                     ),
+                    // Action banner
                     GestureDetector(
                       onTap: _hasActionLink ? _openActionUrl : null,
                       child: Container(
@@ -504,9 +508,7 @@ class _AdWidgetState extends State<AdWidget> {
                           children: [
                             Expanded(
                               child: Text(
-                                _hasActionLink
-                                    ? _actionLabel
-                                    : strings.advertisement,
+                                _hasActionLink ? _actionLabel : 'Advertisement',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 13.sp,
@@ -597,6 +599,7 @@ class _AdWidgetState extends State<AdWidget> {
       ),
     );
 
+    // Wrap in VisibilityDetector for non-owners to track view time
     if (!widget.isCurrentUser) {
       card = VisibilityDetector(
         key: Key('ad_visibility_${widget.ad.id}'),
@@ -610,7 +613,7 @@ class _AdWidgetState extends State<AdWidget> {
 
   // ─── Unpaid banner ─────────────────────────────────────────────────────────
 
-  Widget _buildUnpaidBanner(ColorScheme theme, S strings) {
+  Widget _buildUnpaidBanner(ColorScheme theme) {
     return Padding(
       padding: EdgeInsets.only(top: 12.h),
       child: Container(
@@ -636,7 +639,7 @@ class _AdWidgetState extends State<AdWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    strings.adSavedAsDraft,
+                    'Ad saved as draft — not published',
                     style: TextStyle(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
@@ -644,7 +647,7 @@ class _AdWidgetState extends State<AdWidget> {
                   ),
                   SizedBox(height: 2.h),
                   Text(
-                    strings.completePaymentToActivate,
+                    'Complete payment to activate this ad in the feed.',
                     style: TextStyle(
                         fontSize: 11.sp,
                         color: const Color(0xFF9E6900),
@@ -654,21 +657,26 @@ class _AdWidgetState extends State<AdWidget> {
               ),
             ),
             SizedBox(width: 8.w),
-            OutlinedButton(
-              onPressed: _navigateToPayment, // ← wired up
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFFFB300),
-                side: const BorderSide(color: Color(0xFFFFB300)),
-                padding:
-                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r)),
+            Tooltip(
+              message: 'Payment coming soon',
+              child: OutlinedButton(
+                onPressed: null,
+                style: OutlinedButton.styleFrom(
+                  disabledForegroundColor:
+                      const Color(0xFFFFB300).withOpacity(0.5),
+                  side: BorderSide(
+                      color: const Color(0xFFFFB300).withOpacity(0.5)),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r)),
+                ),
+                child: Text('Pay Now',
+                    style: TextStyle(
+                        fontSize: 12.sp, fontWeight: FontWeight.w600)),
               ),
-              child: Text(strings.payNow,
-                  style: TextStyle(
-                      fontSize: 12.sp, fontWeight: FontWeight.w600)),
             ),
           ],
         ),

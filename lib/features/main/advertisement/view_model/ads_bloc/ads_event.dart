@@ -146,3 +146,11 @@ class SendAdProgress extends AdsEvent {
   @override
   List<Object?> get props => [adId, watchedTime, isWatched];
 }
+
+class FetchSingleAd extends AdsEvent {
+  final String adId;
+  const FetchSingleAd({required this.adId});
+
+  @override
+  List<Object?> get props => [adId];
+}

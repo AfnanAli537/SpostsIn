@@ -69,7 +69,8 @@ class AdModel {
       sportTypeId: (json['sportTypeId'] ?? 1).toInt(),
       sportTypeName: json['sportTypeName'],
       videoDuration: (json['videoDuration'] ?? 0).toDouble(),
-      targetAudiences: List<int>.from((json['targetAudiences'] ?? []).map((e) => (e as num).toInt())),
+      targetAudiences: List<int>.from(
+          (json['targetAudiences'] ?? []).map((e) => (e as num).toInt())),
       isActive: json['isActive'] ?? false,
       isPaid: json['isPaid'] ?? false,
       watchedTime: (json['watchedTime'] ?? 0).toDouble(),
@@ -150,6 +151,28 @@ class AdModel {
       author: author,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is AdModel &&
+        other.id == id &&
+        other.isLikedByCurrentUser == isLikedByCurrentUser &&
+        other.likesCount == likesCount &&
+        other.commentsCount == commentsCount &&
+        other.isActive == isActive &&
+        other.isPaid == isPaid;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        isLikedByCurrentUser,
+        likesCount,
+        commentsCount,
+        isActive,
+        isPaid,
+      );
 }
 
 class AdDashboardModel {
@@ -172,8 +195,10 @@ class AdDashboardModel {
       totalAds: (json['totalAds'] ?? 0).toInt(),
       totalViews: (json['totalViews'] ?? 0).toInt(),
       totalClicks: (json['totalClicks'] ?? 0).toInt(),
-      averageCompletionRate: (json['averageCompletionRate'] ?? 0).toDouble(),
-      totalEngagementSeconds: (json['totalEngagementSeconds'] ?? 0).toInt(),
+      averageCompletionRate:
+          (json['averageCompletionRate'] ?? 0).toDouble(),
+      totalEngagementSeconds:
+          (json['totalEngagementSeconds'] ?? 0).toInt(),
     );
   }
 }

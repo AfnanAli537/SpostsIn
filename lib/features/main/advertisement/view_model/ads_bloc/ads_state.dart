@@ -72,3 +72,11 @@ class AdUpdated extends AdsState {}
 class AdDeleted extends AdsState {}
 
 class AdStatusToggled extends AdsState {}
+
+class SingleAdLoaded extends AdsState {
+  final AdModel ad;
+  const SingleAdLoaded(this.ad);
+
+  @override
+  List<Object?> get props => [ad];
+}

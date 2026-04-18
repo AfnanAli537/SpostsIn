@@ -102,19 +102,19 @@ class _SearchViewState extends State<_SearchView>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.people_outline_rounded, size: 16.sp),
+                        Icon(Icons.sports_soccer_rounded, size: 16.sp),
                         SizedBox(width: 6.w),
-                        Text(string.people),
+                        Text(string.videoAnalysis),
                       ],
                     ),
                   ),
                   Tab(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.sports_soccer_rounded, size: 16.sp),
+                      children: [Icon(Icons.people_outline_rounded, size: 16.sp),
                         SizedBox(width: 6.w),
-                        Text(string.videoAnalysis),
+                        Text(string.people),
+                        
                       ],
                     ),
                   ),

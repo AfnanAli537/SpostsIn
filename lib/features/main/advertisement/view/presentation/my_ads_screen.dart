@@ -49,7 +49,6 @@ class _MyAdsView extends StatefulWidget {
 
 class _MyAdsViewState extends State<_MyAdsView> {
   bool _onlyInactive = false;
-
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -186,6 +185,7 @@ class _MyAdsViewState extends State<_MyAdsView> {
 
             if (state is UserAdsLoaded) {
               final ads = state.ads;
+              final adsBloc = context.read<AdsBloc>();
 
               return RefreshIndicator(
                 onRefresh: () async {
@@ -195,13 +195,13 @@ class _MyAdsViewState extends State<_MyAdsView> {
                 child: CustomScrollView(
                   controller: _scrollController,
                   slivers: [
-                    // ── Summary dashboard banner (owner only) ───────────────
+                    // ── Owner dashboard banner ────────────────────────────
                     if (widget.isOwner)
                       SliverToBoxAdapter(
                         child: _OwnerDashboardBanner(userId: widget.userId),
                       ),
 
-                    // ── Empty state ─────────────────────────────────────────
+                    // ── Empty state ───────────────────────────────────────
                     if (ads.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
@@ -225,14 +225,18 @@ class _MyAdsViewState extends State<_MyAdsView> {
                         ),
                       )
                     else
-                      // ── Ad list ─────────────────────────────────────────
                       SliverList(
                         delegate: SliverChildBuilderDelegate(
-                          (_, index) => AdWidget(
-                            key: ValueKey(ads[index].id),
-                            ad: ads[index],
-                            isCurrentUser: widget.isOwner,
-                            onDeleted: _refresh,
+                          (_, index) => BlocProvider.value(
+                            // Explicitly inject adsBloc so the Sliver
+                            // subtree context always finds the right bloc
+                            value: adsBloc,
+                            child: AdWidget(
+                              key: ValueKey(ads[index].id),
+                              ad: ads[index],
+                              isCurrentUser: widget.isOwner,
+                              onDeleted: _refresh,
+                            ),
                           ),
                           childCount: ads.length,
                         ),
@@ -256,7 +260,6 @@ class _MyAdsViewState extends State<_MyAdsView> {
 
 class _OwnerDashboardBanner extends StatefulWidget {
   final String? userId;
-
   const _OwnerDashboardBanner({this.userId});
 
   @override
@@ -275,12 +278,13 @@ class _OwnerDashboardBannerState extends State<_OwnerDashboardBanner> {
 
   Future<void> _load() async {
     try {
-      final data =
-          await getIt<AdsRepositoryImpl>().getDashboard(adId: '');
-      if (mounted) setState(() {
-        _data = data;
-        _isLoading = false;
-      });
+      final data = await getIt<AdsRepositoryImpl>().getDashboard(adId: '');
+      if (mounted) {
+        setState(() {
+          _data = data;
+          _isLoading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -296,7 +300,6 @@ class _OwnerDashboardBannerState extends State<_OwnerDashboardBanner> {
         context,
         MaterialPageRoute(
           builder: (_) => const AdDashboardScreen(
-            // null adId → all-ads overview
             adId: null,
             adTitle: 'All Advertisements',
           ),
@@ -351,7 +354,6 @@ class _OwnerDashboardBannerState extends State<_OwnerDashboardBanner> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header row
                       Row(
                         children: [
                           const Icon(Icons.analytics_outlined,
@@ -371,24 +373,20 @@ class _OwnerDashboardBannerState extends State<_OwnerDashboardBanner> {
                         ],
                       ),
                       SizedBox(height: 12.h),
-                      // Stat row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _BannerStat(
-                            label: strings.ads,
-                            value: _data!.totalAds.toString(),
-                          ),
+                              label: strings.ads,
+                              value: _data!.totalAds.toString()),
                           _divider(),
                           _BannerStat(
-                            label: strings.views,
-                            value: _data!.totalViews.toString(),
-                          ),
+                              label: strings.views,
+                              value: _data!.totalViews.toString()),
                           _divider(),
                           _BannerStat(
-                            label: strings.clicks,
-                            value: _data!.totalClicks.toString(),
-                          ),
+                              label: strings.clicks,
+                              value: _data!.totalClicks.toString()),
                           _divider(),
                           _BannerStat(
                             label: strings.completion,
@@ -420,18 +418,13 @@ class _BannerStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          value,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(color: Colors.white70, fontSize: 11.sp),
-        ),
+        Text(value,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w700)),
+        Text(label,
+            style: TextStyle(color: Colors.white70, fontSize: 11.sp)),
       ],
     );
   }

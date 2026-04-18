@@ -24,6 +24,8 @@ import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/create_add_screen.dart';
 import 'package:sports_in/features/main/advertisement/view/presentation/my_ads_screen.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
+import 'package:sports_in/features/main/courses/data/repo/course_repository.dart';
+import 'package:sports_in/features/main/courses/view/presentation/client/course_detail_screen.dart';
 import 'package:sports_in/features/main/courses/view/presentation/client/course_list_screen.dart';
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/home/data/model/post_model.dart';
@@ -37,6 +39,7 @@ import 'package:sports_in/features/main/profile/view/presentation/edit_profile_r
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
+import 'package:sports_in/features/notitification/presentation/view/ad_detail_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view/post_detail_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/features/payment/presentation/subscription_screen.dart';
@@ -211,6 +214,11 @@ case AppRoutes.mainLayout:
   return CupertinoPageRoute(
     builder: (_) => PostDetailScreen(postId: postId),
   );
+  case AppRoutes.adDetail:
+  final adId = settings.arguments as String;
+  return CupertinoPageRoute(
+    builder: (_) => AdDetailScreen(adId: adId),
+  );
       // ── Profile ─────────────────────────────────────────────────────────────
       case AppRoutes.userProfile:
         final userId = settings.arguments as String;
@@ -277,7 +285,17 @@ case AppRoutes.mainLayout:
             ),
           ),
         );
-
+      
+      case AppRoutes.courseDetail:
+        final courseId = settings.arguments as String;
+        
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => CoursesBloc(getIt<CourseRepository>()),
+            child: CourseDetailScreen(
+            courseId: courseId,
+          ),
+        ));
       // ── Settings / misc ─────────────────────────────────────────────────────
       case AppRoutes.settings:
         return CupertinoPageRoute(
