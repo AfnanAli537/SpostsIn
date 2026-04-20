@@ -280,6 +280,7 @@ class _NotificationViewState extends State<_NotificationView>
 
   Widget _buildCategoryBar(ColorScheme cs) {
     final categories = [
+      {'label': S.of(context).all, 'value': ''},
       {'label': S.of(context).categoryRecent, 'value': 'recent'},
       {'label': S.of(context).categoryRequests, 'value': 'requests'},
       {'label': S.of(context).categoryReactions, 'value': 'reactions'},
