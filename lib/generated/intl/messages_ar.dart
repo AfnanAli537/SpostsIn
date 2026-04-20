@@ -340,6 +340,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "categoryRequests": MessageLookupByLibrary.simpleMessage("الطلبات"),
     "center": MessageLookupByLibrary.simpleMessage("محور (Center)"),
     "centerBack": MessageLookupByLibrary.simpleMessage("صانع لعب (وسط خلفي)"),
+    "certifications": MessageLookupByLibrary.simpleMessage("شهادات"),
     "changePassword": MessageLookupByLibrary.simpleMessage("تغيير كلمة المرور"),
     "changeVideo": MessageLookupByLibrary.simpleMessage("تغيير الفيديو"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -1422,6 +1423,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectAnalysisType": MessageLookupByLibrary.simpleMessage(
       "اختر نوع التحليل",
     ),
+    "selectCertifications": MessageLookupByLibrary.simpleMessage(
+      "اختر الشهادات",
+    ),
     "selectEndDate": MessageLookupByLibrary.simpleMessage(
       "اختر تاريخ الانتهاء",
     ),
@@ -1475,6 +1479,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "على الأقل رمز خاص واحد",
     ),
+    "specialist": MessageLookupByLibrary.simpleMessage("التخصص"),
     "specializedSport": MessageLookupByLibrary.simpleMessage(
       "الرياضة المتخصصة",
     ),

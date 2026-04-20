@@ -343,6 +343,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "categoryRequests": MessageLookupByLibrary.simpleMessage("Requests"),
     "center": MessageLookupByLibrary.simpleMessage("Center"),
     "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
+    "certifications": MessageLookupByLibrary.simpleMessage("Certifications"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Change Password"),
     "changeVideo": MessageLookupByLibrary.simpleMessage("Change Video"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -1455,6 +1456,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
       "Please select at least one sport",
     ),
+    "selectCertifications": MessageLookupByLibrary.simpleMessage(
+      "Select Certifications",
+    ),
     "selectEndDate": MessageLookupByLibrary.simpleMessage("Select End Date"),
     "selectField": m34,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
@@ -1504,6 +1508,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 special character",
     ),
+    "specialist": MessageLookupByLibrary.simpleMessage("Specialist"),
     "specializedSport": MessageLookupByLibrary.simpleMessage(
       "Specialized sports",
     ),

@@ -1,14 +1,7 @@
 import 'dart:io';
 import 'package:equatable/equatable.dart';
 
-enum UserType {
-  player,
-  coach,
-  scout,
-  club,
-  institute,
-  others,
-}
+enum UserType { player, coach, scout, club, institute, others }
 
 class UserModel extends Equatable {
   final UserType userType;
@@ -28,11 +21,13 @@ class UserModel extends Equatable {
   final double? weight;
   final int? age;
   final bool? hasClub;
+  final String? currentClubName;
 
   // Coach-specific
   final int? experienceYears;
-  // final String? experienceYears;
   final String? specialization;
+  final String? specialist;
+  final List<int>? certificationsIds;
 
   // Scout-specific
   final String? agencyName;
@@ -62,8 +57,11 @@ class UserModel extends Equatable {
     this.weight,
     this.age,
     this.hasClub,
+    this.currentClubName,
     this.experienceYears,
     this.specialization,
+    this.specialist,
+    this.certificationsIds,
     this.agencyName,
     this.clubName,
     this.foundDate,
@@ -84,14 +82,15 @@ class UserModel extends Equatable {
     File? image,
     String? sport,
     String? position,
-    String? birthDate,
     double? height,
     double? weight,
     int? age,
-    String? nationality,
     bool? hasClub,
+    String? currentClubName,
     int? experienceYears,
     String? specialization,
+    String? specialist,
+    List<int>? certificationsIds,
     String? agencyName,
     String? clubName,
     String? foundDate,
@@ -115,8 +114,11 @@ class UserModel extends Equatable {
       weight: weight ?? this.weight,
       age: age ?? this.age,
       hasClub: hasClub ?? this.hasClub,
+      currentClubName: currentClubName ?? this.currentClubName,
       experienceYears: experienceYears ?? this.experienceYears,
       specialization: specialization ?? this.specialization,
+      specialist: specialist ?? this.specialist,
+      certificationsIds: certificationsIds ?? this.certificationsIds,
       agencyName: agencyName ?? this.agencyName,
       clubName: clubName ?? this.clubName,
       foundDate: foundDate ?? this.foundDate,
@@ -136,16 +138,18 @@ class UserModel extends Equatable {
       'lastName': lastName,
       'gender': gender,
       'location': location,
-      // Add image upload logic separately
-      if(image != null) 'image': image,
+      if (image != null) 'image': image,
       if (sport != null) 'sport': sport,
       if (position != null) 'position': position,
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
       if (age != null) 'age': age,
       if (hasClub != null) 'hasClub': hasClub,
+      if (currentClubName != null) 'currentClubName': currentClubName,
       if (experienceYears != null) 'experienceYears': experienceYears,
       if (specialization != null) 'specialization': specialization,
+      if (specialist != null) 'specialist': specialist,
+      if (certificationsIds != null) 'certificationsIds': certificationsIds,
       if (agencyName != null) 'agencyName': agencyName,
       if (clubName != null) 'clubName': clubName,
       if (foundDate != null) 'foundDate': foundDate,
@@ -157,27 +161,31 @@ class UserModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        userType,
-        email,
-        password,
-        firstName,
-        lastName,
-        gender,
-        location,
-        image,
-        sport,
-        position,
-        height,
-        weight,
-        age,
-        hasClub,
-        experienceYears,
-        specialization,
-        agencyName,
-        clubName,
-        foundDate,
-        sports,
-        instituteName,
-        industry,
-      ];
+    userType,
+    email,
+    password,
+    confirmPassword,
+    firstName,
+    lastName,
+    gender,
+    location,
+    image,
+    sport,
+    position,
+    height,
+    weight,
+    age,
+    hasClub,
+    currentClubName,
+    experienceYears,
+    specialization,
+    specialist,
+    certificationsIds,
+    agencyName,
+    clubName,
+    foundDate,
+    sports,
+    instituteName,
+    industry,
+  ];
 }

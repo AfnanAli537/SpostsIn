@@ -349,6 +349,31 @@ class S {
     return Intl.message('Coach', name: 'coach', desc: '', args: []);
   }
 
+  /// `Certifications`
+  String get certifications {
+    return Intl.message(
+      'Certifications',
+      name: 'certifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specialist`
+  String get specialist {
+    return Intl.message('Specialist', name: 'specialist', desc: '', args: []);
+  }
+
+  /// `Select Certifications`
+  String get selectCertifications {
+    return Intl.message(
+      'Select Certifications',
+      name: 'selectCertifications',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Scout`
   String get scout {
     return Intl.message('Scout', name: 'scout', desc: '', args: []);
