@@ -1,7 +1,9 @@
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_payment_screen.dart';
@@ -136,17 +138,57 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
     );
   }
 
-  Widget _buildVideoArea(ThemeData theme, bool isPaid, S strings) {
+ Widget _buildVideoArea(ThemeData theme, bool isPaid, S strings) {
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       child: Stack(
         children: [
+          // 1. The Video Player
           AspectRatio(
             aspectRatio: 16 / 9,
             child: _betterPlayerController != null
                 ? BetterPlayer(controller: _betterPlayerController!)
                 : Container(color: theme.colorScheme.surfaceVariant),
           ),
+
+          // 2. The Pop-up Menu (Added for Delete functionality)
+          if(widget.item.analyst.userId == getIt<SharedPref>().getUserId())
+          Positioned(
+            top: 8.h,
+            right: 8.w,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2), // Subtle background for visibility
+                shape: BoxShape.circle,
+              ),
+              child: PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: Colors.white, size: 20.sp),
+                padding: EdgeInsets.zero,
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    widget.onDelete?.call(); // Calls the delete callback passed to the widget
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: theme.colorScheme.error, size: 20.sp),
+                        SizedBox(width: 8.w),
+                        Text(
+                          strings.deleteAnalysis, 
+                          style: TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 3. The Lock Overlay (if unpaid)
           if (!isPaid)
             Positioned.fill(
               child: Container(
@@ -162,8 +204,7 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
                         color: Colors.white.withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
-                      child:
-                          Icon(Icons.lock_outline, color: Colors.white, size: 30.sp),
+                      child: Icon(Icons.lock_outline, color: Colors.white, size: 30.sp),
                     ),
                     SizedBox(height: 8.h),
                     Text(
@@ -182,7 +223,6 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
       ),
     );
   }
-
   Widget _buildInfoAndAction(ThemeData theme, S strings, bool isPaid) {
     return Padding(
       padding: EdgeInsets.all(16.w),

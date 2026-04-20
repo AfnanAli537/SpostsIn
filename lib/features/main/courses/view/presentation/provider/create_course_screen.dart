@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -386,7 +387,10 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(dialogContext);
+              // Navigator.pop(dialogContext);
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
             },
             child: Text(string.addLater),
           ),
@@ -406,7 +410,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                 ),
               );
             },
-            child: Text(string.addNow),
+            child: Text(string.addNow,style: TextStyle(color: Theme.of(context).colorScheme.surface),),
           ),
         ],
       ),

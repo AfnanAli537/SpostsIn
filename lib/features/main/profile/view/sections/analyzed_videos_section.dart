@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import 'package:sports_in/features/main/video_analysis/view/widgets/analysis_list_item_card.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
 import '../widgets/section_header.dart';
 
 class AnalyzedVideosSection extends StatelessWidget {
@@ -21,6 +24,7 @@ class AnalyzedVideosSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = S.of(context);
     if (videos.isEmpty) return const SizedBox.shrink();
 
     return Column(
@@ -41,10 +45,38 @@ class AnalyzedVideosSection extends StatelessWidget {
               item: item,
               // Use ?.call here too
               onTap: () => onVideoTap?.call(item), 
+              onDelete: () => _confirmDelete(context, item.id, strings)
+                
             );
           },
         ),
       ],
     );
   }
+  void _confirmDelete(BuildContext context, String id, S strings) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(strings.deleteAnalysis),
+        content: Text(strings.deleteAnalysisConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(strings.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AnalysisBloc>().add(DeleteAnalysis(id));
+            },
+            child: Text(
+              strings.delete,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

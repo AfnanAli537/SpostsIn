@@ -2,6 +2,7 @@ class Endpoints {
   static const String login = "/api/Auth/login";
   static const String signUpPlayer = "/api/Auth/register/player";
   static const String signUpCoach = "/api/Auth/register/coach";
+  static const String certifications = "/api/Lookups/certifications";
   static const String signUpScout = "/api/Auth/register/scout";
   static const String signUpClub = "/api/Auth/register/club";
   static const String signUpInstitute = "/api/Auth/register/institute";

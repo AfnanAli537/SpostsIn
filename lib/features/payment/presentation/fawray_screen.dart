@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_processing_screen.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
@@ -12,16 +14,21 @@ import 'package:sports_in/features/payment/presentation/widgets/processing_dailo
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';
 import 'package:sports_in/generated/l10n.dart';
 
+// Import needed for video analysis navigation
+
 class FawryScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final String mobileNumber;
   final PaymentTargetType targetType;
+
+  final AnalysisType? analysisType;
 
   const FawryScreen({
     super.key,
     required this.plan,
     required this.mobileNumber,
     this.targetType = PaymentTargetType.supscription,
+    this.analysisType,
   });
 
   @override
@@ -58,7 +65,9 @@ class _FawryScreenState extends State<FawryScreen> {
   /// Dispatched by THIS screen once [PaymentInitiatedAwaitingActivation]
   /// is received and the reference code is displayed.
   void _triggerManualActivation(String txId) {
-    context.read<PaymentBloc>().add(ManualActivateEvent(orderId: txId, targetType: widget.targetType));
+    context.read<PaymentBloc>().add(
+      ManualActivateEvent(orderId: txId, targetType: widget.targetType),
+    );
   }
 
   void _copyCode() {
@@ -106,16 +115,38 @@ class _FawryScreenState extends State<FawryScreen> {
       barrierDismissible: false,
       builder: (_) => PaymentSuccessDialog(
         transactionId: _pendingTxId ?? S.of(context).unKnown,
-        // Stays on screen so the user can keep the reference code visible.
-        onDismissed: () {},
+        onDismissed: _handlePaymentSuccess,
       ),
     );
   }
 
-  void _goHome() {
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
+  /// Called after the success dialog auto-dismisses.
+  /// Navigation is handled here based on the payment target type.
+  void _handlePaymentSuccess() {
+    if (!mounted) return;
+
+    switch (widget.targetType) {
+      // ── Video Analysis ───────────────────────────────────────────────────
+      case PaymentTargetType.videoAnalysis:
+        if (widget.analysisType != null) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) =>
+                  AnalysisProcessingScreen(type: widget.analysisType!),
+            ),
+            (route) => route.isFirst,
+          );
+        }
+        break;
+
+      // ── Subscription / Other types ───────────────────────────────────────
+      case PaymentTargetType.supscription:
+      case PaymentTargetType.course:
+      case PaymentTargetType.advertisement:
+        // For subscription/courses/ads, just pop back to the calling screen
+        // Navigator.of(context).pop();
+        break;
+    }
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -153,7 +184,7 @@ class _FawryScreenState extends State<FawryScreen> {
           _showProcessingDialog();
         }
 
-        // ── 4. Success ───────────────────────────────────────────────────
+        // ── 4. Success → show dialog then navigate (handled in _onDismissed) ─
         if (state is ManualActivateSuccess || state is ProcessSuccessful) {
           _dismissProcessingDialog();
           if (mounted) setState(() => _isLoading = false);
@@ -186,8 +217,10 @@ class _FawryScreenState extends State<FawryScreen> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            // Back arrow clears the stack → main layout
-            onPressed: _goHome,
+            // Back arrow pops the screen (returns to FawryMobileScreen/previous)
+            onPressed: () => Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false),
             icon: Icon(Icons.arrow_back, color: theme.onSurface),
           ),
           title: Text(
@@ -339,7 +372,6 @@ class _FawryScreenState extends State<FawryScreen> {
                             ],
                           ),
                         ),
-                    
                     ],
                   ),
                 ),
@@ -372,9 +404,7 @@ class _FawryScreenState extends State<FawryScreen> {
                       backgroundColor: _codeCopied
                           ? theme.primary.withOpacity(0.85)
                           : theme.primary,
-                      disabledBackgroundColor: theme.primary.withOpacity(
-                        0.4,
-                      ),
+                      disabledBackgroundColor: theme.primary.withOpacity(0.4),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.r),
                       ),

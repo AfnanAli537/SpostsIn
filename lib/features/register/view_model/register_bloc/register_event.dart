@@ -52,3 +52,6 @@ class CompleteRegistrationEvent extends RegistrationEvent {
 class ResetValidationEvent extends RegistrationEvent {
   const ResetValidationEvent();
 }
+class LoadCertificationsEvent extends RegistrationEvent {
+  const LoadCertificationsEvent();
+}

@@ -20,7 +20,9 @@ const _profileTypes = {
   'Follow',
   'GroupInvitation',
 };
-const _postTypes = {'PostLike', 'PostComment', 'AdLike'};
+const _postTypes = {'PostLike', 'PostComment'};
+const _adTypes = {'AdLike', 'AdComment'};
+const _courseTypes = {'CoursePublished', 'CoursePurchased'};
 const _opportunityTypes = {
   'OpportunityNew',
   'OpportunityApplied',
@@ -112,6 +114,10 @@ class _NotificationViewState extends State<_NotificationView>
       Navigator.pushNamed(context, AppRoutes.userProfile, arguments: id);
     } else if (_postTypes.contains(n.type)) {
       Navigator.pushNamed(context, AppRoutes.postDetail, arguments: id);
+    } else if (_adTypes.contains(n.type)) {
+      Navigator.pushNamed(context, AppRoutes.adDetail, arguments: id);
+    } else if (_courseTypes.contains(n.type)) {
+      Navigator.pushNamed(context, AppRoutes.courseDetail, arguments: id);
     } else if (_opportunityTypes.contains(n.type)) {
       Navigator.push(
         context,
@@ -274,6 +280,7 @@ class _NotificationViewState extends State<_NotificationView>
 
   Widget _buildCategoryBar(ColorScheme cs) {
     final categories = [
+      {'label': S.of(context).all, 'value': ''},
       {'label': S.of(context).categoryRecent, 'value': 'recent'},
       {'label': S.of(context).categoryRequests, 'value': 'requests'},
       {'label': S.of(context).categoryReactions, 'value': 'reactions'},

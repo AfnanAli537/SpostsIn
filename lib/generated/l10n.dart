@@ -349,6 +349,31 @@ class S {
     return Intl.message('Coach', name: 'coach', desc: '', args: []);
   }
 
+  /// `Certifications`
+  String get certifications {
+    return Intl.message(
+      'Certifications',
+      name: 'certifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specialist`
+  String get specialist {
+    return Intl.message('Specialist', name: 'specialist', desc: '', args: []);
+  }
+
+  /// `Select Certifications`
+  String get selectCertifications {
+    return Intl.message(
+      'Select Certifications',
+      name: 'selectCertifications',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Scout`
   String get scout {
     return Intl.message('Scout', name: 'scout', desc: '', args: []);
@@ -494,31 +519,6 @@ class S {
     return Intl.message('Female', name: 'female', desc: '', args: []);
   }
 
-  /// `Algeria`
-  String get algeria {
-    return Intl.message('Algeria', name: 'algeria', desc: '', args: []);
-  }
-
-  /// `Egypt`
-  String get egypt {
-    return Intl.message('Egypt', name: 'egypt', desc: '', args: []);
-  }
-
-  /// `Morocco`
-  String get morocco {
-    return Intl.message('Morocco', name: 'morocco', desc: '', args: []);
-  }
-
-  /// `Tunisia`
-  String get tunisia {
-    return Intl.message('Tunisia', name: 'tunisia', desc: '', args: []);
-  }
-
-  /// `Sudan`
-  String get sudan {
-    return Intl.message('Sudan', name: 'sudan', desc: '', args: []);
-  }
-
   /// `Select a Sport`
   String get selectSports {
     return Intl.message(
@@ -612,136 +612,6 @@ class S {
   /// `Gymnastics`
   String get gymnastics {
     return Intl.message('Gymnastics', name: 'gymnastics', desc: '', args: []);
-  }
-
-  /// `Point Guard`
-  String get pointGuard {
-    return Intl.message('Point Guard', name: 'pointGuard', desc: '', args: []);
-  }
-
-  /// `Shooting Guard`
-  String get shootingGuard {
-    return Intl.message(
-      'Shooting Guard',
-      name: 'shootingGuard',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Small Forward`
-  String get smallForward {
-    return Intl.message(
-      'Small Forward',
-      name: 'smallForward',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Power Forward`
-  String get powerForward {
-    return Intl.message(
-      'Power Forward',
-      name: 'powerForward',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Center`
-  String get center {
-    return Intl.message('Center', name: 'center', desc: '', args: []);
-  }
-
-  /// `Goalkeeper`
-  String get goalkeeper {
-    return Intl.message('Goalkeeper', name: 'goalkeeper', desc: '', args: []);
-  }
-
-  /// `Defender`
-  String get defender {
-    return Intl.message('Defender', name: 'defender', desc: '', args: []);
-  }
-
-  /// `Midfielder`
-  String get midfielder {
-    return Intl.message('Midfielder', name: 'midfielder', desc: '', args: []);
-  }
-
-  /// `Forward`
-  String get forward {
-    return Intl.message('Forward', name: 'forward', desc: '', args: []);
-  }
-
-  /// `Setter`
-  String get setter {
-    return Intl.message('Setter', name: 'setter', desc: '', args: []);
-  }
-
-  /// `Outside Hitter`
-  String get outsideHitter {
-    return Intl.message(
-      'Outside Hitter',
-      name: 'outsideHitter',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Opposite Hitter`
-  String get oppositeHitter {
-    return Intl.message(
-      'Opposite Hitter',
-      name: 'oppositeHitter',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Middle Blocker`
-  String get middleBlocker {
-    return Intl.message(
-      'Middle Blocker',
-      name: 'middleBlocker',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Libero`
-  String get libero {
-    return Intl.message('Libero', name: 'libero', desc: '', args: []);
-  }
-
-  /// `Left Wing`
-  String get leftWing {
-    return Intl.message('Left Wing', name: 'leftWing', desc: '', args: []);
-  }
-
-  /// `Right Wing`
-  String get rightWing {
-    return Intl.message('Right Wing', name: 'rightWing', desc: '', args: []);
-  }
-
-  /// `Left Back`
-  String get leftBack {
-    return Intl.message('Left Back', name: 'leftBack', desc: '', args: []);
-  }
-
-  /// `Center Back`
-  String get centerBack {
-    return Intl.message('Center Back', name: 'centerBack', desc: '', args: []);
-  }
-
-  /// `Right Back`
-  String get rightBack {
-    return Intl.message('Right Back', name: 'rightBack', desc: '', args: []);
-  }
-
-  /// `Pivot`
-  String get pivot {
-    return Intl.message('Pivot', name: 'pivot', desc: '', args: []);
   }
 
   /// `0-2 years`
@@ -2824,6 +2694,26 @@ class S {
     return Intl.message(
       'Analyze Video',
       name: 'analyzeVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis started! Your report will be ready soon.`
+  String get analysisStartedToast {
+    return Intl.message(
+      'Analysis started! Your report will be ready soon.',
+      name: 'analysisStartedToast',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis queued. Report will appear in your profile when ready.`
+  String get analysisStartFailedToast {
+    return Intl.message(
+      'Analysis queued. Report will appear in your profile when ready.',
+      name: 'analysisStartFailedToast',
       desc: '',
       args: [],
     );
@@ -5848,6 +5738,11 @@ class S {
     return Intl.message('N/A', name: 'unKnown', desc: '', args: []);
   }
 
+  /// `Goalkeeper`
+  String get goalkeeper {
+    return Intl.message('Goalkeeper', name: 'goalkeeper', desc: '', args: []);
+  }
+
   /// `Passing`
   String get passing {
     return Intl.message('Passing', name: 'passing', desc: '', args: []);
@@ -6613,40 +6508,40 @@ class S {
     return Intl.message('More info', name: 'moreInfo', desc: '', args: []);
   }
 
-  /// `Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.`
+  /// `• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
   String get goalkeeperVideoInstructions {
     return Intl.message(
-      'Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.',
+      '• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
       name: 'goalkeeperVideoInstructions',
       desc: '',
       args: [],
     );
   }
 
-  /// `Record the player's upper body and feet. Show both successful and unsuccessful passes.`
+  /// `• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
   String get passingVideoInstructions {
     return Intl.message(
-      'Record the player\'s upper body and feet. Show both successful and unsuccessful passes.',
+      '• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
       name: 'passingVideoInstructions',
       desc: '',
       args: [],
     );
   }
 
-  /// `Keep the camera steady. The player should be visible from waist up.`
+  /// `• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
   String get dribblingVideoInstructions {
     return Intl.message(
-      'Keep the camera steady. The player should be visible from waist up.',
+      '• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
       name: 'dribblingVideoInstructions',
       desc: '',
       args: [],
     );
   }
 
-  /// `Full match footage preferred. If not available, record key phases.`
+  /// `• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions`
   String get matchVideoInstructions {
     return Intl.message(
-      'Full match footage preferred. If not available, record key phases.',
+      '• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions',
       name: 'matchVideoInstructions',
       desc: '',
       args: [],

@@ -208,7 +208,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "aiEnhancedAnalysis": MessageLookupByLibrary.simpleMessage(
       "AI Enhanced Analysis",
     ),
-    "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "allCaughtUp": MessageLookupByLibrary.simpleMessage(
       "You\'re all caught up!",
@@ -243,6 +242,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "analysisReadyToast": m3,
     "analysisSavedCompletePayment": MessageLookupByLibrary.simpleMessage(
       "Your video has been saved. Complete payment to run the AI analysis.",
+    ),
+    "analysisStartFailedToast": MessageLookupByLibrary.simpleMessage(
+      "Analysis queued. Report will appear in your profile when ready.",
+    ),
+    "analysisStartedToast": MessageLookupByLibrary.simpleMessage(
+      "Analysis started! Your report will be ready soon.",
     ),
     "analysisTypeSubtitle": MessageLookupByLibrary.simpleMessage(
       "Select the category that matches your training drill.",
@@ -329,8 +334,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "categoryReactions": MessageLookupByLibrary.simpleMessage("Reactions"),
     "categoryRecent": MessageLookupByLibrary.simpleMessage("Recent"),
     "categoryRequests": MessageLookupByLibrary.simpleMessage("Requests"),
-    "center": MessageLookupByLibrary.simpleMessage("Center"),
-    "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
+    "certifications": MessageLookupByLibrary.simpleMessage("Certifications"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Change Password"),
     "changeVideo": MessageLookupByLibrary.simpleMessage("Change Video"),
     "changesBody": MessageLookupByLibrary.simpleMessage(
@@ -458,7 +462,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "This ad will no longer appear in the feed.",
     ),
     "december": MessageLookupByLibrary.simpleMessage("December"),
-    "defender": MessageLookupByLibrary.simpleMessage("Defender"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deleteAdConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this advertisement?",
@@ -526,7 +529,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "dribblingAnalysisLabel": MessageLookupByLibrary.simpleMessage("Dribbling"),
     "dribblingVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Keep the camera steady. The player should be visible from waist up.",
+      "• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
     ),
     "drillDuration": MessageLookupByLibrary.simpleMessage("Drill Duration"),
     "duration": m8,
@@ -552,7 +555,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editingComment": MessageLookupByLibrary.simpleMessage("Editing comment"),
     "egp": MessageLookupByLibrary.simpleMessage("EGP"),
-    "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "elite": MessageLookupByLibrary.simpleMessage("Elite"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -741,7 +743,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Forgot your password?",
     ),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("Forgot Password"),
-    "forward": MessageLookupByLibrary.simpleMessage("Forward"),
     "forwardPasses": MessageLookupByLibrary.simpleMessage("Forward\nPasses"),
     "foundDate": MessageLookupByLibrary.simpleMessage("Foundation date"),
     "frames": MessageLookupByLibrary.simpleMessage("Frames"),
@@ -765,7 +766,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Goalkeeper Height (meters)",
     ),
     "goalkeeperVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.",
+      "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
     ),
     "good": MessageLookupByLibrary.simpleMessage("Good"),
     "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
@@ -905,8 +906,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "latestCourses": MessageLookupByLibrary.simpleMessage("Latest Courses"),
     "latestPosts": MessageLookupByLibrary.simpleMessage("Latest posts"),
     "learnMore": MessageLookupByLibrary.simpleMessage("Learn More"),
-    "leftBack": MessageLookupByLibrary.simpleMessage("Left Back"),
-    "leftWing": MessageLookupByLibrary.simpleMessage("Left Wing"),
     "lessonNumber": m17,
     "lessonOrder": m18,
     "lessonOrderAndDuration": m19,
@@ -917,7 +916,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "lessons": MessageLookupByLibrary.simpleMessage("Lessons"),
     "lessonsCount": m20,
     "lessonsProgress": m21,
-    "libero": MessageLookupByLibrary.simpleMessage("Libero"),
     "likes": MessageLookupByLibrary.simpleMessage("Likes"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading"),
     "loadingUserData": MessageLookupByLibrary.simpleMessage(
@@ -967,7 +965,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "matchAnalysisLabel": MessageLookupByLibrary.simpleMessage("Match"),
     "matchVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Full match footage preferred. If not available, record key phases.",
+      "• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions",
     ),
     "maxExtension": MessageLookupByLibrary.simpleMessage("Max Extension"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage("Max 500MB"),
@@ -979,8 +977,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageSent": MessageLookupByLibrary.simpleMessage(
       "Message sent successfully",
     ),
-    "middleBlocker": MessageLookupByLibrary.simpleMessage("Middle Blocker"),
-    "midfielder": MessageLookupByLibrary.simpleMessage("Midfielder"),
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "At least 8 characters long",
     ),
@@ -989,7 +985,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "monthsAgo": m23,
     "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "moreInfo": MessageLookupByLibrary.simpleMessage("More info"),
-    "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
     "myAdvertisements": MessageLookupByLibrary.simpleMessage(
       "My Advertisements",
     ),
@@ -1149,7 +1144,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Opportunity created successfully!",
     ),
-    "oppositeHitter": MessageLookupByLibrary.simpleMessage("Opposite Hitter"),
     "optional": MessageLookupByLibrary.simpleMessage("Optional"),
     "orPasteUrlLabel": MessageLookupByLibrary.simpleMessage("OR PASTE URL"),
     "orPasteVideoUrl": MessageLookupByLibrary.simpleMessage(
@@ -1170,7 +1164,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "otpSentSuccessfully": MessageLookupByLibrary.simpleMessage(
       "OTP sent successfully! Please check your email.",
     ),
-    "outsideHitter": MessageLookupByLibrary.simpleMessage("Outside Hitter"),
     "overviewAllAds": MessageLookupByLibrary.simpleMessage(
       "Overview — All Ads",
     ),
@@ -1181,7 +1174,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "passingAnalysisLabel": MessageLookupByLibrary.simpleMessage("Passing"),
     "passingVideoInstructions": MessageLookupByLibrary.simpleMessage(
-      "Record the player\'s upper body and feet. Show both successful and unsuccessful passes.",
+      "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
     ),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordHintDesc": MessageLookupByLibrary.simpleMessage(
@@ -1249,7 +1242,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pickImage": MessageLookupByLibrary.simpleMessage("Pick Image"),
     "pickVideo": MessageLookupByLibrary.simpleMessage("Pick Video"),
-    "pivot": MessageLookupByLibrary.simpleMessage("Pivot"),
     "player": MessageLookupByLibrary.simpleMessage("Player"),
     "playing": MessageLookupByLibrary.simpleMessage("Playing"),
     "pleaseEnterDescription": MessageLookupByLibrary.simpleMessage(
@@ -1282,7 +1274,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "please_select_date": MessageLookupByLibrary.simpleMessage(
       "Please select a date",
     ),
-    "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
     "possession": MessageLookupByLibrary.simpleMessage("Possession"),
     "post": MessageLookupByLibrary.simpleMessage("Post"),
@@ -1318,7 +1309,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "The post video will be used as the source.",
     ),
     "posts": MessageLookupByLibrary.simpleMessage("Posts"),
-    "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
     "preparing": MessageLookupByLibrary.simpleMessage("Preparing…"),
     "price": MessageLookupByLibrary.simpleMessage("Price"),
     "priceEGP": m31,
@@ -1394,8 +1384,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "revenue": MessageLookupByLibrary.simpleMessage("Revenue"),
-    "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
-    "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "save_achievement_button": MessageLookupByLibrary.simpleMessage(
       "Save Achievement",
@@ -1426,6 +1414,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectAtLeastOne": MessageLookupByLibrary.simpleMessage(
       "Please select at least one sport",
     ),
+    "selectCertifications": MessageLookupByLibrary.simpleMessage(
+      "Select Certifications",
+    ),
     "selectEndDate": MessageLookupByLibrary.simpleMessage("Select End Date"),
     "selectField": m34,
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
@@ -1446,7 +1437,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Service temporarily unavailable",
     ),
     "sessionAvatarLabel": MessageLookupByLibrary.simpleMessage("S"),
-    "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "settings": MessageLookupByLibrary.simpleMessage("Setting"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
@@ -1454,7 +1444,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "sharingInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Sharing Your Information",
     ),
-    "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
     "showAll": MessageLookupByLibrary.simpleMessage("Show all"),
     "showApplicants": MessageLookupByLibrary.simpleMessage("Show Applicants"),
     "showDescription": MessageLookupByLibrary.simpleMessage("Show Description"),
@@ -1465,13 +1454,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "since": MessageLookupByLibrary.simpleMessage("Since"),
     "skills": MessageLookupByLibrary.simpleMessage("Skills"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
-    "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
     "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "Something went wrong. Please try again.",
     ),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 special character",
     ),
+    "specialist": MessageLookupByLibrary.simpleMessage("Specialist"),
     "specializedSport": MessageLookupByLibrary.simpleMessage(
       "Specialized sports",
     ),
@@ -1547,7 +1536,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscription_title": MessageLookupByLibrary.simpleMessage(
       "Premium Access",
     ),
-    "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
     "supportedFormats": MessageLookupByLibrary.simpleMessage("MP4 · MOV · AVI"),
     "switchAccount": MessageLookupByLibrary.simpleMessage("Switch Account"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("Taekwondo"),
@@ -1605,7 +1593,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage(
       "Try a different search",
     ),
-    "tunisia": MessageLookupByLibrary.simpleMessage("Tunisia"),
     "unKnown": MessageLookupByLibrary.simpleMessage("N/A"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "Unauthorized. Please check your credentials.",

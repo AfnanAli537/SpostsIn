@@ -59,8 +59,11 @@ class _AdWidgetState extends State<AdWidget> {
   bool _isWatched = false;
   bool _isVisible = false;
 
+  // Current zoom scale — updated when user pinches an image or enters
+  // video full-screen. Sent with every progress report.
   double _zoomScale = 1.0;
 
+  // Throttle: send progress at most every 5 seconds while visible.
   static const Duration _reportInterval = Duration(seconds: 5);
   DateTime? _lastReported;
 
@@ -84,11 +87,12 @@ class _AdWidgetState extends State<AdWidget> {
   @override
   void didUpdateWidget(covariant AdWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.ad.isLikedByCurrentUser != oldWidget.ad.isLikedByCurrentUser) {
-      _isLiked = widget.ad.isLikedByCurrentUser;
-    }
-    if (widget.ad.likesCount != oldWidget.ad.likesCount) {
-      _likesCount = widget.ad.likesCount;
+    if (widget.ad != oldWidget.ad) {
+      setState(() {
+        _isLiked = widget.ad.isLikedByCurrentUser;
+        _likesCount = widget.ad.likesCount;
+        _commentsCount = widget.ad.commentsCount;
+      });
     }
     if (widget.ad.mediaUrl != oldWidget.ad.mediaUrl) {
       _videoController?.dispose();
@@ -240,19 +244,6 @@ class _AdWidgetState extends State<AdWidget> {
     );
   }
 
-  // ── Navigate to AdPaymentScreen exactly as it is pushed elsewhere ──────────
-  void _navigateToPayment() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AdPaymentScreen(
-          adId: widget.ad.id,
-          price: widget.ad.price,
-        ),
-      ),
-    );
-  }
-
   void _showDeleteConfirmation() {
     final strings = S.of(context);
     ConfirmationDialog.show(
@@ -297,6 +288,27 @@ class _AdWidgetState extends State<AdWidget> {
     _videoController?.dispose();
     super.dispose();
   }
+
+Future<void> _onPayNow() async {
+  final price = widget.ad.price;
+  // if ( price <= 0) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(content: Text('Invalid ad price. Please contact support.')),
+  //   );
+  //   return;
+  // }
+
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => AdPaymentScreen(
+        price: price,
+        adId: widget.ad.id,
+      ),
+    ),
+  );
+  // Optionally refresh the parent ad list after returning
+}
 
   // ─── Build ─────────────────────────────────────────────────────────────────
 
@@ -363,7 +375,6 @@ class _AdWidgetState extends State<AdWidget> {
                   ),
                 ),
 
-                // Three-dot menu — owner only
                 if (widget.isCurrentUser)
                   PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: theme.onSurface),
@@ -382,7 +393,7 @@ class _AdWidgetState extends State<AdWidget> {
                           _showToggleConfirmation();
                           break;
                         case 'pay':
-                          _navigateToPayment(); // ← wired up
+                          _onPayNow();
                           break;
                         case 'delete':
                           _showDeleteConfirmation();
@@ -450,7 +461,6 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
-            // ── Title ───────────────────────────────────────────────────
             Text(widget.ad.title,
                 style: TextStyle(
                     fontSize: 16.sp,
@@ -458,7 +468,6 @@ class _AdWidgetState extends State<AdWidget> {
                     color: theme.onSurface)),
             SizedBox(height: 6.h),
 
-            // ── Description ─────────────────────────────────────────────
             Text(
               widget.ad.description,
               style: TextStyle(
@@ -467,11 +476,9 @@ class _AdWidgetState extends State<AdWidget> {
               overflow: TextOverflow.ellipsis,
             ),
 
-            // ── Unpaid banner (owner only) ───────────────────────────────
             if (widget.isCurrentUser && !widget.ad.isPaid)
               _buildUnpaidBanner(theme, strings),
 
-            // ── Media ───────────────────────────────────────────────────
             if (widget.ad.mediaUrl != null && widget.ad.mediaUrl!.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(top: 12.h),
@@ -532,7 +539,6 @@ class _AdWidgetState extends State<AdWidget> {
 
             SizedBox(height: 12.h),
 
-            // ── Standalone CTA (no media) ────────────────────────────────
             if (_hasActionLink &&
                 (widget.ad.mediaUrl == null || widget.ad.mediaUrl!.isEmpty))
               Padding(
@@ -553,7 +559,6 @@ class _AdWidgetState extends State<AdWidget> {
                 ),
               ),
 
-            // ── Like & Comment ───────────────────────────────────────────
             Row(
               children: [
                 _buildActionButton(
@@ -654,21 +659,24 @@ class _AdWidgetState extends State<AdWidget> {
               ),
             ),
             SizedBox(width: 8.w),
-            OutlinedButton(
-              onPressed: _navigateToPayment, // ← wired up
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFFFB300),
-                side: const BorderSide(color: Color(0xFFFFB300)),
-                padding:
-                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r)),
+            Tooltip(
+              message: strings.paymentComingSoon,
+              child: OutlinedButton(
+                onPressed: () => _onPayNow(),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                      color: const Color(0xFFFFB300).withOpacity(0.5)),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r)),
+                ),
+                child: Text(strings.payNow,
+                    style: TextStyle(
+                        fontSize: 12.sp, fontWeight: FontWeight.w600)),
               ),
-              child: Text(strings.payNow,
-                  style: TextStyle(
-                      fontSize: 12.sp, fontWeight: FontWeight.w600)),
             ),
           ],
         ),

@@ -14,17 +14,18 @@ final class PaymentInitial extends PaymentState {
 final class PlansLoading extends PaymentState {
   const PlansLoading();
 }
-final class ProcessSuccessful extends PaymentState {
-  final String? transactionId; // Add this
 
-  const ProcessSuccessful({this.transactionId}); // Add to constructor
+final class ProcessSuccessful extends PaymentState {
+  final String? transactionId;
+
+  const ProcessSuccessful({this.transactionId});
 
   @override
   List<Object?> get props => [transactionId];
 }
+
 final class PlansLoaded extends PaymentState {
   final List<SubscriptionPlanModel> plans;
-
   final SubscriptionPlanModel? selectedPlan;
 
   const PlansLoaded({required this.plans, this.selectedPlan});
@@ -147,6 +148,23 @@ final class ManualActivateError extends PaymentState {
   final String message;
 
   const ManualActivateError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// ── Video analysis execution results ─────────────────────────────────────────
+// Emitted by PaymentBloc after _fireAndForgetAnalysis completes.
+// Listened to globally in CustomBottomNav to show toasts from anywhere.
+
+/// executePaidAnalysis returned successfully — AI processing has started.
+final class AnalysisExecutionCompleted extends PaymentState {}
+
+/// executePaidAnalysis failed — non-fatal, backend webhook may handle it.
+final class AnalysisExecutionFailed extends PaymentState {
+  final String message;
+
+  const AnalysisExecutionFailed(this.message);
 
   @override
   List<Object?> get props => [message];

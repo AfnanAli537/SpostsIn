@@ -207,6 +207,19 @@ class SharedPref {
     }
   }
 
+    Future<bool> isAccountValid(LoginResponse account) async {
+    if (account.expiresAt == null) return false;
+    final now = DateTime.now().toUtc();
+    final expiry = account.expiresAt!.toUtc();
+    final isValid = now.isBefore(expiry);
+
+    if (!isValid) {
+      // Remove the expired account
+      await removeAccount(account.userId!);
+    }
+    return isValid;
+  }
+
   String? getActiveAccountId() {
     return _prefs.getString(_activeAccountKey);
   }

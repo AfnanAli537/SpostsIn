@@ -40,11 +40,22 @@ class _AccountSwitcherBottomSheetState
   Future<void> _loadAccounts() async {
     setState(() => _isLoading = true);
 
-    final accounts = await getIt<SharedPref>().getSavedAccounts();
-    final activeId = getIt<SharedPref>().getActiveAccountId();
+    final sharedPref = getIt<SharedPref>();
+    var accounts = await sharedPref.getSavedAccounts();
+    final activeId = sharedPref.getActiveAccountId();
+
+    // Filter out expired accounts (but be careful: removing inside loop)
+    final validAccounts = <LoginResponse>[];
+    for (final account in accounts) {
+      if (await sharedPref.isAccountValid(account)) {
+        validAccounts.add(account);
+      } else {
+        // Account already removed by isAccountValid
+      }
+    }
 
     setState(() {
-      _accounts = accounts;
+      _accounts = validAccounts;
       _activeAccountId = activeId;
       _isLoading = false;
     });
@@ -52,10 +63,25 @@ class _AccountSwitcherBottomSheetState
 
   Future<void> _switchAccount(LoginResponse account) async {
     if (account.userId == _activeAccountId) {
-      Navigator.pop(context); // Just close if already active
+      Navigator.pop(context);
       return;
     }
 
+    // Check if the account token is still valid
+    final isValid = await getIt<SharedPref>().isAccountValid(account);
+    if (!isValid) {
+      // Account expired and was removed; refresh the list
+      await _loadAccounts();
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'This account has expired. Please log in again.',
+          backgroundColor: Colors.orange,
+        );
+      }
+      return;
+    }
+
+    // Proceed with switching
     try {
       await getIt<SharedPref>().switchAccount(account.userId!);
 
@@ -65,7 +91,7 @@ class _AccountSwitcherBottomSheetState
           backgroundColor: Colors.green,
         );
 
-        // Navigate to home and clear stack
+        // Navigate to main layout (which will re-check token validity)
         Navigator.pushNamedAndRemoveUntil(
           context,
           AppRoutes.mainLayout,

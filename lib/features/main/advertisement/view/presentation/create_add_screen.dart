@@ -305,7 +305,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
               ),
             );
           } else {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => BlocProvider.value(

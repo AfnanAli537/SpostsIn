@@ -15,10 +15,11 @@ class PlayerModel extends UserModel {
     required String super.gender,
     required super.hasClub,
     super.position,
-    super.image
+    super.currentClubName,
+    super.image,
   }) : super(
           userType: UserType.player,
-          sport: sportName
+          sport: sportName,
         );
 
   @override
@@ -37,5 +38,6 @@ class PlayerModel extends UserModel {
         "gender": gender??"",
         "hasClub": clubName ?? false,
         "position": position ?? "",
+        "currentClubName": currentClubName,
       };
 }

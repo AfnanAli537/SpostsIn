@@ -25,6 +25,7 @@ class AdsBloc extends Bloc<AdsEvent, AdsState> {
     on<ToggleAdStatus>(_onToggleAdStatus);
     on<FetchUserAds>(_onFetchUserAds);
     on<SendAdProgress>(_onSendAdProgress);
+    on<FetchSingleAd>(_onFetchSingleAd);
   }
 
   final List<AdModel> _ads = [];
@@ -89,42 +90,72 @@ class AdsBloc extends Bloc<AdsEvent, AdsState> {
   // ─── Like (optimistic) ─────────────────────────────────────────────────────
 
   Future<void> _onLikeAd(LikeAd event, Emitter<AdsState> emit) async {
-    final currentState = state;
-    if (currentState is! AdsLoaded) return;
-
-    final updatedAds = currentState.ads.map((ad) {
-      if (ad.id == event.adId) {
-        final newLiked = !ad.isLikedByCurrentUser;
-        return ad.copyWith(
-          isLikedByCurrentUser: newLiked,
-          likesCount: newLiked ? ad.likesCount + 1 : ad.likesCount - 1,
+    AdModel? _findAd(List<AdModel> ads) =>
+        ads.cast<AdModel?>().firstWhere(
+          (a) => a!.id == event.adId,
+          orElse: () => null,
         );
+
+    List<AdModel> _toggleLike(List<AdModel> ads, bool newLiked) =>
+        ads.map((ad) {
+          if (ad.id == event.adId) {
+            return ad.copyWith(
+              isLikedByCurrentUser: newLiked,
+              likesCount: newLiked ? ad.likesCount + 1 : ad.likesCount - 1,
+            );
+          }
+          return ad;
+        }).toList();
+
+    // ── AdsLoaded (feed / PostsTab) ───────────────────────────────────────────
+    if (state is AdsLoaded) {
+      final currentState = state as AdsLoaded;
+      final ad = _findAd(currentState.ads);
+      if (ad == null) return; // ad not found — do nothing
+
+      final newLiked = !ad.isLikedByCurrentUser;
+      final optimistic = _toggleLike(currentState.ads, newLiked);
+
+      emit(AdsLoaded(ads: optimistic, hasNextPage: currentState.hasNextPage));
+      _ads
+        ..clear()
+        ..addAll(optimistic);
+
+      try {
+        await adsRepo.likeAd(adId: event.adId);
+      } catch (e) {
+        log('Like ad failed: $e');
+        final reverted = _toggleLike(optimistic, !newLiked);
+        emit(AdsLoaded(ads: reverted, hasNextPage: currentState.hasNextPage));
+        _ads
+          ..clear()
+          ..addAll(reverted);
       }
-      return ad;
-    }).toList();
+      return;
+    }
 
-    emit(AdsLoaded(ads: updatedAds, hasNextPage: currentState.hasNextPage));
+    // ── UserAdsLoaded (MyAdsScreen) ───────────────────────────────────────────
+    if (state is UserAdsLoaded) {
+      final currentState = state as UserAdsLoaded;
+      final ad = _findAd(currentState.ads);
+      if (ad == null) return; // ad not found — do nothing
 
-    try {
-      await adsRepo.likeAd(adId: event.adId);
-    } catch (e) {
-      log('Like ad failed: $e');
-      // revert
-      final revertedAds = updatedAds.map((ad) {
-        if (ad.id == event.adId) {
-          final originalLiked = !ad.isLikedByCurrentUser;
-          return ad.copyWith(
-            isLikedByCurrentUser: originalLiked,
-            likesCount:
-                originalLiked ? ad.likesCount + 1 : ad.likesCount - 1,
-          );
-        }
-        return ad;
-      }).toList();
-      emit(AdsLoaded(ads: revertedAds, hasNextPage: currentState.hasNextPage));
+      final newLiked = !ad.isLikedByCurrentUser;
+      final optimistic = _toggleLike(currentState.ads, newLiked);
+
+      emit(UserAdsLoaded(ads: optimistic, hasNextPage: currentState.hasNextPage));
+
+      try {
+        await adsRepo.likeAd(adId: event.adId);
+      } catch (e) {
+        log('Like ad failed (UserAdsLoaded): $e');
+        final reverted = _toggleLike(optimistic, !newLiked);
+        emit(UserAdsLoaded(
+            ads: reverted, hasNextPage: currentState.hasNextPage));
+      }
+      return;
     }
   }
-
   // ─── Click log (fire-and-forget) ───────────────────────────────────────────
 
   Future<void> _onLogAdClick(
@@ -313,4 +344,16 @@ class AdsBloc extends Bloc<AdsEvent, AdsState> {
       zoomScale: event.zoomScale,
     );
   }
+  Future<void> _onFetchSingleAd(
+  FetchSingleAd event,
+  Emitter<AdsState> emit,
+) async {
+  try {
+    emit(AdsLoading());
+    final ad = await adsRepo.getAdById(adId: event.adId); // you'll need to add this method to your repository
+    emit(SingleAdLoaded(ad));
+  } catch (e) {
+    emit(AdsError('Failed to load ad: ${e.toString()}'));
+  }
+}
 }

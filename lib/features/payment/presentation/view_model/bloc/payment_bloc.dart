@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +42,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     emit(const PlansLoading());
     try {
       final plans = await _repository.getPlans();
-      log('✅ [PaymentBloc] fetched ${plans.length} plans');
       emit(PlansLoaded(plans: plans));
     } catch (e) {
       log('❌ [PaymentBloc] FetchPlansEvent error: $e');
@@ -50,7 +51,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
   void _onSelectPlan(SelectPlanEvent event, Emitter<PaymentState> emit) {
     _selectedPlan = event.plan;
-    log('✅ [PaymentBloc] plan selected: ${event.plan.name}');
     if (state is PlansLoaded) {
       emit((state as PlansLoaded).copyWith(selectedPlan: event.plan));
     } else {
@@ -66,14 +66,12 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     try {
       final sub = await _repository.getMySubscription(userId: event.userId);
       if (sub == null) {
-        log('[PaymentBloc] no active subscription');
         emit(const NoActiveSubscription());
       } else {
-        log('[PaymentBloc] subscription: ${sub.planName}');
         emit(MySubscriptionLoaded(sub));
       }
     } catch (e) {
-      log('[PaymentBloc] FetchMySubscriptionEvent error: $e');
+      log('❌ [PaymentBloc] FetchMySubscriptionEvent error: $e');
       emit(MySubscriptionError(e.toString()));
     }
   }
@@ -83,10 +81,10 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     Emitter<PaymentState> emit,
   ) {
     if (_selectedPlan == null) {
-      emit(const PlansError('Please select a plan before choosing a payment method.'));
+      emit(const PlansError(
+          'Please select a plan before choosing a payment method.'));
       return;
     }
-    log('✅ [PaymentBloc] method selected: ${event.method.displayName}');
     emit(PaymentMethodSelected(plan: _selectedPlan!, method: event.method));
   }
 
@@ -103,19 +101,16 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         mobileNumber: event.mobileNumber,
       );
 
-      // Free plan
       if (_selectedPlan?.isFree == true) {
         emit(ProcessSuccessful(transactionId: response.transactionId));
         return;
       }
 
-      log('✅ [PaymentBloc] initiatePayment response: $response');
-
-      // Credit card → redirect
       if (event.method == PaymentMethod.creditCard) {
         final url = response.paymentUrl;
         if (url == null || url.isEmpty) {
-          emit(const PaymentInitiateError('Credit card flow: no redirect URL returned.'));
+          emit(const PaymentInitiateError(
+              'Credit card flow: no redirect URL returned.'));
           return;
         }
         emit(PaymentRedirectReady(
@@ -125,7 +120,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         return;
       }
 
-      // Fawry / Vodafone → awaiting manual activation
       final txId = response.transactionId;
       if (txId == null || txId.isEmpty) {
         emit(const PaymentInitiateError('No transaction ID returned.'));
@@ -149,30 +143,43 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   ) async {
     emit(const ManualActivating());
     try {
-      // 1. Activate the order
+      // ── Step 1: Activate the order ────────────────────────────────────────
+      // This is the only blocking call. The Fawry/Vodafone processing dialog
+      // stays open until this resolves.
       await _repository.manualTest(orderId: event.orderId);
-      log('✅ [PaymentBloc] manual activation success for orderId: ${event.orderId}');
+      log('✅ [PaymentBloc] manual activation success: ${event.orderId}');
 
-      // 2. If this is a video analysis payment, execute the analysis
-      //    using the transactionId (= orderId passed from Fawry/Vodafone screen)
+      // ── Step 2: Emit success IMMEDIATELY ─────────────────────────────────
+      // This dismisses the Fawry/Vodafone processing dialog right away.
+      // executePaidAnalysis is NOT awaited here — it would block the UI
+      // for the full AI processing time (minutes), keeping the dialog open.
+      emit(const ManualActivateSuccess(message: 'Payment activated successfully!'));
+
+      // ── Step 3: Fire-and-forget executePaidAnalysis ───────────────────────
+      // Runs in the background AFTER the dialog has already dismissed.
+      // Emits AnalysisExecutionCompleted / AnalysisExecutionFailed so the
+      // global listener in CustomBottomNav can show a toast — even if the
+      // user has already navigated away from the payment screen.
       if (event.targetType == PaymentTargetType.videoAnalysis) {
-        try {
-          await _analysisRepository.executePaidAnalysis(event.orderId);
-          log('✅ [PaymentBloc] executePaidAnalysis success for txId: ${event.orderId}');
-        } catch (e) {
-          // executePaidAnalysis failure is non-fatal — the analysis may still
-          // be queued by the backend webhook. Log and continue to success.
-          log('⚠️ [PaymentBloc] executePaidAnalysis error (non-fatal): $e');
-        }
+        _fireAndForgetAnalysis(event.orderId);
       }
-
-      emit(const ManualActivateSuccess(
-        message: 'Payment activated successfully!',
-      ));
     } catch (e) {
       log('❌ [PaymentBloc] ManualActivateEvent error: $e');
       emit(ManualActivateError(e.toString()));
     }
+  }
+
+  /// Calls executePaidAnalysis without blocking [_onManualActivate].
+  /// On completion emits [AnalysisExecutionCompleted] or [AnalysisExecutionFailed].
+  void _fireAndForgetAnalysis(String transactionId) {
+    _analysisRepository.executePaidAnalysis(transactionId).then((_) {
+      log('✅ [PaymentBloc] executePaidAnalysis done: $transactionId');
+      if (!isClosed) emit(AnalysisExecutionCompleted());
+    }).catchError((Object e) {
+      log('⚠️ [PaymentBloc] executePaidAnalysis error (non-fatal): $e');
+      // Still emit completed — backend webhook may have already queued it.
+      if (!isClosed) emit(AnalysisExecutionFailed(e.toString()));
+    });
   }
 
   void _onReset(ResetPaymentEvent event, Emitter<PaymentState> emit) {

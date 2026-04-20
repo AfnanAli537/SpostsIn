@@ -39,6 +39,9 @@
   "alreadyHaveAnAccount": "Already have an account?",
   "player": "Player",
   "coach": "Coach",
+  "certifications":"Certifications",
+  "specialist":"Specialist",
+  "selectCertifications":"Select Certifications",
   "scout": "Scout",
   "club": "Club",
   "institute": "Institute",
@@ -62,11 +65,6 @@
   "currentlyInClub": "Currently in a Club",
   "male": "Male",
   "female": "Female",
-  "algeria": "Algeria",
-  "egypt": "Egypt",
-  "morocco": "Morocco",
-  "tunisia": "Tunisia",
-  "sudan": "Sudan",
   "selectSports": "Select a Sport",
   "sport": "Sport",
   "footballer": "Footballer",
@@ -81,26 +79,6 @@
   "volleyball": "Volleyball",
   "teakwando": "Teakwando",
   "gymnastics": "Gymnastics",
-  "pointGuard": "Point Guard",
-  "shootingGuard": "Shooting Guard",
-  "smallForward": "Small Forward",
-  "powerForward": "Power Forward",
-  "center": "Center",
-  "goalkeeper": "Goalkeeper",
-  "defender": "Defender",
-  "midfielder": "Midfielder",
-  "forward": "Forward",
-  "setter": "Setter",
-  "outsideHitter": "Outside Hitter",
-  "oppositeHitter": "Opposite Hitter",
-  "middleBlocker": "Middle Blocker",
-  "libero": "Libero",
-  "leftWing": "Left Wing",
-  "rightWing": "Right Wing",
-  "leftBack": "Left Back",
-  "centerBack": "Center Back",
-  "rightBack": "Right Back",
-  "pivot": "Pivot",
   "yearsOfExperience0to2": "0-2 years",
   "yearsOfExperience3to5": "3-5 years",
   "yearsOfExperience5to10": "6-10 years",
@@ -368,6 +346,8 @@
   "failedToLoadVideo": "Failed to load video",
   "analyzeVideoComingSoon": "Analyze video feature coming soon",
   "analyzeVideo": "Analyze Video",
+  "analysisStartedToast": "Analysis started! Your report will be ready soon.",
+  "analysisStartFailedToast": "Analysis queued. Report will appear in your profile when ready.",
   "archive": "Archive",
   "activate": "Activate",
   "pay": "Pay",
@@ -897,7 +877,7 @@
   "subscription_plan_duration_month": "{count} Days",
   "subscription_plan_duration_year": "{count} Months",
   "unKnown": "N/A",
-
+  "goalkeeper": "Goalkeeper",
   "passing": "Passing",
   "dribbling": "Dribbling",
   "match": "Match",
@@ -919,7 +899,7 @@
   "stepAiProcessing": "Our AI engine starts processing your video",
   "stepReportNotified": "Report appears in your profile — you'll be notified",
   "processing": "Processing...",
-"analysisCompleteTitle": "Analysis Complete!",
+  "analysisCompleteTitle": "Analysis Complete!",
   "analysisInProgressTitle": "Analysis in Progress",
   "analysisCompleteMessage": "Your {type} report is ready. Find it in your profile under Video Analysis.",
   "analysisInProgressMessage": "Your {type} video is being processed by our AI engine. This may take a few minutes.",
@@ -928,25 +908,32 @@
   "analysisNotificationInfo": "You'll see a toast notification here when your report is ready — no need to wait on this screen.",
   "goToProfileButton": "Go to Profile",
   "backToHomeButton": "Back to Home",
-  
   "@analysisCompleteMessage": {
     "placeholders": {
-      "type": { "type": "String" }
+      "type": {
+        "type": "String"
+      }
     }
   },
   "@analysisInProgressMessage": {
     "placeholders": {
-      "type": { "type": "String" }
+      "type": {
+        "type": "String"
+      }
     }
   },
   "@analysisReadyToast": {
     "placeholders": {
-      "type": { "type": "String" }
+      "type": {
+        "type": "String"
+      }
     }
   },
   "@analysisFailedToast": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
   "analyzedVideoReport": "Analyzed Video Report",
@@ -1000,16 +987,23 @@
   "orPasteUrlLabel": "OR PASTE URL",
   "videoTips": "Video Tips",
   "moreInfo": "More info",
-  "goalkeeperVideoInstructions": "Record from behind the goal or side angle. Ensure the goalkeeper is fully visible.",
-  "passingVideoInstructions": "Record the player's upper body and feet. Show both successful and unsuccessful passes.",
-  "dribblingVideoInstructions": "Keep the camera steady. The player should be visible from waist up.",
-  "matchVideoInstructions": "Full match footage preferred. If not available, record key phases.",
-  
+  "goalkeeperVideoInstructions": "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
+  "passingVideoInstructions": "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
+  "dribblingVideoInstructions": "• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
+  "matchVideoInstructions": "• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions",
   "@analysisTypeTitle": {
-    "placeholders": { "type": { "type": "String" } }
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
   },
   "@uploadError": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "analyzedVideos": "Analyzed videos",
   "analyzed": "Analyzed",
@@ -1038,9 +1032,12 @@
   "kpiTopSpeedPerTeam": "Top Speed per Team (km/h)",
   "kpiTopSprintSpeedOverall": "Top Sprint Speed overall (km/h)",
   "kpiTotalFramesProcessed": "Total Frames Processed",
-  
   "@exampleDrill": {
-    "placeholders": { "type": { "type": "String" } }
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
   },
   "maxExtension": "Max Extension",
   "maxVelocity": "Max Velocity",
@@ -1078,11 +1075,12 @@
   "usersAnalyses": "{name}'s Analyses",
   "@usersAnalyses": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "people": "People",
-  
   "@@locale": "en",
   "userMessage": "User message",
   "@userMessage": {
@@ -1119,28 +1117,38 @@
   "categoryRequests": "Requests",
   "categoryReactions": "Reactions",
   "categoryOpportunities": "Opportunities",
-
   "dateToday": "Today",
   "dateYesterday": "Yesterday",
-
   "timeMinutes": "{count}m",
   "@timeMinutes": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "timeHours": "{count}h",
   "@timeHours": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "timeDays": "{count}d",
   "@timeDays": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "newBadge": "{count} new",
   "@newBadge": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
-
-
-

@@ -9,10 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
+import 'package:sports_in/core/utils/helper/image_helper.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
-import 'package:dio/dio.dart';
-import 'package:sports_in/core/constants/strings_keys.dart';
 import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/create_analysis/create_analysis_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/view_model/create_analysis/create_analysis_event.dart';
@@ -103,34 +102,24 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
     await _uploadVideo(_pickedVideo!);
   }
 
-  Future<void> _uploadVideo(File file) async {
-    setState(() => _isUploadingVideo = true);
-    try {
-      final dio = Dio();
-      final url =
-          'https://api.cloudinary.com/v1_1/${StringKeys.cloudName}/video/upload';
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(file.path),
-        'upload_preset': StringKeys.uploadPreset,
-        'folder': 'analysis/videos',
-        'resource_type': 'video',
+Future<void> _uploadVideo(File file) async {
+  setState(() => _isUploadingVideo = true);
+  try {
+    final url = await CloudinaryService.uploadVideo(file);
+    if (url.isNotEmpty) {
+      setState(() {
+        _videoUrlController.text = url;
+        _isUploaded = true;
       });
-      final res = await dio.post(url, data: formData);
-      if ((res.statusCode == 200 || res.statusCode == 201) &&
-          res.data['secure_url'] != null) {
-        setState(() {
-          _videoUrlController.text = res.data['secure_url'] as String;
-          _isUploaded = true;
-        });
-      } else {
-        _toast(S.of(context).uploadFailedPasteManually, err: true);
-      }
-    } catch (e) {
-      _toast(S.of(context).uploadError(e.toString()), err: true);
-    } finally {
-      setState(() => _isUploadingVideo = false);
+    } else {
+      _toast(S.of(context).uploadFailedPasteManually, err: true);
     }
+  } catch (e) {
+    _toast(S.of(context).uploadError(e.toString()), err: true);
+  } finally {
+    setState(() => _isUploadingVideo = false);
   }
+}
 
   void _showSourceSheet(S strings) {
     showModalBottomSheet(
@@ -615,19 +604,6 @@ class _TypeBadge extends StatelessWidget {
   final String label;
   const _TypeBadge({required this.type, required this.label});
 
-  Color get _color {
-    switch (type) {
-      case AnalysisType.goalkeeper:
-        return const Color(0xFF4FC3F7);
-      case AnalysisType.passing:
-        return const Color(0xFF81C784);
-      case AnalysisType.dribbling:
-        return const Color(0xFFFFB74D);
-      case AnalysisType.match:
-        return const Color(0xFFBA68C8);
-    }
-  }
-
   IconData get _icon {
     switch (type) {
       case AnalysisType.goalkeeper:
@@ -647,7 +623,7 @@ class _TypeBadge extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: _color.withOpacity(0.1),
+        color: theme.onTertiaryContainer.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: theme.primary.withOpacity(0.3)),
       ),

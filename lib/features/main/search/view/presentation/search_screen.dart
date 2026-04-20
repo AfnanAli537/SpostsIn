@@ -90,21 +90,14 @@ class _SearchViewState extends State<_SearchView>
                 indicatorSize: TabBarIndicatorSize.tab,
                 dividerColor: Colors.transparent,
                 labelColor: theme.colorScheme.onPrimary,
-                unselectedLabelColor:
-                    theme.colorScheme.onSurface.withOpacity(0.6),
+                unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(
+                  0.6,
+                ),
                 labelStyle: TextStyle(
-                    fontSize: 13.sp, fontWeight: FontWeight.w600),
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                ),
                 tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.people_outline_rounded, size: 16.sp),
-                        SizedBox(width: 6.w),
-                        Text(string.people),
-                      ],
-                    ),
-                  ),
                   Tab(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -112,6 +105,16 @@ class _SearchViewState extends State<_SearchView>
                         Icon(Icons.sports_soccer_rounded, size: 16.sp),
                         SizedBox(width: 6.w),
                         Text(string.videoAnalysis),
+                      ],
+                    ),
+                  ),
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Icon(Icons.people_outline_rounded, size: 16.sp),
+                        SizedBox(width: 6.w),
+                        Text(string.people),
+                        
                       ],
                     ),
                   ),
@@ -123,10 +126,7 @@ class _SearchViewState extends State<_SearchView>
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: const [
-                  _PeopleSearchTab(),
-                  _VideoAnalysisSearchTab(),
-                ],
+                children: const [_VideoAnalysisSearchTab(), _PeopleSearchTab()],
               ),
             ),
           ],
@@ -179,8 +179,7 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
       maxAge: _maxAge.toInt(),
       location: _selectedLocation,
       sportTypeId: _selectedSportTypeId,
-      position:
-          _selectedPosition?.isEmpty == true ? null : _selectedPosition,
+      position: _selectedPosition?.isEmpty == true ? null : _selectedPosition,
       userType: _selectedUserType,
     );
     final query = _searchController.text.trim();
@@ -205,10 +204,11 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
     final string = S.of(context);
     final locationOptions = RegisterLists.locationOptions(string);
     final sportOptions = RegisterLists.sportNameOptions(string);
-    final hasPositions =
-        RegisterLists.sportHasPositions(_selectedSportLabel);
-    final positionOptions =
-        RegisterLists.positionOptions(string, _selectedSportLabel);
+    final hasPositions = RegisterLists.sportHasPositions(_selectedSportLabel);
+    final positionOptions = RegisterLists.positionOptions(
+      string,
+      _selectedSportLabel,
+    );
 
     final clearLabel = string.clear;
     final locationOptionsWithClear = [...locationOptions, clearLabel];
@@ -230,12 +230,10 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
               decoration: InputDecoration(
                 hintText: string.searchByUserName,
                 hintStyle: TextStyle(color: theme.hintColor),
-                prefixIcon:
-                    Icon(Icons.search, color: theme.iconTheme.color),
+                prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Icons.clear,
-                            color: theme.iconTheme.color),
+                        icon: Icon(Icons.clear, color: theme.iconTheme.color),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {});
@@ -252,8 +250,7 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
-                  borderSide:
-                      BorderSide(color: theme.primaryColor, width: 2),
+                  borderSide: BorderSide(color: theme.primaryColor, width: 2),
                 ),
               ),
             ),
@@ -274,8 +271,13 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
                       inactiveTrackColor: theme.disabledColor,
                       thumbColor: theme.colorScheme.primary,
                       trackHeight: 2.0,
-                      overlayColor:
-                          theme.primaryColor.withOpacity(0.2),
+                      overlayColor: theme.primaryColor.withOpacity(0.2),
+                      showValueIndicator: ShowValueIndicator.always,
+                      rangeThumbShape: const RoundRangeSliderThumbShape(
+                        enabledThumbRadius: 12,
+                        pressedElevation: 4,
+                        disabledThumbRadius: 12,
+                      ),
                     ),
                     child: RangeSlider(
                       values: RangeValues(_minAge, _maxAge),
@@ -285,19 +287,27 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
                         _minAge = v.start;
                         _maxAge = v.end;
                       }),
+                      labels: RangeLabels(
+                        _minAge.round().toString(),
+                        _maxAge.round().toString(),
+                      ),
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('18',
-                          style: TextStyle(
-                              color: theme
-                                  .colorScheme.onTertiaryContainer)),
-                      Text('99',
-                          style: TextStyle(
-                              color: theme
-                                  .colorScheme.onTertiaryContainer)),
+                      Text(
+                        '18',
+                        style: TextStyle(
+                          color: theme.colorScheme.onTertiaryContainer,
+                        ),
+                      ),
+                      Text(
+                        '99',
+                        style: TextStyle(
+                          color: theme.colorScheme.onTertiaryContainer,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 16.h),
@@ -307,8 +317,7 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
                     options: locationOptionsWithClear,
                     borderColor: theme.dividerColor,
                     onChanged: (val) => setState(() {
-                      _selectedLocation =
-                          val == clearLabel ? null : val;
+                      _selectedLocation = val == clearLabel ? null : val;
                     }),
                   ),
                   SizedBox(height: 16.h),
@@ -320,8 +329,7 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
                     onChanged: (label) => setState(() {
                       _selectedUserType = label == clearLabel
                           ? null
-                          : UserType.values
-                              .firstWhere((e) => e.label == label);
+                          : UserType.values.firstWhere((e) => e.label == label);
                     }),
                   ),
                   SizedBox(height: 16.h),
@@ -348,8 +356,7 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
                       options: positionOptionsWithClear,
                       borderColor: theme.dividerColor,
                       onChanged: (val) => setState(() {
-                        _selectedPosition =
-                            val == clearLabel ? null : val;
+                        _selectedPosition = val == clearLabel ? null : val;
                       }),
                     ),
                     SizedBox(height: 16.h),
@@ -371,15 +378,15 @@ class _PeopleSearchTabState extends State<_PeopleSearchTab> {
   }
 
   Widget _label(String text, ThemeData theme) => Padding(
-        padding: EdgeInsets.only(bottom: 8.h),
-        child: Text(
-          text,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-      );
+    padding: EdgeInsets.only(bottom: 8.h),
+    child: Text(
+      text,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: theme.colorScheme.onSurface,
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -394,8 +401,7 @@ class _VideoAnalysisSearchTab extends StatefulWidget {
       _VideoAnalysisSearchTabState();
 }
 
-class _VideoAnalysisSearchTabState
-    extends State<_VideoAnalysisSearchTab> {
+class _VideoAnalysisSearchTabState extends State<_VideoAnalysisSearchTab> {
   final _searchController = TextEditingController();
   String? _selectedType;
 
@@ -409,14 +415,14 @@ class _VideoAnalysisSearchTabState
 
   void _search() {
     context.read<AnalysisBloc>().add(
-          LoadAnalysisSearch(
-            mode: AnalysisSearchMode.public,
-            term: _searchController.text.trim().isEmpty
-                ? null
-                : _searchController.text.trim(),
-            type: _selectedType,
-          ),
-        );
+      LoadAnalysisSearch(
+        mode: AnalysisSearchMode.public,
+        term: _searchController.text.trim().isEmpty
+            ? null
+            : _searchController.text.trim(),
+        type: _selectedType,
+      ),
+    );
   }
 
   void _selectType(String? type) {
@@ -443,12 +449,10 @@ class _VideoAnalysisSearchTabState
             decoration: InputDecoration(
               hintText: strings.searchByPlayerName,
               hintStyle: TextStyle(color: theme.hintColor),
-              prefixIcon:
-                  Icon(Icons.search, color: theme.iconTheme.color),
+              prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon:
-                          Icon(Icons.clear, color: theme.iconTheme.color),
+                      icon: Icon(Icons.clear, color: theme.iconTheme.color),
                       onPressed: () {
                         _searchController.clear();
                         setState(() {});
@@ -466,8 +470,7 @@ class _VideoAnalysisSearchTabState
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12.r),
-                borderSide:
-                    BorderSide(color: theme.primaryColor, width: 2),
+                borderSide: BorderSide(color: theme.primaryColor, width: 2),
               ),
             ),
           ),
@@ -486,7 +489,7 @@ class _VideoAnalysisSearchTabState
           child: BlocBuilder<AnalysisBloc, AnalysisState>(
             builder: (context, state) {
               if (state is AnalysisInitial) {
-                return _buildHint(theme,strings);
+                return _buildHint(theme, strings);
               }
               if (state is AnalysisSearchLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -496,9 +499,11 @@ class _VideoAnalysisSearchTabState
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline,
-                          size: 48.sp,
-                          color: theme.colorScheme.error),
+                      Icon(
+                        Icons.error_outline,
+                        size: 48.sp,
+                        color: theme.colorScheme.error,
+                      ),
                       SizedBox(height: 12.h),
                       Text(state.message, textAlign: TextAlign.center),
                       SizedBox(height: 12.h),
@@ -516,32 +521,34 @@ class _VideoAnalysisSearchTabState
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.videocam_off_outlined,
-                            size: 56.sp,
-                            color: theme.colorScheme.onSurface
-                                .withOpacity(0.25)),
+                        Icon(
+                          Icons.videocam_off_outlined,
+                          size: 56.sp,
+                          color: theme.colorScheme.onSurface.withOpacity(0.25),
+                        ),
                         SizedBox(height: 12.h),
-                        Text(strings.noAnalysesFound,
-                            style: TextStyle(
-                                fontSize: 14.sp,
-                                color: theme.colorScheme.onSurface
-                                    .withOpacity(0.5))),
+                        Text(
+                          strings.noAnalysesFound,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+                          ),
+                        ),
                       ],
                     ),
                   );
                 }
                 return ListView.builder(
-                  padding:
-                      EdgeInsets.only(top: 4.h, bottom: 24.h),
-                  itemCount: state.items.length +
+                  padding: EdgeInsets.only(top: 4.h, bottom: 24.h),
+                  itemCount:
+                      state.items.length +
                       (state is AnalysisSearchLoadingMore ? 1 : 0),
                   itemBuilder: (context, i) {
                     if (i == state.items.length) {
                       return Center(
                         child: Padding(
                           padding: EdgeInsets.all(16.h),
-                          child:
-                              const CircularProgressIndicator(),
+                          child: const CircularProgressIndicator(),
                         ),
                       );
                     }
@@ -552,10 +559,10 @@ class _VideoAnalysisSearchTabState
                         context,
                         MaterialPageRoute(
                           builder: (_) => BlocProvider(
-                            create: (_) => getIt<AnalysisBloc>()
-                              ..add(LoadAnalysisReport(item.id)),
-                            child: AnalysisReportScreen(
-                                analysisId: item.id),
+                            create: (_) =>
+                                getIt<AnalysisBloc>()
+                                  ..add(LoadAnalysisReport(item.id)),
+                            child: AnalysisReportScreen(analysisId: item.id),
                           ),
                         ),
                       ),
@@ -572,33 +579,33 @@ class _VideoAnalysisSearchTabState
   }
 
   Widget _buildHint(ThemeData theme, S strings) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.manage_search_rounded,
-              size: 64.sp,
-              color: theme.colorScheme.onSurface.withOpacity(0.2),
-            ),
-            SizedBox(height: 14.h),
-            Text(
-              strings.searchByPlayerInstruction1,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: theme.colorScheme.onSurface.withOpacity(0.45),
-              ),
-            ),
-            SizedBox(height: 6.h),
-            Text(
-              strings.searchByPlayerInstruction2,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
-              ),
-            ),
-          ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.manage_search_rounded,
+          size: 64.sp,
+          color: theme.colorScheme.onSurface.withOpacity(0.2),
         ),
-      );
+        SizedBox(height: 14.h),
+        Text(
+          strings.searchByPlayerInstruction1,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: theme.colorScheme.onSurface.withOpacity(0.45),
+          ),
+        ),
+        SizedBox(height: 6.h),
+        Text(
+          strings.searchByPlayerInstruction2,
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: theme.colorScheme.onSurface.withOpacity(0.3),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -637,15 +644,13 @@ class _TypeFilterRow extends StatelessWidget {
             selected: isSelected,
             onSelected: (_) => onSelect(option),
             selectedColor: theme.colorScheme.primary,
-            backgroundColor:
-                theme.colorScheme.onError.withOpacity(0.2),
+            backgroundColor: theme.colorScheme.onError.withOpacity(0.2),
             labelStyle: TextStyle(
               fontSize: 12.sp,
               color: isSelected
                   ? theme.colorScheme.onPrimary
                   : theme.colorScheme.onSecondary,
-              fontWeight:
-                  isSelected ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.r),

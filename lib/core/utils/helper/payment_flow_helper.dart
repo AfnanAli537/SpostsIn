@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
@@ -11,12 +12,15 @@ import 'package:sports_in/features/payment/presentation/vodafon_cash_screen.dart
 ///
 /// Key design decision: Fawry and VodafoneCash are shown as FULL-SCREEN
 /// DIALOGS (using [showGeneralDialog] with [barrierDismissible: false]) rather
-/// than pushed routes. This avoids the gray-overlay bug caused by:
-/// - [Navigator.push] returning after [CourseDetailScreen] has already popped
-/// - Stale BlocListener re-fires when routes are pushed/popped
+/// than pushed routes. This avoids navigation conflicts and allows each
+/// payment screen to control its own navigation after success.
 ///
 /// Credit card fires [InitiatePaymentEvent] directly; the parent
 /// [BlocListener] handles [PaymentRedirectReady] → push [WebViewScreen].
+///
+/// For video analysis: analysisType is passed through the chain so that
+/// FawryScreen/VodafoneCashScreen can navigate to AnalysisProcessingScreen
+/// after payment succeeds.
 ///
 /// [paymentBloc] must be read by the caller BEFORE calling this:
 ///   final paymentBloc = context.read<PaymentBloc>();
@@ -27,6 +31,7 @@ Future<bool> initiatePaymentFlow({
   required String targetId,
   required PaymentTargetType targetType,
   double price = 0,
+  AnalysisType? analysisType, // Optional: for video analysis payments
 }) async {
   // ── Step 1: choose method ────────────────────────────────────────────────
   final method = await showPaymentMethodDialog(context);
@@ -63,6 +68,7 @@ Future<bool> initiatePaymentFlow({
           child: VodafoneCashScreen(
             plan: syntheticPlan,
             targetType: targetType,
+            analysisType: analysisType,
           ),
         ),
       );
@@ -87,6 +93,7 @@ Future<bool> initiatePaymentFlow({
           child: FawryMobileScreen(
             plan: syntheticPlan,
             targetType: targetType,
+            analysisType: analysisType,
           ),
         ),
       );

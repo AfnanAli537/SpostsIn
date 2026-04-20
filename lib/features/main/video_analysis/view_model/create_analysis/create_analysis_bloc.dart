@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart';
 import 'package:sports_in/features/main/video_analysis/model/create_analysis_response.dart';
@@ -6,21 +5,24 @@ import 'package:sports_in/features/main/video_analysis/view_model/create_analysi
 import 'package:sports_in/features/main/video_analysis/view_model/create_analysis/create_analysis_state.dart';
 import '../../data/enums/analysis_type.dart';
 
-
 class CreateAnalysisBloc
     extends Bloc<CreateAnalysisEvent, CreateAnalysisState> {
   final IAnalysisRepo _repo;
 
-  /// Price shown on the payment screen when isPaid:false is returned.
   static const double kAnalysisPrice = 10.0;
 
-  /// How long to wait before navigating to the processing screen regardless
-  /// of whether the API has responded yet.
+  /// After [_optimisticDelay] the form screen navigates to AnalysisProcessingScreen
+  /// regardless of whether the backend has responded yet.
   static const Duration _optimisticDelay = Duration(seconds: 3);
 
   CreateAnalysisBloc(this._repo) : super(CreateAnalysisInitial()) {
     on<SubmitAnalysisEvent>(_onSubmit);
     on<ExecutePaidAnalysisEvent>(_onExecutePaid);
+    // Private self-events posted when the background API call finishes.
+    // Using self-events (instead of holding the emitter) is the safe pattern
+    // because the Emitter is invalidated once _onSubmit returns.
+    on<_BackgroundResponseReceived>(_onBackgroundResponse);
+    on<_BackgroundErrorReceived>(_onBackgroundError);
   }
 
   Future<void> _onSubmit(
@@ -29,14 +31,12 @@ class CreateAnalysisBloc
   ) async {
     emit(CreateAnalysisLoading());
 
-    // ── Fire the API call without awaiting it yet ──────────────────────────
     final apiFuture = _callEndpoint(event);
-
-    // ── Race: whichever comes first — 3s timer OR api response ─────────────
     bool queuedEmitted = false;
 
+    // ── Race: 3-second timer vs. API response ─────────────────────────────
     await Future.any([
-      // Branch A: 3 seconds elapsed → emit optimistic AnalysisQueued
+      // Branch A — 3 s elapsed → optimistic navigation
       Future.delayed(_optimisticDelay).then((_) {
         if (!queuedEmitted && !isClosed) {
           queuedEmitted = true;
@@ -44,23 +44,23 @@ class CreateAnalysisBloc
         }
       }),
 
-      // Branch B: API responded before 3 seconds
+      // Branch B — API responded before 3 s
       apiFuture.then((response) {
         if (!queuedEmitted) {
-          // Fast response (< 3s) — handle immediately without showing processing
-          queuedEmitted = true; // prevent the timer from re-emitting
+          queuedEmitted = true;
           if (response.requiresPayment) {
+            // Payment required — show payment screen immediately
             emit(CreateAnalysisRequiresPayment(
               analysisId: response.id,
               price: kAnalysisPrice,
             ));
           } else {
-            // Paid & done before 3s — treat same as queued then immediately complete
+            // Paid and fast — queue then complete in the same frame
             emit(const AnalysisQueued());
             emit(AnalysisCompleted(response));
           }
         }
-      }).catchError((e) {
+      }).catchError((Object e) {
         if (!queuedEmitted) {
           queuedEmitted = true;
           emit(CreateAnalysisError(e.toString()));
@@ -68,31 +68,41 @@ class CreateAnalysisBloc
       }),
     ]);
 
-    // ── If we emitted AnalysisQueued, wait for the API to finish in bg ─────
+    // ── After 3 s: wait for the real response via self-events ─────────────
+    // We schedule background self-events rather than awaiting apiFuture here,
+    // because the Emitter is invalidated after _onSubmit returns.
+    // self-events go through the BLoC's own queue so they're safe.
     if (state is AnalysisQueued) {
-      try {
-        final response = await apiFuture;
-
-        if (isClosed) return;
-
-        if (response.requiresPayment) {
-          // Rare: payment required but we already showed processing screen.
-          // Emit payment state — the form screen or main layout listener
-          // can intercept and redirect.
-          emit(CreateAnalysisRequiresPayment(
-            analysisId: response.id,
-            price: kAnalysisPrice,
-          ));
-        } else {
-          // ✅ Analysis done — emit completion so main layout shows toast.
-          emit(AnalysisCompleted(response));
-        }
-      } catch (e) {
-        if (!isClosed) {
-          emit(CreateAnalysisError(e.toString()));
-        }
-      }
+      apiFuture.then((response) {
+        if (!isClosed) add(_BackgroundResponseReceived(response));
+      }).catchError((Object e) {
+        if (!isClosed) add(_BackgroundErrorReceived(e.toString()));
+      });
     }
+  }
+
+  /// Handles the background API response arriving after the optimistic navigation.
+  void _onBackgroundResponse(
+    _BackgroundResponseReceived event,
+    Emitter<CreateAnalysisState> emit,
+  ) {
+    if (event.response.requiresPayment) {
+      // Edge case: payment required but user already sees processing screen.
+      emit(CreateAnalysisRequiresPayment(
+        analysisId: event.response.id,
+        price: kAnalysisPrice,
+      ));
+    } else {
+      // ✅ Analysis complete — CustomBottomNav listener will toast the user.
+      emit(AnalysisCompleted(event.response));
+    }
+  }
+
+  void _onBackgroundError(
+    _BackgroundErrorReceived event,
+    Emitter<CreateAnalysisState> emit,
+  ) {
+    emit(CreateAnalysisError(event.message));
   }
 
   Future<void> _onExecutePaid(
@@ -133,4 +143,20 @@ class CreateAnalysisBloc
         );
     }
   }
+}
+
+// ── Private self-events ───────────────────────────────────────────────────────
+
+class _BackgroundResponseReceived extends CreateAnalysisEvent {
+  final CreateAnalysisResponse response;
+  const _BackgroundResponseReceived(this.response);
+  @override
+  List<Object?> get props => [response];
+}
+
+class _BackgroundErrorReceived extends CreateAnalysisEvent {
+  final String message;
+  const _BackgroundErrorReceived(this.message);
+  @override
+  List<Object?> get props => [message];
 }

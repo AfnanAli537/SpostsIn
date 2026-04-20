@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_processing_screen.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
@@ -32,11 +34,13 @@ import 'package:sports_in/generated/l10n.dart';
 class VodafoneCashScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final PaymentTargetType targetType;
+  final AnalysisType? analysisType;
 
   const VodafoneCashScreen({
     super.key,
     required this.plan,
     this.targetType = PaymentTargetType.supscription,
+    this.analysisType,
   });
 
   @override
@@ -101,15 +105,48 @@ class _VodafoneCashScreenState extends State<VodafoneCashScreen> {
       barrierDismissible: false,
       builder: (_) => PaymentSuccessDialog(
         transactionId: S.of(context).unKnown,
-        onDismissed: () {
-          if (mounted) {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
-          }
-        },
+        onDismissed: _handlePaymentSuccess,
+        // () {
+        //   if (mounted) {
+        //     // if(widget.targetType == PaymentTargetType.videoAnalysis) {
+        //     //   Navigator.of(context).pop(); // Just go back to the video analysis screen
+        //     //   return;
+        //     // }
+        //     Navigator.of(
+        //       context,
+        //     ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
+        //   }
+        // },
       ),
     );
+  }
+  void _handlePaymentSuccess() {
+    if (!mounted) return;
+    
+    switch (widget.targetType) {
+      // ── Video Analysis ───────────────────────────────────────────────────
+      case PaymentTargetType.videoAnalysis:
+        if (widget.analysisType != null) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => AnalysisProcessingScreen(type: widget.analysisType!),
+            ),
+            (route) => route.isFirst,
+          );
+        }
+        break;
+
+      // ── Subscription / Other types ───────────────────────────────────────
+      case PaymentTargetType.supscription:
+      case PaymentTargetType.course:
+      case PaymentTargetType.advertisement:
+        // For subscription/courses/ads, just pop back to the calling screen
+        Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(AppRoutes.mainLayout, (route) => false);
+
+        break;
+    }
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
