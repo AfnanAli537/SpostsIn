@@ -208,8 +208,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "aiEnhancedAnalysis": MessageLookupByLibrary.simpleMessage(
       "AI Enhanced Analysis",
     ),
-    "alexandria": MessageLookupByLibrary.simpleMessage("Alexandria"),
-    "algeria": MessageLookupByLibrary.simpleMessage("Algeria"),
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "allCaughtUp": MessageLookupByLibrary.simpleMessage(
       "You\'re all caught up!",
@@ -296,8 +294,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?",
     ),
     "archivePosts": MessageLookupByLibrary.simpleMessage("Archive Posts"),
-    "aswan": MessageLookupByLibrary.simpleMessage("Aswan"),
-    "asyut": MessageLookupByLibrary.simpleMessage("Asyut"),
     "august": MessageLookupByLibrary.simpleMessage("August"),
     "available": MessageLookupByLibrary.simpleMessage("Available"),
     "availableCourses": MessageLookupByLibrary.simpleMessage(
@@ -325,11 +321,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "beTheFirstToCreatePost": MessageLookupByLibrary.simpleMessage(
       "Be the first to create a post!",
     ),
-    "beheira": MessageLookupByLibrary.simpleMessage("Beheira"),
-    "beniSuef": MessageLookupByLibrary.simpleMessage("Beni Suef"),
     "bio": MessageLookupByLibrary.simpleMessage("Description"),
     "botMessage": MessageLookupByLibrary.simpleMessage("Bot message"),
-    "cairo": MessageLookupByLibrary.simpleMessage("Cairo"),
     "campaignDurationRequired": MessageLookupByLibrary.simpleMessage(
       "Campaign Duration *",
     ),
@@ -341,8 +334,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "categoryReactions": MessageLookupByLibrary.simpleMessage("Reactions"),
     "categoryRecent": MessageLookupByLibrary.simpleMessage("Recent"),
     "categoryRequests": MessageLookupByLibrary.simpleMessage("Requests"),
-    "center": MessageLookupByLibrary.simpleMessage("Center"),
-    "centerBack": MessageLookupByLibrary.simpleMessage("Center Back"),
     "certifications": MessageLookupByLibrary.simpleMessage("Certifications"),
     "changePassword": MessageLookupByLibrary.simpleMessage("Change Password"),
     "changeVideo": MessageLookupByLibrary.simpleMessage("Change Video"),
@@ -459,8 +450,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "currentlyInClub": MessageLookupByLibrary.simpleMessage(
       "Currently in a Club",
     ),
-    "dakahlia": MessageLookupByLibrary.simpleMessage("Dakahlia"),
-    "damietta": MessageLookupByLibrary.simpleMessage("Damietta"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
     "date": MessageLookupByLibrary.simpleMessage("Date"),
     "dateToday": MessageLookupByLibrary.simpleMessage("Today"),
@@ -473,7 +462,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "This ad will no longer appear in the feed.",
     ),
     "december": MessageLookupByLibrary.simpleMessage("December"),
-    "defender": MessageLookupByLibrary.simpleMessage("Defender"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "deleteAdConfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete this advertisement?",
@@ -567,7 +555,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editingComment": MessageLookupByLibrary.simpleMessage("Editing comment"),
     "egp": MessageLookupByLibrary.simpleMessage("EGP"),
-    "egypt": MessageLookupByLibrary.simpleMessage("Egypt"),
     "elite": MessageLookupByLibrary.simpleMessage("Elite"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailAlreadyExists": MessageLookupByLibrary.simpleMessage(
@@ -731,7 +718,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "fawry_screen_terms": MessageLookupByLibrary.simpleMessage(
       "By continuing you agree to our Terms",
     ),
-    "fayoum": MessageLookupByLibrary.simpleMessage("Fayoum"),
     "february": MessageLookupByLibrary.simpleMessage("February"),
     "female": MessageLookupByLibrary.simpleMessage("Female"),
     "field": MessageLookupByLibrary.simpleMessage("field"),
@@ -757,7 +743,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Forgot your password?",
     ),
     "forgotPassword": MessageLookupByLibrary.simpleMessage("Forgot Password"),
-    "forward": MessageLookupByLibrary.simpleMessage("Forward"),
     "forwardPasses": MessageLookupByLibrary.simpleMessage("Forward\nPasses"),
     "foundDate": MessageLookupByLibrary.simpleMessage("Foundation date"),
     "frames": MessageLookupByLibrary.simpleMessage("Frames"),
@@ -766,10 +751,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fullName": MessageLookupByLibrary.simpleMessage("Full Name"),
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
-    "gharbia": MessageLookupByLibrary.simpleMessage("Gharbia"),
-    "giza": MessageLookupByLibrary.simpleMessage("Giza"),
     "goToProfileButton": MessageLookupByLibrary.simpleMessage("Go to Profile"),
-    "goalkeeper": MessageLookupByLibrary.simpleMessage("Goalkeeper"),
     "goalkeeperAnalysis": MessageLookupByLibrary.simpleMessage(
       "Goalkeeper Analysis",
     ),
@@ -848,12 +830,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidWeight": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid weight (30–200 kg)",
     ),
-    "ismailia": MessageLookupByLibrary.simpleMessage("Ismailia"),
     "january": MessageLookupByLibrary.simpleMessage("January"),
     "july": MessageLookupByLibrary.simpleMessage("July"),
     "june": MessageLookupByLibrary.simpleMessage("June"),
     "justNow": MessageLookupByLibrary.simpleMessage("Just now"),
-    "kafrElSheikh": MessageLookupByLibrary.simpleMessage("Kafr El Sheikh"),
     "kneeAngle": MessageLookupByLibrary.simpleMessage("Knee Angle"),
     "knowingYourGoal": MessageLookupByLibrary.simpleMessage(
       "Knowing your goal helps us tailor your experience",
@@ -925,8 +905,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "latestCourses": MessageLookupByLibrary.simpleMessage("Latest Courses"),
     "latestPosts": MessageLookupByLibrary.simpleMessage("Latest posts"),
     "learnMore": MessageLookupByLibrary.simpleMessage("Learn More"),
-    "leftBack": MessageLookupByLibrary.simpleMessage("Left Back"),
-    "leftWing": MessageLookupByLibrary.simpleMessage("Left Wing"),
     "lessonNumber": m17,
     "lessonOrder": m18,
     "lessonOrderAndDuration": m19,
@@ -937,7 +915,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "lessons": MessageLookupByLibrary.simpleMessage("Lessons"),
     "lessonsCount": m20,
     "lessonsProgress": m21,
-    "libero": MessageLookupByLibrary.simpleMessage("Libero"),
     "likes": MessageLookupByLibrary.simpleMessage("Likes"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading"),
     "loadingUserData": MessageLookupByLibrary.simpleMessage(
@@ -957,7 +934,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "lowercaseValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 lowercase letter",
     ),
-    "luxor": MessageLookupByLibrary.simpleMessage("Luxor"),
     "makeVideoAnalysis": MessageLookupByLibrary.simpleMessage(
       "Make Video Analysis",
     ),
@@ -990,7 +966,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "matchVideoInstructions": MessageLookupByLibrary.simpleMessage(
       "• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions",
     ),
-    "matrouh": MessageLookupByLibrary.simpleMessage("Matrouh"),
     "maxExtension": MessageLookupByLibrary.simpleMessage("Max Extension"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage("Max 500MB"),
     "maxVelocity": MessageLookupByLibrary.simpleMessage("Max Velocity"),
@@ -1001,19 +976,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageSent": MessageLookupByLibrary.simpleMessage(
       "Message sent successfully",
     ),
-    "middleBlocker": MessageLookupByLibrary.simpleMessage("Middle Blocker"),
-    "midfielder": MessageLookupByLibrary.simpleMessage("Midfielder"),
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "At least 8 characters long",
     ),
     "minutesAgo": m22,
-    "minya": MessageLookupByLibrary.simpleMessage("Minya"),
     "month": MessageLookupByLibrary.simpleMessage("Month"),
     "monthsAgo": m23,
-    "monufia": MessageLookupByLibrary.simpleMessage("Monufia"),
     "moreDetails": MessageLookupByLibrary.simpleMessage("More details"),
     "moreInfo": MessageLookupByLibrary.simpleMessage("More info"),
-    "morocco": MessageLookupByLibrary.simpleMessage("Morocco"),
     "myAdvertisements": MessageLookupByLibrary.simpleMessage(
       "My Advertisements",
     ),
@@ -1033,7 +1003,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "newCourses": MessageLookupByLibrary.simpleMessage("New Courses"),
     "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
-    "newValley": MessageLookupByLibrary.simpleMessage("New Valley"),
     "newVideoSelected": MessageLookupByLibrary.simpleMessage(
       "New video selected",
     ),
@@ -1122,7 +1091,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "noUserDataFound": MessageLookupByLibrary.simpleMessage(
       "No user data found",
     ),
-    "northSinai": MessageLookupByLibrary.simpleMessage("North Sinai"),
     "notDetected": MessageLookupByLibrary.simpleMessage("Not detected"),
     "notHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
@@ -1175,7 +1143,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Opportunity created successfully!",
     ),
-    "oppositeHitter": MessageLookupByLibrary.simpleMessage("Opposite Hitter"),
     "optional": MessageLookupByLibrary.simpleMessage("Optional"),
     "orPasteUrlLabel": MessageLookupByLibrary.simpleMessage("OR PASTE URL"),
     "orPasteVideoUrl": MessageLookupByLibrary.simpleMessage(
@@ -1196,7 +1163,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "otpSentSuccessfully": MessageLookupByLibrary.simpleMessage(
       "OTP sent successfully! Please check your email.",
     ),
-    "outsideHitter": MessageLookupByLibrary.simpleMessage("Outside Hitter"),
     "overviewAllAds": MessageLookupByLibrary.simpleMessage(
       "Overview — All Ads",
     ),
@@ -1275,7 +1241,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "pickImage": MessageLookupByLibrary.simpleMessage("Pick Image"),
     "pickVideo": MessageLookupByLibrary.simpleMessage("Pick Video"),
-    "pivot": MessageLookupByLibrary.simpleMessage("Pivot"),
     "player": MessageLookupByLibrary.simpleMessage("Player"),
     "playing": MessageLookupByLibrary.simpleMessage("Playing"),
     "pleaseEnterDescription": MessageLookupByLibrary.simpleMessage(
@@ -1308,8 +1273,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "please_select_date": MessageLookupByLibrary.simpleMessage(
       "Please select a date",
     ),
-    "pointGuard": MessageLookupByLibrary.simpleMessage("Point Guard"),
-    "portSaid": MessageLookupByLibrary.simpleMessage("Port Said"),
     "position": MessageLookupByLibrary.simpleMessage("Position"),
     "possession": MessageLookupByLibrary.simpleMessage("Possession"),
     "post": MessageLookupByLibrary.simpleMessage("Post"),
@@ -1345,7 +1308,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "The post video will be used as the source.",
     ),
     "posts": MessageLookupByLibrary.simpleMessage("Posts"),
-    "powerForward": MessageLookupByLibrary.simpleMessage("Power Forward"),
     "preparing": MessageLookupByLibrary.simpleMessage("Preparing…"),
     "price": MessageLookupByLibrary.simpleMessage("Price"),
     "priceEGP": m31,
@@ -1377,14 +1339,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Public Opportunities",
     ),
     "publicPosts": MessageLookupByLibrary.simpleMessage("Public Posts"),
-    "qalyubia": MessageLookupByLibrary.simpleMessage("Qalyubia"),
-    "qena": MessageLookupByLibrary.simpleMessage("Qena"),
     "reactionTime": MessageLookupByLibrary.simpleMessage("Reaction Time"),
     "reactionTimeShort": MessageLookupByLibrary.simpleMessage("Reaction Time"),
     "recordWithCamera": MessageLookupByLibrary.simpleMessage(
       "Record with Camera",
     ),
-    "redSea": MessageLookupByLibrary.simpleMessage("Red Sea"),
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Registered successfully!",
@@ -1424,8 +1383,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "revenue": MessageLookupByLibrary.simpleMessage("Revenue"),
-    "rightBack": MessageLookupByLibrary.simpleMessage("Right Back"),
-    "rightWing": MessageLookupByLibrary.simpleMessage("Right Wing"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "save_achievement_button": MessageLookupByLibrary.simpleMessage(
       "Save Achievement",
@@ -1479,7 +1436,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Service temporarily unavailable",
     ),
     "sessionAvatarLabel": MessageLookupByLibrary.simpleMessage("S"),
-    "setter": MessageLookupByLibrary.simpleMessage("Setter"),
     "settings": MessageLookupByLibrary.simpleMessage("Setting"),
     "sharingInfoBody": MessageLookupByLibrary.simpleMessage(
       "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
@@ -1487,8 +1443,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "sharingInfoTitle": MessageLookupByLibrary.simpleMessage(
       "Sharing Your Information",
     ),
-    "sharqia": MessageLookupByLibrary.simpleMessage("Sharqia"),
-    "shootingGuard": MessageLookupByLibrary.simpleMessage("Shooting Guard"),
     "showAll": MessageLookupByLibrary.simpleMessage("Show all"),
     "showApplicants": MessageLookupByLibrary.simpleMessage("Show Applicants"),
     "showDescription": MessageLookupByLibrary.simpleMessage("Show Description"),
@@ -1499,12 +1453,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "since": MessageLookupByLibrary.simpleMessage("Since"),
     "skills": MessageLookupByLibrary.simpleMessage("Skills"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
-    "smallForward": MessageLookupByLibrary.simpleMessage("Small Forward"),
-    "sohag": MessageLookupByLibrary.simpleMessage("Sohag"),
     "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "Something went wrong. Please try again.",
     ),
-    "southSinai": MessageLookupByLibrary.simpleMessage("South Sinai"),
     "specialCharacterValidation": MessageLookupByLibrary.simpleMessage(
       "At least 1 special character",
     ),
@@ -1584,8 +1535,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscription_title": MessageLookupByLibrary.simpleMessage(
       "Premium Access",
     ),
-    "sudan": MessageLookupByLibrary.simpleMessage("Sudan"),
-    "suez": MessageLookupByLibrary.simpleMessage("Suez"),
     "supportedFormats": MessageLookupByLibrary.simpleMessage("MP4 · MOV · AVI"),
     "switchAccount": MessageLookupByLibrary.simpleMessage("Switch Account"),
     "taekwondo": MessageLookupByLibrary.simpleMessage("Taekwondo"),
@@ -1643,7 +1592,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage(
       "Try a different search",
     ),
-    "tunisia": MessageLookupByLibrary.simpleMessage("Tunisia"),
     "unKnown": MessageLookupByLibrary.simpleMessage("N/A"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "Unauthorized. Please check your credentials.",
