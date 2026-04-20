@@ -182,15 +182,11 @@ class _AnalysisPaymentScreenState extends State<AnalysisPaymentScreen> {
               }
 
               // ── Fawry / Vodafone: ManualActivateSuccess ─────────────────
-              // PaymentBloc already called executePaidAnalysis in _onManualActivate.
-              // We just navigate to the processing screen.
+              // Do NOT navigate here. FawryScreen/VodafoneCashScreen handle
+              // the navigation after showing their success dialogs.
+              // Only dismiss the processing dialog if it's somehow still open.
               if (state is ManualActivateSuccess) {
                 _dismissProcessingDialog();
-                if (!mounted) return;
-                final key = state.runtimeType.toString();
-                if (key == _handledPaymentStateType) return;
-                _handledPaymentStateType = key;
-                _navigateToProcessing(ctx);
               }
 
               // ── Errors ──────────────────────────────────────────────────

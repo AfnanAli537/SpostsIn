@@ -2,22 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
 import 'package:sports_in/features/payment/presentation/fawray_screen.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
 
+
 /// Shown as a full-screen dialog via [showGeneralDialog].
 /// Navigates to [FawryScreen] by pushing a standard route on top.
 class FawryMobileScreen extends StatefulWidget {
   final SubscriptionPlanModel plan;
   final PaymentTargetType targetType;
+  
+  /// Optional: analysis type, required when targetType is videoAnalysis
+  final AnalysisType? analysisType;
 
   const FawryMobileScreen({
     super.key,
     required this.plan,
     this.targetType = PaymentTargetType.supscription,
+    this.analysisType,
   });
 
   @override
@@ -47,6 +53,7 @@ class _FawryMobileScreenState extends State<FawryMobileScreen> {
             plan: widget.plan,
             mobileNumber: mobile,
             targetType: widget.targetType,
+            analysisType: widget.analysisType,
           ),
         ),
       ),

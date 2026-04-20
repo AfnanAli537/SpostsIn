@@ -216,8 +216,9 @@ class _AdPaymentScreenState extends State<AdPaymentScreen> {
                     elevation: 0,
                     leading: IconButton(
                       icon: Icon(Icons.arrow_back, color: theme.onSurface),
-                      onPressed: () => Navigator.of(ctx)
-                          .popUntil((route) => route.isFirst),
+                      onPressed: () => Navigator.of(context).pop(),
+                      // Navigator.of(ctx)
+                      //     .popUntil((route) => route.isFirst),
                     ),
                     title: Text(
                       strings.completePayment,
