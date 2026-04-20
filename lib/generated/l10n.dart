@@ -5738,6 +5738,11 @@ class S {
     return Intl.message('N/A', name: 'unKnown', desc: '', args: []);
   }
 
+  /// `Goalkeeper`
+  String get goalkeeper {
+    return Intl.message('Goalkeeper', name: 'goalkeeper', desc: '', args: []);
+  }
+
   /// `Passing`
   String get passing {
     return Intl.message('Passing', name: 'passing', desc: '', args: []);

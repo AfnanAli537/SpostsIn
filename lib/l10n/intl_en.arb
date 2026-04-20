@@ -877,6 +877,7 @@
   "subscription_plan_duration_month": "{count} Days",
   "subscription_plan_duration_year": "{count} Months",
   "unKnown": "N/A",
+  "goalkeeper": "Goalkeeper",
   "passing": "Passing",
   "dribbling": "Dribbling",
   "match": "Match",

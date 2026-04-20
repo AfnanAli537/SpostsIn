@@ -721,6 +721,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToProfileButton": MessageLookupByLibrary.simpleMessage(
       "انتقل إلى الملف الشخصي",
     ),
+    "goalkeeper": MessageLookupByLibrary.simpleMessage("حارس مرمى"),
     "goalkeeperAnalysis": MessageLookupByLibrary.simpleMessage(
       "تحليل حارس المرمى",
     ),

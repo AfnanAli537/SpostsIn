@@ -752,6 +752,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "getStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
     "goToProfileButton": MessageLookupByLibrary.simpleMessage("Go to Profile"),
+    "goalkeeper": MessageLookupByLibrary.simpleMessage("Goalkeeper"),
     "goalkeeperAnalysis": MessageLookupByLibrary.simpleMessage(
       "Goalkeeper Analysis",
     ),
