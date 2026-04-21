@@ -59,3 +59,19 @@ class RegistrationError extends RegistrationState {
   @override
   List<Object?> get props => [message];
 }
+
+class RegistrationCertificationsLoaded extends RegistrationState {
+  final List<CertificationModel> certifications;
+  const RegistrationCertificationsLoaded(this.certifications);
+ 
+  @override
+  List<Object?> get props => [certifications];
+}
+ 
+class RegistrationCertificationsError extends RegistrationState {
+  final String message;
+  const RegistrationCertificationsError(this.message);
+ 
+  @override
+  List<Object?> get props => [message];
+}

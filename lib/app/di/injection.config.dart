@@ -32,6 +32,39 @@ import 'package:sports_in/features/login/data/data_sources/login_api_data_source
 import 'package:sports_in/features/login/data/interface/i_login_data_source.dart'
     as _i712;
 import 'package:sports_in/features/login/data/repo/login_repo.dart' as _i257;
+import 'package:sports_in/features/main/advertisement/data/data_sources/ad_remote_data_source.dart'
+    as _i823;
+import 'package:sports_in/features/main/advertisement/data/interface/i_ads_data_source.dart'
+    as _i658;
+import 'package:sports_in/features/main/advertisement/data/repo/ads_repository.dart'
+    as _i277;
+import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart'
+    as _i259;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source.dart'
+    as _i661;
+import 'package:sports_in/features/main/chat/data/data_sources/chat_remote_data_source_impl.dart'
+    as _i436;
+import 'package:sports_in/features/main/chat/data/repo/chat_repo.dart' as _i503;
+import 'package:sports_in/features/main/chat/data/service/chat_hub_service.dart'
+    as _i679;
+import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart'
+    as _i324;
+import 'package:sports_in/features/main/chat_bot/data/data_source/chatbot_remote_data_source.dart'
+    as _i82;
+import 'package:sports_in/features/main/chat_bot/data/interface/chatbot_interface.dart'
+    as _i130;
+import 'package:sports_in/features/main/chat_bot/data/repo/chatbot_repo.dart'
+    as _i1050;
+import 'package:sports_in/features/main/chat_bot/presentation/view_model.dart/bloc/chatbot_bloc.dart'
+    as _i982;
+import 'package:sports_in/features/main/courses/data/data_sources/course_remote_data_source.dart'
+    as _i8;
+import 'package:sports_in/features/main/courses/data/interface/i_course_data_source.dart'
+    as _i592;
+import 'package:sports_in/features/main/courses/data/repo/course_repository.dart'
+    as _i674;
+import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart'
+    as _i567;
 import 'package:sports_in/features/main/home/data/data_sources/posts_remote_data_sources.dart'
     as _i833;
 import 'package:sports_in/features/main/home/data/interface/post_interface.dart'
@@ -47,23 +80,53 @@ import 'package:sports_in/features/main/opportunity/data/interface/opportunity_i
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart'
     as _i294;
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart'
-    as _i743;
+    as _i1047;
 import 'package:sports_in/features/main/profile/data/data_sources/profile_api_data_source.dart'
     as _i505;
 import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart'
     as _i544;
 import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart'
     as _i752;
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart'
-    as _i939;
-import 'package:sports_in/features/main/search/data/data_sources/mock_search_data_source.dart'
-    as _i1019;
+import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart'
+    as _i691;
+import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart'
+    as _i111;
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart'
+    as _i86;
+import 'package:sports_in/features/main/search/data/data_sources/search_api_data_source.dart'
+    as _i486;
 import 'package:sports_in/features/main/search/data/interface/i_search_data_source.dart'
     as _i109;
 import 'package:sports_in/features/main/search/data/repo/search_repo.dart'
     as _i514;
 import 'package:sports_in/features/main/search/view_model/search_bloc.dart'
     as _i803;
+import 'package:sports_in/features/main/video_analysis/data/data_sources/analysis_api_data_source.dart'
+    as _i190;
+import 'package:sports_in/features/main/video_analysis/data/interface/i_analysis_data_source.dart'
+    as _i311;
+import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart'
+    as _i352;
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart'
+    as _i251;
+import 'package:sports_in/features/notitification/data/data_source/notifi_data_source_impl.dart'
+    as _i577;
+import 'package:sports_in/features/notitification/data/interface/notifi_interface.dart'
+    as _i102;
+import 'package:sports_in/features/notitification/data/repo/notifi_repo.dart'
+    as _i62;
+import 'package:sports_in/features/notitification/data/service/notifaction_service.dart'
+    as _i700;
+import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart'
+    as _i987;
+import 'package:sports_in/features/payment/data/data_source/payment_remote_data_source.dart'
+    as _i505;
+import 'package:sports_in/features/payment/data/interface/payment_interface.dart'
+    as _i802;
+import 'package:sports_in/features/payment/data/repo/payment_repo.dart'
+    as _i221;
+import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart'
+    as _i971;
 import 'package:sports_in/features/register/data/data_sources/register_api_data_source.dart'
     as _i569;
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart'
@@ -83,14 +146,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => appModule.prefs,
       preResolve: true,
     );
-    gh.lazySingleton<_i109.ISearchDataSource>(
-      () => _i1019.MockSearchDataSource(),
+    gh.lazySingleton<_i679.ChatHubService>(() => _i679.ChatHubService());
+    gh.lazySingleton<_i700.NotificationHubService>(
+      () => _i700.NotificationHubService(),
     );
     gh.lazySingleton<_i414.SharedPref>(
       () => _i414.SharedPref(gh<_i460.SharedPreferences>()),
-    );
-    gh.factory<_i514.SearchRepo>(
-      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
     );
     gh.lazySingleton<_i694.ApiClient>(
       () => appModule.apiClient(gh<_i414.SharedPref>()),
@@ -104,8 +165,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i423.PostsRepository>(
       () => _i833.PostsRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
-    gh.factory<_i803.SearchBloc>(
-      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
+    gh.lazySingleton<_i802.PaymentInterface>(
+      () => _i505.PaymentRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i661.ChatRemoteDataSource>(
+      () => _i436.ChatRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i712.ILoginDataSource>(
       () => _i964.LoginApiDataSource(gh<_i694.ApiClient>()),
@@ -121,6 +185,9 @@ extension GetItInjectableX on _i174.GetIt {
         apiClient: gh<_i694.ApiClient>(),
       ),
     );
+    gh.lazySingleton<_i130.ChatbotRemoteDataSource>(
+      () => _i82.ChatbotRemoteDataSourceImpl(apiClient: gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i470.IAuthDataSource>(
       () => _i172.AuthApiDataSource(gh<_i694.ApiClient>()),
     );
@@ -129,6 +196,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i294.OpportunityReposatory>(
       () => _i294.OpportunityReposatory(gh<_i709.OpportunityInterface>()),
+    );
+    gh.lazySingleton<_i102.NotificationRemoteDataSource>(
+      () => _i577.NotificationRemoteDataSourceImpl(
+        apiClient: gh<_i694.ApiClient>(),
+      ),
     );
     gh.lazySingleton<_i65.IRegisterDataSource>(
       () => _i569.RegisterApiDataSource(gh<_i694.ApiClient>()),
@@ -140,10 +212,26 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i257.LoginRepo(gh<_i712.ILoginDataSource>(), gh<_i414.SharedPref>()),
     );
-    gh.factory<_i743.OpportunityBloc>(
-      () => _i743.OpportunityBloc(
+    gh.lazySingleton<_i221.PaymentRepository>(
+      () =>
+          _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
+    );
+    gh.factory<_i1047.OpportunityBloc>(
+      () => _i1047.OpportunityBloc(
         opportunityRepo: gh<_i294.OpportunityReposatory>(),
       ),
+    );
+    gh.lazySingleton<_i109.ISearchDataSource>(
+      () => _i486.SearchDataSource(gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i658.IAdsDataSource>(
+      () => _i823.AdRemoteDataSource(gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i311.IAnalysisDataSource>(
+      () => _i190.AnalysisApiDataSource(gh<_i694.ApiClient>()),
+    );
+    gh.lazySingleton<_i592.ICourseDataSource>(
+      () => _i8.CourseRemoteDataSource(gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i651.PostsRepositoryImpl>(
       () => _i651.PostsRepositoryImpl(gh<_i423.PostsRepository>()),
@@ -151,17 +239,84 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i752.ProfileRepo>(
       () => _i752.ProfileRepo(gh<_i544.IProfileDataSource>()),
     );
-    gh.factory<_i939.ProfileBloc>(
-      () => _i939.ProfileBloc(gh<_i752.ProfileRepo>()),
+    gh.lazySingleton<_i62.NotificationRepository>(
+      () => _i62.NotificationRepository(
+        remoteDataSource: gh<_i102.NotificationRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i277.AdsRepositoryImpl>(
+      () => _i277.AdsRepositoryImpl(gh<_i658.IAdsDataSource>()),
+    );
+    gh.lazySingleton<_i503.ChatRepository>(
+      () => _i503.ChatRepository(
+        remoteDataSource: gh<_i661.ChatRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i111.FollowListBloc>(
+      () => _i111.FollowListBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.factory<_i86.ProfileBloc>(
+      () => _i86.ProfileBloc(gh<_i752.ProfileRepo>()),
+    );
+    gh.lazySingleton<_i352.IAnalysisRepo>(
+      () => _i352.AnalysisRepo(gh<_i311.IAnalysisDataSource>()),
     );
     gh.factory<_i45.PostsBloc>(
       () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),
     );
+    gh.lazySingleton<_i1050.ChatbotRepository>(
+      () => _i1050.ChatbotRepository(
+        remoteDataSource: gh<_i130.ChatbotRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i987.NotificationBloc>(
+      () =>
+          _i987.NotificationBloc(repository: gh<_i62.NotificationRepository>()),
+    );
     gh.lazySingleton<_i707.ForgetPasswordRepo>(
       () => _i707.ForgetPasswordRepo(gh<_i705.IForgetPasswordDataSource>()),
     );
+    gh.factory<_i259.AdsBloc>(
+      () => _i259.AdsBloc(adsRepo: gh<_i277.AdsRepositoryImpl>()),
+    );
+    gh.factory<_i971.PaymentBloc>(
+      () => _i971.PaymentBloc(
+        repository: gh<_i221.PaymentRepository>(),
+        analysisRepository: gh<_i352.IAnalysisRepo>(),
+      ),
+    );
+    gh.factory<_i251.AnalysisBloc>(
+      () => _i251.AnalysisBloc(gh<_i352.IAnalysisRepo>()),
+    );
+    gh.factory<_i982.ChatbotBloc>(
+      () => _i982.ChatbotBloc(repository: gh<_i1050.ChatbotRepository>()),
+    );
     gh.lazySingleton<_i917.RegisterRepo>(
       () => _i917.RegisterRepo(gh<_i65.IRegisterDataSource>()),
+    );
+    gh.factory<_i514.SearchRepo>(
+      () => _i514.SearchRepo(gh<_i109.ISearchDataSource>()),
+    );
+    gh.factory<_i674.CourseRepository>(
+      () => _i674.CourseRepository(gh<_i592.ICourseDataSource>()),
+    );
+    gh.factory<_i567.CoursesBloc>(
+      () => _i567.CoursesBloc(gh<_i674.CourseRepository>()),
+    );
+    gh.factory<_i691.ConnectionsBloc>(
+      () => _i691.ConnectionsBloc(
+        gh<_i752.ProfileRepo>(),
+        gh<_i414.SharedPref>(),
+      ),
+    );
+    gh.factory<_i324.ChatBloc>(
+      () => _i324.ChatBloc(
+        repo: gh<_i503.ChatRepository>(),
+        hub: gh<_i679.ChatHubService>(),
+      ),
+    );
+    gh.factory<_i803.SearchBloc>(
+      () => _i803.SearchBloc(gh<_i514.SearchRepo>()),
     );
     return this;
   }

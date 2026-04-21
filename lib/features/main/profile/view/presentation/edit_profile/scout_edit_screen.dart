@@ -7,9 +7,9 @@ import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_state.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_two_fields_row.dart';
@@ -46,15 +46,9 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     super.initState();
     final scoutData = widget.profile.scoutData!;
 
-    firstNameController = TextEditingController(
-      text: widget.profile.name.split(' ').first,
-    );
-    lastNameController = TextEditingController(
-      text: widget.profile.name.split(' ').last,
-    );
-    yearsOfExperienceController = TextEditingController(
-      text: scoutData.yearsOfExperience?.toString() ?? '',
-    );
+    firstNameController = TextEditingController(text: widget.profile.name.split(' ').first,);
+    lastNameController = TextEditingController(text: widget.profile.name.split(' ').last,);
+    yearsOfExperienceController = TextEditingController(text: scoutData.yearsOfExperience?.toString() ?? '',);
     bioController = TextEditingController(text: widget.profile.description);
     sportNameNotifier = ValueNotifier<String?>(scoutData.specializedSport);
     // locationNotifier = ValueNotifier<String?>(null);
@@ -67,6 +61,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     lastNameController.dispose();
     yearsOfExperienceController.dispose();
     bioController.dispose();
+    sportNameNotifier.dispose();
     super.dispose();
   }
 
@@ -84,12 +79,13 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       bio: bioController.text.trim(),
       // gender: genderNotifier.value,
       // location: locationNotifier.value,
-      specialization: sportNameNotifier.value,
+      sports: sportNameNotifier.value != null ? [sportNameNotifier.value!] : null,
       yearsOfExperience: parsedExperience,
     );
 
@@ -165,7 +161,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
                           ),
                           SizedBox(height: 16.h),
 
-                          // ✅ Bio/Description Field
+                          // Bio/Description Field
                           RegisterTextField(
                             controller: bioController,
                             labelText: string.bio,
@@ -217,7 +213,7 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
                               return CustomElevatedButton(
                                 text: isLoading ? string.loading : string.save,
                                 isLoading: isLoading,
-                                enabled: !isLoading, // ✅ Disable during loading
+                                enabled: !isLoading, // Disable during loading
                                 onPressed: () => _onUpdate(context, string),
                               );
                             },

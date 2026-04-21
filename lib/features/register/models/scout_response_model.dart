@@ -1,4 +1,5 @@
 import 'package:sports_in/features/register/models/user_model.dart';
+
 class ScoutModel extends UserModel {
   const ScoutModel({
     required super.email,
@@ -9,13 +10,13 @@ class ScoutModel extends UserModel {
     required String super.lastName,
     required int? yearsOfExperience,
     required String sportName,
-    required String gender,
-    super.image
+    required super.age,
+    required String super.gender,
+    super.image,
   }) : super(
           userType: UserType.scout,
           experienceYears: yearsOfExperience,
           sport: sportName,
-          gender: gender,
         );
 
   @override
@@ -29,6 +30,7 @@ class ScoutModel extends UserModel {
         "lastName": lastName,
         "yearsOfExperience":experienceYears ?? 0,
         "sportName":sport,
+        "age": age ?? 0,
         "gender": gender,
       };
 }

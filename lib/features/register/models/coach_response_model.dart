@@ -1,4 +1,3 @@
-
 import 'package:sports_in/features/register/models/user_model.dart';
 
 class CoachModel extends UserModel {
@@ -11,10 +10,13 @@ class CoachModel extends UserModel {
     required String super.lastName,
     required int? yearsOfExperience,
     required String sportName,
+    required super.age,
     required String super.gender,
     required super.hasClub,
-    super.image
-
+    super.currentClubName,
+    super.specialist,
+    super.certificationsIds,
+    super.image,
   }) : super(
           userType: UserType.coach,
           experienceYears: yearsOfExperience,
@@ -32,8 +34,12 @@ class CoachModel extends UserModel {
         "lastName": lastName,
         "yearsOfExperience": experienceYears?? 0,
         "sportName": sport ,
+        "age": age ?? 0,
         "gender":gender,
-        "club": hasClub ?? false
+        "club": hasClub ?? false,
+        "currentClubName": currentClubName,
+        "specialist": specialist,
+        "certificationsIds": certificationsIds,
       };
 }
 

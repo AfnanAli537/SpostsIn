@@ -10,6 +10,7 @@ class AppDropdownOverlay extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final String? Function(String?)? validator;
   final bool enabled;
+  final Color? borderColor;
 
   const AppDropdownOverlay({
     super.key,
@@ -19,6 +20,7 @@ class AppDropdownOverlay extends StatefulWidget {
     required this.onChanged,
     this.validator,
     this.enabled = true,
+    this.borderColor,
   });
 
   @override
@@ -26,7 +28,8 @@ class AppDropdownOverlay extends StatefulWidget {
 }
 
 class _AppDropdownOverlayState extends State<AppDropdownOverlay> {
-  final GlobalKey<FormFieldState<String>> _fieldKey = GlobalKey<FormFieldState<String>>();
+  final GlobalKey<FormFieldState<String>> _fieldKey =
+      GlobalKey<FormFieldState<String>>();
 
   @override
   void didUpdateWidget(AppDropdownOverlay oldWidget) {
@@ -156,30 +159,32 @@ class _AppDropdownOverlayState extends State<AppDropdownOverlay> {
                             ? Colors.grey.shade400
                             : (field.hasError
                                   ? ColorManager.error
-                                  : ColorManager.darkAccent1),
+                                  : (widget.borderColor ??
+                                    ColorManager.darkAccent1)),
                       ),
                       errorMaxLines: 3,
-                      
+
                       // Enabled border
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
                           color: !widget.enabled
                               ? Colors.grey.shade300
-                              : ColorManager.darkAccent1,
+                              : (widget.borderColor ??
+                                    ColorManager.darkAccent1),
                           width: 1.2.w,
                         ),
                       ),
-                      
+
                       // Focused border
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: ColorManager.darkAccent,
+                          color: widget.borderColor ?? ColorManager.darkAccent,
                           width: 1.8.w,
                         ),
                       ),
-                      
+
                       // Error border
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -188,7 +193,7 @@ class _AppDropdownOverlayState extends State<AppDropdownOverlay> {
                           width: 1.5.w,
                         ),
                       ),
-                      
+
                       // Focused error border
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -197,7 +202,7 @@ class _AppDropdownOverlayState extends State<AppDropdownOverlay> {
                           width: 1.8.w,
                         ),
                       ),
-                      
+
                       errorText: field.errorText,
                     ),
                     child: Row(
@@ -207,7 +212,9 @@ class _AppDropdownOverlayState extends State<AppDropdownOverlay> {
                             widget.value ?? S.of(context).select,
                             style: widget.value == null
                                 ? theme.textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.onError,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onError,
                                   )
                                 : theme.textTheme.bodyMedium,
                           ),

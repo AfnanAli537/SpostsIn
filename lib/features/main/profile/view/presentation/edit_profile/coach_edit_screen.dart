@@ -8,9 +8,9 @@ import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_state.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_two_fields_row.dart';
@@ -66,6 +66,9 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
     lastNameController.dispose();
     bioController.dispose();
     yearsOfExperienceController.dispose();
+    // bioController.dispose();
+    imageNotifier.dispose();
+    sportNameNotifier.dispose();
     super.dispose();
   }
 
@@ -81,6 +84,7 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
     final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
       currentProfile: widget.profile,
       newImage: imageNotifier.value,
+      oldImage: widget.profile.profileImage,
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       bio: bioController.text.trim(),
@@ -165,7 +169,7 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
                           ),
                           SizedBox(height: 16.h),
 
-                          // ✅ Bio/Description Field
+                          // Bio/Description Field
                           RegisterTextField(
                             controller: bioController,
                             labelText: string.bio,

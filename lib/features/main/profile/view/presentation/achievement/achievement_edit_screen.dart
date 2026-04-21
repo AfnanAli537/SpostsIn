@@ -11,9 +11,9 @@ import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_event.dart';
-import 'package:sports_in/features/main/profile/view_model/profile_state.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
+import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class AchievementEditScreen extends StatefulWidget {
@@ -72,13 +72,49 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: _selectedDate ?? DateTime.now(),
+  //     firstDate: DateTime(1900),
+  //     lastDate: DateTime.now(),
+  //   );
+  //   if (picked != null) {
+  //     setState(() => _selectedDate = picked);
+  //   }
+  // }
+  Future<void> _selectDate(S strings) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        final theme = Theme.of(context);
+
+        return Theme(
+          data: theme.copyWith(
+            colorScheme: isDark
+                ? ColorScheme.dark(
+                    primary: theme.colorScheme.primary,
+                    onPrimary: theme.colorScheme.onPrimary,
+                    surface: theme.colorScheme.surface,
+                    onSurface: theme.colorScheme.onSurface,
+                  )
+                : ColorScheme.light(
+                    primary: theme.colorScheme.primary,
+                    onPrimary: theme.colorScheme.onPrimary,
+                    surface: theme.colorScheme.surface,
+                    onSurface: theme.colorScheme.onSurface,
+                  ),
+          ),
+          child: child!,
+        );
+      },
     );
+
     if (picked != null) {
       setState(() => _selectedDate = picked);
     }
@@ -228,16 +264,21 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
 
                     _buildLabel(string.date_label, theme),
                     GestureDetector(
-                      onTap: () => _selectDate(context),
+                      onTap: () => _selectDate(string),
                       child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.w,
-                          vertical: 14.h,
+                          vertical: 16.h, 
                         ),
                         decoration: BoxDecoration(
-                          color: theme.onSurface.withOpacity(0.05),
+                          color: theme
+                              .surface, 
                           borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: theme.outline.withOpacity(0.4),
+                            width: 1,
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -248,12 +289,18 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
                                   : string.select_date_hint,
                               style: TextStyle(
                                 fontSize: 14.sp,
-                                color: theme.onSurface,
+                                color: _selectedDate != null
+                                    ? Colors
+                                          .black87 
+                                    : Colors
+                                          .grey[500],
                               ),
                             ),
                             Icon(
-                              Icons.calendar_month,
-                              color: theme.primary,
+                              Icons
+                                  .calendar_month, // Or use Icons.calendar_today to match exactly
+                              color: Colors
+                                  .grey[600], // Changed from theme.primary
                               size: 20.sp,
                             ),
                           ],

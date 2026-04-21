@@ -8,10 +8,13 @@ abstract class PostsRepository {
     required String userId,
     required int page,
     required int pageSize,
+    bool onlyInactive = false,
   });
 
   Future<void> likePost({required String postId});
-  
+   
+Future<PostModel> getPostById({required String postId});
+ 
   Future<void> addComment({required String postId, required String text});
   
   Future<void> uploadPost({
@@ -30,6 +33,8 @@ abstract class PostsRepository {
   });
 
   Future<void> deletePost({required String postId});
+
+  Future<void> togglePostVisibility({required String postId});
   
   Future<void> editComment({required String commentId, required String text});
   
@@ -48,5 +53,11 @@ abstract class PostsRepository {
   Future<void> deleteComment({
     required String postId,
     required String commentId,
+  });
+    Future<void> sendPostProgress({
+    required String postId,
+    required double watchedTime,
+    required bool isWatched,
+    required double zoomScale,
   });
 }

@@ -18,6 +18,7 @@ import 'package:sports_in/features/register/view_model/register_bloc/register_bl
 
 class ScoutRegisterScreen extends StatelessWidget {
   ScoutRegisterScreen({super.key});
+
   final _formKey = GlobalKey<FormState>();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -25,6 +26,7 @@ class ScoutRegisterScreen extends StatelessWidget {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final yearsOfExperienceController = TextEditingController();
+  final ageController = TextEditingController();
 
   final sportNameNotifier = ValueNotifier<String?>(null);
   final locationNotifier = ValueNotifier<String?>(null);
@@ -38,9 +40,7 @@ class ScoutRegisterScreen extends StatelessWidget {
   void _onRegister(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
 
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (genderNotifier.value == null ||
         locationNotifier.value == null ||
@@ -49,10 +49,6 @@ class ScoutRegisterScreen extends StatelessWidget {
     }
 
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
-
-    final int? parsedExperience = int.tryParse(
-      yearsOfExperienceController.text.trim(),
-    );
 
     final userData = ScoutModel(
       firstName: firstNameController.text.trim(),
@@ -63,13 +59,15 @@ class ScoutRegisterScreen extends StatelessWidget {
       gender: genderNotifier.value!,
       location: locationNotifier.value!,
       sportName: sportNameNotifier.value!,
-      yearsOfExperience: parsedExperience,
+      yearsOfExperience: int.tryParse(yearsOfExperienceController.text.trim()),
+      age: int.tryParse(ageController.text.trim()),
     );
 
     context.read<RegistrationBloc>().add(
-      SubmitRegistrationEvent(userData: userData),
-    );
+          SubmitRegistrationEvent(userData: userData),
+        );
   }
+
   Future<void> _showError(BuildContext context, String message) async {
     final msg = await TranslateErrorHelper.translateErrorKeyAsync(
       context,
@@ -82,6 +80,7 @@ class ScoutRegisterScreen extends StatelessWidget {
       gravity: ToastGravity.TOP,
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -91,7 +90,6 @@ class ScoutRegisterScreen extends StatelessWidget {
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
-          // Navigate to OTP screen after OTP is sent
           if (state is RegistrationOtpSent) {
             Fluttertoast.showToast(
               msg: string.otpSentSuccessfully,
@@ -99,15 +97,12 @@ class ScoutRegisterScreen extends StatelessWidget {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-
-            // Navigate to OTP verification screen
             Navigator.pushNamed(
               context,
               AppRoutes.registrationOtp,
               arguments: {'email': state.email, 'userData': state.userData},
             );
           }
-
           if (state is RegistrationError) {
             _showError(context, state.message);
           }
@@ -132,7 +127,8 @@ class ScoutRegisterScreen extends StatelessWidget {
                           SizedBox(height: 24.h),
 
                           AppImagePicker(
-                            onImageSelected: (img) => imageNotifier.value = img,
+                            onImageSelected: (img) =>
+                                imageNotifier.value = img,
                           ),
                           SizedBox(height: 24.h),
 
@@ -156,7 +152,6 @@ class ScoutRegisterScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -168,7 +163,6 @@ class ScoutRegisterScreen extends StatelessWidget {
                               value: v,
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -180,7 +174,6 @@ class ScoutRegisterScreen extends StatelessWidget {
                               value: v,
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -189,12 +182,11 @@ class ScoutRegisterScreen extends StatelessWidget {
                             isConformPassword: true,
                             validator: (v) =>
                                 Validators.validateConfirmPassword(
-                                  context: context,
-                                  value: v,
-                                  password: passwordController.text,
-                                ),
+                              context: context,
+                              value: v,
+                              password: passwordController.text,
+                            ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           ValueListenableBuilder<String?>(
@@ -204,8 +196,10 @@ class ScoutRegisterScreen extends StatelessWidget {
                                 labelText: string.gender,
                                 value: gender,
                                 options: RegisterLists.genderOptions(string),
-                                onChanged: (val) => genderNotifier.value = val,
-                                validator: (v) => Validators.validateDropdown(
+                                onChanged: (val) =>
+                                    genderNotifier.value = val,
+                                validator: (v) =>
+                                    Validators.validateDropdown(
                                   context: context,
                                   value: v,
                                   fieldName: string.gender.toLowerCase(),
@@ -213,7 +207,17 @@ class ScoutRegisterScreen extends StatelessWidget {
                               );
                             },
                           ),
+                          SizedBox(height: 16.h),
 
+                          RegisterTextField(
+                            controller: ageController,
+                            labelText: string.age,
+                            keyboardType: TextInputType.number,
+                            validator: (v) => Validators.validateAge(
+                              context: context,
+                              value: v,
+                            ),
+                          ),
                           SizedBox(height: 16.h),
 
                           RegisterTwoFieldsRow(
@@ -223,12 +227,12 @@ class ScoutRegisterScreen extends StatelessWidget {
                                 return AppDropdownOverlay(
                                   labelText: string.specializedSport,
                                   value: sportName,
-                                  options: RegisterLists.sportNameOptions(
-                                    string,
-                                  ),
+                                  options:
+                                      RegisterLists.sportNameOptions(string),
                                   onChanged: (val) =>
                                       sportNameNotifier.value = val,
-                                  validator: (v) => Validators.validateDropdown(
+                                  validator: (v) =>
+                                      Validators.validateDropdown(
                                     context: context,
                                     value: v,
                                     fieldName: string.specializedSport,
@@ -242,21 +246,21 @@ class ScoutRegisterScreen extends StatelessWidget {
                                 return AppDropdownOverlay(
                                   labelText: string.location,
                                   value: location,
-                                  options: RegisterLists.locationOptions(
-                                    string,
-                                  ),
+                                  options:
+                                      RegisterLists.locationOptions(string),
                                   onChanged: (val) =>
                                       locationNotifier.value = val,
-                                  validator: (v) => Validators.validateDropdown(
+                                  validator: (v) =>
+                                      Validators.validateDropdown(
                                     context: context,
                                     value: v,
-                                    fieldName: string.location.toLowerCase(),
+                                    fieldName:
+                                        string.location.toLowerCase(),
                                   ),
                                 );
                               },
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -268,7 +272,6 @@ class ScoutRegisterScreen extends StatelessWidget {
                               value: v,
                             ),
                           ),
-
                           SizedBox(height: 20.h),
 
                           CustomElevatedButton(

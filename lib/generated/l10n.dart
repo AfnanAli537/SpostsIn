@@ -134,6 +134,11 @@ class S {
     );
   }
 
+  /// `Account`
+  String get account {
+    return Intl.message('Account', name: 'account', desc: '', args: []);
+  }
+
   /// `Don't have an account?`
   String get notHaveAccount {
     return Intl.message(
@@ -344,6 +349,31 @@ class S {
     return Intl.message('Coach', name: 'coach', desc: '', args: []);
   }
 
+  /// `Certifications`
+  String get certifications {
+    return Intl.message(
+      'Certifications',
+      name: 'certifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specialist`
+  String get specialist {
+    return Intl.message('Specialist', name: 'specialist', desc: '', args: []);
+  }
+
+  /// `Select Certifications`
+  String get selectCertifications {
+    return Intl.message(
+      'Select Certifications',
+      name: 'selectCertifications',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Scout`
   String get scout {
     return Intl.message('Scout', name: 'scout', desc: '', args: []);
@@ -489,31 +519,6 @@ class S {
     return Intl.message('Female', name: 'female', desc: '', args: []);
   }
 
-  /// `Algeria`
-  String get algeria {
-    return Intl.message('Algeria', name: 'algeria', desc: '', args: []);
-  }
-
-  /// `Egypt`
-  String get egypt {
-    return Intl.message('Egypt', name: 'egypt', desc: '', args: []);
-  }
-
-  /// `Morocco`
-  String get morocco {
-    return Intl.message('Morocco', name: 'morocco', desc: '', args: []);
-  }
-
-  /// `Tunisia`
-  String get tunisia {
-    return Intl.message('Tunisia', name: 'tunisia', desc: '', args: []);
-  }
-
-  /// `Sudan`
-  String get sudan {
-    return Intl.message('Sudan', name: 'sudan', desc: '', args: []);
-  }
-
   /// `Select a Sport`
   String get selectSports {
     return Intl.message(
@@ -607,136 +612,6 @@ class S {
   /// `Gymnastics`
   String get gymnastics {
     return Intl.message('Gymnastics', name: 'gymnastics', desc: '', args: []);
-  }
-
-  /// `Point Guard`
-  String get pointGuard {
-    return Intl.message('Point Guard', name: 'pointGuard', desc: '', args: []);
-  }
-
-  /// `Shooting Guard`
-  String get shootingGuard {
-    return Intl.message(
-      'Shooting Guard',
-      name: 'shootingGuard',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Small Forward`
-  String get smallForward {
-    return Intl.message(
-      'Small Forward',
-      name: 'smallForward',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Power Forward`
-  String get powerForward {
-    return Intl.message(
-      'Power Forward',
-      name: 'powerForward',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Center`
-  String get center {
-    return Intl.message('Center', name: 'center', desc: '', args: []);
-  }
-
-  /// `Goalkeeper`
-  String get goalkeeper {
-    return Intl.message('Goalkeeper', name: 'goalkeeper', desc: '', args: []);
-  }
-
-  /// `Defender`
-  String get defender {
-    return Intl.message('Defender', name: 'defender', desc: '', args: []);
-  }
-
-  /// `Midfielder`
-  String get midfielder {
-    return Intl.message('Midfielder', name: 'midfielder', desc: '', args: []);
-  }
-
-  /// `Forward`
-  String get forward {
-    return Intl.message('Forward', name: 'forward', desc: '', args: []);
-  }
-
-  /// `Setter`
-  String get setter {
-    return Intl.message('Setter', name: 'setter', desc: '', args: []);
-  }
-
-  /// `Outside Hitter`
-  String get outsideHitter {
-    return Intl.message(
-      'Outside Hitter',
-      name: 'outsideHitter',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Opposite Hitter`
-  String get oppositeHitter {
-    return Intl.message(
-      'Opposite Hitter',
-      name: 'oppositeHitter',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Middle Blocker`
-  String get middleBlocker {
-    return Intl.message(
-      'Middle Blocker',
-      name: 'middleBlocker',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Libero`
-  String get libero {
-    return Intl.message('Libero', name: 'libero', desc: '', args: []);
-  }
-
-  /// `Left Wing`
-  String get leftWing {
-    return Intl.message('Left Wing', name: 'leftWing', desc: '', args: []);
-  }
-
-  /// `Right Wing`
-  String get rightWing {
-    return Intl.message('Right Wing', name: 'rightWing', desc: '', args: []);
-  }
-
-  /// `Left Back`
-  String get leftBack {
-    return Intl.message('Left Back', name: 'leftBack', desc: '', args: []);
-  }
-
-  /// `Center Back`
-  String get centerBack {
-    return Intl.message('Center Back', name: 'centerBack', desc: '', args: []);
-  }
-
-  /// `Right Back`
-  String get rightBack {
-    return Intl.message('Right Back', name: 'rightBack', desc: '', args: []);
-  }
-
-  /// `Pivot`
-  String get pivot {
-    return Intl.message('Pivot', name: 'pivot', desc: '', args: []);
   }
 
   /// `0-2 years`
@@ -939,10 +814,10 @@ class S {
     );
   }
 
-  /// `Please enter your Experience years.`
+  /// `Please enter a valid Experience years (1-60).`
   String get invalidExperience {
     return Intl.message(
-      'Please enter your Experience years.',
+      'Please enter a valid Experience years (1-60).',
       name: 'invalidExperience',
       desc: '',
       args: [],
@@ -1849,6 +1724,11 @@ class S {
     return Intl.message('Follow', name: 'follow', desc: '', args: []);
   }
 
+  /// `Follow Back`
+  String get followBack {
+    return Intl.message('Follow Back', name: 'followBack', desc: '', args: []);
+  }
+
   /// `Connected`
   String get connected {
     return Intl.message('Connected', name: 'connected', desc: '', args: []);
@@ -1904,6 +1784,36 @@ class S {
     );
   }
 
+  /// `Opportunities`
+  String get myOpportunities {
+    return Intl.message(
+      'Opportunities',
+      name: 'myOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Archive Opportunities`
+  String get archiveOpportunities {
+    return Intl.message(
+      'Archive Opportunities',
+      name: 'archiveOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public Opportunities`
+  String get publicOpportunities {
+    return Intl.message(
+      'Public Opportunities',
+      name: 'publicOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No Opportunities`
   String get noOpportunities {
     return Intl.message(
@@ -1919,11 +1829,26 @@ class S {
     return Intl.message('Courses', name: 'courses', desc: '', args: []);
   }
 
+  /// `No Courses`
+  String get noCourses {
+    return Intl.message('No Courses', name: 'noCourses', desc: '', args: []);
+  }
+
   /// `Achievements`
   String get achievements {
     return Intl.message(
       'Achievements',
       name: 'achievements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Achievements`
+  String get noAchievements {
+    return Intl.message(
+      'No Achievements',
+      name: 'noAchievements',
       desc: '',
       args: [],
     );
@@ -2254,6 +2179,86 @@ class S {
     );
   }
 
+  /// `Archive Post`
+  String get archivePost {
+    return Intl.message(
+      'Archive Post',
+      name: 'archivePost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Archive Posts`
+  String get archivePosts {
+    return Intl.message(
+      'Archive Posts',
+      name: 'archivePosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public Posts`
+  String get publicPosts {
+    return Intl.message(
+      'Public Posts',
+      name: 'publicPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post archived successfully!`
+  String get postArchived {
+    return Intl.message(
+      'Post archived successfully!',
+      name: 'postArchived',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?`
+  String get archivePostConfirmation {
+    return Intl.message(
+      'this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?',
+      name: 'archivePostConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Post`
+  String get restorePost {
+    return Intl.message(
+      'Restore Post',
+      name: 'restorePost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post restored successfully!`
+  String get postRestored {
+    return Intl.message(
+      'Post restored successfully!',
+      name: 'postRestored',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?`
+  String get restorePostConfirmation {
+    return Intl.message(
+      'this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?',
+      name: 'restorePostConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Failed to delete post. Please try again.`
   String get postDeleteFailed {
     return Intl.message(
@@ -2444,6 +2449,16 @@ class S {
     );
   }
 
+  /// `Latest Courses`
+  String get latestCourses {
+    return Intl.message(
+      'Latest Courses',
+      name: 'latestCourses',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Oops! Something went wrong`
   String get oopsSomethingWentWrong {
     return Intl.message(
@@ -2457,6 +2472,26 @@ class S {
   /// `No posts yet`
   String get noPostsYet {
     return Intl.message('No posts yet', name: 'noPostsYet', desc: '', args: []);
+  }
+
+  /// `No archived posts`
+  String get noArchivedPosts {
+    return Intl.message(
+      'No archived posts',
+      name: 'noArchivedPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No posts available`
+  String get noPostsAvailable {
+    return Intl.message(
+      'No posts available',
+      name: 'noPostsAvailable',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Likes`
@@ -2662,6 +2697,51 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Analysis started! Your report will be ready soon.`
+  String get analysisStartedToast {
+    return Intl.message(
+      'Analysis started! Your report will be ready soon.',
+      name: 'analysisStartedToast',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis queued. Report will appear in your profile when ready.`
+  String get analysisStartFailedToast {
+    return Intl.message(
+      'Analysis queued. Report will appear in your profile when ready.',
+      name: 'analysisStartFailedToast',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Archive`
+  String get archive {
+    return Intl.message('Archive', name: 'archive', desc: '', args: []);
+  }
+
+  /// `Activate`
+  String get activate {
+    return Intl.message('Activate', name: 'activate', desc: '', args: []);
+  }
+
+  /// `Pay`
+  String get pay {
+    return Intl.message('Pay', name: 'pay', desc: '', args: []);
+  }
+
+  /// `Deactivate`
+  String get deactivate {
+    return Intl.message('Deactivate', name: 'deactivate', desc: '', args: []);
+  }
+
+  /// `Restore`
+  String get restore {
+    return Intl.message('Restore', name: 'restore', desc: '', args: []);
   }
 
   /// `See Original`
@@ -2919,6 +2999,16 @@ class S {
     return Intl.message(
       'Tap to select from gallery',
       name: 'tapToSelectFromGallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to Change`
+  String get tapToChange {
+    return Intl.message(
+      'Tap to Change',
+      name: 'tapToChange',
       desc: '',
       args: [],
     );
@@ -3235,6 +3325,4061 @@ class S {
       name: 'achievement_updated_success',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Message sent successfully`
+  String get messageSent {
+    return Intl.message(
+      'Message sent successfully',
+      name: 'messageSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to send message. Please try again.`
+  String get failedToSendMessage {
+    return Intl.message(
+      'Failed to send message. Please try again.',
+      name: 'failedToSendMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FREE`
+  String get free {
+    return Intl.message('FREE', name: 'free', desc: '', args: []);
+  }
+
+  /// `EGP`
+  String get egp {
+    return Intl.message('EGP', name: 'egp', desc: '', args: []);
+  }
+
+  /// `Enroll`
+  String get enroll {
+    return Intl.message('Enroll', name: 'enroll', desc: '', args: []);
+  }
+
+  /// `{count} lessons`
+  String lessonsCount(int count) {
+    return Intl.message(
+      '$count lessons',
+      name: 'lessonsCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} enrolled`
+  String enrolledCount(int count) {
+    return Intl.message(
+      '$count enrolled',
+      name: 'enrolledCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{percentage}% complete`
+  String completePercentage(String percentage) {
+    return Intl.message(
+      '$percentage% complete',
+      name: 'completePercentage',
+      desc: '',
+      args: [percentage],
+    );
+  }
+
+  /// `Edit Price`
+  String get editPrice {
+    return Intl.message('Edit Price', name: 'editPrice', desc: '', args: []);
+  }
+
+  /// `Free Course`
+  String get freeCourse {
+    return Intl.message('Free Course', name: 'freeCourse', desc: '', args: []);
+  }
+
+  /// `Price (EGP)`
+  String get priceEGPtxt {
+    return Intl.message('Price (EGP)', name: 'priceEGPtxt', desc: '', args: []);
+  }
+
+  /// `Price is required`
+  String get priceRequired {
+    return Intl.message(
+      'Price is required',
+      name: 'priceRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid price`
+  String get invalidPrice {
+    return Intl.message(
+      'Invalid price',
+      name: 'invalidPrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{number} Lesson`
+  String lessonNumber(int number) {
+    return Intl.message(
+      '$number Lesson',
+      name: 'lessonNumber',
+      desc: '',
+      args: [number],
+    );
+  }
+
+  /// `Completed`
+  String get completed {
+    return Intl.message('Completed', name: 'completed', desc: '', args: []);
+  }
+
+  /// `Playing`
+  String get playing {
+    return Intl.message('Playing', name: 'playing', desc: '', args: []);
+  }
+
+  /// `Show Description`
+  String get showDescription {
+    return Intl.message(
+      'Show Description',
+      name: 'showDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide Description`
+  String get hideDescription {
+    return Intl.message(
+      'Hide Description',
+      name: 'hideDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Watched`
+  String get watched {
+    return Intl.message('Watched', name: 'watched', desc: '', args: []);
+  }
+
+  /// `{percentage}% watched`
+  String percentageWatched(String percentage) {
+    return Intl.message(
+      '$percentage% watched',
+      name: 'percentageWatched',
+      desc: '',
+      args: [percentage],
+    );
+  }
+
+  /// `Create Course`
+  String get createCourse {
+    return Intl.message(
+      'Create Course',
+      name: 'createCourse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload Course Thumbnail`
+  String get uploadCourseThumbnail {
+    return Intl.message(
+      'Upload Course Thumbnail',
+      name: 'uploadCourseThumbnail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course Thumbnail`
+  String get courseThumbnail {
+    return Intl.message(
+      'Course Thumbnail',
+      name: 'courseThumbnail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course Title`
+  String get courseTitleHint {
+    return Intl.message(
+      'Course Title',
+      name: 'courseTitleHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course Title`
+  String get enterCourseTitleHint {
+    return Intl.message(
+      'Course Title',
+      name: 'enterCourseTitleHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course Description`
+  String get courseDescriptionHint {
+    return Intl.message(
+      'Course Description',
+      name: 'courseDescriptionHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Course Description`
+  String get enterCourseDescriptionHint {
+    return Intl.message(
+      'Enter Course Description',
+      name: 'enterCourseDescriptionHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No description available`
+  String get noDescriptionAvailable {
+    return Intl.message(
+      'No description available',
+      name: 'noDescriptionAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Price`
+  String get price {
+    return Intl.message('Price', name: 'price', desc: '', args: []);
+  }
+
+  /// `Enter price (0 for free)`
+  String get enterPriceHint {
+    return Intl.message(
+      'Enter price (0 for free)',
+      name: 'enterPriceHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a price`
+  String get pleaseEnterPrice {
+    return Intl.message(
+      'Please enter a price',
+      name: 'pleaseEnterPrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course created successfully`
+  String get courseCreatedSuccess {
+    return Intl.message(
+      'Course created successfully',
+      name: 'courseCreatedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Lesson`
+  String get addLesson {
+    return Intl.message('Add Lesson', name: 'addLesson', desc: '', args: []);
+  }
+
+  /// `Would you like to add a lesson to this course now?`
+  String get addLessonQuestion {
+    return Intl.message(
+      'Would you like to add a lesson to this course now?',
+      name: 'addLessonQuestion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Later`
+  String get addLater {
+    return Intl.message('Add Later', name: 'addLater', desc: '', args: []);
+  }
+
+  /// `Add Now`
+  String get addNow {
+    return Intl.message('Add Now', name: 'addNow', desc: '', args: []);
+  }
+
+  /// `Error picking image. Please try again.`
+  String get error_picking_image {
+    return Intl.message(
+      'Error picking image. Please try again.',
+      name: 'error_picking_image',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a sport`
+  String get select_sport_error {
+    return Intl.message(
+      'Please select a sport',
+      name: 'select_sport_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Lesson`
+  String get editLesson {
+    return Intl.message('Edit Lesson', name: 'editLesson', desc: '', args: []);
+  }
+
+  /// `Lesson Title`
+  String get lessonTitle {
+    return Intl.message(
+      'Lesson Title',
+      name: 'lessonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter lesson title`
+  String get enterLessonTitleHint {
+    return Intl.message(
+      'Enter lesson title',
+      name: 'enterLessonTitleHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter description`
+  String get enterDescriptionHint {
+    return Intl.message(
+      'Enter description',
+      name: 'enterDescriptionHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Title is required`
+  String get titleRequired {
+    return Intl.message(
+      'Title is required',
+      name: 'titleRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description is required`
+  String get descriptionRequired {
+    return Intl.message(
+      'Description is required',
+      name: 'descriptionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lesson order: {order}`
+  String lessonOrder(String order) {
+    return Intl.message(
+      'Lesson order: $order',
+      name: 'lessonOrder',
+      desc: '',
+      args: [order],
+    );
+  }
+
+  /// `Duration: {duration}`
+  String duration(String duration) {
+    return Intl.message(
+      'Duration: $duration',
+      name: 'duration',
+      desc: '',
+      args: [duration],
+    );
+  }
+
+  /// `Update Lesson`
+  String get updateLesson {
+    return Intl.message(
+      'Update Lesson',
+      name: 'updateLesson',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New video will be uploaded`
+  String get newVideoWillBeUploaded {
+    return Intl.message(
+      'New video will be uploaded',
+      name: 'newVideoWillBeUploaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video`
+  String get video {
+    return Intl.message('Video', name: 'video', desc: '', args: []);
+  }
+
+  /// `Change Video`
+  String get changeVideo {
+    return Intl.message(
+      'Change Video',
+      name: 'changeVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Replace Video`
+  String get replaceVideo {
+    return Intl.message(
+      'Replace Video',
+      name: 'replaceVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Extracting duration...`
+  String get extractingDuration {
+    return Intl.message(
+      'Extracting duration...',
+      name: 'extractingDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New video selected`
+  String get newVideoSelected {
+    return Intl.message(
+      'New video selected',
+      name: 'newVideoSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current video`
+  String get currentVideo {
+    return Intl.message(
+      'Current video',
+      name: 'currentVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Updating lesson...`
+  String get updatingLesson {
+    return Intl.message(
+      'Updating lesson...',
+      name: 'updatingLesson',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `File size exceeds 500MB`
+  String get file_size_exceeds_limit {
+    return Intl.message(
+      'File size exceeds 500MB',
+      name: 'file_size_exceeds_limit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error picking video. Please try again.`
+  String get error_picking_video {
+    return Intl.message(
+      'Error picking video. Please try again.',
+      name: 'error_picking_video',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to read video duration`
+  String get failed_to_read_video_duration {
+    return Intl.message(
+      'Failed to read video duration',
+      name: 'failed_to_read_video_duration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload Lesson`
+  String get uploadLesson {
+    return Intl.message(
+      'Upload Lesson',
+      name: 'uploadLesson',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload Video`
+  String get uploadVideo {
+    return Intl.message(
+      'Upload Video',
+      name: 'uploadVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max 500MB`
+  String get maxFileSize {
+    return Intl.message('Max 500MB', name: 'maxFileSize', desc: '', args: []);
+  }
+
+  /// `Not detected`
+  String get notDetected {
+    return Intl.message(
+      'Not detected',
+      name: 'notDetected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lesson order: {order} • Duration: {duration}`
+  String lessonOrderAndDuration(String order, String duration) {
+    return Intl.message(
+      'Lesson order: $order • Duration: $duration',
+      name: 'lessonOrderAndDuration',
+      desc: '',
+      args: [order, duration],
+    );
+  }
+
+  /// `Lessons`
+  String get lessons {
+    return Intl.message('Lessons', name: 'lessons', desc: '', args: []);
+  }
+
+  /// `Revenue`
+  String get revenue {
+    return Intl.message('Revenue', name: 'revenue', desc: '', args: []);
+  }
+
+  /// `Edit Course`
+  String get editCourse {
+    return Intl.message('Edit Course', name: 'editCourse', desc: '', args: []);
+  }
+
+  /// `Cancel Edit`
+  String get cancelEdit {
+    return Intl.message('Cancel Edit', name: 'cancelEdit', desc: '', args: []);
+  }
+
+  /// `Delete Course`
+  String get deleteCourse {
+    return Intl.message(
+      'Delete Course',
+      name: 'deleteCourse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Lesson`
+  String get deleteLesson {
+    return Intl.message(
+      'Delete Lesson',
+      name: 'deleteLesson',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete "{lessonTitle}"? This action cannot be undone.`
+  String deleteLessonConfirmation(String lessonTitle) {
+    return Intl.message(
+      'Are you sure you want to delete "$lessonTitle"? This action cannot be undone.',
+      name: 'deleteLessonConfirmation',
+      desc: '',
+      args: [lessonTitle],
+    );
+  }
+
+  /// `Are you sure you want to delete this course?`
+  String get deleteCourseConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this course?',
+      name: 'deleteCourseConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Title cannot be empty`
+  String get titleCannotBeEmpty {
+    return Intl.message(
+      'Title cannot be empty',
+      name: 'titleCannotBeEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saving changes...`
+  String get savingChanges {
+    return Intl.message(
+      'Saving changes...',
+      name: 'savingChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deleting lesson...`
+  String get deletingLesson {
+    return Intl.message(
+      'Deleting lesson...',
+      name: 'deletingLesson',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enrolled successfully`
+  String get enrolledSuccessfully {
+    return Intl.message(
+      'Enrolled successfully',
+      name: 'enrolledSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course deleted`
+  String get courseDeleted {
+    return Intl.message(
+      'Course deleted',
+      name: 'courseDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enroll Now`
+  String get enrollNow {
+    return Intl.message('Enroll Now', name: 'enrollNow', desc: '', args: []);
+  }
+
+  /// `Enroll for {price}`
+  String enrollForPrice(String price) {
+    return Intl.message(
+      'Enroll for $price',
+      name: 'enrollForPrice',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Available`
+  String get available {
+    return Intl.message('Available', name: 'available', desc: '', args: []);
+  }
+
+  /// `New Courses`
+  String get newCourses {
+    return Intl.message('New Courses', name: 'newCourses', desc: '', args: []);
+  }
+
+  /// `Continue Watching`
+  String get continueWatching {
+    return Intl.message(
+      'Continue Watching',
+      name: 'continueWatching',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show More`
+  String get showMore {
+    return Intl.message('Show More', name: 'showMore', desc: '', args: []);
+  }
+
+  /// `No courses found for "{searchTerm}"`
+  String noCoursesFoundFor(String searchTerm) {
+    return Intl.message(
+      'No courses found for "$searchTerm"',
+      name: 'noCoursesFoundFor',
+      desc: '',
+      args: [searchTerm],
+    );
+  }
+
+  /// `{percentage}% Complete`
+  String percentComplete(String percentage) {
+    return Intl.message(
+      '$percentage% Complete',
+      name: 'percentComplete',
+      desc: '',
+      args: [percentage],
+    );
+  }
+
+  /// `{completed} / {total} Lessons`
+  String lessonsProgress(String completed, String total) {
+    return Intl.message(
+      '$completed / $total Lessons',
+      name: 'lessonsProgress',
+      desc: '',
+      args: [completed, total],
+    );
+  }
+
+  /// `Failed to play video`
+  String get failedToPlayVideo {
+    return Intl.message(
+      'Failed to play video',
+      name: 'failedToPlayVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Playback Error`
+  String get videoPlaybackError {
+    return Intl.message(
+      'Video Playback Error',
+      name: 'videoPlaybackError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown error`
+  String get unknownError {
+    return Intl.message(
+      'Unknown error',
+      name: 'unknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Available Courses`
+  String get availableCourses {
+    return Intl.message(
+      'Available Courses',
+      name: 'availableCourses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Available Courses`
+  String get noAvailableCourses {
+    return Intl.message(
+      'No Available Courses',
+      name: 'noAvailableCourses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enrolled Courses`
+  String get enrolledCourses {
+    return Intl.message(
+      'Enrolled Courses',
+      name: 'enrolledCourses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Courses`
+  String get myCourses {
+    return Intl.message('My Courses', name: 'myCourses', desc: '', args: []);
+  }
+
+  /// `No courses found`
+  String get noCoursesFound {
+    return Intl.message(
+      'No courses found',
+      name: 'noCoursesFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No results for your criteria`
+  String get noResultsForCriteria {
+    return Intl.message(
+      'No results for your criteria',
+      name: 'noResultsForCriteria',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try adjusting your search or filter`
+  String get tryAdjustingSearch {
+    return Intl.message(
+      'Try adjusting your search or filter',
+      name: 'tryAdjustingSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a video`
+  String get pleaseSelectVideo {
+    return Intl.message(
+      'Please select a video',
+      name: 'pleaseSelectVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid video duration. Please select another video.`
+  String get invalidVideoDuration {
+    return Intl.message(
+      'Invalid video duration. Please select another video.',
+      name: 'invalidVideoDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading lesson in background...`
+  String get uploadingInBackground {
+    return Intl.message(
+      'Uploading lesson in background...',
+      name: 'uploadingInBackground',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload will continue in background`
+  String get uploadWillContinue {
+    return Intl.message(
+      'Upload will continue in background',
+      name: 'uploadWillContinue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personal Information`
+  String get personalInfo {
+    return Intl.message(
+      'Personal Information',
+      name: 'personalInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription`
+  String get subscription {
+    return Intl.message(
+      'Subscription',
+      name: 'subscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activities`
+  String get activities {
+    return Intl.message('Activities', name: 'activities', desc: '', args: []);
+  }
+
+  /// `User Type`
+  String get userType {
+    return Intl.message('User Type', name: 'userType', desc: '', args: []);
+  }
+
+  /// `Change Password`
+  String get changePassword {
+    return Intl.message(
+      'Change Password',
+      name: 'changePassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Subscription`
+  String get manageSubscription {
+    return Intl.message(
+      'Manage Subscription',
+      name: 'manageSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Posts`
+  String get managePosts {
+    return Intl.message(
+      'Manage Posts',
+      name: 'managePosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Opportunities`
+  String get manageOpportunities {
+    return Intl.message(
+      'Manage Opportunities',
+      name: 'manageOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Course`
+  String get manageCourse {
+    return Intl.message(
+      'Manage Course',
+      name: 'manageCourse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Video Analysis People`
+  String get manageVideoAnalysis {
+    return Intl.message(
+      'Manage Video Analysis People',
+      name: 'manageVideoAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Advertisement`
+  String get manageAdvertisement {
+    return Intl.message(
+      'Manage Advertisement',
+      name: 'manageAdvertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Achievement`
+  String get manageAchievement {
+    return Intl.message(
+      'Manage Achievement',
+      name: 'manageAchievement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch Account`
+  String get switchAccount {
+    return Intl.message(
+      'Switch Account',
+      name: 'switchAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Account`
+  String get addAccount {
+    return Intl.message('Add Account', name: 'addAccount', desc: '', args: []);
+  }
+
+  /// `Lesson order saved`
+  String get lessonOrderSaved {
+    return Intl.message(
+      'Lesson order saved',
+      name: 'lessonOrderSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No lessons available`
+  String get noLessonsAvailable {
+    return Intl.message(
+      'No lessons available',
+      name: 'noLessonsAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap the + button to add your first lesson`
+  String get tapToAddFirstLesson {
+    return Intl.message(
+      'Tap the + button to add your first lesson',
+      name: 'tapToAddFirstLesson',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course Progress`
+  String get courseProgress {
+    return Intl.message(
+      'Course Progress',
+      name: 'courseProgress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time Spent`
+  String get timeSpent {
+    return Intl.message('Time Spent', name: 'timeSpent', desc: '', args: []);
+  }
+
+  /// `No enrollees yet`
+  String get noEnrolleesYet {
+    return Intl.message(
+      'No enrollees yet',
+      name: 'noEnrolleesYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enrolled students will appear here`
+  String get enrolleesWillAppear {
+    return Intl.message(
+      'Enrolled students will appear here',
+      name: 'enrolleesWillAppear',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Enrolled`
+  String get totalEnrolled {
+    return Intl.message(
+      'Total Enrolled',
+      name: 'totalEnrolled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Progress`
+  String get avgProgress {
+    return Intl.message(
+      'Avg Progress',
+      name: 'avgProgress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Progress`
+  String get progress {
+    return Intl.message('Progress', name: 'progress', desc: '', args: []);
+  }
+
+  /// `Enrolled`
+  String get enrolled {
+    return Intl.message('Enrolled', name: 'enrolled', desc: '', args: []);
+  }
+
+  /// `Close`
+  String get close {
+    return Intl.message('Close', name: 'close', desc: '', args: []);
+  }
+
+  /// `Remove`
+  String get remove {
+    return Intl.message('Remove', name: 'remove', desc: '', args: []);
+  }
+
+  /// `Pending`
+  String get pending {
+    return Intl.message('Pending', name: 'pending', desc: '', args: []);
+  }
+
+  /// `New Connection Requests`
+  String get newConnectionRequests {
+    return Intl.message(
+      'New Connection Requests',
+      name: 'newConnectionRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Connection Requests`
+  String get noConnectionRequests {
+    return Intl.message(
+      'No Connection Requests',
+      name: 'noConnectionRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No More Requests`
+  String get noMoreRequests {
+    return Intl.message(
+      'No More Requests',
+      name: 'noMoreRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Contacts`
+  String get myContacts {
+    return Intl.message('My Contacts', name: 'myContacts', desc: '', args: []);
+  }
+
+  /// `No contacts yet`
+  String get noContactsYet {
+    return Intl.message(
+      'No contacts yet',
+      name: 'noContactsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No followers yet`
+  String get noFollowersYet {
+    return Intl.message(
+      'No followers yet',
+      name: 'noFollowersYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No following yet`
+  String get noFollowingYet {
+    return Intl.message(
+      'No following yet',
+      name: 'noFollowingYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wants to connect with you`
+  String get wantsToConnect {
+    return Intl.message(
+      'Wants to connect with you',
+      name: 'wantsToConnect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No more contacts`
+  String get noMoreContacts {
+    return Intl.message(
+      'No more contacts',
+      name: 'noMoreContacts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Online`
+  String get online {
+    return Intl.message('Online', name: 'online', desc: '', args: []);
+  }
+
+  /// `Month`
+  String get month {
+    return Intl.message('Month', name: 'month', desc: '', args: []);
+  }
+
+  /// `Year`
+  String get year {
+    return Intl.message('Year', name: 'year', desc: '', args: []);
+  }
+
+  /// `All-Time Revenue`
+  String get allTimeRevenue {
+    return Intl.message(
+      'All-Time Revenue',
+      name: 'allTimeRevenue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Weekly Breakdown`
+  String get weeklyBreakdown {
+    return Intl.message(
+      'Weekly Breakdown',
+      name: 'weeklyBreakdown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Weekly Details`
+  String get weeklyDetails {
+    return Intl.message(
+      'Weekly Details',
+      name: 'weeklyDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No data available for {month}`
+  String noDataForMonth(String month) {
+    return Intl.message(
+      'No data available for $month',
+      name: 'noDataForMonth',
+      desc: '',
+      args: [month],
+    );
+  }
+
+  /// `January`
+  String get january {
+    return Intl.message('January', name: 'january', desc: '', args: []);
+  }
+
+  /// `February`
+  String get february {
+    return Intl.message('February', name: 'february', desc: '', args: []);
+  }
+
+  /// `March`
+  String get march {
+    return Intl.message('March', name: 'march', desc: '', args: []);
+  }
+
+  /// `April`
+  String get april {
+    return Intl.message('April', name: 'april', desc: '', args: []);
+  }
+
+  /// `May`
+  String get may {
+    return Intl.message('May', name: 'may', desc: '', args: []);
+  }
+
+  /// `June`
+  String get june {
+    return Intl.message('June', name: 'june', desc: '', args: []);
+  }
+
+  /// `July`
+  String get july {
+    return Intl.message('July', name: 'july', desc: '', args: []);
+  }
+
+  /// `August`
+  String get august {
+    return Intl.message('August', name: 'august', desc: '', args: []);
+  }
+
+  /// `September`
+  String get september {
+    return Intl.message('September', name: 'september', desc: '', args: []);
+  }
+
+  /// `October`
+  String get october {
+    return Intl.message('October', name: 'october', desc: '', args: []);
+  }
+
+  /// `November`
+  String get november {
+    return Intl.message('November', name: 'november', desc: '', args: []);
+  }
+
+  /// `December`
+  String get december {
+    return Intl.message('December', name: 'december', desc: '', args: []);
+  }
+
+  /// `Advertisements`
+  String get advertisements {
+    return Intl.message(
+      'Advertisements',
+      name: 'advertisements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad Dashboard`
+  String get adDashboard {
+    return Intl.message(
+      'Ad Dashboard',
+      name: 'adDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Overview — All Ads`
+  String get overviewAllAds {
+    return Intl.message(
+      'Overview — All Ads',
+      name: 'overviewAllAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Performance Overview`
+  String get performanceOverview {
+    return Intl.message(
+      'Performance Overview',
+      name: 'performanceOverview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Ads`
+  String get totalAds {
+    return Intl.message('Total Ads', name: 'totalAds', desc: '', args: []);
+  }
+
+  /// `Total Views`
+  String get totalViews {
+    return Intl.message('Total Views', name: 'totalViews', desc: '', args: []);
+  }
+
+  /// `Total Clicks`
+  String get totalClicks {
+    return Intl.message(
+      'Total Clicks',
+      name: 'totalClicks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Engagement`
+  String get engagement {
+    return Intl.message('Engagement', name: 'engagement', desc: '', args: []);
+  }
+
+  /// `Avg. Completion Rate`
+  String get averageCompletionRate {
+    return Intl.message(
+      'Avg. Completion Rate',
+      name: 'averageCompletionRate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{value}%`
+  String percentage(String value) {
+    return Intl.message('$value%', name: 'percentage', desc: '', args: [value]);
+  }
+
+  /// `Complete Payment`
+  String get completePayment {
+    return Intl.message(
+      'Complete Payment',
+      name: 'completePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad Created — Pending Payment`
+  String get adCreatedPendingPayment {
+    return Intl.message(
+      'Ad Created — Pending Payment',
+      name: 'adCreatedPendingPayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your ad has been saved. Complete payment to activate it in the feed.`
+  String get adSavedCompletePayment {
+    return Intl.message(
+      'Your ad has been saved. Complete payment to activate it in the feed.',
+      name: 'adSavedCompletePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Amount`
+  String get totalAmount {
+    return Intl.message(
+      'Total Amount',
+      name: 'totalAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `({price} EGP per day)`
+  String pricePerDay(String price) {
+    return Intl.message(
+      '($price EGP per day)',
+      name: 'pricePerDay',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Payment integration is coming soon. You can pay later from your ads dashboard.`
+  String get paymentIntegrationComingSoon {
+    return Intl.message(
+      'Payment integration is coming soon. You can pay later from your ads dashboard.',
+      name: 'paymentIntegrationComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now (Coming Soon)`
+  String get payNowComingSoon {
+    return Intl.message(
+      'Pay Now (Coming Soon)',
+      name: 'payNowComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Later (Ad saved as draft)`
+  String get payLaterDraft {
+    return Intl.message(
+      'Pay Later (Ad saved as draft)',
+      name: 'payLaterDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{price} EGP`
+  String priceEGP(String price) {
+    return Intl.message(
+      '$price EGP',
+      name: 'priceEGP',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Ad Published!`
+  String get adPublished {
+    return Intl.message(
+      'Ad Published!',
+      name: 'adPublished',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your advertisement is now live and will appear in the feed to your target audience.`
+  String get adPublishedDescription {
+    return Intl.message(
+      'Your advertisement is now live and will appear in the feed to your target audience.',
+      name: 'adPublishedDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to Home`
+  String get backToHome {
+    return Intl.message('Back to Home', name: 'backToHome', desc: '', args: []);
+  }
+
+  /// `Edit Advertisement`
+  String get editAdvertisement {
+    return Intl.message(
+      'Edit Advertisement',
+      name: 'editAdvertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Advertisement updated successfully`
+  String get adUpdatedSuccessfully {
+    return Intl.message(
+      'Advertisement updated successfully',
+      name: 'adUpdatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter ad title`
+  String get enterAdTitle {
+    return Intl.message(
+      'Enter ad title',
+      name: 'enterAdTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter ad description`
+  String get enterAdDescription {
+    return Intl.message(
+      'Enter ad description',
+      name: 'enterAdDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Target Audience`
+  String get targetAudience {
+    return Intl.message(
+      'Target Audience',
+      name: 'targetAudience',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Who should see this ad?`
+  String get whoShouldSeeThisAd {
+    return Intl.message(
+      'Who should see this ad?',
+      name: 'whoShouldSeeThisAd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Campaign Duration *`
+  String get campaignDurationRequired {
+    return Intl.message(
+      'Campaign Duration *',
+      name: 'campaignDurationRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Date`
+  String get startDate {
+    return Intl.message('Start Date', name: 'startDate', desc: '', args: []);
+  }
+
+  /// `Estimated cost: {price} EGP`
+  String estimatedCost(String price) {
+    return Intl.message(
+      'Estimated cost: $price EGP',
+      name: 'estimatedCost',
+      desc: '',
+      args: [price],
+    );
+  }
+
+  /// `Action URL (optional)`
+  String get actionUrlOptional {
+    return Intl.message(
+      'Action URL (optional)',
+      name: 'actionUrlOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `https://...`
+  String get urlPlaceholder {
+    return Intl.message(
+      'https://...',
+      name: 'urlPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CTA Button Text (optional)`
+  String get ctaButtonTextOptional {
+    return Intl.message(
+      'CTA Button Text (optional)',
+      name: 'ctaButtonTextOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. Learn More, Buy Now`
+  String get ctaPlaceholder {
+    return Intl.message(
+      'e.g. Learn More, Buy Now',
+      name: 'ctaPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update Ad`
+  String get updateAd {
+    return Intl.message('Update Ad', name: 'updateAd', desc: '', args: []);
+  }
+
+  /// `Tap to change media`
+  String get tapToChangeMedia {
+    return Intl.message(
+      'Tap to change media',
+      name: 'tapToChangeMedia',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Optional`
+  String get optional {
+    return Intl.message('Optional', name: 'optional', desc: '', args: []);
+  }
+
+  /// `My Advertisements`
+  String get myAdvertisements {
+    return Intl.message(
+      'My Advertisements',
+      name: 'myAdvertisements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inactive / Draft`
+  String get inactiveDraft {
+    return Intl.message(
+      'Inactive / Draft',
+      name: 'inactiveDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active`
+  String get active {
+    return Intl.message('Active', name: 'active', desc: '', args: []);
+  }
+
+  /// `Ad deleted successfully`
+  String get adDeletedSuccessfully {
+    return Intl.message(
+      'Ad deleted successfully',
+      name: 'adDeletedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad activated`
+  String get adActivated {
+    return Intl.message(
+      'Ad activated',
+      name: 'adActivated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad deactivated`
+  String get adDeactivated {
+    return Intl.message(
+      'Ad deactivated',
+      name: 'adDeactivated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No active advertisements`
+  String get noActiveAds {
+    return Intl.message(
+      'No active advertisements',
+      name: 'noActiveAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No inactive advertisements`
+  String get noInactiveAds {
+    return Intl.message(
+      'No inactive advertisements',
+      name: 'noInactiveAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Analytics Dashboard`
+  String get viewAnalyticsDashboard {
+    return Intl.message(
+      'View Analytics Dashboard',
+      name: 'viewAnalyticsDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Report`
+  String get viewReport {
+    return Intl.message('View Report', name: 'viewReport', desc: '', args: []);
+  }
+
+  /// `Analytics Overview`
+  String get analyticsOverview {
+    return Intl.message(
+      'Analytics Overview',
+      name: 'analyticsOverview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ads`
+  String get ads {
+    return Intl.message('Ads', name: 'ads', desc: '', args: []);
+  }
+
+  /// `Views`
+  String get views {
+    return Intl.message('Views', name: 'views', desc: '', args: []);
+  }
+
+  /// `Clicks`
+  String get clicks {
+    return Intl.message('Clicks', name: 'clicks', desc: '', args: []);
+  }
+
+  /// `Completion`
+  String get completion {
+    return Intl.message('Completion', name: 'completion', desc: '', args: []);
+  }
+
+  /// `Failed to load page`
+  String get failedToLoadPage {
+    return Intl.message(
+      'Failed to load page',
+      name: 'failedToLoadPage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Learn More`
+  String get learnMore {
+    return Intl.message('Learn More', name: 'learnMore', desc: '', args: []);
+  }
+
+  /// `Sponsor`
+  String get sponsor {
+    return Intl.message('Sponsor', name: 'sponsor', desc: '', args: []);
+  }
+
+  /// `Advertisement`
+  String get advertisement {
+    return Intl.message(
+      'Advertisement',
+      name: 'advertisement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get dashboard {
+    return Intl.message('Dashboard', name: 'dashboard', desc: '', args: []);
+  }
+
+  /// `Deactivate Ad`
+  String get deactivateAd {
+    return Intl.message(
+      'Deactivate Ad',
+      name: 'deactivateAd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activate Ad`
+  String get activateAd {
+    return Intl.message('Activate Ad', name: 'activateAd', desc: '', args: []);
+  }
+
+  /// `This ad will no longer appear in the feed.`
+  String get deactivateAdMessage {
+    return Intl.message(
+      'This ad will no longer appear in the feed.',
+      name: 'deactivateAdMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This ad will appear in the feed again.`
+  String get activateAdMessage {
+    return Intl.message(
+      'This ad will appear in the feed again.',
+      name: 'activateAdMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this advertisement?`
+  String get deleteAdConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this advertisement?',
+      name: 'deleteAdConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ad saved as draft — not published`
+  String get adSavedAsDraft {
+    return Intl.message(
+      'Ad saved as draft — not published',
+      name: 'adSavedAsDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment to activate this ad in the feed.`
+  String get completePaymentToActivate {
+    return Intl.message(
+      'Complete payment to activate this ad in the feed.',
+      name: 'completePaymentToActivate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment coming soon`
+  String get paymentComingSoon {
+    return Intl.message(
+      'Payment coming soon',
+      name: 'paymentComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now`
+  String get payNow {
+    return Intl.message('Pay Now', name: 'payNow', desc: '', args: []);
+  }
+
+  /// `Choose Payment Method`
+  String get chooseMethod {
+    return Intl.message(
+      'Choose Payment Method',
+      name: 'chooseMethod',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Processing Payment...`
+  String get processing_payment_title {
+    return Intl.message(
+      'Processing Payment...',
+      name: 'processing_payment_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please do not close the app`
+  String get processing_payment_subtitle {
+    return Intl.message(
+      'Please do not close the app',
+      name: 'processing_payment_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment Successful!`
+  String get payment_success_title {
+    return Intl.message(
+      'Payment Successful!',
+      name: 'payment_success_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your subscription is now active.\nEnjoy your access! `
+  String get payment_success_subtitle {
+    return Intl.message(
+      'Your subscription is now active.\nEnjoy your access! ',
+      name: 'payment_success_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Transaction ID: {id}`
+  String payment_success_transaction_id(Object id) {
+    return Intl.message(
+      'Transaction ID: $id',
+      name: 'payment_success_transaction_id',
+      desc: '',
+      args: [id],
+    );
+  }
+
+  /// `Enter Mobile Number`
+  String get fawry_mobile_appbar_title {
+    return Intl.message(
+      'Enter Mobile Number',
+      name: 'fawry_mobile_appbar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your Fawry mobile number`
+  String get fawry_mobile_label {
+    return Intl.message(
+      'Enter your Fawry mobile number',
+      name: 'fawry_mobile_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing you agree to our Terms`
+  String get fawry_mobile_terms {
+    return Intl.message(
+      'By continuing you agree to our Terms',
+      name: 'fawry_mobile_terms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mobile Number (e.g., 010xxxxxxxx)`
+  String get fawry_mobile_hint {
+    return Intl.message(
+      'Mobile Number (e.g., 010xxxxxxxx)',
+      name: 'fawry_mobile_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue to Fawry`
+  String get fawry_mobile_confirm_btn {
+    return Intl.message(
+      'Continue to Fawry',
+      name: 'fawry_mobile_confirm_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your mobile number`
+  String get fawry_mobile_validation_empty {
+    return Intl.message(
+      'Please enter your mobile number',
+      name: 'fawry_mobile_validation_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid Egyptian mobile number`
+  String get fawry_mobile_validation_invalid {
+    return Intl.message(
+      'Enter a valid Egyptian mobile number',
+      name: 'fawry_mobile_validation_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fawry Reference Code`
+  String get fawry_screen_appbar_title {
+    return Intl.message(
+      'Fawry Reference Code',
+      name: 'fawry_screen_appbar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your payment details`
+  String get fawry_screen_label {
+    return Intl.message(
+      'Enter your payment details',
+      name: 'fawry_screen_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing you agree to our Terms`
+  String get fawry_screen_terms {
+    return Intl.message(
+      'By continuing you agree to our Terms',
+      name: 'fawry_screen_terms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay at any Fawry POS using this code\nwithin 24 hours`
+  String get fawry_screen_pay_instruction {
+    return Intl.message(
+      'Pay at any Fawry POS using this code\nwithin 24 hours',
+      name: 'fawry_screen_pay_instruction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to generate reference code`
+  String get fawry_screen_failed_code {
+    return Intl.message(
+      'Failed to generate reference code',
+      name: 'fawry_screen_failed_code',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get fawry_screen_retry {
+    return Intl.message(
+      'Retry',
+      name: 'fawry_screen_retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy Code`
+  String get fawry_screen_copy_btn {
+    return Intl.message(
+      'Copy Code',
+      name: 'fawry_screen_copy_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reference code copied to clipboard`
+  String get fawry_screen_copied {
+    return Intl.message(
+      'Reference code copied to clipboard',
+      name: 'fawry_screen_copied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Code copied! Go to any Fawry outlet and pay using this code.`
+  String get fawry_screen_copied_reminder {
+    return Intl.message(
+      'Code copied! Go to any Fawry outlet and pay using this code.',
+      name: 'fawry_screen_copied_reminder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copied!`
+  String get fawry_screen_copied_btn {
+    return Intl.message(
+      'Copied!',
+      name: 'fawry_screen_copied_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Done`
+  String get fawry_screen_done_btn {
+    return Intl.message(
+      'Done',
+      name: 'fawry_screen_done_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Card Details`
+  String get vodafone_appbar_title {
+    return Intl.message(
+      'Enter Card Details',
+      name: 'vodafone_appbar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your payment details`
+  String get vodafone_label {
+    return Intl.message(
+      'Enter your payment details',
+      name: 'vodafone_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By continuing you agree to our Terms`
+  String get vodafone_terms {
+    return Intl.message(
+      'By continuing you agree to our Terms',
+      name: 'vodafone_terms',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mobile Number (e.g., 010xxxxxxxx)`
+  String get vodafone_hint {
+    return Intl.message(
+      'Mobile Number (e.g., 010xxxxxxxx)',
+      name: 'vodafone_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send Payment Request`
+  String get vodafone_send_btn {
+    return Intl.message(
+      'Send Payment Request',
+      name: 'vodafone_send_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your mobile number`
+  String get vodafone_validation_empty {
+    return Intl.message(
+      'Please enter your mobile number',
+      name: 'vodafone_validation_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid Egyptian mobile number`
+  String get vodafone_validation_invalid {
+    return Intl.message(
+      'Enter a valid Egyptian mobile number',
+      name: 'vodafone_validation_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `vodafone Cash`
+  String get vodafone_name {
+    return Intl.message(
+      'vodafone Cash',
+      name: 'vodafone_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Premium Access`
+  String get subscription_title {
+    return Intl.message(
+      'Premium Access',
+      name: 'subscription_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrade and analyse your game without limits`
+  String get subscription_subtitle {
+    return Intl.message(
+      'Upgrade and analyse your game without limits',
+      name: 'subscription_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SUBSCRIBE NOW`
+  String get subscription_btn {
+    return Intl.message(
+      'SUBSCRIBE NOW',
+      name: 'subscription_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This is an automatically renewed subscription.\nYou can cancel anytime in settings.`
+  String get subscription_renewal_note {
+    return Intl.message(
+      'This is an automatically renewed subscription.\nYou can cancel anytime in settings.',
+      name: 'subscription_renewal_note',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get subscription_retry {
+    return Intl.message(
+      'Retry',
+      name: 'subscription_retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `POPULAR`
+  String get subscription_plan_popular {
+    return Intl.message(
+      'POPULAR',
+      name: 'subscription_plan_popular',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `BEST VALUE`
+  String get subscription_plan_best_value {
+    return Intl.message(
+      'BEST VALUE',
+      name: 'subscription_plan_best_value',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `forever`
+  String get subscription_plan_forever {
+    return Intl.message(
+      'forever',
+      name: 'subscription_plan_forever',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `/ month`
+  String get subscription_plan_per_month {
+    return Intl.message(
+      '/ month',
+      name: 'subscription_plan_per_month',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `/ year`
+  String get subscription_plan_per_year {
+    return Intl.message(
+      '/ year',
+      name: 'subscription_plan_per_year',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Plan`
+  String get subscription_plan_current {
+    return Intl.message(
+      'Current Plan',
+      name: 'subscription_plan_current',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Now`
+  String get subscription_plan_select {
+    return Intl.message(
+      'Select Now',
+      name: 'subscription_plan_select',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlimited Videos`
+  String get subscription_plan_unlimited_videos {
+    return Intl.message(
+      'Unlimited Videos',
+      name: 'subscription_plan_unlimited_videos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} Videos / month`
+  String subscription_plan_videos_month(Object count) {
+    return Intl.message(
+      '$count Videos / month',
+      name: 'subscription_plan_videos_month',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} Ads / month`
+  String subscription_plan_ads_month(Object count) {
+    return Intl.message(
+      '$count Ads / month',
+      name: 'subscription_plan_ads_month',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Detailed Reports`
+  String get subscription_plan_detailed_reports {
+    return Intl.message(
+      'Detailed Reports',
+      name: 'subscription_plan_detailed_reports',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Basic Stats`
+  String get subscription_plan_basic_stats {
+    return Intl.message(
+      'Basic Stats',
+      name: 'subscription_plan_basic_stats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Videos`
+  String get subscription_plan_no_videos {
+    return Intl.message(
+      'No Videos',
+      name: 'subscription_plan_no_videos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Ads`
+  String get subscription_plan_no_ads {
+    return Intl.message(
+      'No Ads',
+      name: 'subscription_plan_no_ads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} Days`
+  String subscription_plan_duration_month(Object count) {
+    return Intl.message(
+      '$count Days',
+      name: 'subscription_plan_duration_month',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} Months`
+  String subscription_plan_duration_year(Object count) {
+    return Intl.message(
+      '$count Months',
+      name: 'subscription_plan_duration_year',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `N/A`
+  String get unKnown {
+    return Intl.message('N/A', name: 'unKnown', desc: '', args: []);
+  }
+
+  /// `Goalkeeper`
+  String get goalkeeper {
+    return Intl.message('Goalkeeper', name: 'goalkeeper', desc: '', args: []);
+  }
+
+  /// `Passing`
+  String get passing {
+    return Intl.message('Passing', name: 'passing', desc: '', args: []);
+  }
+
+  /// `Dribbling`
+  String get dribbling {
+    return Intl.message('Dribbling', name: 'dribbling', desc: '', args: []);
+  }
+
+  /// `Match`
+  String get match {
+    return Intl.message('Match', name: 'match', desc: '', args: []);
+  }
+
+  /// `Search by player name`
+  String get searchByPlayerName {
+    return Intl.message(
+      'Search by player name',
+      name: 'searchByPlayerName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search for public video analyses`
+  String get searchByPlayerInstruction1 {
+    return Intl.message(
+      'Search for public video analyses',
+      name: 'searchByPlayerInstruction1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Type a player's name or filter by analysis type`
+  String get searchByPlayerInstruction2 {
+    return Intl.message(
+      'Type a player\'s name or filter by analysis type',
+      name: 'searchByPlayerInstruction2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search by user name`
+  String get searchByUserName {
+    return Intl.message(
+      'Search by user name',
+      name: 'searchByUserName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis deleted`
+  String get analysisDeleted {
+    return Intl.message(
+      'Analysis deleted',
+      name: 'analysisDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Analysis`
+  String get deleteAnalysis {
+    return Intl.message(
+      'Delete Analysis',
+      name: 'deleteAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this analysis?`
+  String get deleteAnalysisConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this analysis?',
+      name: 'deleteAnalysisConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No analyses found`
+  String get noAnalysesFound {
+    return Intl.message(
+      'No analyses found',
+      name: 'noAnalysesFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Goalkeeper Analysis`
+  String get goalkeeperAnalysis {
+    return Intl.message(
+      'Goalkeeper Analysis',
+      name: 'goalkeeperAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passing Analysis`
+  String get passingAnalysis {
+    return Intl.message(
+      'Passing Analysis',
+      name: 'passingAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dribbling Analysis`
+  String get dribblingAnalysis {
+    return Intl.message(
+      'Dribbling Analysis',
+      name: 'dribblingAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match Analysis`
+  String get matchAnalysis {
+    return Intl.message(
+      'Match Analysis',
+      name: 'matchAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your video has been saved. Complete payment to run the AI analysis.`
+  String get analysisSavedCompletePayment {
+    return Intl.message(
+      'Your video has been saved. Complete payment to run the AI analysis.',
+      name: 'analysisSavedCompletePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What happens next`
+  String get whatHappensNext {
+    return Intl.message(
+      'What happens next',
+      name: 'whatHappensNext',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment using your preferred method`
+  String get stepCompletePayment {
+    return Intl.message(
+      'Complete payment using your preferred method',
+      name: 'stepCompletePayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Our AI engine starts processing your video`
+  String get stepAiProcessing {
+    return Intl.message(
+      'Our AI engine starts processing your video',
+      name: 'stepAiProcessing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report appears in your profile — you'll be notified`
+  String get stepReportNotified {
+    return Intl.message(
+      'Report appears in your profile — you\'ll be notified',
+      name: 'stepReportNotified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Processing...`
+  String get processing {
+    return Intl.message(
+      'Processing...',
+      name: 'processing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis Complete!`
+  String get analysisCompleteTitle {
+    return Intl.message(
+      'Analysis Complete!',
+      name: 'analysisCompleteTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis in Progress`
+  String get analysisInProgressTitle {
+    return Intl.message(
+      'Analysis in Progress',
+      name: 'analysisInProgressTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your {type} report is ready. Find it in your profile under Video Analysis.`
+  String analysisCompleteMessage(String type) {
+    return Intl.message(
+      'Your $type report is ready. Find it in your profile under Video Analysis.',
+      name: 'analysisCompleteMessage',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Your {type} video is being processed by our AI engine. This may take a few minutes.`
+  String analysisInProgressMessage(String type) {
+    return Intl.message(
+      'Your $type video is being processed by our AI engine. This may take a few minutes.',
+      name: 'analysisInProgressMessage',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `{type} analysis is ready! Check your profile.`
+  String analysisReadyToast(String type) {
+    return Intl.message(
+      '$type analysis is ready! Check your profile.',
+      name: 'analysisReadyToast',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Analysis failed: {message}`
+  String analysisFailedToast(String message) {
+    return Intl.message(
+      'Analysis failed: $message',
+      name: 'analysisFailedToast',
+      desc: '',
+      args: [message],
+    );
+  }
+
+  /// `You'll see a toast notification here when your report is ready — no need to wait on this screen.`
+  String get analysisNotificationInfo {
+    return Intl.message(
+      'You\'ll see a toast notification here when your report is ready — no need to wait on this screen.',
+      name: 'analysisNotificationInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go to Profile`
+  String get goToProfileButton {
+    return Intl.message(
+      'Go to Profile',
+      name: 'goToProfileButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to Home`
+  String get backToHomeButton {
+    return Intl.message(
+      'Back to Home',
+      name: 'backToHomeButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Video Report`
+  String get analyzedVideoReport {
+    return Intl.message(
+      'Analyzed Video Report',
+      name: 'analyzedVideoReport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analysis Pending Payment`
+  String get analysisPendingPayment {
+    return Intl.message(
+      'Analysis Pending Payment',
+      name: 'analysisPendingPayment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment to unlock the full AI report and analyzed video.`
+  String get completePaymentToUnlock {
+    return Intl.message(
+      'Complete payment to unlock the full AI report and analyzed video.',
+      name: 'completePaymentToUnlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now to Unlock`
+  String get payNowToUnlock {
+    return Intl.message(
+      'Pay Now to Unlock',
+      name: 'payNowToUnlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Video (Locked)`
+  String get analyzedVideoLocked {
+    return Intl.message(
+      'Analyzed Video (Locked)',
+      name: 'analyzedVideoLocked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI Enhanced Analysis`
+  String get aiEnhancedAnalysis {
+    return Intl.message(
+      'AI Enhanced Analysis',
+      name: 'aiEnhancedAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Original Footage`
+  String get originalFootage {
+    return Intl.message(
+      'Original Footage',
+      name: 'originalFootage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete payment to view\nthe analyzed video`
+  String get completePaymentToViewAnalyzedVideo {
+    return Intl.message(
+      'Complete payment to view\nthe analyzed video',
+      name: 'completePaymentToViewAnalyzedVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unpaid`
+  String get unpaid {
+    return Intl.message('Unpaid', name: 'unpaid', desc: '', args: []);
+  }
+
+  /// `Analyzed Video`
+  String get analyzedVideo {
+    return Intl.message(
+      'Analyzed Video',
+      name: 'analyzedVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Original Video`
+  String get originalVideo {
+    return Intl.message(
+      'Original Video',
+      name: 'originalVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Analysis`
+  String get videoAnalysis {
+    return Intl.message(
+      'Video Analysis',
+      name: 'videoAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose Analysis Type`
+  String get chooseAnalysisType {
+    return Intl.message(
+      'Choose Analysis Type',
+      name: 'chooseAnalysisType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select the category that matches your training drill.`
+  String get analysisTypeSubtitle {
+    return Intl.message(
+      'Select the category that matches your training drill.',
+      name: 'analysisTypeSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Goalkeeper`
+  String get goalkeeperAnalysisLabel {
+    return Intl.message(
+      'Goalkeeper',
+      name: 'goalkeeperAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze goalkeeper performance`
+  String get goalkeeperAnalysisDescription {
+    return Intl.message(
+      'Analyze goalkeeper performance',
+      name: 'goalkeeperAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passing`
+  String get passingAnalysisLabel {
+    return Intl.message(
+      'Passing',
+      name: 'passingAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze passing accuracy and technique`
+  String get passingAnalysisDescription {
+    return Intl.message(
+      'Analyze passing accuracy and technique',
+      name: 'passingAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dribbling`
+  String get dribblingAnalysisLabel {
+    return Intl.message(
+      'Dribbling',
+      name: 'dribblingAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyze dribbling skills and control`
+  String get dribblingAnalysisDescription {
+    return Intl.message(
+      'Analyze dribbling skills and control',
+      name: 'dribblingAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match`
+  String get matchAnalysisLabel {
+    return Intl.message(
+      'Match',
+      name: 'matchAnalysisLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Full match performance analysis`
+  String get matchAnalysisDescription {
+    return Intl.message(
+      'Full match performance analysis',
+      name: 'matchAnalysisDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed Players`
+  String get analyzedPlayers {
+    return Intl.message(
+      'Analyzed Players',
+      name: 'analyzedPlayers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No analyzed players yet`
+  String get noAnalyzedPlayersYet {
+    return Intl.message(
+      'No analyzed players yet',
+      name: 'noAnalyzedPlayersYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{type} Analysis`
+  String analysisTypeTitle(String type) {
+    return Intl.message(
+      '$type Analysis',
+      name: 'analysisTypeTitle',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `What to expect`
+  String get whatToExpect {
+    return Intl.message(
+      'What to expect',
+      name: 'whatToExpect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload or Link Your Video`
+  String get uploadOrLinkVideo {
+    return Intl.message(
+      'Upload or Link Your Video',
+      name: 'uploadOrLinkVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose from Gallery`
+  String get chooseFromGallery {
+    return Intl.message(
+      'Choose from Gallery',
+      name: 'chooseFromGallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Record with Camera`
+  String get recordWithCamera {
+    return Intl.message(
+      'Record with Camera',
+      name: 'recordWithCamera',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload failed. Paste a URL manually.`
+  String get uploadFailedPasteManually {
+    return Intl.message(
+      'Upload failed. Paste a URL manually.',
+      name: 'uploadFailedPasteManually',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload error: {error}`
+  String uploadError(String error) {
+    return Intl.message(
+      'Upload error: $error',
+      name: 'uploadError',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Or Paste a Video URL`
+  String get orPasteVideoUrl {
+    return Intl.message(
+      'Or Paste a Video URL',
+      name: 'orPasteVideoUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video from Post`
+  String get videoFromPost {
+    return Intl.message(
+      'Video from Post',
+      name: 'videoFromPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video URL (Cloudinary, YouTube, etc.)`
+  String get videoUrlPlaceholder {
+    return Intl.message(
+      'Video URL (Cloudinary, YouTube, etc.)',
+      name: 'videoUrlPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please provide a video URL`
+  String get provideVideoUrl {
+    return Intl.message(
+      'Please provide a video URL',
+      name: 'provideVideoUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please provide a video URL or upload a video.`
+  String get provideVideoUrlOrUpload {
+    return Intl.message(
+      'Please provide a video URL or upload a video.',
+      name: 'provideVideoUrlOrUpload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Goalkeeper Height (meters)`
+  String get goalkeeperHeight {
+    return Intl.message(
+      'Goalkeeper Height (meters)',
+      name: 'goalkeeperHeight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. 1.85`
+  String get heightExample {
+    return Intl.message('e.g. 1.85', name: 'heightExample', desc: '', args: []);
+  }
+
+  /// `Height is required for goalkeeper analysis`
+  String get heightRequired {
+    return Intl.message(
+      'Height is required for goalkeeper analysis',
+      name: 'heightRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid height (1.0 – 2.5 m)`
+  String get validHeightRange {
+    return Intl.message(
+      'Enter a valid height (1.0 – 2.5 m)',
+      name: 'validHeightRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Height calibrates extension & velocity measurements.`
+  String get heightCalibrationInfo {
+    return Intl.message(
+      'Height calibrates extension & velocity measurements.',
+      name: 'heightCalibrationInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preparing…`
+  String get preparing {
+    return Intl.message('Preparing…', name: 'preparing', desc: '', args: []);
+  }
+
+  /// `Start Analysis`
+  String get startAnalysis {
+    return Intl.message(
+      'Start Analysis',
+      name: 'startAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You'll see a notification here when the report is ready.`
+  String get analysisNotificationHint {
+    return Intl.message(
+      'You\'ll see a notification here when the report is ready.',
+      name: 'analysisNotificationHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading…`
+  String get uploading {
+    return Intl.message('Uploading…', name: 'uploading', desc: '', args: []);
+  }
+
+  /// `Video uploaded`
+  String get videoUploaded {
+    return Intl.message(
+      'Video uploaded',
+      name: 'videoUploaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to upload video`
+  String get tapToUploadVideo {
+    return Intl.message(
+      'Tap to upload video',
+      name: 'tapToUploadVideo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MP4 · MOV · AVI`
+  String get supportedFormats {
+    return Intl.message(
+      'MP4 · MOV · AVI',
+      name: 'supportedFormats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OR PASTE URL`
+  String get orPasteUrlLabel {
+    return Intl.message(
+      'OR PASTE URL',
+      name: 'orPasteUrlLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Tips`
+  String get videoTips {
+    return Intl.message('Video Tips', name: 'videoTips', desc: '', args: []);
+  }
+
+  /// `More info`
+  String get moreInfo {
+    return Intl.message('More info', name: 'moreInfo', desc: '', args: []);
+  }
+
+  /// `• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
+  String get goalkeeperVideoInstructions {
+    return Intl.message(
+      '• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
+      name: 'goalkeeperVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
+  String get passingVideoInstructions {
+    return Intl.message(
+      '• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
+      name: 'passingVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible`
+  String get dribblingVideoInstructions {
+    return Intl.message(
+      '• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible',
+      name: 'dribblingVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions`
+  String get matchVideoInstructions {
+    return Intl.message(
+      '• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions',
+      name: 'matchVideoInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed videos`
+  String get analyzedVideos {
+    return Intl.message(
+      'Analyzed videos',
+      name: 'analyzedVideos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analyzed`
+  String get analyzed {
+    return Intl.message('Analyzed', name: 'analyzed', desc: '', args: []);
+  }
+
+  /// `What will be analyzed`
+  String get whatWillBeAnalyzed {
+    return Intl.message(
+      'What will be analyzed',
+      name: 'whatWillBeAnalyzed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video Recording Tips`
+  String get videoRecordingTips {
+    return Intl.message(
+      'Video Recording Tips',
+      name: 'videoRecordingTips',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Example Frame`
+  String get exampleFrame {
+    return Intl.message(
+      'Example Frame',
+      name: 'exampleFrame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Got it`
+  String get gotIt {
+    return Intl.message('Got it', name: 'gotIt', desc: '', args: []);
+  }
+
+  /// `Example: {type} drill`
+  String exampleDrill(String type) {
+    return Intl.message(
+      'Example: $type drill',
+      name: 'exampleDrill',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Reaction Time (seconds)`
+  String get kpiReactionTime {
+    return Intl.message(
+      'Reaction Time (seconds)',
+      name: 'kpiReactionTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum Extension (meters)`
+  String get kpiMaxExtension {
+    return Intl.message(
+      'Maximum Extension (meters)',
+      name: 'kpiMaxExtension',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum Velocity (km/h)`
+  String get kpiMaxVelocity {
+    return Intl.message(
+      'Maximum Velocity (km/h)',
+      name: 'kpiMaxVelocity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deepest Knee Angle (degrees)`
+  String get kpiDeepestKneeAngle {
+    return Intl.message(
+      'Deepest Knee Angle (degrees)',
+      name: 'kpiDeepestKneeAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drill Duration (seconds)`
+  String get kpiDrillDuration {
+    return Intl.message(
+      'Drill Duration (seconds)',
+      name: 'kpiDrillDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Ball Touches`
+  String get kpiTotalBallTouches {
+    return Intl.message(
+      'Total Ball Touches',
+      name: 'kpiTotalBallTouches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Ball Speed (km/h)`
+  String get kpiAverageBallSpeed {
+    return Intl.message(
+      'Average Ball Speed (km/h)',
+      name: 'kpiAverageBallSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Player Speed (km/h)`
+  String get kpiAveragePlayerSpeed {
+    return Intl.message(
+      'Average Player Speed (km/h)',
+      name: 'kpiAveragePlayerSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Right Knee Angle (degrees)`
+  String get kpiRightKneeAngle {
+    return Intl.message(
+      'Right Knee Angle (degrees)',
+      name: 'kpiRightKneeAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Ball Touches & Touches/sec`
+  String get kpiTouchesPerSec {
+    return Intl.message(
+      'Total Ball Touches & Touches/sec',
+      name: 'kpiTouchesPerSec',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Player Speed (km/h)`
+  String get kpiAvgPlayerSpeedDribbling {
+    return Intl.message(
+      'Average Player Speed (km/h)',
+      name: 'kpiAvgPlayerSpeedDribbling',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Average Ball Distance (meters)`
+  String get kpiAvgBallDistance {
+    return Intl.message(
+      'Average Ball Distance (meters)',
+      name: 'kpiAvgBallDistance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Head-Up Percentage`
+  String get kpiHeadUpPercentage {
+    return Intl.message(
+      'Head-Up Percentage',
+      name: 'kpiHeadUpPercentage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hip Bounce Variance`
+  String get kpiHipBounceVariance {
+    return Intl.message(
+      'Hip Bounce Variance',
+      name: 'kpiHipBounceVariance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cone Passes Forward/Backward & Hits`
+  String get kpiConePasses {
+    return Intl.message(
+      'Cone Passes Forward/Backward & Hits',
+      name: 'kpiConePasses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team Possession (%)`
+  String get kpiTeamPossession {
+    return Intl.message(
+      'Team Possession (%)',
+      name: 'kpiTeamPossession',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Distance Covered per Team (km)`
+  String get kpiDistanceCovered {
+    return Intl.message(
+      'Distance Covered per Team (km)',
+      name: 'kpiDistanceCovered',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Speed per Team (km/h)`
+  String get kpiTopSpeedPerTeam {
+    return Intl.message(
+      'Top Speed per Team (km/h)',
+      name: 'kpiTopSpeedPerTeam',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Sprint Speed overall (km/h)`
+  String get kpiTopSprintSpeedOverall {
+    return Intl.message(
+      'Top Sprint Speed overall (km/h)',
+      name: 'kpiTopSprintSpeedOverall',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Frames Processed`
+  String get kpiTotalFramesProcessed {
+    return Intl.message(
+      'Total Frames Processed',
+      name: 'kpiTotalFramesProcessed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max Extension`
+  String get maxExtension {
+    return Intl.message(
+      'Max Extension',
+      name: 'maxExtension',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max Velocity`
+  String get maxVelocity {
+    return Intl.message(
+      'Max Velocity',
+      name: 'maxVelocity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Knee Angle`
+  String get kneeAngle {
+    return Intl.message('Knee Angle', name: 'kneeAngle', desc: '', args: []);
+  }
+
+  /// `Reaction Time`
+  String get reactionTimeShort {
+    return Intl.message(
+      'Reaction Time',
+      name: 'reactionTimeShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reaction Time`
+  String get reactionTime {
+    return Intl.message(
+      'Reaction Time',
+      name: 'reactionTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Elite`
+  String get elite {
+    return Intl.message('Elite', name: 'elite', desc: '', args: []);
+  }
+
+  /// `Good`
+  String get good {
+    return Intl.message('Good', name: 'good', desc: '', args: []);
+  }
+
+  /// `Average`
+  String get average {
+    return Intl.message('Average', name: 'average', desc: '', args: []);
+  }
+
+  /// `Needs Work`
+  String get needsWork {
+    return Intl.message('Needs Work', name: 'needsWork', desc: '', args: []);
+  }
+
+  /// `Drill Duration`
+  String get drillDuration {
+    return Intl.message(
+      'Drill Duration',
+      name: 'drillDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ball Touches`
+  String get ballTouches {
+    return Intl.message(
+      'Ball Touches',
+      name: 'ballTouches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Ball Speed`
+  String get avgBallSpeed {
+    return Intl.message(
+      'Avg Ball Speed',
+      name: 'avgBallSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Player Speed`
+  String get avgPlayerSpeed {
+    return Intl.message(
+      'Avg Player Speed',
+      name: 'avgPlayerSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Knee Angle`
+  String get avgKneeAngle {
+    return Intl.message(
+      'Avg Knee Angle',
+      name: 'avgKneeAngle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Touches`
+  String get totalTouches {
+    return Intl.message(
+      'Total Touches',
+      name: 'totalTouches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Touches / sec`
+  String get touchesPerSec {
+    return Intl.message(
+      'Touches / sec',
+      name: 'touchesPerSec',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avg Ball Distance`
+  String get avgBallDistance {
+    return Intl.message(
+      'Avg Ball Distance',
+      name: 'avgBallDistance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Head Up %`
+  String get headUpPercent {
+    return Intl.message('Head Up %', name: 'headUpPercent', desc: '', args: []);
+  }
+
+  /// `Forward\nPasses`
+  String get forwardPasses {
+    return Intl.message(
+      'Forward\nPasses',
+      name: 'forwardPasses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Backward\nPasses`
+  String get backwardPasses {
+    return Intl.message(
+      'Backward\nPasses',
+      name: 'backwardPasses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cone Hits`
+  String get coneHits {
+    return Intl.message('Cone Hits', name: 'coneHits', desc: '', args: []);
+  }
+
+  /// `Hip Variance`
+  String get hipVariance {
+    return Intl.message(
+      'Hip Variance',
+      name: 'hipVariance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team 1`
+  String get team1 {
+    return Intl.message('Team 1', name: 'team1', desc: '', args: []);
+  }
+
+  /// `Team 2`
+  String get team2 {
+    return Intl.message('Team 2', name: 'team2', desc: '', args: []);
+  }
+
+  /// `VS`
+  String get vs {
+    return Intl.message('VS', name: 'vs', desc: '', args: []);
+  }
+
+  /// `Possession`
+  String get possession {
+    return Intl.message('Possession', name: 'possession', desc: '', args: []);
+  }
+
+  /// `Distance Covered`
+  String get distanceCovered {
+    return Intl.message(
+      'Distance Covered',
+      name: 'distanceCovered',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Speed`
+  String get topSpeed {
+    return Intl.message('Top Speed', name: 'topSpeed', desc: '', args: []);
+  }
+
+  /// `Top Sprint Speed`
+  String get topSprintSpeed {
+    return Intl.message(
+      'Top Sprint Speed',
+      name: 'topSprintSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Frames`
+  String get frames {
+    return Intl.message('Frames', name: 'frames', desc: '', args: []);
+  }
+
+  /// `Select Analysis Type`
+  String get selectAnalysisType {
+    return Intl.message(
+      'Select Analysis Type',
+      name: 'selectAnalysisType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The post video will be used as the source.`
+  String get postVideoSourceHint {
+    return Intl.message(
+      'The post video will be used as the source.',
+      name: 'postVideoSourceHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Analysis Library`
+  String get myAnalysisLibrary {
+    return Intl.message(
+      'My Analysis Library',
+      name: 'myAnalysisLibrary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name}'s Analyses`
+  String usersAnalyses(String name) {
+    return Intl.message(
+      '$name\'s Analyses',
+      name: 'usersAnalyses',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `People`
+  String get people {
+    return Intl.message('People', name: 'people', desc: '', args: []);
+  }
+
+  /// `User message`
+  String get userMessage {
+    return Intl.message(
+      'User message',
+      name: 'userMessage',
+      desc: 'Semantics label for a message sent by the user in the chat bubble',
+      args: [],
+    );
+  }
+
+  /// `Bot message`
+  String get botMessage {
+    return Intl.message(
+      'Bot message',
+      name: 'botMessage',
+      desc: 'Semantics label for a message sent by the bot in the chat bubble',
+      args: [],
+    );
+  }
+
+  /// `Your AI Assistant`
+  String get aiAssistantTitle {
+    return Intl.message(
+      'Your AI Assistant',
+      name: 'aiAssistantTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Using this software you can ask questions and receive articles using artificial intelligence assistant.`
+  String get aiAssistantSubtitle {
+    return Intl.message(
+      'Using this software you can ask questions and receive articles using artificial intelligence assistant.',
+      name: 'aiAssistantSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SportsIn`
+  String get sportsinTitle {
+    return Intl.message('SportsIn', name: 'sportsinTitle', desc: '', args: []);
+  }
+
+  /// `● Online`
+  String get onlineStatus {
+    return Intl.message('● Online', name: 'onlineStatus', desc: '', args: []);
+  }
+
+  /// `Write your message`
+  String get writeMessageHint {
+    return Intl.message(
+      'Write your message',
+      name: 'writeMessageHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Say hello to SportsIn! `
+  String get sayHello {
+    return Intl.message(
+      'Say hello to SportsIn! ',
+      name: 'sayHello',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active Chats`
+  String get activeChats {
+    return Intl.message(
+      'Active Chats',
+      name: 'activeChats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ended Chats`
+  String get endedChats {
+    return Intl.message('Ended Chats', name: 'endedChats', desc: '', args: []);
+  }
+
+  /// `No chats yet.\nStart a new conversation!`
+  String get noChatsYet {
+    return Intl.message(
+      'No chats yet.\nStart a new conversation!',
+      name: 'noChatsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Another Chat With SportsIn`
+  String get startAnotherChat {
+    return Intl.message(
+      'Start Another Chat With SportsIn',
+      name: 'startAnotherChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Chat`
+  String get deleteChat {
+    return Intl.message('Delete Chat', name: 'deleteChat', desc: '', args: []);
+  }
+
+  /// `Are you sure you want to delete this chat?`
+  String get deleteConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this chat?',
+      name: 'deleteConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename Chat`
+  String get renameChat {
+    return Intl.message('Rename Chat', name: 'renameChat', desc: '', args: []);
+  }
+
+  /// `Enter new name`
+  String get enterNewName {
+    return Intl.message(
+      'Enter new name',
+      name: 'enterNewName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename`
+  String get rename {
+    return Intl.message('Rename', name: 'rename', desc: '', args: []);
+  }
+
+  /// `Tap to continue this chat...`
+  String get tapToContinue {
+    return Intl.message(
+      'Tap to continue this chat...',
+      name: 'tapToContinue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `S`
+  String get sessionAvatarLabel {
+    return Intl.message('S', name: 'sessionAvatarLabel', desc: '', args: []);
+  }
+
+  /// `Notification`
+  String get notificationTitle {
+    return Intl.message(
+      'Notification',
+      name: 'notificationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mark all as read`
+  String get markAllAsRead {
+    return Intl.message(
+      'Mark all as read',
+      name: 'markAllAsRead',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No notifications yet`
+  String get noNotificationsYet {
+    return Intl.message(
+      'No notifications yet',
+      name: 'noNotificationsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You're all caught up!`
+  String get allCaughtUp {
+    return Intl.message(
+      'You\'re all caught up!',
+      name: 'allCaughtUp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Accepted`
+  String get requestAccepted {
+    return Intl.message(
+      'Request Accepted',
+      name: 'requestAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Declined`
+  String get requestDeclined {
+    return Intl.message(
+      'Request Declined',
+      name: 'requestDeclined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recent`
+  String get categoryRecent {
+    return Intl.message('Recent', name: 'categoryRecent', desc: '', args: []);
+  }
+
+  /// `Requests`
+  String get categoryRequests {
+    return Intl.message(
+      'Requests',
+      name: 'categoryRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reactions`
+  String get categoryReactions {
+    return Intl.message(
+      'Reactions',
+      name: 'categoryReactions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opportunities`
+  String get categoryOpportunities {
+    return Intl.message(
+      'Opportunities',
+      name: 'categoryOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Today`
+  String get dateToday {
+    return Intl.message('Today', name: 'dateToday', desc: '', args: []);
+  }
+
+  /// `Yesterday`
+  String get dateYesterday {
+    return Intl.message('Yesterday', name: 'dateYesterday', desc: '', args: []);
+  }
+
+  /// `{count}m`
+  String timeMinutes(int count) {
+    return Intl.message(
+      '${count}m',
+      name: 'timeMinutes',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count}h`
+  String timeHours(int count) {
+    return Intl.message(
+      '${count}h',
+      name: 'timeHours',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count}d`
+  String timeDays(int count) {
+    return Intl.message('${count}d', name: 'timeDays', desc: '', args: [count]);
+  }
+
+  /// `{count} new`
+  String newBadge(int count) {
+    return Intl.message(
+      '$count new',
+      name: 'newBadge',
+      desc: '',
+      args: [count],
     );
   }
 }

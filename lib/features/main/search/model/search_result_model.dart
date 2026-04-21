@@ -19,50 +19,70 @@ class SearchResultModel {
 
   factory SearchResultModel.fromJson(Map<String, dynamic> json) {
     return SearchResultModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      role: json['role'] ?? '',
-      profileImage: json['profileImage'] ?? json['profile_image'] ?? '',
-      userType: _parseUserType(json['userType'] ?? json['user_type']),
+      id: json['userId']?.toString() ?? '',
+      name: json['fullName'] ?? '',
+      role: json['userType'] ?? '',
+      profileImage: json['profilePictureUrl'] ?? '',
+      userType: UserType.fromApi(json['userType']),
       location: json['location'],
       age: json['age'],
     );
   }
 
-  static UserType _parseUserType(String? type) {
-    switch (type?.toLowerCase()) {
-      case 'athlete':
-      case 'player':
-        return UserType.athlete;
-      case 'coach':
-        return UserType.coach;
-      case 'agent':
-        return UserType.agent;
-      case 'scout':
-        return UserType.scout;
-      default:
-        return UserType.athlete;
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'role': role,
-      'profileImage': profileImage,
-      'userType': userType.name,
-      'location': location,
-      'age': age,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'userId': id,
+    'name': name,
+    'role': role,
+    'profileImage': profileImage,
+    'userType': userType.apiValue,
+    'location': location,
+    'age': age,
+  };
 }
 
 enum UserType {
-  athlete,
+  player,
   coach,
-  agent,
   scout,
+  club,
+  institute,
+  other;
+
+String get apiValue {
+  switch (this) {
+    case UserType.player:     return 'Player';
+    case UserType.coach:      return 'Coach';
+    case UserType.scout:      return 'Scout';
+    case UserType.club:       return 'Club';
+    case UserType.institute:  return 'Institute';
+    case UserType.other:      return 'Other';
+  }
+}
+
+  /// Display label shown in the dropdown
+  String get label {
+    switch (this) {
+      case UserType.player:
+        return 'Player';
+      case UserType.coach:
+        return 'Coach';
+      case UserType.scout:
+        return 'Scout';
+      case UserType.club:
+        return 'Club';
+      case UserType.institute:
+        return 'Institute';
+      case UserType.other:
+        return 'Other';
+    }
+  }
+
+static UserType fromApi(String? value) {
+  return UserType.values.firstWhere(
+    (e) => e.apiValue.toLowerCase() == value?.toLowerCase(),
+    orElse: () => UserType.player,
+  );
+}
 }
 
 class SearchFilters {
@@ -70,49 +90,52 @@ class SearchFilters {
   final int? maxAge;
   final String? location;
   final String? position;
-  final String? typeOfPlay;
-  final String? level;
+  final int? sportTypeId; // replaces typeOfPlay string
   final UserType? userType;
+  final int pageNumber;
+  final int pageSize;
 
   SearchFilters({
     this.minAge,
     this.maxAge,
     this.location,
     this.position,
-    this.typeOfPlay,
-    this.level,
+    this.sportTypeId,
     this.userType,
+    this.pageNumber = 1,
+    this.pageSize = 20,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'minAge': minAge,
-      'maxAge': maxAge,
-      'location': location,
-      'position': position,
-      'typeOfPlay': typeOfPlay,
-      'level': level,
-      'userType': userType?.name,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'minAge': minAge,
+    'maxAge': maxAge,
+    'location': location,
+    'position': position,
+    'sportTypeId': sportTypeId,
+    'userType': userType?.apiValue,
+    'pageNumber': pageNumber,
+    'pageSize': pageSize,
+  };
 
   SearchFilters copyWith({
     int? minAge,
     int? maxAge,
     String? location,
     String? position,
-    String? typeOfPlay,
-    String? level,
+    int? sportTypeId,
     UserType? userType,
+    int? pageNumber,
+    int? pageSize,
   }) {
     return SearchFilters(
       minAge: minAge ?? this.minAge,
       maxAge: maxAge ?? this.maxAge,
       location: location ?? this.location,
       position: position ?? this.position,
-      typeOfPlay: typeOfPlay ?? this.typeOfPlay,
-      level: level ?? this.level,
+      sportTypeId: sportTypeId ?? this.sportTypeId,
       userType: userType ?? this.userType,
+      pageNumber: pageNumber ?? this.pageNumber,
+      pageSize: pageSize ?? this.pageSize,
     );
   }
 }

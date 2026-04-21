@@ -47,11 +47,13 @@ class FetchUserPosts extends PostsEvent {
   final String userId;
   final int page;
   final int pageSize;
+  final bool onlyInactive;
 
   const FetchUserPosts({
     required this.userId,
     this.page = 1,
     this.pageSize = 10,
+    this.onlyInactive = false,
   });
   }
 
@@ -81,4 +83,48 @@ class DeletePost extends PostsEvent {
 
   @override
   List<Object?> get props => [postId];
+}
+
+class TogglePostVisibility extends PostsEvent {
+  final String postId;
+  const TogglePostVisibility({required this.postId});
+}
+
+class FetchAllPosts extends PostsEvent {
+  final String? targetUserId;
+  final bool onlyInactive;
+  final int page;
+  final int size;
+  
+  const FetchAllPosts({
+    this.targetUserId,
+    this.onlyInactive = false,
+    required this.page,
+    required this.size,
+  });
+}
+// في الـ events
+class FetchSinglePost extends PostsEvent {
+  final String postId;
+  const FetchSinglePost({required this.postId});
+
+  @override
+  List<Object> get props => [postId];
+}
+
+class SendPostProgress extends PostsEvent {
+  final String postId;
+  final double watchedTime;
+  final bool isWatched;
+  final double zoomScale;
+
+  const SendPostProgress({
+    required this.postId,
+    required this.watchedTime,
+    required this.isWatched,
+    this.zoomScale = 1.0,
+  });
+
+  @override
+  List<Object?> get props => [postId, watchedTime, isWatched];
 }

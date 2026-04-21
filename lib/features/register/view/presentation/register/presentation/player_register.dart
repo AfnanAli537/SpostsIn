@@ -29,6 +29,7 @@ class PlayerRegisterScreen extends StatelessWidget {
   final heightController = TextEditingController();
   final weightController = TextEditingController();
   final ageController = TextEditingController();
+  final clubNameController = TextEditingController();
 
   final genderNotifier = ValueNotifier<String?>(null);
   final locationNotifier = ValueNotifier<String?>(null);
@@ -41,19 +42,15 @@ class PlayerRegisterScreen extends StatelessWidget {
     AutovalidateMode.disabled,
   );
 
-  void _onSportChanged(String? selectedSport, S string) {
+  void _onSportChanged(String? selectedSport) {
     sportNotifier.value = selectedSport;
-    if (!RegisterLists.isTeamSport(string, selectedSport)) {
-      positionNotifier.value = null;
-    }
+    positionNotifier.value = null;
   }
 
   void _onRegister(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
 
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (genderNotifier.value == null ||
         locationNotifier.value == null ||
@@ -68,31 +65,31 @@ class PlayerRegisterScreen extends StatelessWidget {
 
     context.read<RegistrationBloc>().add(const ResetValidationEvent());
 
-    final int? parsedHeight = int.tryParse(heightController.text.trim());
-    final int? parsedWeight = int.tryParse(weightController.text.trim());
-    final int? parsedAge = int.tryParse(ageController.text.trim());
-
     final player = PlayerModel(
       firstName: firstNameController.text.trim(),
       lastName: lastNameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      height: parsedHeight,
-      weight: parsedWeight,
-      age: parsedAge,
+      height: double.tryParse(heightController.text.trim()),
+      weight: double.tryParse(weightController.text.trim()),
+      age: int.tryParse(ageController.text.trim()),
       gender: genderNotifier.value!,
       location: locationNotifier.value!,
       sportName: sportNotifier.value!,
       position: positionNotifier.value,
       hasClub: hasClubNotifier.value,
+      currentClubName: hasClubNotifier.value
+          ? clubNameController.text.trim()
+          : null,
       image: imageNotifier.value,
     );
 
     context.read<RegistrationBloc>().add(
-      SubmitRegistrationEvent(userData: player),
-    );
+          SubmitRegistrationEvent(userData: player),
+        );
   }
+
   Future<void> _showError(BuildContext context, String message) async {
     final msg = await TranslateErrorHelper.translateErrorKeyAsync(
       context,
@@ -105,6 +102,7 @@ class PlayerRegisterScreen extends StatelessWidget {
       gravity: ToastGravity.TOP,
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -114,7 +112,6 @@ class PlayerRegisterScreen extends StatelessWidget {
       appBar: AppBar(),
       body: BlocConsumer<RegistrationBloc, RegistrationState>(
         listener: (context, state) {
-          // Navigate to OTP screen after OTP is sent
           if (state is RegistrationOtpSent) {
             Fluttertoast.showToast(
               msg: string.otpSentSuccessfully,
@@ -122,15 +119,12 @@ class PlayerRegisterScreen extends StatelessWidget {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-
-            // Navigate to OTP verification screen
             Navigator.pushNamed(
               context,
               AppRoutes.registrationOtp,
               arguments: {'email': state.email, 'userData': state.userData},
             );
           }
-
           if (state is RegistrationError) {
             _showError(context, state.message);
           }
@@ -155,7 +149,8 @@ class PlayerRegisterScreen extends StatelessWidget {
                           SizedBox(height: 24.h),
 
                           AppImagePicker(
-                            onImageSelected: (img) => imageNotifier.value = img,
+                            onImageSelected: (img) =>
+                                imageNotifier.value = img,
                           ),
                           SizedBox(height: 24.h),
 
@@ -179,7 +174,6 @@ class PlayerRegisterScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -191,7 +185,6 @@ class PlayerRegisterScreen extends StatelessWidget {
                               value: v,
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -203,7 +196,6 @@ class PlayerRegisterScreen extends StatelessWidget {
                               value: v,
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
@@ -212,12 +204,11 @@ class PlayerRegisterScreen extends StatelessWidget {
                             isConformPassword: true,
                             validator: (v) =>
                                 Validators.validateConfirmPassword(
-                                  context: context,
-                                  value: v,
-                                  password: passwordController.text,
-                                ),
+                              context: context,
+                              value: v,
+                              password: passwordController.text,
+                            ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTwoFieldsRow(
@@ -240,7 +231,6 @@ class PlayerRegisterScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           RegisterTwoFieldsRow(
@@ -250,13 +240,16 @@ class PlayerRegisterScreen extends StatelessWidget {
                                 return AppDropdownOverlay(
                                   labelText: string.gender,
                                   value: gender,
-                                  options: RegisterLists.genderOptions(string),
+                                  options:
+                                      RegisterLists.genderOptions(string),
                                   onChanged: (val) =>
                                       genderNotifier.value = val,
-                                  validator: (v) => Validators.validateDropdown(
+                                  validator: (v) =>
+                                      Validators.validateDropdown(
                                     context: context,
                                     value: v,
-                                    fieldName: string.gender.toLowerCase(),
+                                    fieldName:
+                                        string.gender.toLowerCase(),
                                   ),
                                 );
                               },
@@ -271,7 +264,6 @@ class PlayerRegisterScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           SizedBox(height: 16.h),
 
                           ValueListenableBuilder<String?>(
@@ -280,18 +272,20 @@ class PlayerRegisterScreen extends StatelessWidget {
                               return AppDropdownOverlay(
                                 labelText: string.location,
                                 value: location,
-                                options: RegisterLists.locationOptions(string),
+                                options:
+                                    RegisterLists.locationOptions(string),
                                 onChanged: (val) =>
                                     locationNotifier.value = val,
-                                validator: (v) => Validators.validateDropdown(
+                                validator: (v) =>
+                                    Validators.validateDropdown(
                                   context: context,
                                   value: v,
-                                  fieldName: string.location.toLowerCase(),
+                                  fieldName:
+                                      string.location.toLowerCase(),
                                 ),
                               );
                             },
                           ),
-
                           SizedBox(height: 16.h),
 
                           ValueListenableBuilder<String?>(
@@ -300,12 +294,13 @@ class PlayerRegisterScreen extends StatelessWidget {
                               return AppDropdownOverlay(
                                 labelText: string.sportProfession,
                                 value: sport,
-                                options: RegisterLists.sportProfessionOptions(
-                                  string,
-                                ),
+                                options:
+                                    RegisterLists.sportProfessionOptions(
+                                        string),
                                 onChanged: (val) =>
-                                    _onSportChanged(val, string),
-                                validator: (v) => Validators.validateDropdown(
+                                    _onSportChanged(val),
+                                validator: (v) =>
+                                    Validators.validateDropdown(
                                   context: context,
                                   value: v,
                                   fieldName: string.sportProfession
@@ -315,61 +310,86 @@ class PlayerRegisterScreen extends StatelessWidget {
                             },
                           ),
 
-                          SizedBox(height: 16.h),
-
+                          // Position — shown only for team sports
                           ValueListenableBuilder<String?>(
                             valueListenable: sportNotifier,
                             builder: (context, sport, _) {
-                              if (!RegisterLists.isTeamSport(string, sport)) {
+                              if (!RegisterLists.isTeamSport(
+                                  string, sport)) {
                                 return const SizedBox.shrink();
                               }
-                              return ValueListenableBuilder<String?>(
-                                valueListenable: positionNotifier,
-                                builder: (context, position, _) {
-                                  return AppDropdownOverlay(
-                                    labelText: string.position,
-                                    value: position,
-                                    options: RegisterLists.positionOptions(
-                                      string,
-                                      sport,
-                                    ),
-                                    onChanged: (val) =>
-                                        positionNotifier.value = val,
-                                    validator: (v) =>
-                                        Validators.validateDropdown(
+                              return Column(
+                                children: [
+                                  SizedBox(height: 16.h),
+                                  ValueListenableBuilder<String?>(
+                                    valueListenable: positionNotifier,
+                                    builder: (context, position, _) {
+                                      return AppDropdownOverlay(
+                                        labelText: string.position,
+                                        value: position,
+                                        options:
+                                            RegisterLists.positionOptions(
+                                                string, sport),
+                                        onChanged: (val) =>
+                                            positionNotifier.value = val,
+                                        validator: (v) =>
+                                            Validators.validateDropdown(
                                           context: context,
                                           value: v,
                                           fieldName: string.position
                                               .toLowerCase(),
                                         ),
-                                  );
-                                },
+                                      );
+                                    },
+                                  ),
+                                ],
                               );
                             },
                           ),
 
-                          ValueListenableBuilder<String?>(
-                            valueListenable: sportNotifier,
-                            builder: (context, sport, _) {
-                              if (!RegisterLists.isTeamSport(string, sport)) {
-                                return const SizedBox.shrink();
-                              }
-                              return SizedBox(height: 20.h);
-                            },
-                          ),
+                          SizedBox(height: 16.h),
 
+                          // "Currently in a club" checkbox
                           ValueListenableBuilder<bool>(
                             valueListenable: hasClubNotifier,
                             builder: (context, hasClub, _) {
-                              return Row(
+                              return Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                 children: [
-                                  Checkbox(
-                                    value: hasClub,
-                                    activeColor: ColorManager.darkAccent1,
-                                    onChanged: (value) =>
-                                        hasClubNotifier.value = value ?? false,
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: hasClub,
+                                        activeColor:
+                                            ColorManager.darkAccent1,
+                                        onChanged: (value) {
+                                          hasClubNotifier.value =
+                                              value ?? false;
+                                          if (!(value ?? false)) {
+                                            clubNameController.clear();
+                                          }
+                                        },
+                                      ),
+                                      Text(string.currentlyInClub),
+                                    ],
                                   ),
-                                  Text(string.currentlyInClub),
+
+                                  // Club name field — shown when checkbox is checked
+                                  if (hasClub) ...[
+                                    SizedBox(height: 8.h),
+                                    RegisterTextField(
+                                      controller: clubNameController,
+                                      labelText: string.clubName,
+                                      validator: (v) =>
+                                          Validators.validateName(
+                                        context: context,
+                                        value: v,
+                                        fieldName: string.clubName
+                                            .toLowerCase(),
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               );
                             },
@@ -383,7 +403,8 @@ class PlayerRegisterScreen extends StatelessWidget {
                                 : string.create,
                             isLoading: state is RegistrationLoading,
                             enabled: true,
-                            onPressed: () => _onRegister(context, string),
+                            onPressed: () =>
+                                _onRegister(context, string),
                           ),
                         ],
                       ),

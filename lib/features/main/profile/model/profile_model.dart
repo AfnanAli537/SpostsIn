@@ -1,3 +1,6 @@
+import 'package:sports_in/core/mappers/enum_mapper.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+
 class ProfileModel {
   final String id;
   final String name;
@@ -8,19 +11,23 @@ class ProfileModel {
   final ProfileStats stats;
   final List<Post> posts;
   final List<Achievement> achievements;
-  final List<AnalyzedVideoReport> analyzedVideos;
+  final List<AnalysisListItemModel> analyzedVideos;
   final List<Interest> interests;
   final List<Opportunity>? opportunities;
   final List<Course>? courses;
+  // ── Active ads shown on the profile ──────────────────────────────────────
+  final List<ProfileAd> ads;
   final PlayerSpecificData? playerData;
   final CoachSpecificData? coachData;
   final ScoutSpecificData? scoutData;
   final ClubSpecificData? clubData;
   final InstituteSpecificData? instituteData;
   final OtherSpecificData? otherData;
-  final bool isConnected;
+
+  /// null = not connected, "Pending" = request sent awaiting accept, "Accepted" = in contacts
+  final String? connectionStatus;
   final bool isFollowing;
-  final bool isOwner; // ✅ Added isOwner field
+  final bool isOwner;
 
   ProfileModel({
     required this.id,
@@ -36,16 +43,21 @@ class ProfileModel {
     required this.interests,
     this.opportunities,
     this.courses,
+    this.ads = const [], // ← default empty; optional for callers
     this.playerData,
     this.coachData,
     this.scoutData,
     this.clubData,
     this.instituteData,
     this.otherData,
-    this.isConnected = false,
+    this.connectionStatus,
     this.isFollowing = false,
-    this.isOwner = false, // ✅ Default value
+    this.isOwner = false,
   });
+
+  /// Convenience getters
+  bool get isConnected => connectionStatus == 'Accepted';
+  bool get isPending => connectionStatus == 'Pending';
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     final userType = _parseUserType(json['userType'] ?? json['user_type']);
@@ -67,7 +79,7 @@ class ProfileModel {
           [],
       analyzedVideos:
           (json['analyzedVideos'] as List?)
-              ?.map((e) => AnalyzedVideoReport.fromJson(e))
+              ?.map((e) => AnalysisListItemModel.fromJson(e))
               .toList() ??
           [],
       interests:
@@ -83,6 +95,9 @@ class ProfileModel {
       courses: json['courses'] != null
           ? (json['courses'] as List).map((e) => Course.fromJson(e)).toList()
           : null,
+      ads:
+          (json['ads'] as List?)?.map((e) => ProfileAd.fromJson(e)).toList() ??
+          [],
       playerData: userType == UserType.player && json['playerData'] != null
           ? PlayerSpecificData.fromJson(json['playerData'])
           : null,
@@ -97,14 +112,14 @@ class ProfileModel {
           : null,
       instituteData:
           userType == UserType.institute && json['instituteData'] != null
-              ? InstituteSpecificData.fromJson(json['instituteData'])
-              : null,
+          ? InstituteSpecificData.fromJson(json['instituteData'])
+          : null,
       otherData: userType == UserType.other && json['otherData'] != null
           ? OtherSpecificData.fromJson(json['otherData'])
           : null,
-      isConnected: json['isConnected'] as bool? ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
       isFollowing: json['isFollowing'] as bool? ?? false,
-      isOwner: json['isOwner'] as bool? ?? false, // ✅ Parse from JSON
+      isOwner: json['isOwner'] as bool? ?? false,
     );
   }
 
@@ -140,15 +155,16 @@ class ProfileModel {
       'interests': interests.map((e) => e.toJson()).toList(),
       'opportunities': opportunities?.map((e) => e.toJson()).toList(),
       'courses': courses?.map((e) => e.toJson()).toList(),
+      'ads': ads.map((e) => e.toJson()).toList(),
       'playerData': playerData?.toJson(),
       'coachData': coachData?.toJson(),
       'scoutData': scoutData?.toJson(),
       'clubData': clubData?.toJson(),
       'instituteData': instituteData?.toJson(),
       'otherData': otherData?.toJson(),
-      'isConnected': isConnected,
+      'connectionStatus': connectionStatus,
       'isFollowing': isFollowing,
-      'isOwner': isOwner, // ✅ Include in JSON
+      'isOwner': isOwner,
     };
   }
 
@@ -162,19 +178,21 @@ class ProfileModel {
     ProfileStats? stats,
     List<Post>? posts,
     List<Achievement>? achievements,
-    List<AnalyzedVideoReport>? analyzedVideos,
+    List<AnalysisListItemModel>? analyzedVideos,
     List<Interest>? interests,
     List<Opportunity>? opportunities,
     List<Course>? courses,
+    List<ProfileAd>? ads, // ← new
     PlayerSpecificData? playerData,
     CoachSpecificData? coachData,
     ScoutSpecificData? scoutData,
     ClubSpecificData? clubData,
     InstituteSpecificData? instituteData,
     OtherSpecificData? otherData,
-    bool? isConnected,
+    String? connectionStatus,
     bool? isFollowing,
-    bool? isOwner, // ✅ Add to copyWith
+    bool? isOwner,
+    bool clearConnectionStatus = false,
   }) {
     return ProfileModel(
       id: id ?? this.id,
@@ -190,21 +208,25 @@ class ProfileModel {
       interests: interests ?? this.interests,
       opportunities: opportunities ?? this.opportunities,
       courses: courses ?? this.courses,
+      ads: ads ?? this.ads, // ← new
       playerData: playerData ?? this.playerData,
       coachData: coachData ?? this.coachData,
       scoutData: scoutData ?? this.scoutData,
       clubData: clubData ?? this.clubData,
       instituteData: instituteData ?? this.instituteData,
       otherData: otherData ?? this.otherData,
-      isConnected: isConnected ?? this.isConnected,
+      connectionStatus: clearConnectionStatus
+          ? null
+          : (connectionStatus ?? this.connectionStatus),
       isFollowing: isFollowing ?? this.isFollowing,
-      isOwner: isOwner ?? this.isOwner, // ✅ Include in copyWith
+      isOwner: isOwner ?? this.isOwner,
     );
   }
 }
 
-// Rest of the classes remain the same...
 enum UserType { player, coach, scout, club, institute, other }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class ProfileStats {
   final String followers;
@@ -241,13 +263,20 @@ class ProfileStats {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 class Post {
   final String id;
   final String imageUrl;
   final String? title;
   final String? description;
 
-  Post({required this.id, required this.imageUrl, this.title,this.description});
+  Post({
+    required this.id,
+    required this.imageUrl,
+    this.title,
+    this.description,
+  });
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -259,9 +288,46 @@ class Post {
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'imageUrl': imageUrl, 'title': title, 'description': description};
+    return {
+      'id': id,
+      'imageUrl': imageUrl,
+      'title': title,
+      'description': description,
+    };
   }
 }
+
+class ProfileAd {
+  final String id;
+  final String title;
+  final String? mediaUrl;
+  final bool isActive;
+
+  const ProfileAd({
+    required this.id,
+    required this.title,
+    this.mediaUrl,
+    required this.isActive,
+  });
+
+  factory ProfileAd.fromJson(Map<String, dynamic> json) {
+    return ProfileAd(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      mediaUrl: json['mediaUrl'],
+      isActive: json['isActive'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'mediaUrl': mediaUrl,
+    'isActive': isActive,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class Achievement {
   final String id;
@@ -299,62 +365,47 @@ class Achievement {
   }
 }
 
-class AnalyzedVideoReport {
-  final String id;
-  final String thumbnailUrl;
-  final String duration;
-  final String speed;
-  final String distance;
-  final String calories;
-
-  AnalyzedVideoReport({
-    required this.id,
-    required this.thumbnailUrl,
-    required this.duration,
-    required this.speed,
-    required this.distance,
-    required this.calories,
-  });
-
-  factory AnalyzedVideoReport.fromJson(Map<String, dynamic> json) {
-    return AnalyzedVideoReport(
-      id: json['id'] ?? '',
-      thumbnailUrl: json['thumbnailUrl'] ?? json['thumbnail_url'] ?? '',
-      duration: json['duration'] ?? '',
-      speed: json['speed'] ?? '',
-      distance: json['distance'] ?? '',
-      calories: json['calories'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'thumbnailUrl': thumbnailUrl,
-      'duration': duration,
-      'speed': speed,
-      'distance': distance,
-      'calories': calories,
-    };
-  }
-}
-
 class Interest {
   final String id;
   final String name;
   final String role;
   final String profileImage;
-  final bool isConnected;
+
+  /// null = not connected, "Pending" = request sent, "Accepted" = in contacts
+  final String? connectionStatus;
   final bool isFollowing;
+
+  bool get isConnected => connectionStatus == 'Accepted';
 
   Interest({
     required this.id,
     required this.name,
     required this.role,
     required this.profileImage,
-    this.isConnected = false,
+    this.connectionStatus,
     this.isFollowing = false,
   });
+
+  Interest copyWith({
+    String? id,
+    String? name,
+    String? role,
+    String? profileImage,
+    String? connectionStatus,
+    bool? isFollowing,
+    bool clearConnectionStatus = false,
+  }) {
+    return Interest(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      profileImage: profileImage ?? this.profileImage,
+      connectionStatus: clearConnectionStatus
+          ? null
+          : (connectionStatus ?? this.connectionStatus),
+      isFollowing: isFollowing ?? this.isFollowing,
+    );
+  }
 
   factory Interest.fromJson(Map<String, dynamic> json) {
     return Interest(
@@ -362,7 +413,7 @@ class Interest {
       name: json['name'] ?? '',
       role: json['role'] ?? '',
       profileImage: json['profileImage'] ?? json['profile_image'] ?? '',
-      isConnected: json['isConnected'] ?? json['is_connected'] ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
       isFollowing: json['isFollowing'] ?? json['is_following'] ?? false,
     );
   }
@@ -373,11 +424,13 @@ class Interest {
       'name': name,
       'role': role,
       'profileImage': profileImage,
-      'isConnected': isConnected,
+      'connectionStatus': connectionStatus,
       'isFollowing': isFollowing,
     };
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class Opportunity {
   final String id;
@@ -389,7 +442,7 @@ class Opportunity {
   factory Opportunity.fromJson(Map<String, dynamic> json) {
     return Opportunity(
       id: json['id'] ?? '',
-      mediaUrl: json['mediaUrl'] ?? json['mediaUrl'] ?? '',
+      mediaUrl: json['mediaUrl'] ?? '',
       title: json['title'],
     );
   }
@@ -399,31 +452,63 @@ class Opportunity {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 class Course {
   final String id;
   final String imageUrl;
   final String? title;
+  final String? description;
+  final double? price;
+  final bool isFree;
+  final int lessonsCount;
+  final int enrolledCount;
 
-  Course({required this.id, required this.imageUrl, this.title});
+  Course({
+    required this.id,
+    required this.imageUrl,
+    this.title,
+    this.description,
+    this.price,
+    this.isFree = false,
+    this.lessonsCount = 0,
+    this.enrolledCount = 0,
+  });
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       id: json['id'] ?? '',
-      imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
+      imageUrl: json['thumbnailUrl'] ?? json['thumbnail_url'] ?? '',
       title: json['title'],
+      description: json['description'],
+      price: json['price']?.toDouble(),
+      isFree: json['isFree'] ?? false,
+      lessonsCount: json['lessonsCount'] ?? 0,
+      enrolledCount: json['enrolledUsersCount'] ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'imageUrl': imageUrl, 'title': title};
+    return {
+      'id': id,
+      'imageUrl': imageUrl,
+      'title': title,
+      'description': description,
+      'price': price,
+      'isFree': isFree,
+      'lessonsCount': lessonsCount,
+      'enrolledCount': enrolledCount,
+    };
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class PlayerSpecificData {
   final String? position;
   final String? height;
   final String? weight;
-  final String? preferredFoot;
+  // final String? preferredFoot;
   final String? age;
   final String? specializedSport;
   final int? yearsOfExperience;
@@ -434,7 +519,7 @@ class PlayerSpecificData {
     this.position,
     this.height,
     this.weight,
-    this.preferredFoot,
+    // this.preferredFoot,
     this.age,
     this.specializedSport,
     this.yearsOfExperience,
@@ -445,9 +530,11 @@ class PlayerSpecificData {
       position: json['position'],
       height: json['height']?.toString(),
       weight: json['weight']?.toString(),
-      preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
+      // preferredFoot: json['preferredFoot'] ?? json['preferred_foot'],
       age: json['age']?.toString(),
-      specializedSport: json['specializedSport'] ?? json['specialized_sport'],
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']),
+          // ??json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       gender: json['gender'],
@@ -459,7 +546,7 @@ class PlayerSpecificData {
       'position': position,
       'height': height,
       'weight': weight,
-      'preferredFoot': preferredFoot,
+      // 'preferredFoot': preferredFoot,
       'age': age,
       'specializedSport': specializedSport,
       'yearsOfExperience': yearsOfExperience,
@@ -467,6 +554,8 @@ class PlayerSpecificData {
     };
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class CoachSpecificData {
   final String? specializedSport;
@@ -485,7 +574,9 @@ class CoachSpecificData {
 
   factory CoachSpecificData.fromJson(Map<String, dynamic> json) {
     return CoachSpecificData(
-      specializedSport: json['specializedSport'] ?? json['specialized_sport'],
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
+          json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       certifications: json['certifications'],
@@ -505,6 +596,8 @@ class CoachSpecificData {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 class ScoutSpecificData {
   final String? specializedSport;
   final int? yearsOfExperience;
@@ -520,7 +613,9 @@ class ScoutSpecificData {
 
   factory ScoutSpecificData.fromJson(Map<String, dynamic> json) {
     return ScoutSpecificData(
-      specializedSport: json['specializedSport'] ?? json['specialized_sport'],
+      specializedSport:
+          EnumMapper.sportIdToLabel(json['sports']) ??
+          json['specialized_sport'],
       yearsOfExperience:
           json['yearsOfExperience'] ?? json['years_of_experience'],
       organization: json['organization'],
@@ -538,10 +633,12 @@ class ScoutSpecificData {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 class ClubSpecificData {
   final String? location;
   final String? foundedYear;
-  final String? sport;
+  final List<String?>? sport;
 
   ClubSpecificData({this.location, this.foundedYear, this.sport});
 
@@ -557,6 +654,8 @@ class ClubSpecificData {
     return {'location': location, 'foundedYear': foundedYear, 'sport': sport};
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class InstituteSpecificData {
   final String? location;
@@ -590,6 +689,8 @@ class InstituteSpecificData {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+
 class OtherSpecificData {
   final Map<String, dynamic>? customData;
   final int? gender;
@@ -605,5 +706,105 @@ class OtherSpecificData {
 
   Map<String, dynamic> toJson() {
     return {'customData': customData, 'gender': gender};
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+class ConnectionRequest {
+  final String id;
+  final String fullName;
+  final String? profilePictureUrl;
+
+  const ConnectionRequest({
+    required this.id,
+    required this.fullName,
+    this.profilePictureUrl,
+  });
+
+  factory ConnectionRequest.fromJson(Map<String, dynamic> json) {
+    return ConnectionRequest(
+      id: json['id'] ?? '',
+      fullName: json['fullName'] ?? '',
+      profilePictureUrl: json['profilePictureUrl'] as String?,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+class ContactItem {
+  final String id;
+  final String title;
+  final String? imageUrl;
+  final bool isOnline;
+
+  const ContactItem({
+    required this.id,
+    required this.title,
+    this.imageUrl,
+    this.isOnline = false,
+  });
+
+  factory ContactItem.fromJson(Map<String, dynamic> json) {
+    return ContactItem(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      imageUrl: json['imageUrl'] as String?,
+      isOnline: json['isOnline'] as bool? ?? false,
+    );
+  }
+}
+
+class UserContactItem {
+  final String userId;
+  final String fullName;
+  final String? profilePictureUrl;
+  final String userType; // e.g., "User"
+  final String? bio;
+  final bool isFollowedByMe;
+  final String?
+  connectionStatus; // or maybe an enum, depending on possible values
+
+  const UserContactItem({
+    required this.userId,
+    required this.fullName,
+    this.profilePictureUrl,
+    required this.userType,
+    this.bio,
+    required this.isFollowedByMe,
+    this.connectionStatus,
+  });
+
+  factory UserContactItem.fromJson(Map<String, dynamic> json) {
+    return UserContactItem(
+      userId: json['userId'] ?? '',
+      fullName: json['fullName'] ?? '',
+      profilePictureUrl: json['profilePictureUrl'] as String?,
+      userType: json['userType'] ?? '',
+      bio: json['bio'] as String?,
+      isFollowedByMe: json['isFollowedByMe'] as bool? ?? false,
+      connectionStatus: json['connectionStatus'] as String?,
+    );
+  }
+  UserContactItem copyWith({
+    String? userId,
+    String? fullName,
+    String? profilePictureUrl,
+    String? userType,
+    String? bio,
+    bool? isFollowedByMe,
+    String? connectionStatus,
+  }) {
+    return UserContactItem(
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      userType: userType ?? this.userType,
+      bio: bio ?? this.bio,
+      isFollowedByMe: isFollowedByMe ?? this.isFollowedByMe,
+      connectionStatus:
+          connectionStatus,
+    );
   }
 }

@@ -108,4 +108,8 @@ class OpportunityReposatory {
   Future<void> deleteOpportunity(String id) async {
     return await repo.deleteOpportunity(opportunityId: id);
   }
+
+  Future<void> toggleOpportunityVisibility({required String opportunityId}) {
+    return repo.toggleOpportunityVisibility(opportunityId: opportunityId);
+  }
 }

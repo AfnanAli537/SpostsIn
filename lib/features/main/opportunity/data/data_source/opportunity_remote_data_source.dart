@@ -293,4 +293,22 @@ class OpportunityRemoteDataSourceImpl implements OpportunityInterface {
       throw ApiErrorHandler.handleDioError(e);
     }
   }
+
+
+  @override
+  Future<void> toggleOpportunityVisibility({required String opportunityId}) async {
+    try {
+      final url = Endpoints.opportunityToggle.replaceFirst('{id}', opportunityId);
+      final response = await apiClient.patch(url);
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiErrorHandler.handleDioError(_badResponse(response));
+      }
+
+      log(' Post visibility toggled successfully');
+    } on DioException catch (e) {
+      log(' Error toggling post visibility: ${e.message}');
+      throw ApiErrorHandler.handleDioError(e);
+    }
+  }
 }

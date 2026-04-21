@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
+import 'package:sports_in/features/register/models/certification_model.dart';
 import 'package:sports_in/features/register/models/user_model.dart';
 
 part 'register_event.dart';
@@ -15,6 +16,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     on<VerifyRegistrationOtpEvent>(_onVerifyRegistrationOtp);
     on<CompleteRegistrationEvent>(_onCompleteRegistration);
     on<ResetValidationEvent>((event, emit) => emit(RegistrationInitial()));
+    on<LoadCertificationsEvent>(_onLoadCertifications);
   }
 
   Future<void> _onSubmitRegistration(
@@ -67,4 +69,15 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       emit(RegistrationError(message: e is ApiException ? e.message : e.toString()));
     }
   }
+  Future<void> _onLoadCertifications(
+  LoadCertificationsEvent event,
+  Emitter<RegistrationState> emit,
+) async {
+  try {
+    final certifications = await repository.getCertifications();
+    emit(RegistrationCertificationsLoaded(certifications));
+  } catch (e) {
+    emit(RegistrationCertificationsError(e.toString()));
+  }
+}
 }

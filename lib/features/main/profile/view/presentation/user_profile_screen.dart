@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/generated/l10n.dart';
-import '../../view_model/profile_bloc.dart';
-import '../../view_model/profile_event.dart';
+import '../../view_model/profile bloc/profile_bloc.dart';
+import '../../view_model/profile bloc/profile_event.dart';
 import 'profile_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
