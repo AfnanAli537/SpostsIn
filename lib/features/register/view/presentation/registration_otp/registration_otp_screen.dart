@@ -9,7 +9,7 @@ import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/generated/l10n.dart';
 import 'package:sports_in/core/widgets/auth_title.dart';
-import 'package:sports_in/features/register/models/user_model.dart';
+import 'package:sports_in/features/register/data/models/user_model.dart';
 import 'package:sports_in/features/register/view_model/register_bloc/register_bloc.dart';
 
 class RegistrationOtpScreen extends StatefulWidget {

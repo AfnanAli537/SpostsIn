@@ -41,37 +41,101 @@ class UpdateSportFilter extends OpportunityEvent {
 class ClearFilters extends OpportunityEvent {
   const ClearFilters();
 }
-
 class CreateOpportunity extends OpportunityEvent {
   final String title;
   final String description;
-  final String requirements;
   final String endDate;
   final int sportTypeId;
+  final String? additionalNotes;
   final String? mediaFile;
-  final String? mediaUrl;
-
+  // matchCriteria
+  final String? targetUserType;
+  final String? targetGender;
+  final int? minAge;
+  final int? maxAge;
+  final String? targetLocation;
+  final String? targetPosition;
+  final double? minHeight;
+  final double? maxHeight;
+  final double? minWeight;
+  final double? maxWeight;
+  final String? targetSpecialization;
+  final int? minExperienceYears;
+ 
   const CreateOpportunity({
     required this.title,
     required this.description,
-    required this.requirements,
     required this.endDate,
     required this.sportTypeId,
+    this.additionalNotes,
     this.mediaFile,
-    this.mediaUrl,
+    this.targetUserType,
+    this.targetGender,
+    this.minAge,
+    this.maxAge,
+    this.targetLocation,
+    this.targetPosition,
+    this.minHeight,
+    this.maxHeight,
+    this.minWeight,
+    this.maxWeight,
+    this.targetSpecialization,
+    this.minExperienceYears,
   });
-
+ 
   @override
   List<Object?> get props => [
         title,
         description,
-        requirements,
         endDate,
         sportTypeId,
+        additionalNotes,
         mediaFile,
-        mediaUrl,
+        targetUserType,
+        targetGender,
+        minAge,
+        maxAge,
+        targetLocation,
+        targetPosition,
+        minHeight,
+        maxHeight,
+        minWeight,
+        maxWeight,
+        targetSpecialization,
+        minExperienceYears,
       ];
 }
+ 
+// class CreateOpportunity extends OpportunityEvent {
+//   final String title;
+//   final String description;
+//   final String requirements;
+//   final String endDate;
+//   final int sportTypeId;
+//   final String? mediaFile;
+//   final String? mediaUrl;
+
+//   const CreateOpportunity({
+//     required this.title,
+//     required this.description,
+//     required this.requirements,
+//     required this.endDate,
+//     required this.sportTypeId,
+//     this.mediaFile,
+//     this.mediaUrl,
+//   });
+
+//   @override
+//   List<Object?> get props => [
+//         title,
+//         description,
+//         requirements,
+//         endDate,
+//         sportTypeId,
+//         mediaFile,
+//         mediaUrl,
+//       ];
+// }
 
 class FetchOpportunityDetails extends OpportunityEvent {
   final String opportunityId;

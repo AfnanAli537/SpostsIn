@@ -1,5 +1,5 @@
 import 'package:sports_in/core/network/endpoints.dart';
-import 'package:sports_in/features/register/models/user_model.dart';
+import 'package:sports_in/features/register/data/models/user_model.dart';
 
 String getEndpointForUserType(UserType type) {
   switch (type) {

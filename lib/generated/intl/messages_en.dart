@@ -194,10 +194,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "add_achievement_title": MessageLookupByLibrary.simpleMessage(
       "Add Achievement",
     ),
+    "additionalNotes": MessageLookupByLibrary.simpleMessage("Additional Notes"),
     "ads": MessageLookupByLibrary.simpleMessage("Ads"),
     "advertisement": MessageLookupByLibrary.simpleMessage("Advertisement"),
     "advertisements": MessageLookupByLibrary.simpleMessage("Advertisements"),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
+    "ageRange": MessageLookupByLibrary.simpleMessage("Age Range"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("I agree"),
     "aiAssistantSubtitle": MessageLookupByLibrary.simpleMessage(
       "Using this software you can ask questions and receive articles using artificial intelligence assistant.",
@@ -585,6 +587,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter ad description",
     ),
     "enterAdTitle": MessageLookupByLibrary.simpleMessage("Enter ad title"),
+    "enterAdditionalNotes": MessageLookupByLibrary.simpleMessage(
+      "Any extra details...",
+    ),
     "enterAge": MessageLookupByLibrary.simpleMessage("Please enter your age"),
     "enterCourseDescriptionHint": MessageLookupByLibrary.simpleMessage(
       "Enter Course Description",
@@ -615,6 +620,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterLessonTitleHint": MessageLookupByLibrary.simpleMessage(
       "Enter lesson title",
     ),
+    "enterMinExperience": MessageLookupByLibrary.simpleMessage("e.g. 3"),
     "enterNewName": MessageLookupByLibrary.simpleMessage("Enter new name"),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
       "Enter your new password",
@@ -784,6 +790,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Height calibrates extension & velocity measurements.",
     ),
     "heightExample": MessageLookupByLibrary.simpleMessage("e.g. 1.85"),
+    "heightRange": MessageLookupByLibrary.simpleMessage("Height Range (cm)"),
     "heightRequired": MessageLookupByLibrary.simpleMessage(
       "Height is required for goalkeeper analysis",
     ),
@@ -964,12 +971,19 @@ class MessageLookup extends MessageLookupByLibrary {
       "Full match performance analysis",
     ),
     "matchAnalysisLabel": MessageLookupByLibrary.simpleMessage("Match"),
+    "matchCriteria": MessageLookupByLibrary.simpleMessage("Match Criteria"),
+    "matchCriteriaSubtitle": MessageLookupByLibrary.simpleMessage(
+      "Target specific applicants (optional)",
+    ),
     "matchVideoInstructions": MessageLookupByLibrary.simpleMessage(
       "• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions",
     ),
+    "maxAge": MessageLookupByLibrary.simpleMessage("Max Age"),
     "maxExtension": MessageLookupByLibrary.simpleMessage("Max Extension"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage("Max 500MB"),
+    "maxHeight": MessageLookupByLibrary.simpleMessage("Max Height"),
     "maxVelocity": MessageLookupByLibrary.simpleMessage("Max Velocity"),
+    "maxWeight": MessageLookupByLibrary.simpleMessage("Max Weight"),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
       "Maximum file size is 200 MB",
     ),
@@ -977,9 +991,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageSent": MessageLookupByLibrary.simpleMessage(
       "Message sent successfully",
     ),
+    "minAge": MessageLookupByLibrary.simpleMessage("Min Age"),
+    "minExperienceYears": MessageLookupByLibrary.simpleMessage(
+      "Min Experience (years)",
+    ),
+    "minHeight": MessageLookupByLibrary.simpleMessage("Min Height"),
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "At least 8 characters long",
     ),
+    "minWeight": MessageLookupByLibrary.simpleMessage("Min Weight"),
     "minutesAgo": m22,
     "month": MessageLookupByLibrary.simpleMessage("Month"),
     "monthsAgo": m23,
@@ -1089,6 +1109,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "No results for your criteria",
     ),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("No results found"),
+    "noTopMatchFound": MessageLookupByLibrary.simpleMessage(
+      "No top matches found",
+    ),
     "noUserDataFound": MessageLookupByLibrary.simpleMessage(
       "No user data found",
     ),
@@ -1419,9 +1442,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectEndDate": MessageLookupByLibrary.simpleMessage("Select End Date"),
     "selectField": m34,
+    "selectGender": MessageLookupByLibrary.simpleMessage("Select gender"),
     "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
+    "selectLocation": MessageLookupByLibrary.simpleMessage("Select location"),
+    "selectPosition": MessageLookupByLibrary.simpleMessage("Select position"),
+    "selectSpecialization": MessageLookupByLibrary.simpleMessage(
+      "Select specialization",
+    ),
     "selectSport": MessageLookupByLibrary.simpleMessage("Select Sport"),
     "selectSports": MessageLookupByLibrary.simpleMessage("Select a Sport"),
+    "selectTargetUserType": MessageLookupByLibrary.simpleMessage(
+      "Select player or coach",
+    ),
     "select_date_hint": MessageLookupByLibrary.simpleMessage("Select Date"),
     "select_sport_error": MessageLookupByLibrary.simpleMessage(
       "Please select a sport",
@@ -1556,6 +1588,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Tap to upload video",
     ),
     "targetAudience": MessageLookupByLibrary.simpleMessage("Target Audience"),
+    "targetGender": MessageLookupByLibrary.simpleMessage("Target Gender"),
+    "targetLocation": MessageLookupByLibrary.simpleMessage("Target Location"),
+    "targetUserType": MessageLookupByLibrary.simpleMessage("Target User Type"),
     "teakwando": MessageLookupByLibrary.simpleMessage("Teakwando"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("Teakwando Player"),
     "team1": MessageLookupByLibrary.simpleMessage("Team 1"),
@@ -1577,6 +1612,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "Session expired, please login again",
     ),
+    "topMatch": MessageLookupByLibrary.simpleMessage("Top Match"),
     "topSpeed": MessageLookupByLibrary.simpleMessage("Top Speed"),
     "topSprintSpeed": MessageLookupByLibrary.simpleMessage("Top Sprint Speed"),
     "totalAds": MessageLookupByLibrary.simpleMessage("Total Ads"),
@@ -1717,6 +1753,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("Weekly Details"),
     "weeksAgo": m44,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
+    "weightRange": MessageLookupByLibrary.simpleMessage("Weight Range (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "whatHappensNext": MessageLookupByLibrary.simpleMessage(
       "What happens next",
@@ -1735,6 +1772,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Write your message",
     ),
     "year": MessageLookupByLibrary.simpleMessage("Year"),
+    "years": MessageLookupByLibrary.simpleMessage("years"),
     "yearsAgo": m45,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",

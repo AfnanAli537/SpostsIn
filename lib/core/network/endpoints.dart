@@ -67,6 +67,8 @@ static const String getPostById = '/api/Posts/{id}';
   static const String getOpportunity = "/api/Opportunity";
   static const String postOpportunity = "/api/Opportunity";
   static const String opportunityDetails = "/api/Opportunity/{id}";
+  static const String getOpportunityRecommendations =
+     '/api/Opportunity/{id}/recommendations';
   static const String editOpportunity = "/api/Opportunity/{id}";
   static const String deleteOpportunity = "/api/Opportunity/{id}";
   static const String opportunityToggle = "/api/Opportunity/{id}/toggle";

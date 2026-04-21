@@ -1095,8 +1095,35 @@
   "newBadge": "{count} جديد",
   "@newBadge": {
     "placeholders": { "count": { "type": "int" } }
-  }
+  },
 
+  "topMatch": "أفضل تطابق",
+  "noTopMatchFound": "لم يتم العثور على تطابق",
+  "matchCriteria": "معايير المطابقة",
+  "matchCriteriaSubtitle": "استهداف متقدم لمقدمين محددين (اختياري)",
+  "targetUserType": "نوع المستخدم المستهدف",
+  "selectTargetUserType": "اختر لاعب أو مدرب",
+  "targetGender": "الجنس المستهدف",
+  "selectGender": "اختر الجنس",
+  "ageRange": "الفئة العمرية",
+  "minAge": "الحد الأدنى للعمر",
+  "maxAge": "الحد الأقصى للعمر",
+  "targetLocation": "الموقع المستهدف",
+  "selectLocation": "اختر الموقع",
+  "selectPosition": "اختر المركز",
+  "heightRange": "نطاق الطول (سم)",
+  "minHeight": "الحد الأدنى للطول",
+  "maxHeight": "الحد الأقصى للطول",
+  "weightRange": "نطاق الوزن (كجم)",
+  "minWeight": "الحد الأدنى للوزن",
+  "maxWeight": "الحد الأقصى للوزن",
+  "selectSpecialization": "اختر التخصص",
+  "minExperienceYears": "الحد الأدنى للخبرة (سنوات)",
+  "enterMinExperience": "مثال: 3",
+  "additionalNotes": "ملاحظات إضافية",
+  "enterAdditionalNotes": "أي تفاصيل إضافية...",
+  "years": "سنوات"
 
+ 
 
 }

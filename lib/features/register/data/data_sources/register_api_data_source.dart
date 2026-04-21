@@ -7,8 +7,8 @@ import 'package:sports_in/core/network/endpoints.dart';
 import 'package:sports_in/core/utils/helper/auth_api_helper.dart';
 import 'package:sports_in/core/utils/helper/register_build_request_body.dart';
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart';
-import 'package:sports_in/features/register/models/certification_model.dart';
-import 'package:sports_in/features/register/models/user_model.dart';
+import 'package:sports_in/features/register/data/models/certification_model.dart';
+import 'package:sports_in/features/register/data/models/user_model.dart';
 
 @LazySingleton(as: IRegisterDataSource)
 class RegisterApiDataSource implements IRegisterDataSource {

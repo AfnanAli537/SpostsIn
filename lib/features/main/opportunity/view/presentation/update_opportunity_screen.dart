@@ -73,7 +73,7 @@ class _UpdateOpportunityScreenState extends State<UpdateOpportunityScreen> {
       _opportunityDetails = details;
       _titleController.text = details.title;
       _descriptionController.text = details.description;
-      _requirementsController.text = details.requirements;
+      // _requirementsController.text = details.requirements;
       _selectedEndDate = details.endDate;
       _selectedSportId = details.sportTypeId;
       
