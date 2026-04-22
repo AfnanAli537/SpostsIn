@@ -1,56 +1,6 @@
-// class DetailsModel {
-//   final String title;
-//   final String description;
-//   final String requirements;
-//   final DateTime endDate;
-//   final int sportTypeId;
-//   final String? mediaFile;
-//   final String? uploadedMediaUrl;
-//   final bool isAlreadyApplied;
-
-//   DetailsModel({
-//     required this.title,
-//     required this.description,
-//     required this.requirements,
-//     required this.endDate,
-//     required this.sportTypeId,
-//     this.mediaFile,
-//     this.uploadedMediaUrl,
-//      required this.isAlreadyApplied,
-//   });
-
-//   factory DetailsModel.fromJson(Map<String, dynamic> json) {
-//     return DetailsModel(
-//       title: json['title'] ?? '',
-//       description: json['description'] ?? '',
-//       requirements: json['requirements'] ?? '',
-//       endDate: DateTime.parse(json['endDate']),
-//       sportTypeId: json['sportTypeId'] ?? 0,
-//       mediaFile: json['mediaFile'],
-//       uploadedMediaUrl: json['uploadedMediaUrl'],
-//       isAlreadyApplied: json['isAlreadyApplied']?? false,
-//     );
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     return {
-//       'title': title,
-//       'description': description,
-//       'requirements': requirements,
-//       'endDate': endDate.toIso8601String(),
-//       'sportTypeId': sportTypeId,
-//       'mediaFile': mediaFile,
-//       'uploadedMediaUrl': uploadedMediaUrl,
-//       'isAlreadyApplied':isAlreadyApplied,
-//     };
-//   }
-// }
-
-
-
 class MatchCriteria {
   final String? targetUserType;
-  final int? targetGender;
+  final dynamic targetGender; // Can be int from API or String from UI
   final int? minAge;
   final int? maxAge;
   final String? targetLocation;
@@ -62,7 +12,7 @@ class MatchCriteria {
   final String? preferredClubExperience;
   final String? targetSpecialization;
   final int? minExperienceYears;
-  final String? requiredCertifications;
+  final String? requiredCertifications; // comma-separated IDs: "1,2,3"
   final int? gender;
 
   MatchCriteria({
@@ -83,10 +33,21 @@ class MatchCriteria {
     this.gender,
   });
 
+  /// Convert gender integer from API to display string
+  String? get genderDisplayValue {
+    if (targetGender == null) return null;
+    if (targetGender is String) return targetGender; // Already a string
+    if (targetGender is int) {
+      // Map: 1=Male, 2=Female, etc.
+      return targetGender == 1 ? 'Male' : targetGender == 2 ? 'Female' : null;
+    }
+    return null;
+  }
+
   factory MatchCriteria.fromJson(Map<String, dynamic> json) {
     return MatchCriteria(
       targetUserType: json['targetUserType'],
-      targetGender: json['targetGender'],
+      targetGender: json['targetGender'], // Keep as-is (can be int or String)
       minAge: json['minAge'],
       maxAge: json['maxAge'],
       targetLocation: json['targetLocation'],
@@ -129,6 +90,18 @@ class MatchCriteria {
       'requiredCertifications': requiredCertifications,
       'gender': gender,
     };
+  }
+
+  /// Parse comma-separated certification IDs to list of integers
+  List<int> getCertificationIds() {
+    if (requiredCertifications == null || requiredCertifications!.isEmpty) {
+      return [];
+    }
+    return requiredCertifications!
+        .split(',')
+        .map((id) => int.tryParse(id.trim()) ?? 0)
+        .where((id) => id != 0)
+        .toList();
   }
 
   bool get hasAnyCriteria =>

@@ -8,7 +8,7 @@ import 'package:sports_in/features/payment/data/interface/payment_interface.dart
 import 'package:sports_in/features/payment/data/model/initiate_payment_model.dart';
 import 'package:sports_in/features/payment/data/model/manual_test_model.dart';
 import 'package:sports_in/features/payment/data/model/my_subscription_model.dart';
-import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
+import 'package:sports_in/features/payment/data/model/subscription_plan_model.dart';
 
 @LazySingleton(as: PaymentInterface)
 class PaymentRemoteDataSourceImpl implements PaymentInterface {

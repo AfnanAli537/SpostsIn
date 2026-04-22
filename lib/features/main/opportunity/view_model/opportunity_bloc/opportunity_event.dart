@@ -41,6 +41,7 @@ class UpdateSportFilter extends OpportunityEvent {
 class ClearFilters extends OpportunityEvent {
   const ClearFilters();
 }
+
 class CreateOpportunity extends OpportunityEvent {
   final String title;
   final String description;
@@ -61,7 +62,9 @@ class CreateOpportunity extends OpportunityEvent {
   final double? maxWeight;
   final String? targetSpecialization;
   final int? minExperienceYears;
- 
+  final String? preferredClubExperience;
+  final String? requiredCertifications;
+
   const CreateOpportunity({
     required this.title,
     required this.description,
@@ -81,8 +84,10 @@ class CreateOpportunity extends OpportunityEvent {
     this.maxWeight,
     this.targetSpecialization,
     this.minExperienceYears,
+    this.preferredClubExperience,
+    this.requiredCertifications,
   });
- 
+
   @override
   List<Object?> get props => [
         title,
@@ -103,39 +108,10 @@ class CreateOpportunity extends OpportunityEvent {
         maxWeight,
         targetSpecialization,
         minExperienceYears,
+        preferredClubExperience,
+        requiredCertifications,
       ];
 }
- 
-// class CreateOpportunity extends OpportunityEvent {
-//   final String title;
-//   final String description;
-//   final String requirements;
-//   final String endDate;
-//   final int sportTypeId;
-//   final String? mediaFile;
-//   final String? mediaUrl;
-
-//   const CreateOpportunity({
-//     required this.title,
-//     required this.description,
-//     required this.requirements,
-//     required this.endDate,
-//     required this.sportTypeId,
-//     this.mediaFile,
-//     this.mediaUrl,
-//   });
-
-//   @override
-//   List<Object?> get props => [
-//         title,
-//         description,
-//         requirements,
-//         endDate,
-//         sportTypeId,
-//         mediaFile,
-//         mediaUrl,
-//       ];
-// }
 
 class FetchOpportunityDetails extends OpportunityEvent {
   final String opportunityId;
@@ -154,23 +130,53 @@ class ApplyToOpportunity extends OpportunityEvent {
   @override
   List<Object?> get props => [opportunityId];
 }
+
 class UpdateOpportunity extends OpportunityEvent {
   final String opportunityId;
   final String title;
   final String description;
-  final String requirements;
   final DateTime endDate;
   final int sportTypeId;
   final String? mediaFile;
+  final String? additionalNotes;
+  // matchCriteria
+  final String? targetUserType;
+  final String? targetGender;
+  final int? minAge;
+  final int? maxAge;
+  final String? targetLocation;
+  final String? targetPosition;
+  final double? minHeight;
+  final double? maxHeight;
+  final double? minWeight;
+  final double? maxWeight;
+  final String? targetSpecialization;
+  final int? minExperienceYears;
+  final String? preferredClubExperience;
+  final String? requiredCertifications;
 
   const UpdateOpportunity({
     required this.opportunityId,
     required this.title,
     required this.description,
-    required this.requirements,
     required this.endDate,
     required this.sportTypeId,
     this.mediaFile,
+    this.additionalNotes,
+    this.targetUserType,
+    this.targetGender,
+    this.minAge,
+    this.maxAge,
+    this.targetLocation,
+    this.targetPosition,
+    this.minHeight,
+    this.maxHeight,
+    this.minWeight,
+    this.maxWeight,
+    this.targetSpecialization,
+    this.minExperienceYears,
+    this.preferredClubExperience,
+    this.requiredCertifications,
   });
 
   @override
@@ -178,10 +184,24 @@ class UpdateOpportunity extends OpportunityEvent {
         opportunityId,
         title,
         description,
-        requirements,
         endDate,
         sportTypeId,
         mediaFile,
+        additionalNotes,
+        targetUserType,
+        targetGender,
+        minAge,
+        maxAge,
+        targetLocation,
+        targetPosition,
+        minHeight,
+        maxHeight,
+        minWeight,
+        maxWeight,
+        targetSpecialization,
+        minExperienceYears,
+        preferredClubExperience,
+        requiredCertifications,
       ];
 }
 
@@ -193,6 +213,7 @@ class DeleteOpportunity extends OpportunityEvent {
   @override
   List<Object?> get props => [opportunityId];
 }
+
 class LoadMoreMyOpportunities extends OpportunityEvent {
   final bool showActive;
   const LoadMoreMyOpportunities({required this.showActive});
@@ -207,7 +228,7 @@ class FetchMyOpportunities extends OpportunityEvent {
   final bool showActive;
   final int page;
   final int pageSize;
-  final bool isRefresh;  // new
+  final bool isRefresh;
 
   const FetchMyOpportunities({
     required this.showActive,

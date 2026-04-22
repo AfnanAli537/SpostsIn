@@ -32,103 +32,108 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(type) => "تحليل ${type}";
 
-  static String m5(percentage) => "اكتمل ${percentage}%";
+  static String m5(action) => "هل أنت متأكد من ${action} هذه الفرصة؟";
 
-  static String m6(count) =>
+  static String m6(percentage) => "اكتمل ${percentage}%";
+
+  static String m7(count) =>
       "${Intl.plural(count, one: 'منذ يوم', two: 'منذ يومين', few: 'منذ ${count} أيام', many: 'منذ ${count} يومًا', other: 'منذ ${count} يوم')}";
 
-  static String m7(lessonTitle) =>
+  static String m8(lessonTitle) =>
       "هل أنت متأكد من حذف \"${lessonTitle}\"؟ لا يمكن التراجع عن هذا الإجراء.";
 
-  static String m8(duration) => "المدة: ${duration}";
+  static String m9(duration) => "المدة: ${duration}";
 
-  static String m9(price) => "اشترك مقابل ${price}";
+  static String m10(price) => "اشترك مقابل ${price}";
 
-  static String m10(count) => "${count} مشترك";
+  static String m11(count) => "${count} مشترك";
 
-  static String m11(field) => "يرجى إدخال ${field}";
+  static String m12(field) => "يرجى إدخال ${field}";
 
-  static String m12(price) => "التكلفة التقديرية: ${price} جنيه";
+  static String m13(price) => "التكلفة التقديرية: ${price} جنيه";
 
-  static String m13(type) => "مثال: تمرين ${type}";
+  static String m14(type) => "مثال: تمرين ${type}";
 
-  static String m14(field) => "يجب أن يحتوي ${field} على حرفين على الأقل";
+  static String m15(field) => "يجب أن يحتوي ${field} على حرفين على الأقل";
 
-  static String m15(count) =>
+  static String m16(count) =>
       "${Intl.plural(count, one: 'منذ ساعة', two: 'منذ ساعتين', few: 'منذ ${count} ساعات', many: 'منذ ${count} ساعة', other: 'منذ ${count} ساعة')}";
 
-  static String m16(field) => "${field} غير صالح";
+  static String m17(field) => "${field} غير صالح";
 
-  static String m17(number) => "${number} درس";
+  static String m18(number) => "${number} درس";
 
-  static String m18(order) => "ترتيب الدرس: ${order}";
+  static String m19(order) => "ترتيب الدرس: ${order}";
 
-  static String m19(order, duration) =>
+  static String m20(order, duration) =>
       "ترتيب الدرس: ${order} • المدة: ${duration}";
 
-  static String m20(count) => "${count} دروس";
+  static String m21(count) => "${count} دروس";
 
-  static String m21(completed, total) => "${completed} / ${total} دروس";
-
-  static String m22(count) =>
-      "${Intl.plural(count, one: 'منذ دقيقة', two: 'منذ دقيقتين', few: 'منذ ${count} دقائق', many: 'منذ ${count} دقيقة', other: 'منذ ${count} دقيقة')}";
+  static String m22(completed, total) => "${completed} / ${total} دروس";
 
   static String m23(count) =>
+      "${Intl.plural(count, one: 'منذ دقيقة', two: 'منذ دقيقتين', few: 'منذ ${count} دقائق', many: 'منذ ${count} دقيقة', other: 'منذ ${count} دقيقة')}";
+
+  static String m24(count) =>
       "${Intl.plural(count, one: 'منذ شهر', two: 'منذ شهرين', few: 'منذ ${count} أشهر', many: 'منذ ${count} شهرًا', other: 'منذ ${count} شهر')}";
 
-  static String m24(count) => "${count} جديد";
+  static String m25(count) => "${count} جديد";
 
-  static String m25(searchTerm) => "لا توجد دورات لـ \"${searchTerm}\"";
+  static String m26(searchTerm) => "لا توجد دورات لـ \"${searchTerm}\"";
 
-  static String m26(month) => "لا توجد بيانات متاحة لشهر ${month}";
+  static String m27(month) => "لا توجد بيانات متاحة لشهر ${month}";
 
-  static String m27(id) => "رقم العملية: ${id}";
+  static String m28(id) => "رقم العملية: ${id}";
 
-  static String m28(percentage) => "اكتمل ${percentage}%";
+  static String m29(percentage) => "اكتمل ${percentage}%";
 
-  static String m29(value) => "${value}%";
+  static String m30(value) => "${value}%";
 
-  static String m30(percentage) => "تمت مشاهدة ${percentage}%";
+  static String m31(percentage) => "تمت مشاهدة ${percentage}%";
 
-  static String m31(price) => "${price} جنيه";
+  static String m32(price) => "${price} جنيه";
 
-  static String m32(price) => "(${price} جنيه في اليوم)";
+  static String m33(price) => "(${price} جنيه في اليوم)";
 
-  static String m33(count) =>
+  static String m34(count) =>
       "${Intl.plural(count, one: 'منذ ثانية', two: 'منذ ثانيتين', few: 'منذ ${count} ثوانٍ', many: 'منذ ${count} ثانية', other: 'منذ ${count} ثانية')}";
 
-  static String m34(field) => "يرجى اختيار ${field}";
+  static String m35(field) => "يرجى اختيار ${field}";
 
-  static String m35(count) => "${count} إعلان / شهر";
+  static String m36(date) => "منذ ${date}";
 
-  static String m36(count) => "${count} يوم";
+  static String m37(count) => "${count} إعلان / شهر";
 
-  static String m37(count) => "${count} شهر";
+  static String m38(count) => "${count} يوم";
 
-  static String m38(count) => "${count} فيديو / شهر";
+  static String m39(count) => "${count} شهر";
 
-  static String m39(count) => "${count} ي";
+  static String m40(count) => "${count} فيديو / شهر";
 
-  static String m40(count) => "${count} س";
+  static String m41(count) => "${count} ي";
 
-  static String m41(count) => "${count} د";
+  static String m42(count) => "${count} س";
 
-  static String m42(name) => "${name} يكتب...";
+  static String m43(count) => "${count} د";
 
-  static String m43(error) => "خطأ في الرفع: ${error}";
+  static String m44(error) => "خطأ في الرفع: ${error}";
 
-  static String m44(name) => "تحليلات ${name}";
-
-  static String m45(count) =>
-      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+  static String m45(name) => "تحليلات ${name}";
 
   static String m46(count) =>
+      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+
+  static String m47(count) =>
       "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ ${count} سنوات', many: 'منذ ${count} سنة', other: 'منذ ${count} سنة')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "GetYourCode": MessageLookupByLibrary.simpleMessage(
       "احصل على الرمز الخاص بك!",
+    ),
+    "PreferredClubExperience": MessageLookupByLibrary.simpleMessage(
+      "خبرة في نادي سابق",
     ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
     "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
@@ -292,11 +297,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "archiveOpportunities": MessageLookupByLibrary.simpleMessage(
       "فرصي المؤرشفة",
     ),
+    "archiveOpportunity": MessageLookupByLibrary.simpleMessage("أرشفة الفرصة"),
     "archivePost": MessageLookupByLibrary.simpleMessage("أرشفة المنشور"),
     "archivePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "سيتم أرشفة هذا المنشور وإخفائه من ملفك الشخصي وتدفقك، لكن يمكنك استعادته لاحقاً. هل أنت متأكد من رغبتك في أرشفة هذا المنشور؟",
     ),
     "archivePosts": MessageLookupByLibrary.simpleMessage("المنشورات المؤرشفة"),
+    "archiveRestoreConfirmation": m5,
     "august": MessageLookupByLibrary.simpleMessage("أغسطس"),
     "available": MessageLookupByLibrary.simpleMessage("متاح"),
     "availableCourses": MessageLookupByLibrary.simpleMessage("الدورات المتاحة"),
@@ -378,7 +385,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "completePaymentToViewAnalyzedVideo": MessageLookupByLibrary.simpleMessage(
       "أكمل الدفع لعرض\nالفيديو المحلل",
     ),
-    "completePercentage": m5,
+    "completePercentage": m6,
     "completed": MessageLookupByLibrary.simpleMessage("مكتمل"),
     "completion": MessageLookupByLibrary.simpleMessage("الإكمال"),
     "coneHits": MessageLookupByLibrary.simpleMessage("إصابات المخروط"),
@@ -447,7 +454,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "dateToday": MessageLookupByLibrary.simpleMessage("اليوم"),
     "dateYesterday": MessageLookupByLibrary.simpleMessage("أمس"),
     "date_label": MessageLookupByLibrary.simpleMessage("التاريخ"),
-    "daysAgo": m6,
+    "daysAgo": m7,
     "deactivate": MessageLookupByLibrary.simpleMessage("تعطيل"),
     "deactivateAd": MessageLookupByLibrary.simpleMessage("إلغاء تنشيط الإعلان"),
     "deactivateAdMessage": MessageLookupByLibrary.simpleMessage(
@@ -474,8 +481,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteCourseConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذه الدورة؟",
     ),
+    "deleteFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل الحذف. يرجى المحاولة مرة أخرى.",
+    ),
     "deleteLesson": MessageLookupByLibrary.simpleMessage("حذف الدرس"),
-    "deleteLessonConfirmation": m7,
+    "deleteLessonConfirmation": m8,
     "deleteOpportunity": MessageLookupByLibrary.simpleMessage("حذف الفرصة"),
     "deleteOpportunityConfirmation": MessageLookupByLibrary.simpleMessage(
       "هل أنت متأكد من حذف هذه الفرصة؟ لا يمكن التراجع عن هذا الإجراء.",
@@ -518,11 +528,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "• استخدم حامل ثلاثي القوائم – كاميرا ثابتة، خلفية ثابتة\n• احصل على الجسم بالكامل – زاوية واسعة\n• صوّر من الزاوية الجانبية\n• المسافة بين المخاريط 90 سم\n• كاميرا بعيدة بما يكفي لرؤية نقطة البداية وجميع المخاريط واللاعب\n• فقط اللاعب والكرة والمخاريط في الإطار\n• ضع الكاميرا على بُعد 5–7 أمتار، بارتفاع 1.5 م\n• إضاءة جيدة\n• تجنب الملابس الفضفاضة",
     ),
     "drillDuration": MessageLookupByLibrary.simpleMessage("مدة التمرين"),
-    "duration": m8,
+    "duration": m9,
     "edit": MessageLookupByLibrary.simpleMessage("تعديل"),
     "editAdvertisement": MessageLookupByLibrary.simpleMessage("تعديل الإعلان"),
     "editCourse": MessageLookupByLibrary.simpleMessage("تعديل الدورة"),
     "editLesson": MessageLookupByLibrary.simpleMessage("تعديل الدرس"),
+    "editOpportunity": MessageLookupByLibrary.simpleMessage("تعديل الفرصة"),
     "editPrice": MessageLookupByLibrary.simpleMessage("تعديل السعر"),
     "editProfile": MessageLookupByLibrary.simpleMessage("عدل الحساب"),
     "editProfileFailed": MessageLookupByLibrary.simpleMessage(
@@ -555,10 +566,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "engagement": MessageLookupByLibrary.simpleMessage("التفاعل"),
     "english": MessageLookupByLibrary.simpleMessage("الإنجليزية"),
     "enroll": MessageLookupByLibrary.simpleMessage("اشتراك"),
-    "enrollForPrice": m9,
+    "enrollForPrice": m10,
     "enrollNow": MessageLookupByLibrary.simpleMessage("اشترك الآن"),
     "enrolled": MessageLookupByLibrary.simpleMessage("تاريخ الاشتراك"),
-    "enrolledCount": m10,
+    "enrolledCount": m11,
     "enrolledCourses": MessageLookupByLibrary.simpleMessage(
       "الدورات المسجل فيها",
     ),
@@ -596,7 +607,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterExperience": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال عدد سنين الخبرة",
     ),
-    "enterField": m11,
+    "enterField": m12,
     "enterHeight": MessageLookupByLibrary.simpleMessage("يرجى إدخال الطول"),
     "enterLessonTitleHint": MessageLookupByLibrary.simpleMessage(
       "أدخل عنوان الدرس",
@@ -630,8 +641,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "error_picking_video": MessageLookupByLibrary.simpleMessage(
       "خطأ في اختيار الفيديو. الرجاء المحاولة مرة أخرى.",
     ),
-    "estimatedCost": m12,
-    "exampleDrill": m13,
+    "estimatedCost": m13,
+    "exampleDrill": m14,
     "exampleFrame": MessageLookupByLibrary.simpleMessage("إطار مثال"),
     "extractingDuration": MessageLookupByLibrary.simpleMessage(
       "جاري استخراج المدة...",
@@ -708,7 +719,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "february": MessageLookupByLibrary.simpleMessage("فبراير"),
     "female": MessageLookupByLibrary.simpleMessage("أنثى"),
     "field": MessageLookupByLibrary.simpleMessage("الحقل"),
-    "fieldTooShort": m14,
+    "fieldTooShort": m15,
     "file_size_exceeds_limit": MessageLookupByLibrary.simpleMessage(
       "حجم الملف يتجاوز 500 ميجابايت",
     ),
@@ -782,7 +793,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hideDescription": MessageLookupByLibrary.simpleMessage("إخفاء الوصف"),
     "hipVariance": MessageLookupByLibrary.simpleMessage("تباين الورك"),
     "home": MessageLookupByLibrary.simpleMessage("الرئيسية"),
-    "hoursAgo": m15,
+    "hoursAgo": m16,
     "inactiveDraft": MessageLookupByLibrary.simpleMessage("غير نشط / مسودة"),
     "inbox": MessageLookupByLibrary.simpleMessage("صندوق الوارد"),
     "industary": MessageLookupByLibrary.simpleMessage("المجال"),
@@ -811,7 +822,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidExperience": MessageLookupByLibrary.simpleMessage(
       "يجب على سنين الخبرة ان لا تتجاوز ال 60 عاماً",
     ),
-    "invalidField": m16,
+    "invalidField": m17,
     "invalidHeight": MessageLookupByLibrary.simpleMessage(
       "يرجى إدخال طول صالح (100–250 سم)",
     ),
@@ -900,16 +911,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "latestCourses": MessageLookupByLibrary.simpleMessage("أحدث الدورات"),
     "latestPosts": MessageLookupByLibrary.simpleMessage("أحدث المنشورات"),
     "learnMore": MessageLookupByLibrary.simpleMessage("اعرف المزيد"),
-    "lessonNumber": m17,
-    "lessonOrder": m18,
-    "lessonOrderAndDuration": m19,
+    "lessonNumber": m18,
+    "lessonOrder": m19,
+    "lessonOrderAndDuration": m20,
     "lessonOrderSaved": MessageLookupByLibrary.simpleMessage(
       "تم حفظ ترتيب الدروس",
     ),
     "lessonTitle": MessageLookupByLibrary.simpleMessage("عنوان الدرس"),
     "lessons": MessageLookupByLibrary.simpleMessage("الدروس"),
-    "lessonsCount": m20,
-    "lessonsProgress": m21,
+    "lessonsCount": m21,
+    "lessonsProgress": m22,
     "likes": MessageLookupByLibrary.simpleMessage("الإعجابات"),
     "loading": MessageLookupByLibrary.simpleMessage("جار التحميل"),
     "loadingUserData": MessageLookupByLibrary.simpleMessage(
@@ -989,9 +1000,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "يجب أن تتكون من 8 أحرف على الأقل",
     ),
     "minWeight": MessageLookupByLibrary.simpleMessage("الحد الأدنى للوزن"),
-    "minutesAgo": m22,
+    "minutesAgo": m23,
     "month": MessageLookupByLibrary.simpleMessage("الشهر"),
-    "monthsAgo": m23,
+    "monthsAgo": m24,
     "moreDetails": MessageLookupByLibrary.simpleMessage("المزيد من التفاصيل"),
     "moreInfo": MessageLookupByLibrary.simpleMessage("مزيد من المعلومات"),
     "myAdvertisements": MessageLookupByLibrary.simpleMessage("إعلاناتي"),
@@ -1005,7 +1016,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "name": MessageLookupByLibrary.simpleMessage("الاسم"),
     "nationality": MessageLookupByLibrary.simpleMessage("الجنسية"),
     "needsWork": MessageLookupByLibrary.simpleMessage("يحتاج تحسيناً"),
-    "newBadge": m24,
+    "newBadge": m25,
     "newConnectionRequests": MessageLookupByLibrary.simpleMessage(
       "طلبات الاتصال الجديدة",
     ),
@@ -1023,6 +1034,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noAchievements": MessageLookupByLibrary.simpleMessage("لا توجدإنجازات"),
     "noActiveAds": MessageLookupByLibrary.simpleMessage("لا توجد إعلانات نشطة"),
+    "noActiveOpportunities": MessageLookupByLibrary.simpleMessage(
+      "لا توجد فرص نشطة",
+    ),
     "noAnalysesFound": MessageLookupByLibrary.simpleMessage("لا توجد تحليلات"),
     "noAnalyzedPlayersYet": MessageLookupByLibrary.simpleMessage(
       "لا يوجد لاعبين تم تحليلهم بعد",
@@ -1054,8 +1068,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noCourses": MessageLookupByLibrary.simpleMessage("لا توجد دورات"),
     "noCoursesFound": MessageLookupByLibrary.simpleMessage("لا توجد دورات"),
-    "noCoursesFoundFor": m25,
-    "noDataForMonth": m26,
+    "noCoursesFoundFor": m26,
+    "noData": MessageLookupByLibrary.simpleMessage("لا بيانات"),
+    "noDataForMonth": m27,
     "noDescriptionAvailable": MessageLookupByLibrary.simpleMessage(
       "لا يوجد وصف متاح",
     ),
@@ -1070,6 +1085,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noInactiveAds": MessageLookupByLibrary.simpleMessage(
       "لا توجد إعلانات غير نشطة",
+    ),
+    "noInactiveOpportunities": MessageLookupByLibrary.simpleMessage(
+      "لا توجد فرص غير نشطة",
     ),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",
@@ -1157,9 +1175,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "oopsSomethingWentWrong": MessageLookupByLibrary.simpleMessage(
       "عذراً! حدث خطأ ما",
     ),
-    "opportunities": MessageLookupByLibrary.simpleMessage("الفرص"),
     "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم إنشاء الفرصة بنجاح!",
+    ),
+    "opportunityDeletedSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم حذف الفرصة بنجاح",
+    ),
+    "opportunityUpdatedSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الفرصة بنجاح",
+    ),
+    "opportunityUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الفرصة بنجاح!",
     ),
     "optional": MessageLookupByLibrary.simpleMessage("اختياري"),
     "orPasteUrlLabel": MessageLookupByLibrary.simpleMessage("أو الصق الرابط"),
@@ -1243,12 +1269,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "payment_success_title": MessageLookupByLibrary.simpleMessage(
       "تمت عملية الدفع بنجاح!",
     ),
-    "payment_success_transaction_id": m27,
+    "payment_success_transaction_id": m28,
     "pending": MessageLookupByLibrary.simpleMessage("معلق"),
     "people": MessageLookupByLibrary.simpleMessage("أشخاص"),
-    "percentComplete": m28,
-    "percentage": m29,
-    "percentageWatched": m30,
+    "percentComplete": m29,
+    "percentage": m30,
+    "percentageWatched": m31,
     "performanceOverview": MessageLookupByLibrary.simpleMessage(
       "نظرة عامة على الأداء",
     ),
@@ -1317,9 +1343,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "posts": MessageLookupByLibrary.simpleMessage("المنشورات"),
     "preparing": MessageLookupByLibrary.simpleMessage("جاري التحضير…"),
     "price": MessageLookupByLibrary.simpleMessage("السعر"),
-    "priceEGP": m31,
+    "priceEGP": m32,
     "priceEGPtxt": MessageLookupByLibrary.simpleMessage("السعر (جنيه)"),
-    "pricePerDay": m32,
+    "pricePerDay": m33,
     "priceRequired": MessageLookupByLibrary.simpleMessage("السعر مطلوب"),
     "privacyPolicyTitle": MessageLookupByLibrary.simpleMessage(
       "الخصوصية والسياسة",
@@ -1381,6 +1407,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "المورد غير موجود.",
     ),
     "restore": MessageLookupByLibrary.simpleMessage("استعادة"),
+    "restoreOpportunity": MessageLookupByLibrary.simpleMessage(
+      "استعادة الفرصة",
+    ),
     "restorePost": MessageLookupByLibrary.simpleMessage("استعادة المنشور"),
     "restorePostConfirmation": MessageLookupByLibrary.simpleMessage(
       "سيتم استعادة هذا المنشور وجعله مرئياً في ملفك الشخصي وتدفقك. هل أنت متأكد من رغبتك في استعادة هذا المنشور؟",
@@ -1411,7 +1440,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "searchChats": MessageLookupByLibrary.simpleMessage("ابحث في المحادثات"),
     "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
-    "secondsAgo": m33,
+    "secondsAgo": m34,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("رؤية النص الأصلي"),
     "select": MessageLookupByLibrary.simpleMessage("اختر"),
     "selectAnalysisType": MessageLookupByLibrary.simpleMessage(
@@ -1423,7 +1452,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectEndDate": MessageLookupByLibrary.simpleMessage(
       "اختر تاريخ الانتهاء",
     ),
-    "selectField": m34,
+    "selectField": m35,
     "selectGender": MessageLookupByLibrary.simpleMessage("اختر الجنس"),
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
     "selectLocation": MessageLookupByLibrary.simpleMessage("اختر الموقع"),
@@ -1462,6 +1491,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "signUp": MessageLookupByLibrary.simpleMessage("إنشاء حساب"),
     "signingIn": MessageLookupByLibrary.simpleMessage("جارٍ تسجيل الدخول..."),
     "since": MessageLookupByLibrary.simpleMessage("منذ"),
+    "sinceDate": m36,
     "skills": MessageLookupByLibrary.simpleMessage("المهارات"),
     "skip": MessageLookupByLibrary.simpleMessage("تخطي"),
     "somethingWentWrong": MessageLookupByLibrary.simpleMessage(
@@ -1498,7 +1528,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "subscription": MessageLookupByLibrary.simpleMessage("الاشتراك"),
     "subscription_btn": MessageLookupByLibrary.simpleMessage("اشترك الآن"),
-    "subscription_plan_ads_month": m35,
+    "subscription_plan_ads_month": m37,
     "subscription_plan_basic_stats": MessageLookupByLibrary.simpleMessage(
       "إحصائيات أساسية",
     ),
@@ -1511,8 +1541,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscription_plan_detailed_reports": MessageLookupByLibrary.simpleMessage(
       "تقارير مفصّلة",
     ),
-    "subscription_plan_duration_month": m36,
-    "subscription_plan_duration_year": m37,
+    "subscription_plan_duration_month": m38,
+    "subscription_plan_duration_year": m39,
     "subscription_plan_forever": MessageLookupByLibrary.simpleMessage("للأبد"),
     "subscription_plan_no_ads": MessageLookupByLibrary.simpleMessage(
       "بدون إعلانات",
@@ -1533,7 +1563,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscription_plan_unlimited_videos": MessageLookupByLibrary.simpleMessage(
       "فيديوهات غير محدودة",
     ),
-    "subscription_plan_videos_month": m38,
+    "subscription_plan_videos_month": m40,
     "subscription_renewal_note": MessageLookupByLibrary.simpleMessage(
       "هذا اشتراك يتجدد تلقائياً.\nيمكنك الإلغاء في أي وقت من الإعدادات.",
     ),
@@ -1572,9 +1602,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "team1": MessageLookupByLibrary.simpleMessage("الفريق 1"),
     "team2": MessageLookupByLibrary.simpleMessage("الفريق 2"),
     "theme": MessageLookupByLibrary.simpleMessage("الوضع الفاتح"),
-    "timeDays": m39,
-    "timeHours": m40,
-    "timeMinutes": m41,
+    "timeDays": m41,
+    "timeHours": m42,
+    "timeMinutes": m43,
     "timeSpent": MessageLookupByLibrary.simpleMessage("الوقت المستغرق"),
     "title": MessageLookupByLibrary.simpleMessage("العنوان"),
     "titleCannotBeEmpty": MessageLookupByLibrary.simpleMessage(
@@ -1608,6 +1638,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
     ),
+    "undo": MessageLookupByLibrary.simpleMessage("تراجع"),
     "unexpectedError": MessageLookupByLibrary.simpleMessage(
       "حدث خطأ غير متوقع.",
     ),
@@ -1634,7 +1665,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadCourseThumbnail": MessageLookupByLibrary.simpleMessage(
       "رفع صورة مصغرة للدورة",
     ),
-    "uploadError": m43,
+    "uploadError": m42,
     "uploadFailedPasteManually": MessageLookupByLibrary.simpleMessage(
       "فشل الرفع. الصق رابط الفيديو يدوياً.",
     ),
@@ -1669,7 +1700,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "userMessage": MessageLookupByLibrary.simpleMessage("رسالة المستخدم"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
     "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
-    "usersAnalyses": m44,
+    "usersAnalyses": m43,
     "validEmail": MessageLookupByLibrary.simpleMessage(
       "أدخل بريدًا إلكترونيًا صالحًا",
     ),
@@ -1726,7 +1757,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("تمت المشاهدة"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("تفاصيل الأسبوع"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("التفاصيل الأسبوعية"),
-    "weeksAgo": m45,
+    "weeksAgo": m46,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "weightRange": MessageLookupByLibrary.simpleMessage("نطاق الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
@@ -1744,7 +1775,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "writeMessageHint": MessageLookupByLibrary.simpleMessage("اكتب رسالتك"),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
     "years": MessageLookupByLibrary.simpleMessage("سنوات"),
-    "yearsAgo": m46,
+    "yearsAgo": m47,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),
     "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(

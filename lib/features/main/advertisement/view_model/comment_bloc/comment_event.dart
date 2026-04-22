@@ -24,7 +24,7 @@ class FetchAdComments extends AdCommentsEvent {
 class AddAdComment extends AdCommentsEvent {
   final String adId;
   final String text;
-  AddAdComment({required this.adId, required this.text});
+  const AddAdComment({required this.adId, required this.text});
 
   @override
   List<Object?> get props => [adId, text];
@@ -33,7 +33,7 @@ class AddAdComment extends AdCommentsEvent {
 class EditAdComment extends AdCommentsEvent {
   final String commentId;
   final String text;
-  EditAdComment({required this.commentId, required this.text});
+  const EditAdComment({required this.commentId, required this.text});
 
   @override
   List<Object?> get props => [commentId, text];

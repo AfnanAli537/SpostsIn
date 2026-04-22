@@ -369,6 +369,16 @@ class S {
     );
   }
 
+  /// `Preferred Club Experience`
+  String get PreferredClubExperience {
+    return Intl.message(
+      'Preferred Club Experience',
+      name: 'PreferredClubExperience',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Specialist`
   String get specialist {
     return Intl.message('Specialist', name: 'specialist', desc: '', args: []);
@@ -1784,6 +1794,26 @@ class S {
     );
   }
 
+  /// `undo`
+  String get undo {
+    return Intl.message('undo', name: 'undo', desc: '', args: []);
+  }
+
+  /// `No data.`
+  String get noData {
+    return Intl.message('No data.', name: 'noData', desc: '', args: []);
+  }
+
+  /// `Failed to delete. Please try again.`
+  String get deleteFailed {
+    return Intl.message(
+      'Failed to delete. Please try again.',
+      name: 'deleteFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Opportunities`
   String get opportunities {
     return Intl.message(
@@ -1794,10 +1824,20 @@ class S {
     );
   }
 
-  /// `Opportunities`
+  /// `Edit Opportunity`
+  String get editOpportunity {
+    return Intl.message(
+      'Edit Opportunity',
+      name: 'editOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Opportunities`
   String get myOpportunities {
     return Intl.message(
-      'Opportunities',
+      'My Opportunities',
       name: 'myOpportunities',
       desc: '',
       args: [],
@@ -2819,6 +2859,16 @@ class S {
     );
   }
 
+  /// `Opportunity updated successfully!`
+  String get opportunityUpdatedSuccessfully {
+    return Intl.message(
+      'Opportunity updated successfully!',
+      name: 'opportunityUpdatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Application submitted successfully!`
   String get applicationSubmittedSuccessfully {
     return Intl.message(
@@ -3126,6 +3176,86 @@ class S {
       name: 'noOpportunitiesAvailable',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Opportunity deleted successfully`
+  String get opportunityDeletedSuccess {
+    return Intl.message(
+      'Opportunity deleted successfully',
+      name: 'opportunityDeletedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opportunity updated successfully`
+  String get opportunityUpdatedSuccess {
+    return Intl.message(
+      'Opportunity updated successfully',
+      name: 'opportunityUpdatedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No active opportunities`
+  String get noActiveOpportunities {
+    return Intl.message(
+      'No active opportunities',
+      name: 'noActiveOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No inactive opportunities`
+  String get noInactiveOpportunities {
+    return Intl.message(
+      'No inactive opportunities',
+      name: 'noInactiveOpportunities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Archive Opportunity`
+  String get archiveOpportunity {
+    return Intl.message(
+      'Archive Opportunity',
+      name: 'archiveOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Opportunity`
+  String get restoreOpportunity {
+    return Intl.message(
+      'Restore Opportunity',
+      name: 'restoreOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to {action} this opportunity?`
+  String archiveRestoreConfirmation(Object action) {
+    return Intl.message(
+      'Are you sure you want to $action this opportunity?',
+      name: 'archiveRestoreConfirmation',
+      desc: '',
+      args: [action],
+    );
+  }
+
+  /// `Since {date}`
+  String sinceDate(Object date) {
+    return Intl.message(
+      'Since $date',
+      name: 'sinceDate',
+      desc: '',
+      args: [date],
     );
   }
 

@@ -96,8 +96,9 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   ) async {
     final currentState = state;
     if (currentState is! ConnectionsLoaded) return;
-    if (!currentState.hasMoreContacts || currentState.isLoadingMoreContacts)
+    if (!currentState.hasMoreContacts || currentState.isLoadingMoreContacts) {
       return;
+    }
 
     if (_viewingUserId == null) return;
 

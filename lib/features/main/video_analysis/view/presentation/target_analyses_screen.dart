@@ -126,8 +126,9 @@ class _TargetAnalysesScreenState extends State<TargetAnalysesScreen> {
               },
               builder: (context, state) {
                 if (state is TargetAnalysesLoading) return _buildShimmer();
-                if (state is TargetAnalysesError)
+                if (state is TargetAnalysesError) {
                   return _buildError(context, state.message, strings);
+                }
                 if (state is TargetAnalysesLoaded) {
                   if (state.items.isEmpty) return _buildEmpty(theme, strings);
                   return _buildList(context, state, strings);
