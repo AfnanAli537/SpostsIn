@@ -3,11 +3,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:sports_in/core/utils/helper/date_time_helper.dart';
 import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart';
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_avatar.dart';
+import 'package:sports_in/generated/l10n.dart';
 
 part 'widgets/chat_view_widgets.dart';
 
@@ -253,7 +255,7 @@ class _ChatViewState extends State<ChatView> {
       builder: (_) => Container(
         margin: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -264,7 +266,7 @@ class _ChatViewState extends State<ChatView> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFFEEF0F5),
+                color:Theme.of(context).colorScheme.onSurface,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -276,14 +278,14 @@ class _ChatViewState extends State<ChatView> {
               _OptionTile(
                 icon: Icons.edit_rounded,
                 label: 'Edit',
-                color: Colors.black87,
+                color:Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
                 onTap: () {
                   Navigator.pop(context);
                   _startEdit(msg);
                 },
               ),
 
-            const Divider(height: 1, color: Color(0xFFEEF0F5)),
+             Divider(height: 1, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
 
             _OptionTile(
               icon: Icons.delete_outline_rounded,
@@ -303,79 +305,81 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FA),
-      appBar: _ChatAppBar(chat: widget.chat),
-      body: BlocConsumer<ChatBloc, ChatState>(
-        listenWhen: (p, c) =>
-            p.messages.length != c.messages.length ||
-            p.sendError != c.sendError,
-        // Rebuild message list (and _buildStatusIcon) when bloc emits updated messages (e.g. after HubMessageStatusChanged or HubConversationSeen).
-        buildWhen: (p, c) =>
-            p.messages != c.messages ||
-            p.messagesLoading != c.messagesLoading ||
-            p.messagesLoadingMore != c.messagesLoadingMore ||
-            p.messagesError != c.messagesError ||
-            p.isSending != c.isSending ||
-            p.typingInfo != c.typingInfo ||
-            p.hubConnected != c.hubConnected ||
-            p.hubReconnecting != c.hubReconnecting,
-        listener: (_, state) {
-          if (state.sendError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.sendError!),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
-          }
-
-          // add notifySeen here
-          if (state.messagesLoading == false &&
-              state.messages.last.isMe == false) {
-            log(
-              '👁️ notifySeen to: ${state.messages.last.senderId} (id: ${state.messages.last.id}, isMe: ${state.messages.last.isMe} , groupId: ${widget.chat.isGroup ? widget.chat.id : null})',
-            );
-            context.read<ChatBloc>().add(
-              NotifySeenEvent(
-                senderId: state.messages.last.senderId,
-                groupId: widget.chat.isGroup ? widget.chat.id : null,
-              ),
-            );
-          }
-          // TODO:
-          if (state.messages.isNotEmpty) {
-            _scrollToBottom();
-          }
-        },
-        builder: (_, state) {
-          final isTypingInThisChat =
-              state.typingInfo?.isTyping == true &&
-              (widget.chat.isGroup
-                  ? widget.chat.members.any(
-                      (m) => m.userId == state.typingInfo?.userId,
-                    )
-                  : widget.chat.id == state.typingInfo?.userId);
-          final showHubBanner = !state.hubConnected || state.hubReconnecting;
-          return Column(
-            children: [
-              if (showHubBanner)
-                _ChatSignalRBanner(
-                  hubReconnecting: state.hubReconnecting,
-                  hubError: state.hubError,
+    return SafeArea(
+      child: Scaffold(
+        //    backgroundColor: const Color(0xFFF4F6FA),
+        appBar: _ChatAppBar(chat: widget.chat),
+        body: BlocConsumer<ChatBloc, ChatState>(
+          listenWhen: (p, c) =>
+              p.messages.length != c.messages.length ||
+              p.sendError != c.sendError,
+          // Rebuild message list (and _buildStatusIcon) when bloc emits updated messages (e.g. after HubMessageStatusChanged or HubConversationSeen).
+          buildWhen: (p, c) =>
+              p.messages != c.messages ||
+              p.messagesLoading != c.messagesLoading ||
+              p.messagesLoadingMore != c.messagesLoadingMore ||
+              p.messagesError != c.messagesError ||
+              p.isSending != c.isSending ||
+              p.typingInfo != c.typingInfo ||
+              p.hubConnected != c.hubConnected ||
+              p.hubReconnecting != c.hubReconnecting,
+          listener: (_, state) {
+            if (state.sendError != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.sendError!),
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
-              Expanded(child: _buildMessageList(state)),
-              if (isTypingInThisChat)
-                _TypingIndicator(userName: _getTypingUserName(state)),
-              _MessageInputBar(
-                controller: _inputController,
-                isSending: state.isSending,
-                onChanged: _onTextChanged,
-                onSend: _sendMessage,
-              ),
-            ],
-          );
-        },
+              );
+            }
+      
+            // add notifySeen here
+            if (state.messagesLoading == false &&
+                state.messages.last.isMe == false) {
+              log(
+                '👁️ notifySeen to: ${state.messages.last.senderId} (id: ${state.messages.last.id}, isMe: ${state.messages.last.isMe} , groupId: ${widget.chat.isGroup ? widget.chat.id : null})',
+              );
+              context.read<ChatBloc>().add(
+                NotifySeenEvent(
+                  senderId: state.messages.last.senderId,
+                  groupId: widget.chat.isGroup ? widget.chat.id : null,
+                ),
+              );
+            }
+            // TODO:
+            if (state.messages.isNotEmpty) {
+              _scrollToBottom();
+            }
+          },
+          builder: (_, state) {
+            final isTypingInThisChat =
+                state.typingInfo?.isTyping == true &&
+                (widget.chat.isGroup
+                    ? widget.chat.members.any(
+                        (m) => m.userId == state.typingInfo?.userId,
+                      )
+                    : widget.chat.id == state.typingInfo?.userId);
+            final showHubBanner = !state.hubConnected || state.hubReconnecting;
+            return Column(
+              children: [
+                if (showHubBanner)
+                  _ChatSignalRBanner(
+                    hubReconnecting: state.hubReconnecting,
+                    hubError: state.hubError,
+                  ),
+                Expanded(child: _buildMessageList(state)),
+                if (isTypingInThisChat)
+                  _TypingIndicator(userName: _getTypingUserName(state)),
+                _MessageInputBar(
+                  controller: _inputController,
+                  isSending: state.isSending,
+                  onChanged: _onTextChanged,
+                  onSend: _sendMessage,
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

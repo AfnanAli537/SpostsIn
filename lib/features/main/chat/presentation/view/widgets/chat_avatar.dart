@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-// ─── Chat Avatar ──────────────────────────────────────────────────────────────
-
 class ChatAvatar extends StatelessWidget {
   final String? imageUrl;
   final String name;

@@ -9,6 +9,7 @@ import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart'
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/presentation/view/chat_view.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_avatar.dart';
+import 'package:sports_in/generated/l10n.dart'; // S
 
 class ContactsSection extends StatelessWidget {
   final bool loading;
@@ -22,17 +23,20 @@ class ContactsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final s = S.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 18.w),
           child: Text(
-            "Contacts",
-            style: TextStyle(
-              fontSize: 15.sp,
+            s.contacts,
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
             ),
           ),
         ),
@@ -40,7 +44,12 @@ class ContactsSection extends StatelessWidget {
         SizedBox(
           height: 90.h,
           child: loading
-              ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
+              ? Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colorScheme.primary,
+                  ),
+                )
               : ListView.separated(
                   padding: EdgeInsets.symmetric(horizontal: 18.w),
                   scrollDirection: Axis.horizontal,
@@ -96,9 +105,9 @@ class ContactsSection extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: textTheme.labelLarge?.copyWith(
                                 fontSize: 11.sp,
-                                color: Colors.grey[700],
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ),

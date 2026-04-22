@@ -276,7 +276,12 @@ class S {
 
   /// `Chat`
   String get chat {
-    return Intl.message('Chat', name: 'chat', desc: '', args: []);
+    return Intl.message(
+      'Chat',
+      name: 'chat',
+      desc: 'Generic fallback label for a chat',
+      args: [],
+    );
   }
 
   /// `Profile`
@@ -291,7 +296,12 @@ class S {
 
   /// `Create`
   String get create {
-    return Intl.message('Create', name: 'create', desc: '', args: []);
+    return Intl.message(
+      'Create',
+      name: 'create',
+      desc: 'Button label to submit group creation',
+      args: [],
+    );
   }
 
   /// `Registered successfully!`
@@ -2019,7 +2029,7 @@ class S {
     return Intl.message(
       'Search Result',
       name: 'searchResults',
-      desc: '',
+      desc: 'Section header shown while searching chats',
       args: [],
     );
   }
@@ -2316,17 +2326,32 @@ class S {
 
   /// `Retry`
   String get retry {
-    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+      desc: 'Button label to retry a failed action',
+      args: [],
+    );
   }
 
   /// `Edit`
   String get edit {
-    return Intl.message('Edit', name: 'edit', desc: '', args: []);
+    return Intl.message(
+      'Edit',
+      name: 'edit',
+      desc: 'Option to edit a message',
+      args: [],
+    );
   }
 
   /// `Delete`
   String get delete {
-    return Intl.message('Delete', name: 'delete', desc: '', args: []);
+    return Intl.message(
+      'Delete',
+      name: 'delete',
+      desc: 'Option to delete a message',
+      args: [],
+    );
   }
 
   /// `Delete Comment`
@@ -4515,7 +4540,12 @@ class S {
 
   /// `Online`
   String get online {
-    return Intl.message('Online', name: 'online', desc: '', args: []);
+    return Intl.message(
+      'Online',
+      name: 'online',
+      desc: 'Status label shown when a user is online',
+      args: [],
+    );
   }
 
   /// `Month`
@@ -7178,7 +7208,7 @@ class S {
     return Intl.message(
       'No chats yet.\nStart a new conversation!',
       name: 'noChatsYet',
-      desc: '',
+      desc: 'Empty state when there are no chats',
       args: [],
     );
   }
@@ -7596,6 +7626,166 @@ class S {
   /// `years`
   String get years {
     return Intl.message('years', name: 'years', desc: '', args: []);
+  }
+
+  /// `Messages`
+  String get messages {
+    return Intl.message(
+      'Messages',
+      name: 'messages',
+      desc: 'Title for the messages/chat list screen',
+      args: [],
+    );
+  }
+
+  /// `Search chats`
+  String get searchChats {
+    return Intl.message(
+      'Search chats',
+      name: 'searchChats',
+      desc: 'Hint text for the chat search field',
+      args: [],
+    );
+  }
+
+  /// `Contacts`
+  String get contacts {
+    return Intl.message(
+      'Contacts',
+      name: 'contacts',
+      desc: 'Section header for contacts list',
+      args: [],
+    );
+  }
+
+  /// `Inbox`
+  String get inbox {
+    return Intl.message(
+      'Inbox',
+      name: 'inbox',
+      desc: 'Section header for chat inbox',
+      args: [],
+    );
+  }
+
+  /// `Create group`
+  String get createGroup {
+    return Intl.message(
+      'Create group',
+      name: 'createGroup',
+      desc: 'Title for the create group bottom sheet',
+      args: [],
+    );
+  }
+
+  /// `Group name`
+  String get groupName {
+    return Intl.message(
+      'Group name',
+      name: 'groupName',
+      desc: 'Label for the group name text field',
+      args: [],
+    );
+  }
+
+  /// `Description (optional)`
+  String get descriptionOptional {
+    return Intl.message(
+      'Description (optional)',
+      name: 'descriptionOptional',
+      desc: 'Label for the optional group description field',
+      args: [],
+    );
+  }
+
+  /// `Members`
+  String get members {
+    return Intl.message(
+      'Members',
+      name: 'members',
+      desc: 'Section header for member selection in group creation',
+      args: [],
+    );
+  }
+
+  /// `No contacts available`
+  String get noContactsAvailable {
+    return Intl.message(
+      'No contacts available',
+      name: 'noContactsAvailable',
+      desc: 'Empty state when no contacts are found',
+      args: [],
+    );
+  }
+
+  /// `Type a message...`
+  String get typeAMessage {
+    return Intl.message(
+      'Type a message...',
+      name: 'typeAMessage',
+      desc: 'Hint text in the chat message input field',
+      args: [],
+    );
+  }
+
+  /// `typing...`
+  String get typing {
+    return Intl.message(
+      'typing...',
+      name: 'typing',
+      desc: 'Status label shown when a user is typing (no name prefix)',
+      args: [],
+    );
+  }
+
+  /// `{name} is typing...`
+  String typingWithName(String name) {
+    return Intl.message(
+      '$name is typing...',
+      name: 'typingWithName',
+      desc: 'Typing indicator with the user\'s name',
+      args: [name],
+    );
+  }
+
+  /// `edited`
+  String get edited {
+    return Intl.message(
+      'edited',
+      name: 'edited',
+      desc: 'Label appended to edited messages',
+      args: [],
+    );
+  }
+
+  /// `Reconnecting…`
+  String get reconnecting {
+    return Intl.message(
+      'Reconnecting…',
+      name: 'reconnecting',
+      desc: 'Banner text while SignalR is reconnecting',
+      args: [],
+    );
+  }
+
+  /// `Connection failed. Tap to retry`
+  String get connectionFailed {
+    return Intl.message(
+      'Connection failed. Tap to retry',
+      name: 'connectionFailed',
+      desc: 'Banner text when SignalR connection has failed',
+      args: [],
+    );
+  }
+
+  /// `Disconnected. Tap to reconnect`
+  String get disconnected {
+    return Intl.message(
+      'Disconnected. Tap to reconnect',
+      name: 'disconnected',
+      desc: 'Banner text when SignalR is disconnected',
+      args: [],
+    );
   }
 }
 

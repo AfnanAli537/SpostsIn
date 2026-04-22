@@ -50,118 +50,120 @@ class _ChatWindowScreenState extends State<ChatWindowScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        // backgroundColor: Colors.white,
-        elevation: 0.5,
-        // leading: const BackButton(color: Color(0xFF1A1A2E)),
-        leading:  BackButton(color:  Theme.of(context).colorScheme.primary),
-
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/chatbot_robot.png',
-              width: 36.w,
-              height: 36.h,
-              fit: BoxFit.contain,
-            ),
-            SizedBox(width: 10.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  S.of(context).sportsinTitle,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    // color: const Color(0xFF1A1A2E),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
-                  ),
-                ),
-                Text(
-                  S.of(context).onlineStatus,
-                  style: TextStyle(
-                    color: const Color(0xFF4CAF50),
-                    fontSize: 11.sp,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      body: BlocConsumer<ChatbotBloc, ChatbotState>(
-        listener: (context, state) {
-          if (state is SendingMessage || state is MessageSent) {
-            _scrollToBottom();
-          }
-          if (state is SendingMessage) {
-            setState(() => _isSending = true);
-          } else {
-            setState(() => _isSending = false);
-          }
-          if (state is SendMessageError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        builder: (context, state) {
-          List<ChatMessage> messages = [];
-          String sessionId = context.read<ChatbotBloc>().currentSessionId;
-
-          if (state is MessagesLoaded) {
-            messages = state.messages;
-            sessionId = state.sessionId;
-          } else if (state is SendingMessage) {
-            messages = state.messages;
-          } else if (state is MessageSent) {
-            messages = state.messages;
-            sessionId = state.sessionId;
-          } else if (state is SendMessageError) {
-            messages = state.messages;
-          }
-
-          return Column(
+    return SafeArea(
+      child: Scaffold(
+        // backgroundColor: const Color(0xFFF5F7FA),
+        appBar: AppBar(
+          // backgroundColor: Colors.white,
+          elevation: 0.5,
+          // leading: const BackButton(color: Color(0xFF1A1A2E)),
+          leading:  BackButton(color:  Theme.of(context).colorScheme.primary),
+      
+          title: Row(
             children: [
-              Expanded(
-                child: messages.isEmpty && state is MessagesLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : messages.isEmpty
-                        ? Center(
-                            child: Text(
-                              S.of(context).sayHello,
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          )
-                        : ListView.builder(
-                            controller: _scrollController,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 12.h,
-                            ),
-                            itemCount: messages.length + (_isSending ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index == messages.length && _isSending) {
-                                return const _TypingIndicator();
-                              }
-                              final msg = messages[index];
-                              return ChatBubble(message: msg);
-                            },
-                          ),
+              Image.asset(
+                'assets/images/chatbot_robot.png',
+                width: 36.w,
+                height: 36.h,
+                fit: BoxFit.contain,
               ),
-              _InputBar(
-                controller: _controller,
-                isSending: _isSending,
-                onSend: () => _sendMessage(sessionId),
+              SizedBox(width: 10.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    S.of(context).sportsinTitle,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      // color: const Color(0xFF1A1A2E),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
+                    ),
+                  ),
+                  Text(
+                    S.of(context).onlineStatus,
+                    style: TextStyle(
+                      color: const Color(0xFF4CAF50),
+                      fontSize: 11.sp,
+                    ),
+                  ),
+                ],
               ),
             ],
-          );
-        },
+          ),
+        ),
+        body: BlocConsumer<ChatbotBloc, ChatbotState>(
+          listener: (context, state) {
+            if (state is SendingMessage || state is MessageSent) {
+              _scrollToBottom();
+            }
+            if (state is SendingMessage) {
+              setState(() => _isSending = true);
+            } else {
+              setState(() => _isSending = false);
+            }
+            if (state is SendMessageError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+          builder: (context, state) {
+            List<ChatMessage> messages = [];
+            String sessionId = context.read<ChatbotBloc>().currentSessionId;
+      
+            if (state is MessagesLoaded) {
+              messages = state.messages;
+              sessionId = state.sessionId;
+            } else if (state is SendingMessage) {
+              messages = state.messages;
+            } else if (state is MessageSent) {
+              messages = state.messages;
+              sessionId = state.sessionId;
+            } else if (state is SendMessageError) {
+              messages = state.messages;
+            }
+      
+            return Column(
+              children: [
+                Expanded(
+                  child: messages.isEmpty && state is MessagesLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : messages.isEmpty
+                          ? Center(
+                              child: Text(
+                                S.of(context).sayHello,
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              controller: _scrollController,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 12.h,
+                              ),
+                              itemCount: messages.length + (_isSending ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index == messages.length && _isSending) {
+                                  return const _TypingIndicator();
+                                }
+                                final msg = messages[index];
+                                return ChatBubble(message: msg);
+                              },
+                            ),
+                ),
+                _InputBar(
+                  controller: _controller,
+                  isSending: _isSending,
+                  onSend: () => _sendMessage(sessionId),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

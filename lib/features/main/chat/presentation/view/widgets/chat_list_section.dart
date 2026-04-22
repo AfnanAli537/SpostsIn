@@ -10,6 +10,7 @@ import 'package:sports_in/features/main/chat/data/models/chat_model_import.dart'
 import 'package:sports_in/features/main/chat/presentation/manger/chat_bloc/chat_bloc.dart';
 import 'package:sports_in/features/main/chat/presentation/view/chat_view.dart';
 import 'package:sports_in/features/main/chat/presentation/view/widgets/chat_list_tile.dart';
+import 'package:sports_in/generated/l10n.dart'; // S
 
 class ChatListSection extends StatelessWidget {
   final List<ChatModel> chats;
@@ -25,14 +26,27 @@ class ChatListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final s = S.of(context);
+
     if (loading && chats.isEmpty) {
-      return const Expanded(child: Center(child: CircularProgressIndicator()));
+      return Expanded(
+        child: Center(
+          child: CircularProgressIndicator(color: colorScheme.primary),
+        ),
+      );
     }
 
     if (chats.isEmpty) {
-      return const Expanded(
+      return Expanded(
         child: Center(
-          child: Text('No chats yet', style: TextStyle(color: Colors.grey)),
+          child: Text(
+            s.noChatsYet,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
         ),
       );
     }
@@ -44,9 +58,14 @@ class ChatListSection extends StatelessWidget {
         separatorBuilder: (_, __) => SizedBox(height: 12.h),
         itemBuilder: (_, index) {
           if (loadingMore && index == chats.length) {
-            return const Padding(
-              padding: EdgeInsets.all(8),
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            return Padding(
+              padding: EdgeInsets.all(8.r),
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colorScheme.primary,
+                ),
+              ),
             );
           }
 

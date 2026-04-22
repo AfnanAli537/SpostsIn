@@ -1122,7 +1122,78 @@
   "enterMinExperience": "مثال: 3",
   "additionalNotes": "ملاحظات إضافية",
   "enterAdditionalNotes": "أي تفاصيل إضافية...",
-  "years": "سنوات"
+  "years": "سنوات",
+
+  "messages": "الرسائل",
+  "@messages": { "description": "Title for the messages/chat list screen" },
+
+  "searchChats": "ابحث في المحادثات",
+  "@searchChats": { "description": "Hint text for the chat search field" },
+
+  "contacts": "جهات الاتصال",
+  "@contacts": { "description": "Section header for contacts list" },
+
+  "inbox": "صندوق الوارد",
+  "@inbox": { "description": "Section header for chat inbox" },
+
+  "@searchResults": { "description": "Section header shown while searching chats" },
+
+  "createGroup": "إنشاء مجموعة",
+  "@createGroup": { "description": "Title for the create group bottom sheet" },
+
+  "groupName": "اسم المجموعة",
+  "@groupName": { "description": "Label for the group name text field" },
+
+  "descriptionOptional": "الوصف (اختياري)",
+  "@descriptionOptional": { "description": "Label for the optional group description field" },
+
+  "members": "الأعضاء",
+  "@members": { "description": "Section header for member selection in group creation" },
+
+  "@create": { "description": "Button label to submit group creation" },
+
+  "noContactsAvailable": "لا توجد جهات اتصال",
+  "@noContactsAvailable": { "description": "Empty state when no contacts are found" },
+
+  "@noChatsYet": { "description": "Empty state when there are no chats" },
+
+  "typeAMessage": "اكتب رسالة...",
+  "@typeAMessage": { "description": "Hint text in the chat message input field" },
+
+
+  "@online": { "description": "Status label shown when a user is online" },
+
+  "typing": "يكتب...",
+  "@typing": { "description": "Status label shown when a user is typing (no name prefix)" },
+
+  "typingWithName": "{name} يكتب...",
+  "@typingWithName": {
+    "description": "Typing indicator with the user's name",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "edited": "تم التعديل",
+  "@edited": { "description": "Label appended to edited messages" },
+
+  "@edit": { "description": "Option to edit a message" },
+
+  "@delete": { "description": "Option to delete a message" },
+
+  "@retry": { "description": "Button label to retry a failed action" },
+
+  "reconnecting": "جارٍ إعادة الاتصال…",
+  "@reconnecting": { "description": "Banner text while SignalR is reconnecting" },
+
+  "connectionFailed": "فشل الاتصال. اضغط للمحاولة مجدداً",
+  "@connectionFailed": { "description": "Banner text when SignalR connection has failed" },
+
+  "disconnected": "غير متصل. اضغط لإعادة الاتصال",
+  "@disconnected": { "description": "Banner text when SignalR is disconnected" },
+
+  "@chat": { "description": "Generic fallback label for a chat" }
+
 
  
 

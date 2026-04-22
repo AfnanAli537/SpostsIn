@@ -11,16 +11,18 @@ class ChatListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final hasUnread = chat.unreadCount > 0;
 
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .05),
+            color: colorScheme.onSurface.withOpacity(0.05),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -46,8 +48,8 @@ class ChatListTile extends StatelessWidget {
                         chat.title ?? 'Chat',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14.sp,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
                           fontWeight: hasUnread
                               ? FontWeight.w700
                               : FontWeight.w600,
@@ -56,7 +58,10 @@ class ChatListTile extends StatelessWidget {
                     ),
                     Text(
                       timeLabel,
-                      style: TextStyle(fontSize: 11.sp, color: Colors.grey),
+                      style: textTheme.labelLarge?.copyWith(
+                        fontSize: 11.sp,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
@@ -68,23 +73,23 @@ class ChatListTile extends StatelessWidget {
                         chat.lastMessage ?? '',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: textTheme.bodySmall?.copyWith(
                           fontSize: 12.sp,
-                          color: Colors.grey[600],
+                          color: colorScheme.onSurface.withOpacity(0.8),
                         ),
                       ),
                     ),
                     if (hasUnread)
                       Container(
                         padding: EdgeInsets.all(6.r),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF4A6CF7),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
                           shape: BoxShape.circle,
                         ),
                         child: Text(
                           '${chat.unreadCount}',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: textTheme.labelLarge?.copyWith(
+                            color: colorScheme.onPrimary,
                             fontSize: 10.sp,
                             fontWeight: FontWeight.bold,
                           ),

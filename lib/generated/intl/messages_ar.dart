@@ -113,14 +113,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m41(count) => "${count} د";
 
-  static String m42(error) => "خطأ في الرفع: ${error}";
+  static String m42(name) => "${name} يكتب...";
 
-  static String m43(name) => "تحليلات ${name}";
+  static String m43(error) => "خطأ في الرفع: ${error}";
 
-  static String m44(count) =>
-      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+  static String m44(name) => "تحليلات ${name}";
 
   static String m45(count) =>
+      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+
+  static String m46(count) =>
       "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ ${count} سنوات', many: 'منذ ${count} سنة', other: 'منذ ${count} سنة')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -391,6 +393,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "connect": MessageLookupByLibrary.simpleMessage("اتصل"),
     "connected": MessageLookupByLibrary.simpleMessage("متصل"),
     "connectionError": MessageLookupByLibrary.simpleMessage("فشل الاتصال"),
+    "connectionFailed": MessageLookupByLibrary.simpleMessage(
+      "فشل الاتصال. اضغط للمحاولة مجدداً",
+    ),
     "connectionSuccess": MessageLookupByLibrary.simpleMessage(
       "تم الاتصال بنجاح!",
     ),
@@ -403,6 +408,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("تواصل معنا"),
     "contactUs": MessageLookupByLibrary.simpleMessage("اتصل بنا"),
+    "contacts": MessageLookupByLibrary.simpleMessage("جهات الاتصال"),
     "continueButton": MessageLookupByLibrary.simpleMessage("استمر"),
     "continueText": MessageLookupByLibrary.simpleMessage("استمر"),
     "continueWatching": MessageLookupByLibrary.simpleMessage("متابعة المشاهدة"),
@@ -424,6 +430,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "createAchievement": MessageLookupByLibrary.simpleMessage("إنشاء إنجاز"),
     "createAdvertisement": MessageLookupByLibrary.simpleMessage("إنشاء إعلان"),
     "createCourse": MessageLookupByLibrary.simpleMessage("إنشاء دورة"),
+    "createGroup": MessageLookupByLibrary.simpleMessage("إنشاء مجموعة"),
     "createOpportunity": MessageLookupByLibrary.simpleMessage("إنشاء فرصة"),
     "createPost": MessageLookupByLibrary.simpleMessage("إنشاء منشور"),
     "createYourAccount": MessageLookupByLibrary.simpleMessage("أنشئ حسابك"),
@@ -486,12 +493,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "جاري حذف الفرصة...",
     ),
     "description": MessageLookupByLibrary.simpleMessage("الوصف"),
+    "descriptionOptional": MessageLookupByLibrary.simpleMessage(
+      "الوصف (اختياري)",
+    ),
     "descriptionRequired": MessageLookupByLibrary.simpleMessage("الوصف مطلوب"),
     "description_hint": MessageLookupByLibrary.simpleMessage("اشرح إنجازك..."),
     "description_label": MessageLookupByLibrary.simpleMessage("الوصف"),
     "details": MessageLookupByLibrary.simpleMessage("التفاصيل"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "تم قطع الاتصال بنجاح!",
+    ),
+    "disconnected": MessageLookupByLibrary.simpleMessage(
+      "غير متصل. اضغط لإعادة الاتصال",
     ),
     "distanceCovered": MessageLookupByLibrary.simpleMessage("المسافة المقطوعة"),
     "done": MessageLookupByLibrary.simpleMessage("تم"),
@@ -520,6 +533,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editYourComment": MessageLookupByLibrary.simpleMessage("عدّل تعليقك..."),
     "edit_achievement": MessageLookupByLibrary.simpleMessage("تعديل الإنجاز"),
+    "edited": MessageLookupByLibrary.simpleMessage("تم التعديل"),
     "editingComment": MessageLookupByLibrary.simpleMessage(
       "جاري تعديل التعليق",
     ),
@@ -745,6 +759,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "good": MessageLookupByLibrary.simpleMessage("جيد"),
     "gotIt": MessageLookupByLibrary.simpleMessage("فهمت"),
+    "groupName": MessageLookupByLibrary.simpleMessage("اسم المجموعة"),
     "guest": MessageLookupByLibrary.simpleMessage("ضيف"),
     "gymnast": MessageLookupByLibrary.simpleMessage("لاعب جمباز"),
     "gymnastics": MessageLookupByLibrary.simpleMessage("الجمباز"),
@@ -769,6 +784,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "home": MessageLookupByLibrary.simpleMessage("الرئيسية"),
     "hoursAgo": m15,
     "inactiveDraft": MessageLookupByLibrary.simpleMessage("غير نشط / مسودة"),
+    "inbox": MessageLookupByLibrary.simpleMessage("صندوق الوارد"),
     "industary": MessageLookupByLibrary.simpleMessage("المجال"),
     "informationBody": MessageLookupByLibrary.simpleMessage(
       "عند استخدامك لتطبيق سبورتس إن، قد نقوم بجمع الأنواع التالية من المعلومات:\n\n• البيانات الشخصية: الاسم، البريد الإلكتروني، صورة الملف الشخصي، المهارات والاهتمامات الرياضية.\n• بيانات النشاط: المنشورات، الرسائل، الإعجابات، والتفاعلات الأخرى.\n• بيانات الجهاز: نوع الجهاز، نظام التشغيل، وعنوان IP.",
@@ -959,9 +975,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "الحد الأقصى لحجم الملف 200 ميجابايت",
     ),
     "may": MessageLookupByLibrary.simpleMessage("مايو"),
+    "members": MessageLookupByLibrary.simpleMessage("الأعضاء"),
     "messageSent": MessageLookupByLibrary.simpleMessage(
       "تم إرسال الرسالة بنجاح",
     ),
+    "messages": MessageLookupByLibrary.simpleMessage("الرسائل"),
     "minAge": MessageLookupByLibrary.simpleMessage("الحد الأدنى للعمر"),
     "minExperienceYears": MessageLookupByLibrary.simpleMessage(
       "الحد الأدنى للخبرة (سنوات)",
@@ -1027,6 +1045,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noConnectionRequests": MessageLookupByLibrary.simpleMessage(
       "لا توجد طلبات اتصال",
+    ),
+    "noContactsAvailable": MessageLookupByLibrary.simpleMessage(
+      "لا توجد جهات اتصال",
     ),
     "noContactsYet": MessageLookupByLibrary.simpleMessage(
       "لا توجد جهات اتصال بعد",
@@ -1325,6 +1346,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "publicPosts": MessageLookupByLibrary.simpleMessage("المنشورات العامة"),
     "reactionTime": MessageLookupByLibrary.simpleMessage("وقت رد الفعل"),
     "reactionTimeShort": MessageLookupByLibrary.simpleMessage("وقت رد الفعل"),
+    "reconnecting": MessageLookupByLibrary.simpleMessage("جارٍ إعادة الاتصال…"),
     "recordWithCamera": MessageLookupByLibrary.simpleMessage("تصوير بالكاميرا"),
     "register": MessageLookupByLibrary.simpleMessage("تسجيل"),
     "registeredSuccessfully": MessageLookupByLibrary.simpleMessage(
@@ -1387,6 +1409,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchByUserName": MessageLookupByLibrary.simpleMessage(
       "ابحث باسم المستخدم",
     ),
+    "searchChats": MessageLookupByLibrary.simpleMessage("ابحث في المحادثات"),
     "searchResults": MessageLookupByLibrary.simpleMessage("نتائج البحث"),
     "secondsAgo": m33,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("رؤية النص الأصلي"),
@@ -1578,6 +1601,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "حاول تعديل البحث أو التصفية",
     ),
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage("جرب بحث أخر"),
+    "typeAMessage": MessageLookupByLibrary.simpleMessage("اكتب رسالة..."),
+    "typing": MessageLookupByLibrary.simpleMessage("يكتب..."),
+    "typingWithName": m42,
     "unKnown": MessageLookupByLibrary.simpleMessage("غير محدد"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
@@ -1608,7 +1634,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadCourseThumbnail": MessageLookupByLibrary.simpleMessage(
       "رفع صورة مصغرة للدورة",
     ),
-    "uploadError": m42,
+    "uploadError": m43,
     "uploadFailedPasteManually": MessageLookupByLibrary.simpleMessage(
       "فشل الرفع. الصق رابط الفيديو يدوياً.",
     ),
@@ -1643,7 +1669,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "userMessage": MessageLookupByLibrary.simpleMessage("رسالة المستخدم"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
     "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
-    "usersAnalyses": m43,
+    "usersAnalyses": m44,
     "validEmail": MessageLookupByLibrary.simpleMessage(
       "أدخل بريدًا إلكترونيًا صالحًا",
     ),
@@ -1700,7 +1726,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("تمت المشاهدة"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("تفاصيل الأسبوع"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("التفاصيل الأسبوعية"),
-    "weeksAgo": m44,
+    "weeksAgo": m45,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "weightRange": MessageLookupByLibrary.simpleMessage("نطاق الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
@@ -1718,7 +1744,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "writeMessageHint": MessageLookupByLibrary.simpleMessage("اكتب رسالتك"),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
     "years": MessageLookupByLibrary.simpleMessage("سنوات"),
-    "yearsAgo": m45,
+    "yearsAgo": m46,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),
     "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(

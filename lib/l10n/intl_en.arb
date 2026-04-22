@@ -1176,7 +1176,75 @@
 "enterMinExperience": "e.g. 3",
 "additionalNotes": "Additional Notes",
 "enterAdditionalNotes": "Any extra details...",
-"years": "years"
+"years": "years",
+  "messages": "Messages",
+  "@messages": { "description": "Title for the messages/chat list screen" },
+
+  "searchChats": "Search chats",
+  "@searchChats": { "description": "Hint text for the chat search field" },
+
+  "contacts": "Contacts",
+  "@contacts": { "description": "Section header for contacts list" },
+
+  "inbox": "Inbox",
+  "@inbox": { "description": "Section header for chat inbox" },
+
+  "@searchResults": { "description": "Section header shown while searching chats" },
+
+  "createGroup": "Create group",
+  "@createGroup": { "description": "Title for the create group bottom sheet" },
+
+  "groupName": "Group name",
+  "@groupName": { "description": "Label for the group name text field" },
+
+  "descriptionOptional": "Description (optional)",
+  "@descriptionOptional": { "description": "Label for the optional group description field" },
+
+  "members": "Members",
+  "@members": { "description": "Section header for member selection in group creation" },
+
+  "@create": { "description": "Button label to submit group creation" },
+
+  "noContactsAvailable": "No contacts available",
+  "@noContactsAvailable": { "description": "Empty state when no contacts are found" },
+
+  "@noChatsYet": { "description": "Empty state when there are no chats" },
+
+  "typeAMessage": "Type a message...",
+  "@typeAMessage": { "description": "Hint text in the chat message input field" },
+
+  "@online": { "description": "Status label shown when a user is online" },
+
+  "typing": "typing...",
+  "@typing": { "description": "Status label shown when a user is typing (no name prefix)" },
+
+  "typingWithName": "{name} is typing...",
+  "@typingWithName": {
+    "description": "Typing indicator with the user's name",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "edited": "edited",
+  "@edited": { "description": "Label appended to edited messages" },
+
+  "@edit": { "description": "Option to edit a message" },
+
+  "@delete": { "description": "Option to delete a message" },
+
+  "@retry": { "description": "Button label to retry a failed action" },
+
+  "reconnecting": "Reconnecting…",
+  "@reconnecting": { "description": "Banner text while SignalR is reconnecting" },
+
+  "connectionFailed": "Connection failed. Tap to retry",
+  "@connectionFailed": { "description": "Banner text when SignalR connection has failed" },
+
+  "disconnected": "Disconnected. Tap to reconnect",
+  "@disconnected": { "description": "Banner text when SignalR is disconnected" },
+
+  "@chat": { "description": "Generic fallback label for a chat" }
 
 
 }

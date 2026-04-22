@@ -113,14 +113,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m41(count) => "${count}m";
 
-  static String m42(error) => "Upload error: ${error}";
+  static String m42(name) => "${name} is typing...";
 
-  static String m43(name) => "${name}\'s Analyses";
+  static String m43(error) => "Upload error: ${error}";
 
-  static String m44(count) =>
-      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+  static String m44(name) => "${name}\'s Analyses";
 
   static String m45(count) =>
+      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+
+  static String m46(count) =>
       "${Intl.plural(count, one: '${count} year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -398,6 +400,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "connectionError": MessageLookupByLibrary.simpleMessage(
       "Failed to connect",
     ),
+    "connectionFailed": MessageLookupByLibrary.simpleMessage(
+      "Connection failed. Tap to retry",
+    ),
     "connectionSuccess": MessageLookupByLibrary.simpleMessage(
       "Connected successfully!",
     ),
@@ -410,6 +415,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("Contact Us"),
     "contactUs": MessageLookupByLibrary.simpleMessage("Contact us"),
+    "contacts": MessageLookupByLibrary.simpleMessage("Contacts"),
     "continueButton": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueText": MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "continueWatching": MessageLookupByLibrary.simpleMessage(
@@ -435,6 +441,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Create Advertisement",
     ),
     "createCourse": MessageLookupByLibrary.simpleMessage("Create Course"),
+    "createGroup": MessageLookupByLibrary.simpleMessage("Create group"),
     "createOpportunity": MessageLookupByLibrary.simpleMessage(
       "Create opportunity",
     ),
@@ -509,6 +516,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Deleting opportunity...",
     ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
+    "descriptionOptional": MessageLookupByLibrary.simpleMessage(
+      "Description (optional)",
+    ),
     "descriptionRequired": MessageLookupByLibrary.simpleMessage(
       "Description is required",
     ),
@@ -519,6 +529,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "details": MessageLookupByLibrary.simpleMessage("Details"),
     "disconnectSuccess": MessageLookupByLibrary.simpleMessage(
       "Disconnected successfully!",
+    ),
+    "disconnected": MessageLookupByLibrary.simpleMessage(
+      "Disconnected. Tap to reconnect",
     ),
     "distanceCovered": MessageLookupByLibrary.simpleMessage("Distance Covered"),
     "done": MessageLookupByLibrary.simpleMessage("Done"),
@@ -555,6 +568,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "edit_achievement": MessageLookupByLibrary.simpleMessage(
       "Edit Achievement",
     ),
+    "edited": MessageLookupByLibrary.simpleMessage("edited"),
     "editingComment": MessageLookupByLibrary.simpleMessage("Editing comment"),
     "egp": MessageLookupByLibrary.simpleMessage("EGP"),
     "elite": MessageLookupByLibrary.simpleMessage("Elite"),
@@ -776,6 +790,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "good": MessageLookupByLibrary.simpleMessage("Good"),
     "gotIt": MessageLookupByLibrary.simpleMessage("Got it"),
+    "groupName": MessageLookupByLibrary.simpleMessage("Group name"),
     "guest": MessageLookupByLibrary.simpleMessage("Guest"),
     "gymnast": MessageLookupByLibrary.simpleMessage("Gymnast"),
     "gymnastics": MessageLookupByLibrary.simpleMessage("Gymnastics"),
@@ -800,6 +815,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "home": MessageLookupByLibrary.simpleMessage("Home"),
     "hoursAgo": m15,
     "inactiveDraft": MessageLookupByLibrary.simpleMessage("Inactive / Draft"),
+    "inbox": MessageLookupByLibrary.simpleMessage("Inbox"),
     "industary": MessageLookupByLibrary.simpleMessage("Industry"),
     "informationBody": MessageLookupByLibrary.simpleMessage(
       "When you use SportsIn, we may collect the following types of information:\n\n• Personal data: your name, email, profile photo, sports skills, and interests.\n• Activity data: posts, messages, likes, and other interactions.\n• Device data: device type, operating system, and IP address.",
@@ -988,9 +1004,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Maximum file size is 200 MB",
     ),
     "may": MessageLookupByLibrary.simpleMessage("May"),
+    "members": MessageLookupByLibrary.simpleMessage("Members"),
     "messageSent": MessageLookupByLibrary.simpleMessage(
       "Message sent successfully",
     ),
+    "messages": MessageLookupByLibrary.simpleMessage("Messages"),
     "minAge": MessageLookupByLibrary.simpleMessage("Min Age"),
     "minExperienceYears": MessageLookupByLibrary.simpleMessage(
       "Min Experience (years)",
@@ -1060,6 +1078,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noCommentsYet": MessageLookupByLibrary.simpleMessage("No comments yet"),
     "noConnectionRequests": MessageLookupByLibrary.simpleMessage(
       "No Connection Requests",
+    ),
+    "noContactsAvailable": MessageLookupByLibrary.simpleMessage(
+      "No contacts available",
     ),
     "noContactsYet": MessageLookupByLibrary.simpleMessage("No contacts yet"),
     "noCourses": MessageLookupByLibrary.simpleMessage("No Courses"),
@@ -1365,6 +1386,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "publicPosts": MessageLookupByLibrary.simpleMessage("Public Posts"),
     "reactionTime": MessageLookupByLibrary.simpleMessage("Reaction Time"),
     "reactionTimeShort": MessageLookupByLibrary.simpleMessage("Reaction Time"),
+    "reconnecting": MessageLookupByLibrary.simpleMessage("Reconnecting…"),
     "recordWithCamera": MessageLookupByLibrary.simpleMessage(
       "Record with Camera",
     ),
@@ -1427,6 +1449,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchByUserName": MessageLookupByLibrary.simpleMessage(
       "Search by user name",
     ),
+    "searchChats": MessageLookupByLibrary.simpleMessage("Search chats"),
     "searchResults": MessageLookupByLibrary.simpleMessage("Search Result"),
     "secondsAgo": m33,
     "seeOriginal": MessageLookupByLibrary.simpleMessage("See Original"),
@@ -1629,6 +1652,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage(
       "Try a different search",
     ),
+    "typeAMessage": MessageLookupByLibrary.simpleMessage("Type a message..."),
+    "typing": MessageLookupByLibrary.simpleMessage("typing..."),
+    "typingWithName": m42,
     "unKnown": MessageLookupByLibrary.simpleMessage("N/A"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "Unauthorized. Please check your credentials.",
@@ -1657,7 +1683,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadCourseThumbnail": MessageLookupByLibrary.simpleMessage(
       "Upload Course Thumbnail",
     ),
-    "uploadError": m42,
+    "uploadError": m43,
     "uploadFailedPasteManually": MessageLookupByLibrary.simpleMessage(
       "Upload failed. Paste a URL manually.",
     ),
@@ -1692,7 +1718,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "userMessage": MessageLookupByLibrary.simpleMessage("User message"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
     "userType": MessageLookupByLibrary.simpleMessage("User Type"),
-    "usersAnalyses": m43,
+    "usersAnalyses": m44,
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
     "validHeightRange": MessageLookupByLibrary.simpleMessage(
       "Enter a valid height (1.0 – 2.5 m)",
@@ -1751,7 +1777,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("Watched"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("Weekly Breakdown"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("Weekly Details"),
-    "weeksAgo": m44,
+    "weeksAgo": m45,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "weightRange": MessageLookupByLibrary.simpleMessage("Weight Range (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
@@ -1773,7 +1799,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "year": MessageLookupByLibrary.simpleMessage("Year"),
     "years": MessageLookupByLibrary.simpleMessage("years"),
-    "yearsAgo": m45,
+    "yearsAgo": m46,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",
     ),
