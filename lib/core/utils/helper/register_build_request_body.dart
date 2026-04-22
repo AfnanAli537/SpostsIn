@@ -51,7 +51,7 @@ Future<Map<String, dynamic>> _buildRequestBody(
   switch (user.userType) {
     case UserType.player:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -71,7 +71,7 @@ Future<Map<String, dynamic>> _buildRequestBody(
 
     case UserType.coach:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -91,7 +91,7 @@ Future<Map<String, dynamic>> _buildRequestBody(
 
     case UserType.scout:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -112,7 +112,7 @@ Future<Map<String, dynamic>> _buildRequestBody(
           .toList();
 
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -125,7 +125,7 @@ Future<Map<String, dynamic>> _buildRequestBody(
 
     case UserType.institute:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -137,7 +137,7 @@ Future<Map<String, dynamic>> _buildRequestBody(
 
     case UserType.others:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
