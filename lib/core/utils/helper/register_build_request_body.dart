@@ -4,11 +4,17 @@ import 'package:sports_in/features/register/data/models/user_model.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-Future<Map<String, dynamic>> buildRequestBodyIsolate(UserModel user) async {
-  return _buildRequestBody(user);
+Future<Map<String, dynamic>> buildRequestBodyIsolate(
+  UserModel user,
+  CloudinaryService cloudinaryService,
+) async {
+  return _buildRequestBody(user, cloudinaryService);
 }
 
-Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
+Future<Map<String, dynamic>> _buildRequestBody(
+  UserModel user,
+  CloudinaryService cloudinaryService,
+) async {
   S? s;
   try {
     s = S.current;
@@ -16,7 +22,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
     s = null;
   }
 
-  final String imageUrl = await CloudinaryService.uploadImage(user.image);
+  final String imageUrl = await cloudinaryService.uploadImage(user.image);
 
   final genderEnum = user.gender != null
       ? EnumMapper.fromLabel(EnumMapper.genderLabels(s), user.gender!)

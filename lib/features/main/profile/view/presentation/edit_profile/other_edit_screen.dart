@@ -17,7 +17,6 @@ import 'package:sports_in/features/register/view/presentation/register/widgets/r
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 
 class OtherEditScreen extends StatefulWidget {
   final ProfileModel profile;
@@ -44,18 +43,19 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
 
   @override
   void initState() {
- super.initState();
-  
-  final nameParts = widget.profile.name.split(' ');
-  final firstName = nameParts.isNotEmpty ? nameParts.first : '';
-  final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-  
-  firstNameController = TextEditingController(text: firstName);
-  lastNameController = TextEditingController(text: lastName);
-  bioController = TextEditingController(text: widget.profile.description);
-  genderNotifier = ValueNotifier( EnumMapper.genderIdToLabel(widget.profile.otherData!.gender??0));
+    super.initState();
 
-}
+    final nameParts = widget.profile.name.split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+    firstNameController = TextEditingController(text: firstName);
+    lastNameController = TextEditingController(text: lastName);
+    bioController = TextEditingController(text: widget.profile.description);
+    genderNotifier = ValueNotifier(
+      EnumMapper.genderIdToLabel(widget.profile.otherData!.gender ?? 0),
+    );
+  }
 
   @override
   void dispose() {
@@ -66,25 +66,23 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     super.dispose();
   }
 
-  void _onUpdate(BuildContext context, S string) async {
+  void _onUpdate(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
 
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    
-    final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
-      currentProfile: widget.profile,
-      newImage: imageNotifier.value,
-      oldImage: widget.profile.profileImage,
-      firstName: firstNameController.text.trim(),
-      lastName: lastNameController.text.trim(),
-      gender: genderNotifier.value,
-      bio: bioController.text.trim(),
-      // location: locationNotifier.value,
-    );
+    if (!_formKey.currentState!.validate()) return;
 
-    context.read<ProfileBloc>().add(UpdateProfile(updateData: updateBody));
+    context.read<ProfileBloc>().add(
+      UpdateProfile(
+        currentProfile: widget.profile,
+        newImage: imageNotifier.value,
+        oldImage: widget.profile.profileImage,
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        gender: genderNotifier.value,
+        bio: bioController.text.trim(),
+        // location: locationNotifier.value,
+      ),
+    );
   }
 
   @override
@@ -93,9 +91,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     final string = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(string.editProfile),
-      ),
+      appBar: AppBar(title: Text(string.editProfile)),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {
@@ -132,8 +128,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
                         children: [
                           AppImagePicker(
                             initialImage: widget.profile.profileImage,
-                            onImageSelected: (img) =>
-                                imageNotifier.value = img,
+                            onImageSelected: (img) => imageNotifier.value = img,
                           ),
                           SizedBox(height: 24.h),
 
@@ -180,14 +175,12 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
                                 labelText: string.gender,
                                 value: gender,
                                 options: RegisterLists.genderOptions(string),
-                                onChanged: (val) =>
-                                    genderNotifier.value = val,
-                                validator: (v) =>
-                                    Validators.validateDropdown(
-                                      context: context,
-                                      value: v,
-                                      fieldName: string.gender.toLowerCase(),
-                                    ),
+                                onChanged: (val) => genderNotifier.value = val,
+                                validator: (v) => Validators.validateDropdown(
+                                  context: context,
+                                  value: v,
+                                  fieldName: string.gender.toLowerCase(),
+                                ),
                               );
                             },
                           ),

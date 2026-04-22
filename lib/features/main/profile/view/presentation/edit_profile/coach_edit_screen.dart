@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -17,7 +16,6 @@ import 'package:sports_in/features/register/view/presentation/register/widgets/r
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
-
 
 class CoachEditScreen extends StatefulWidget {
   final ProfileModel profile;
@@ -39,16 +37,22 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
   // late final ValueNotifier<String?> genderNotifier;
   // late final ValueNotifier<bool> hasClubNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
-  
-  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(AutovalidateMode.disabled);
+
+  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(
+    AutovalidateMode.disabled,
+  );
 
   @override
   void initState() {
     super.initState();
     final coachData = widget.profile.coachData!;
-    
-    firstNameController = TextEditingController(text: widget.profile.name.split(' ').first);
-    lastNameController = TextEditingController(text: widget.profile.name.split(' ').last);
+
+    firstNameController = TextEditingController(
+      text: widget.profile.name.split(' ').first,
+    );
+    lastNameController = TextEditingController(
+      text: widget.profile.name.split(' ').last,
+    );
     bioController = TextEditingController(text: widget.profile.description);
     yearsOfExperienceController = TextEditingController(
       text: coachData.yearsOfExperience?.toString() ?? '',
@@ -72,30 +76,29 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
     super.dispose();
   }
 
-  void _onUpdate(BuildContext context, S string) async {
+  void _onUpdate(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
-    
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
 
-    final int? parsedExperience = int.tryParse(yearsOfExperienceController.text.trim());
+    if (!_formKey.currentState!.validate()) return;
 
-    final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
-      currentProfile: widget.profile,
-      newImage: imageNotifier.value,
-      oldImage: widget.profile.profileImage,
-      firstName: firstNameController.text.trim(),
-      lastName: lastNameController.text.trim(),
-      bio: bioController.text.trim(),
-      // gender: genderNotifier.value,
-      // location: locationNotifier.value,
-      specialization: sportNameNotifier.value,
-      yearsOfExperience: parsedExperience,
-      // hasClub: hasClubNotifier.value,
+    final int? parsedExperience = int.tryParse(
+      yearsOfExperienceController.text.trim(),
     );
 
-    context.read<ProfileBloc>().add(UpdateProfile(updateData: updateBody));
+    context.read<ProfileBloc>().add(
+      UpdateProfile(
+        currentProfile: widget.profile,
+        newImage: imageNotifier.value,
+        oldImage: widget.profile.profileImage,
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        bio: bioController.text.trim(),
+        specialization: sportNameNotifier.value,
+        yearsOfExperience: parsedExperience,
+        // gender: genderNotifier.value,   // uncomment if used
+        // location: locationNotifier.value,
+      ),
+    );
   }
 
   @override
@@ -104,9 +107,7 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
     final string = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(string.editProfile),
-      ),
+      appBar: AppBar(title: Text(string.editProfile)),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {
@@ -184,22 +185,23 @@ class _CoachEditScreenState extends State<CoachEditScreen> {
 
                           SizedBox(height: 16.h),
 
-                            ValueListenableBuilder<String?>(
-                              valueListenable: sportNameNotifier,
-                              builder: (context, sportName, _) {
-                                return AppDropdownOverlay(
-                                  labelText: string.specializedSport,
-                                  value: sportName,
-                                  options: RegisterLists.sportNameOptions(string),
-                                  onChanged: (val) => sportNameNotifier.value = val,
-                                  validator: (v) => Validators.validateDropdown(
-                                    context: context,
-                                    value: v,
-                                    fieldName: string.specializedSport,
-                                  ),
-                                );
-                              },
-                            ),
+                          ValueListenableBuilder<String?>(
+                            valueListenable: sportNameNotifier,
+                            builder: (context, sportName, _) {
+                              return AppDropdownOverlay(
+                                labelText: string.specializedSport,
+                                value: sportName,
+                                options: RegisterLists.sportNameOptions(string),
+                                onChanged: (val) =>
+                                    sportNameNotifier.value = val,
+                                validator: (v) => Validators.validateDropdown(
+                                  context: context,
+                                  value: v,
+                                  fieldName: string.specializedSport,
+                                ),
+                              );
+                            },
+                          ),
 
                           SizedBox(height: 16.h),
 

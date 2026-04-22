@@ -3,6 +3,7 @@ class Endpoints {
   static const String signUpPlayer = "/api/Auth/register/player";
   static const String signUpCoach = "/api/Auth/register/coach";
   static const String certifications = "/api/Lookups/certifications";
+  static const String uploadSignature = "/api/Media/upload-signature";
   static const String signUpScout = "/api/Auth/register/scout";
   static const String signUpClub = "/api/Auth/register/club";
   static const String signUpInstitute = "/api/Auth/register/institute";
@@ -68,7 +69,7 @@ static const String getPostById = '/api/Posts/{id}';
   static const String postOpportunity = "/api/Opportunity";
   static const String opportunityDetails = "/api/Opportunity/{id}";
   static const String getOpportunityRecommendations =
-     '/api/Opportunity/{id}/recommendations';
+    '/api/Opportunity/{id}/recommendations';
   static const String editOpportunity = "/api/Opportunity/{id}";
   static const String deleteOpportunity = "/api/Opportunity/{id}";
   static const String opportunityToggle = "/api/Opportunity/{id}/toggle";

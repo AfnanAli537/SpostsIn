@@ -17,8 +17,6 @@ import 'package:sports_in/features/register/view/presentation/register/widgets/r
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
-
 
 class PlayerEditScreen extends StatefulWidget {
   final ProfileModel profile;
@@ -44,30 +42,42 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
   late final ValueNotifier<String?> positionNotifier;
   late final ValueNotifier<bool> hasClubNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
-  
-  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(AutovalidateMode.disabled);
+
+  final autoValidateNotifier = ValueNotifier<AutovalidateMode>(
+    AutovalidateMode.disabled,
+  );
 
   @override
   void initState() {
     super.initState();
     final playerData = widget.profile.playerData!;
-    firstNameController = TextEditingController(text: widget.profile.name.split(' ').first);
-    lastNameController = TextEditingController(text: widget.profile.name.split(' ').last);
-    heightController = TextEditingController(text: playerData.height?.toString() ?? '');
-    weightController = TextEditingController(text: playerData.weight?.toString() ?? '');
-    ageController = TextEditingController(text: playerData.age?.toString() ?? '');
+    firstNameController = TextEditingController(
+      text: widget.profile.name.split(' ').first,
+    );
+    lastNameController = TextEditingController(
+      text: widget.profile.name.split(' ').last,
+    );
+    heightController = TextEditingController(
+      text: playerData.height?.toString() ?? '',
+    );
+    weightController = TextEditingController(
+      text: playerData.weight?.toString() ?? '',
+    );
+    ageController = TextEditingController(
+      text: playerData.age?.toString() ?? '',
+    );
     bioController = TextEditingController(text: widget.profile.description);
-    
+
     final normalizedSport = _normalizeSport(playerData.specializedSport);
     sportNameNotifier = ValueNotifier<String?>(normalizedSport);
-    
+
     if (kDebugMode) {
       debugPrint('✅ sportNameNotifier initialized with: "$normalizedSport"');
     }
-    
+
     final normalizedPosition = _normalizeSport(playerData.position);
     positionNotifier = ValueNotifier<String?>(normalizedPosition);
-    
+
     if (kDebugMode) {
       debugPrint('✅ positionNotifier initialized with: "$normalizedPosition"');
     }
@@ -88,11 +98,11 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
 
   String? _normalizeSport(String? value) {
     if (value == null) return null;
-    
+
     final trimmed = value.trim();
-    
+
     if (trimmed.isEmpty) return null;
-    
+
     return trimmed;
   }
 
@@ -101,35 +111,34 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     positionNotifier.value = null;
   }
 
-  void _onUpdate(BuildContext context, S string) async {
+  void _onUpdate(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
-    
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+
+    if (!_formKey.currentState!.validate()) return;
 
     final double? parsedHeight = double.tryParse(heightController.text.trim());
     final double? parsedWeight = double.tryParse(weightController.text.trim());
     final int? parsedAge = int.tryParse(ageController.text.trim());
 
-    final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
-      currentProfile: widget.profile,
-      newImage: imageNotifier.value,
-      oldImage: widget.profile.profileImage,
-      firstName: firstNameController.text.trim(),
-      lastName: lastNameController.text.trim(),
-      height: parsedHeight,
-      weight: parsedWeight,
-      age: parsedAge,
-      bio: bioController.text.trim(),
-      // gender: genderNotifier.value,
-      // location: locationNotifier.value,
-      sports: sportNameNotifier.value != null ? [sportNameNotifier.value!] : null,
-      position: positionNotifier.value,
-      // hasClub: hasClubNotifier.value,
+    context.read<ProfileBloc>().add(
+      UpdateProfile(
+        currentProfile: widget.profile,
+        newImage: imageNotifier.value,
+        oldImage: widget.profile.profileImage,
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        height: parsedHeight,
+        weight: parsedWeight,
+        age: parsedAge,
+        bio: bioController.text.trim(),
+        sports: sportNameNotifier.value != null
+            ? [sportNameNotifier.value!]
+            : null,
+        position: positionNotifier.value,
+        // gender: genderNotifier.value,
+        // location: locationNotifier.value,
+      ),
     );
-
-    context.read<ProfileBloc>().add(UpdateProfile(updateData: updateBody));
   }
 
   @override
@@ -138,9 +147,7 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
     final string = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(string.editProfile),
-      ),
+      appBar: AppBar(title: Text(string.editProfile)),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {
@@ -235,14 +242,14 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                           SizedBox(height: 16.h),
 
                           RegisterTextField(
-                              controller: ageController,
-                              labelText: string.age,
-                              keyboardType: TextInputType.number,
-                              validator: (v) => Validators.validateAge(
-                                context: context,
-                                value: v,
-                              ),
+                            controller: ageController,
+                            labelText: string.age,
+                            keyboardType: TextInputType.number,
+                            validator: (v) => Validators.validateAge(
+                              context: context,
+                              value: v,
                             ),
+                          ),
 
                           SizedBox(height: 16.h),
 
@@ -250,18 +257,22 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                             valueListenable: sportNameNotifier,
                             builder: (context, sport, _) {
                               if (kDebugMode) {
-                                debugPrint('🏗️ Building sport dropdown - value: "$sport"');
+                                debugPrint(
+                                  '🏗️ Building sport dropdown - value: "$sport"',
+                                );
                               }
-                              
+
                               return AppDropdownOverlay(
                                 labelText: string.sportProfession,
                                 value: sport,
                                 options: RegisterLists.sportNameOptions(string),
-                                onChanged: (val) => _onSportChanged(val, string),
+                                onChanged: (val) =>
+                                    _onSportChanged(val, string),
                                 validator: (v) => Validators.validateDropdown(
                                   context: context,
                                   value: v,
-                                  fieldName: string.sportProfession.toLowerCase(),
+                                  fieldName: string.sportProfession
+                                      .toLowerCase(),
                                 ),
                               );
                             },
@@ -281,13 +292,19 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                                   return AppDropdownOverlay(
                                     labelText: string.position,
                                     value: position,
-                                    options: RegisterLists.positionOptions(string, sport),
-                                    onChanged: (val) => positionNotifier.value = val,
-                                    validator: (v) => Validators.validateDropdown(
-                                      context: context,
-                                      value: v,
-                                      fieldName: string.position.toLowerCase(),
+                                    options: RegisterLists.positionOptions(
+                                      string,
+                                      sport,
                                     ),
+                                    onChanged: (val) =>
+                                        positionNotifier.value = val,
+                                    validator: (v) =>
+                                        Validators.validateDropdown(
+                                          context: context,
+                                          value: v,
+                                          fieldName: string.position
+                                              .toLowerCase(),
+                                        ),
                                   );
                                 },
                               );
@@ -303,7 +320,6 @@ class _PlayerEditScreenState extends State<PlayerEditScreen> {
                               return SizedBox(height: 20.h);
                             },
                           ),
-
 
                           SizedBox(height: 12.h),
 

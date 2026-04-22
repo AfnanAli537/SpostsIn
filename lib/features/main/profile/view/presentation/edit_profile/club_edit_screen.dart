@@ -16,7 +16,6 @@ import 'package:sports_in/features/register/view/presentation/register/widgets/c
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 
 class ClubEditScreen extends StatefulWidget {
   final ProfileModel profile;
@@ -49,7 +48,9 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
     foundDateController = TextEditingController(text: clubData.foundedYear);
     bioController = TextEditingController(text: widget.profile.description);
     // locationNotifier = ValueNotifier<String?>(null);
-    selectedSportsNotifier = ValueNotifier<List<String>>((widget.profile.clubData?.sport ?? []).whereType<String>().toList());
+    selectedSportsNotifier = ValueNotifier<List<String>>(
+      (widget.profile.clubData?.sport ?? []).whereType<String>().toList(),
+    );
   }
 
   @override
@@ -69,18 +70,17 @@ class _ClubEditScreenState extends State<ClubEditScreen> {
       return;
     }
 
-    final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
-      currentProfile: widget.profile,
-      newImage: imageNotifier.value,
-      oldImage: widget.profile.profileImage,
-      clubName: clubNameController.text.trim(),
-      bio: bioController.text.trim(),
-      // location: locationNotifier.value,
-      foundationDate: foundDateController.text.trim(),
-      sports: selectedSportsNotifier.value,
+    context.read<ProfileBloc>().add(
+      UpdateProfile(
+        currentProfile: widget.profile,
+        newImage: imageNotifier.value,
+        oldImage: widget.profile.profileImage,
+        clubName: clubNameController.text.trim(),
+        bio: bioController.text.trim(),
+        foundationDate: foundDateController.text.trim(),
+        sports: selectedSportsNotifier.value,
+      ),
     );
-
-    context.read<ProfileBloc>().add(UpdateProfile(updateData: updateBody));
   }
 
   @override

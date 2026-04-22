@@ -16,7 +16,6 @@ import 'package:sports_in/features/register/view/presentation/register/widgets/r
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 
 class ScoutEditScreen extends StatefulWidget {
   final ProfileModel profile;
@@ -46,9 +45,15 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     super.initState();
     final scoutData = widget.profile.scoutData!;
 
-    firstNameController = TextEditingController(text: widget.profile.name.split(' ').first,);
-    lastNameController = TextEditingController(text: widget.profile.name.split(' ').last,);
-    yearsOfExperienceController = TextEditingController(text: scoutData.yearsOfExperience?.toString() ?? '',);
+    firstNameController = TextEditingController(
+      text: widget.profile.name.split(' ').first,
+    );
+    lastNameController = TextEditingController(
+      text: widget.profile.name.split(' ').last,
+    );
+    yearsOfExperienceController = TextEditingController(
+      text: scoutData.yearsOfExperience?.toString() ?? '',
+    );
     bioController = TextEditingController(text: widget.profile.description);
     sportNameNotifier = ValueNotifier<String?>(scoutData.specializedSport);
     // locationNotifier = ValueNotifier<String?>(null);
@@ -65,31 +70,31 @@ class _ScoutEditScreenState extends State<ScoutEditScreen> {
     super.dispose();
   }
 
-  void _onUpdate(BuildContext context, S string) async {
+  void _onUpdate(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
 
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     final int? parsedExperience = int.tryParse(
       yearsOfExperienceController.text.trim(),
     );
 
-    final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
-      currentProfile: widget.profile,
-      newImage: imageNotifier.value,
-      oldImage: widget.profile.profileImage,
-      firstName: firstNameController.text.trim(),
-      lastName: lastNameController.text.trim(),
-      bio: bioController.text.trim(),
-      // gender: genderNotifier.value,
-      // location: locationNotifier.value,
-      sports: sportNameNotifier.value != null ? [sportNameNotifier.value!] : null,
-      yearsOfExperience: parsedExperience,
+    context.read<ProfileBloc>().add(
+      UpdateProfile(
+        currentProfile: widget.profile,
+        newImage: imageNotifier.value,
+        oldImage: widget.profile.profileImage,
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        bio: bioController.text.trim(),
+        sports: sportNameNotifier.value != null
+            ? [sportNameNotifier.value!]
+            : null,
+        yearsOfExperience: parsedExperience,
+        // gender: genderNotifier.value,
+        // location: locationNotifier.value,
+      ),
     );
-
-    context.read<ProfileBloc>().add(UpdateProfile(updateData: updateBody));
   }
 
   @override

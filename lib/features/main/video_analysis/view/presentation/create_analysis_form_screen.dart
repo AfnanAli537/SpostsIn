@@ -49,6 +49,8 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
 
+  late CloudinaryService _cloudinaryService;
+
   File? _pickedVideo;
   bool _isUploadingVideo = false;
   bool _isUploaded = false;
@@ -61,6 +63,8 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
   @override
   void initState() {
     super.initState();
+    _cloudinaryService = getIt<CloudinaryService>();
+
     if (_hasPrefilledUrl) {
       _videoUrlController.text = widget.prefilledVideoUrl!;
       _isUploaded = true;
@@ -102,24 +106,25 @@ class _CreateAnalysisFormScreenState extends State<CreateAnalysisFormScreen> {
     await _uploadVideo(_pickedVideo!);
   }
 
-Future<void> _uploadVideo(File file) async {
-  setState(() => _isUploadingVideo = true);
-  try {
-    final url = await CloudinaryService.uploadVideo(file);
-    if (url.isNotEmpty) {
-      setState(() {
-        _videoUrlController.text = url;
-        _isUploaded = true;
-      });
-    } else {
-      _toast(S.of(context).uploadFailedPasteManually, err: true);
+  // ✅ Updated to use CloudinaryService instance
+  Future<void> _uploadVideo(File file) async {
+    setState(() => _isUploadingVideo = true);
+    try {
+      final url = await _cloudinaryService.uploadVideo(file);
+      if (url.isNotEmpty) {
+        setState(() {
+          _videoUrlController.text = url;
+          _isUploaded = true;
+        });
+      } else {
+        _toast(S.of(context).uploadFailedPasteManually, err: true);
+      }
+    } catch (e) {
+      _toast(S.of(context).uploadError(e.toString()), err: true);
+    } finally {
+      setState(() => _isUploadingVideo = false);
     }
-  } catch (e) {
-    _toast(S.of(context).uploadError(e.toString()), err: true);
-  } finally {
-    setState(() => _isUploadingVideo = false);
   }
-}
 
   void _showSourceSheet(S strings) {
     showModalBottomSheet(
