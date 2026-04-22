@@ -237,6 +237,8 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       maxWeight: event.maxWeight,
       targetSpecialization: event.targetSpecialization,
       minExperienceYears: event.minExperienceYears,
+      preferredClubExperience: event.preferredClubExperience,
+      requiredCertifications: event.requiredCertifications,
     );
      emit(OpportunityCreated());
    
@@ -251,34 +253,6 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
        emit(OpportunityError('Failed to create opportunity: ${e is ApiException ? e.message : e.toString()}'));
   }
 }
-  // Future<void> _onCreateOpportunity(
-  //   CreateOpportunity event,
-  //   Emitter<OpportunityState> emit,
-  // ) async {
-  //   try {
-  //     emit(OpportunityCreating());
-
-  //     await opportunityRepo.postOpportunity(
-  //       title: event.title,
-  //       description: event.description,
-  //       requirements: event.requirements,
-  //       endDate: event.endDate,
-  //       sportTypeId: event.sportTypeId,
-  //       mediaFile: event.mediaFile,
-  //       mediaUrl: event.mediaUrl,
-  //     );
-
-  //     log(' Opportunity created successfully');
-
-  //     emit(const OpportunityCreated());
-
-  //     await Future.delayed(const Duration(milliseconds: 500));
-  //     add(const FetchOpportunities(isRefresh: true));
-  //   } catch (e) {
-  //     log('Error creating opportunity: $e');
-  //     emit(OpportunityError('Failed to create opportunity: ${e is ApiException ? e.message : e.toString()}'));
-  //   }
-  // }
 
   Future<void> _onFetchOpportunityDetails(
     FetchOpportunityDetails event,
@@ -394,7 +368,23 @@ Future<void> _onUpdateOpportunity(
       description: event.description,
       endDate: event.endDate,
       sportTypeId: event.sportTypeId,
+      additionalNotes: event.additionalNotes,
       mediaFile: event.mediaFile,
+      targetUserType: event.targetUserType,
+      targetGender: event.targetGender,
+      minAge: event.minAge,
+      maxAge: event.maxAge,
+      targetLocation: event.targetLocation,
+      targetPosition: event.targetPosition,
+      minHeight: event.minHeight,
+      maxHeight: event.maxHeight,
+      minWeight: event.minWeight,
+      maxWeight: event.maxWeight,
+      targetSpecialization: event.targetSpecialization,
+      minExperienceYears: event.minExperienceYears,
+      preferredClubExperience: event.preferredClubExperience,
+      requiredCertifications: event.requiredCertifications,
+
     );
     
     emit(OpportunityUpdated(opportunityId: event.opportunityId));

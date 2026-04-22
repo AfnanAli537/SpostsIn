@@ -359,6 +359,16 @@ class S {
     );
   }
 
+  /// `Preferred Club Experience`
+  String get PreferredClubExperience {
+    return Intl.message(
+      'Preferred Club Experience',
+      name: 'PreferredClubExperience',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Specialist`
   String get specialist {
     return Intl.message('Specialist', name: 'specialist', desc: '', args: []);
@@ -1784,10 +1794,20 @@ class S {
     );
   }
 
-  /// `Opportunities`
+  /// `Edit Opportunity`
+  String get editOpportunity {
+    return Intl.message(
+      'Edit Opportunity',
+      name: 'editOpportunity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Opportunities`
   String get myOpportunities {
     return Intl.message(
-      'Opportunities',
+      'My Opportunities',
       name: 'myOpportunities',
       desc: '',
       args: [],
@@ -2789,6 +2809,16 @@ class S {
     return Intl.message(
       'Opportunity created successfully!',
       name: 'opportunityCreatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opportunity updated successfully!`
+  String get opportunityUpdatedSuccessfully {
+    return Intl.message(
+      'Opportunity updated successfully!',
+      name: 'opportunityUpdatedSuccessfully',
       desc: '',
       args: [],
     );

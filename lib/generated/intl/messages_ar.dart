@@ -128,6 +128,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "GetYourCode": MessageLookupByLibrary.simpleMessage(
       "احصل على الرمز الخاص بك!",
     ),
+    "PreferredClubExperience": MessageLookupByLibrary.simpleMessage(
+      "خبرة في نادي سابق",
+    ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage("تحقق وتابع"),
     "aboutUs": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
     "accept": MessageLookupByLibrary.simpleMessage("قبول"),
@@ -510,6 +513,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "editAdvertisement": MessageLookupByLibrary.simpleMessage("تعديل الإعلان"),
     "editCourse": MessageLookupByLibrary.simpleMessage("تعديل الدورة"),
     "editLesson": MessageLookupByLibrary.simpleMessage("تعديل الدرس"),
+    "editOpportunity": MessageLookupByLibrary.simpleMessage("تعديل الفرصة"),
     "editPrice": MessageLookupByLibrary.simpleMessage("تعديل السعر"),
     "editProfile": MessageLookupByLibrary.simpleMessage("عدل الحساب"),
     "editProfileFailed": MessageLookupByLibrary.simpleMessage(
@@ -1139,6 +1143,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "opportunities": MessageLookupByLibrary.simpleMessage("الفرص"),
     "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "تم إنشاء الفرصة بنجاح!",
+    ),
+    "opportunityUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث الفرصة بنجاح!",
     ),
     "optional": MessageLookupByLibrary.simpleMessage("اختياري"),
     "orPasteUrlLabel": MessageLookupByLibrary.simpleMessage("أو الصق الرابط"),

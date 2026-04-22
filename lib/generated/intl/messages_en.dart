@@ -126,6 +126,9 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "GetYourCode": MessageLookupByLibrary.simpleMessage("Get Your Code !"),
+    "PreferredClubExperience": MessageLookupByLibrary.simpleMessage(
+      "Preferred Club Experience",
+    ),
     "VerifyAndProceed": MessageLookupByLibrary.simpleMessage(
       "Verify and proceed",
     ),
@@ -541,6 +544,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editCourse": MessageLookupByLibrary.simpleMessage("Edit Course"),
     "editLesson": MessageLookupByLibrary.simpleMessage("Edit Lesson"),
+    "editOpportunity": MessageLookupByLibrary.simpleMessage("Edit Opportunity"),
     "editPrice": MessageLookupByLibrary.simpleMessage("Edit Price"),
     "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
     "editProfileFailed": MessageLookupByLibrary.simpleMessage(
@@ -1013,7 +1017,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "myContacts": MessageLookupByLibrary.simpleMessage("My Contacts"),
     "myCourses": MessageLookupByLibrary.simpleMessage("My Courses"),
-    "myOpportunities": MessageLookupByLibrary.simpleMessage("Opportunities"),
+    "myOpportunities": MessageLookupByLibrary.simpleMessage("My Opportunities"),
     "myPosts": MessageLookupByLibrary.simpleMessage("My Posts"),
     "name": MessageLookupByLibrary.simpleMessage("name"),
     "nationality": MessageLookupByLibrary.simpleMessage("Nationality"),
@@ -1166,6 +1170,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "opportunities": MessageLookupByLibrary.simpleMessage("Opportunities"),
     "opportunityCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Opportunity created successfully!",
+    ),
+    "opportunityUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Opportunity updated successfully!",
     ),
     "optional": MessageLookupByLibrary.simpleMessage("Optional"),
     "orPasteUrlLabel": MessageLookupByLibrary.simpleMessage("OR PASTE URL"),
