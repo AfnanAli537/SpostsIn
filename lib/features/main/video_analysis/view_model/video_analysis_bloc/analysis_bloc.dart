@@ -119,7 +119,9 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     final current = state;
     if (current is! TargetAnalysesLoaded ||
         !current.hasMore ||
-        _currentTargetUserId == null) return;
+        _currentTargetUserId == null) {
+      return;
+    }
 
     try {
       emit(TargetAnalysesLoadingMore(

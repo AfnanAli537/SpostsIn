@@ -3,7 +3,7 @@ import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/interface/payment_interface.dart';
 import 'package:sports_in/features/payment/data/model/initiate_payment_model.dart';
 import 'package:sports_in/features/payment/data/model/my_subscription_model.dart';
-import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
+import 'package:sports_in/features/payment/data/model/subscription_plan_model.dart';
 
 abstract class PaymentRepository {
   Future<List<SubscriptionPlanModel>> getPlans();

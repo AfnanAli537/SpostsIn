@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
 import 'package:sports_in/features/payment/data/model/my_subscription_model.dart';
-import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
+import 'package:sports_in/features/payment/data/model/subscription_plan_model.dart';
 import 'package:sports_in/features/payment/data/repo/payment_repo.dart';
 
 part 'payment_event.dart';

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'dart:io';
@@ -59,7 +60,7 @@ class CloudinaryService {
         return '';
       }
     } catch (e) {
-      print('Upload error: $e');
+      debugPrint('Upload error: $e');
       return '';
     }
   }

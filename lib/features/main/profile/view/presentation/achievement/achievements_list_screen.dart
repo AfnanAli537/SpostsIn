@@ -403,34 +403,31 @@ class _AchievementCard extends StatelessWidget {
 class _AchievementShimmerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // Same structure as _AchievementCard
-      child: Row(
-        children: [
-          Expanded(
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Column(
-                children: [
-                  Container(width: 50.w, height: 12.h, color: Colors.white),
-                  Container(
-                    width: double.infinity,
-                    height: 16.h,
-                    color: Colors.white,
-                  ),
-                  Container(width: 120.w, height: 12.h, color: Colors.white),
-                ],
-              ),
-            ),
-          ),
-          Shimmer.fromColors(
+    return Row(
+      children: [
+        Expanded(
+          child: Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
-            child: Container(width: 80.w, height: 60.h, color: Colors.white),
+            child: Column(
+              children: [
+                Container(width: 50.w, height: 12.h, color: Colors.white),
+                Container(
+                  width: double.infinity,
+                  height: 16.h,
+                  color: Colors.white,
+                ),
+                Container(width: 120.w, height: 12.h, color: Colors.white),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(width: 80.w, height: 60.h, color: Colors.white),
+        ),
+      ],
     );
   }
 }

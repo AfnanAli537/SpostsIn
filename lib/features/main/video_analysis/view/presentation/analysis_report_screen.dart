@@ -426,15 +426,19 @@ class _VideoPlayerViewState extends State<_VideoPlayerView> {
         ),
         betterPlayerDataSource: dataSource,
       );
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _controller = controller;
         _isInitializing = false;
       });
+      }
     } catch (e) {
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _isInitializing = false;
         _error = widget.strings.failedToLoadVideo;
       });
+      }
     }
   }
 

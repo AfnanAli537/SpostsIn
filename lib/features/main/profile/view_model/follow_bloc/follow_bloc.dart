@@ -1,6 +1,7 @@
 // followers_bloc.dart
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 // import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
@@ -254,7 +255,7 @@ class FollowListBloc extends Bloc<FollowListEvent, FollowListState> {
         senderId: event.senderId,
         status: 'Rejected',
       );
-      print('Reject: updated items count = ${updatedItems.length}, first status = ${updatedItems.first.connectionStatus}');
+      debugPrint('Reject: updated items count = ${updatedItems.length}, first status = ${updatedItems.first.connectionStatus}');
     } catch (e) {
       // Rollback on error – revert to original list
       emit(currentState.copyWith(items: currentState.items));

@@ -170,7 +170,7 @@ class _RevenueTabState extends State<RevenueTab> {
           Expanded(
             flex: 2,
             child: DropdownButtonFormField<int>(
-              value: _selectedMonth,
+              initialValue: _selectedMonth,
               decoration: InputDecoration(
                 labelText: string.month,
                 contentPadding: EdgeInsets.symmetric(
@@ -257,7 +257,7 @@ class _RevenueTabState extends State<RevenueTab> {
         SizedBox(width: 16.w),
         Expanded(
           child: _buildRevenueCard(
-            '${_getMonthName(_selectedMonth, string)} ${_selectedYear}',
+            '${_getMonthName(_selectedMonth, string)} $_selectedYear',
             '${report.totalMonthRevenue.toStringAsFixed(0)} ${string.egp}',
             Icons.calendar_today,
             Colors.green,
@@ -313,7 +313,7 @@ class _RevenueTabState extends State<RevenueTab> {
         height: 200.h,
         alignment: Alignment.center,
         child: Text(
-          string.noDataForMonth('${_getMonthName(_selectedMonth, string)} ${_selectedYear}'),
+          string.noDataForMonth('${_getMonthName(_selectedMonth, string)} $_selectedYear'),
           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey),
           textAlign: TextAlign.center,
         ),

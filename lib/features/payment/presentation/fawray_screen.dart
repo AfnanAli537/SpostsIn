@@ -8,7 +8,7 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_processing_screen.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
-import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
+import 'package:sports_in/features/payment/data/model/subscription_plan_model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/features/payment/presentation/widgets/processing_dailog.dart';
 import 'package:sports_in/features/payment/presentation/widgets/sucess_dailog.dart';

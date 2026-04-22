@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/features/main/advertisement/model/ad_model.dart';
 import 'package:sports_in/features/main/advertisement/view/widgets/ad_widget.dart';
 import 'package:sports_in/features/main/advertisement/view_model/ads_bloc/ads_bloc.dart';
@@ -86,9 +87,9 @@ class _AdDetailView extends StatelessWidget {
   }
 
   bool _isCurrentUser(AdModel ad) {
-    // TODO: Implement real check (e.g., compare ad.author?.userId with logged-in user id)
-    // For now, returns false (you can inject a UserService or read from your auth bloc).
-    return false;
+    final sharedPref = getIt<SharedPref>();
+    final String? currentUserId = sharedPref.getUserId();
+    return ad.author?.userId == currentUserId;
   }
 
   Widget _buildNotFound(BuildContext context) {

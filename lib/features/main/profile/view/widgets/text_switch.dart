@@ -12,7 +12,7 @@ class IconSwitch extends StatelessWidget {
   final double height;
 
   const IconSwitch({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
     required this.activeIcon,
@@ -22,7 +22,7 @@ class IconSwitch extends StatelessWidget {
     this.thumbColor = Colors.white,
     this.width = 70,      // smaller default width
     this.height = 28,     // smaller default height
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/features/main/video_analysis/data/enums/analysis_type.dart';
 import 'package:sports_in/features/payment/data/enums/enums.dart';
-import 'package:sports_in/features/payment/data/model/subscription%20plan%20model.dart';
+import 'package:sports_in/features/payment/data/model/subscription_plan_model.dart';
 import 'package:sports_in/features/payment/presentation/view_model/bloc/payment_bloc.dart';
 import 'package:sports_in/features/payment/presentation/widgets/payment_methods_dailog.dart';
 import 'package:sports_in/features/payment/presentation/fawery_mobile_screen.dart';
@@ -23,7 +23,7 @@ import 'package:sports_in/features/payment/presentation/vodafon_cash_screen.dart
 /// after payment succeeds.
 ///
 /// [paymentBloc] must be read by the caller BEFORE calling this:
-///   final paymentBloc = context.read<PaymentBloc>();
+///   final paymentBloc = context.read&lt;PaymentBloc&gt;();
 ///   await initiatePaymentFlow(paymentBloc: paymentBloc, ...);
 Future<bool> initiatePaymentFlow({
   required BuildContext context,

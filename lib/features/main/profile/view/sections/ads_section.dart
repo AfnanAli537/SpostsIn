@@ -20,14 +20,14 @@ class AdsSection extends StatelessWidget {
   final S string;
 
   const AdsSection({
-    Key? key,
+    super.key,
     required this.ads,
     this.onShowAll,
     this.onAdTap,
     required this.isOwner,
     required this.theme,
     required this.string,
-  }) : super(key: key);
+  });
 
   bool _isValidImageUrl(String? url) {
     if (url == null || url.isEmpty) return false;

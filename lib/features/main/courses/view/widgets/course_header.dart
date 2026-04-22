@@ -13,7 +13,7 @@ class CourseHeader extends StatelessWidget {
   final Function(LessonModel) onPreviousLesson;
 
   const CourseHeader({
-    Key? key,
+    super.key,
     required this.currentPlayingLesson,
     required this.allLessons,
     required this.courseId,
@@ -21,7 +21,7 @@ class CourseHeader extends StatelessWidget {
     required this.onBack,
     required this.onNextLesson,
     required this.onPreviousLesson,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

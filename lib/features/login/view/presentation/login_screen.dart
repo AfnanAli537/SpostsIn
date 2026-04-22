@@ -40,7 +40,7 @@ class LoginScreen extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    final _sharedpref =getIt<SharedPref>();
+    final sharedpref =getIt<SharedPref>();
     final string = S.of(context);
     final themeCubit = context.watch<ThemeCubit>();
 
@@ -66,7 +66,7 @@ class LoginScreen extends StatelessWidget {
               gravity: ToastGravity.TOP,
             );
             context.read<PaymentBloc>().add(
-              FetchMySubscriptionEvent(userId: _sharedpref.getUserId()!),
+              FetchMySubscriptionEvent(userId: sharedpref.getUserId()!),
             );
           } else if (state is LoginFailure) {
             _showError(context, state.generalError!);

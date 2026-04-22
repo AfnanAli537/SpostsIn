@@ -150,7 +150,7 @@ class _AdCommentsSheetContentState extends State<_AdCommentsSheetContent> {
     return BlocListener<AdCommentsBloc, AdCommentsState>(
       listenWhen: (_, current) {
         if (current is AdCommentsLoaded &&
-            current.action != CommentAction.none) return true;
+            current.action != CommentAction.none) {return true;}
         return current is AdCommentsError;
       },
       listener: (context, state) {
