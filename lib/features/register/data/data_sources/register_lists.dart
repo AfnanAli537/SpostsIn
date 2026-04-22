@@ -30,7 +30,9 @@ class PositionEntry {
   });
 
   /// e.g.  "GK - Goalkeeper (حارس مرمى)"
-  String display() => '$abbreviation - $displayEn ($displayAr)';
+  String display(S s) {
+    final isArabic = s.male == 'ذكر';
+    return isArabic? '$displayEn - $displayAr': displayEn; }
 }
 
 class RegisterLists {
@@ -151,7 +153,7 @@ class RegisterLists {
   static List<String> positionOptions(S s, String? sport) {
     if (sport == null) return [];
     final entries = _positionEntries(s, sport);
-    return entries.map((e) => e.display()).toList();
+    return entries.map((e) => e.display(s)).toList();
   }
 
   /// Given a display string, returns just the abbreviation for the API
@@ -159,7 +161,7 @@ class RegisterLists {
     if (sport == null || displayValue == null) return null;
     try {
       return _positionEntries(s, sport)
-          .firstWhere((e) => e.display() == displayValue)
+          .firstWhere((e) => e.display(s) == displayValue)
           .abbreviation;
     } catch (_) {
       return displayValue;

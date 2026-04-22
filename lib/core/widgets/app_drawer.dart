@@ -18,6 +18,7 @@ import 'package:sports_in/core/constants/color_manager.dart';
 import 'package:sports_in/core/widgets/custom_toggle_switch.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/login/model/login_response_model.dart'; 
+import 'package:sports_in/features/auth_session/view/account_switcher_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -81,6 +82,8 @@ class AppDrawer extends StatelessWidget {
               ],
             ),
           ),
+          _buildSwitchAccountButton(theme, string, context),
+          SizedBox(height: 8.h),
           _buildLogoutButton(context, theme, string),
           SizedBox(height: 24.h),
         ],
@@ -168,7 +171,6 @@ class AppDrawer extends StatelessWidget {
       },
     );
   }
-  // ... rest of the helper methods (_buildMenuItem, _buildThemeToggle, etc. remain the same)
 
   Widget _buildMenuItem({
     required IconData icon,
@@ -180,15 +182,15 @@ class AppDrawer extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.r),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
         decoration: BoxDecoration(
           color: theme.colorScheme.onError.withOpacity(0.3),
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
           children: [
-            Icon(icon, color: theme.colorScheme.onSurface, size: 22.sp),
-            SizedBox(width: 16.w),
+            Icon(icon, color: theme.colorScheme.onSurface, size: 18.sp,),
+            SizedBox(width: 8.w),
             Expanded(
               child: Text(
                 title,
@@ -210,7 +212,7 @@ class AppDrawer extends StatelessWidget {
 
   Widget _buildThemeToggle(ThemeData theme, S string) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: theme.colorScheme.onError.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12.r),
@@ -220,9 +222,9 @@ class AppDrawer extends StatelessWidget {
           Icon(
             Icons.dark_mode_outlined,
             color: theme.colorScheme.onSurface,
-            size: 22.sp,
+            size: 18.sp,
           ),
-          SizedBox(width: 16.w),
+          SizedBox(width: 8.w),
           Expanded(
             child: Text(
               string.theme,
@@ -283,7 +285,7 @@ class AppDrawer extends StatelessWidget {
           }
         },
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
           decoration: BoxDecoration(
             color: theme.colorScheme.error,
             borderRadius: BorderRadius.circular(12.r),
@@ -295,13 +297,13 @@ class AppDrawer extends StatelessWidget {
                 string.logout,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: ColorManager.lightSurface,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Icon(
                 Icons.logout_rounded,
                 color: ColorManager.lightSurface,
-                size: 20.sp,
+                size: 18.sp,
               ),
             ],
           ),
@@ -340,6 +342,47 @@ class AppDrawer extends StatelessWidget {
       context,
       CupertinoPageRoute(
         builder: (_) => NotificationScreen(notificationBloc: bloc),
+      ),
+    );
+  }
+
+  Widget _buildSwitchAccountButton(ThemeData theme, S string, BuildContext context) {
+    
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: InkWell(
+        onTap: () async {
+            Navigator.pop(context);
+            await Future.delayed(const Duration(milliseconds: 200));
+            if (context.mounted) {
+              AccountSwitcherBottomSheet.show(context);
+            }
+          },
+        child:Container(
+          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: theme.colorScheme.primary),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                string.switchAccount,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Icon(
+                Icons.swap_horiz,
+                  color: theme.colorScheme.primary,
+                size: 18.sp,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

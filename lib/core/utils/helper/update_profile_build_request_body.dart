@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart';
+import 'package:sports_in/core/utils/helper/image_helper.dart';
 // import 'package:sports_in/core/utils/helper/image_helper.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
@@ -78,9 +79,9 @@ class UpdateProfileBodyBuilder {
       "UserId": currentProfile.id,
       "FullName": fullName,
       "UserType": _getUserTypeString(currentProfile.userType),
-      if(newImage != null)
-          "ProfileImage": await MultipartFile.fromFile(newImage.path,filename: newImage.path.split('/').last,),
-          "ProfilePictureUrl": oldImage,
+      "ProfilePictureUrl": newImage != null
+          ? await CloudinaryService.uploadImage(newImage)
+          : oldImage,
       "Bio": bio ?? currentProfile.description,
       "Sports": sportIds??sports ?? [],
       "FollowersCount": currentProfile.stats.followers,
