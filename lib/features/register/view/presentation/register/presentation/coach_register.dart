@@ -83,6 +83,7 @@ class _CoachRegisterScreenState extends State<CoachRegisterScreen> {
       certificationsIds: selectedCertificationIdsNotifier.value.isEmpty
           ? []
           : List<int>.from(selectedCertificationIdsNotifier.value),
+      image: imageNotifier.value,
     );
 
     context.read<RegistrationBloc>().add(

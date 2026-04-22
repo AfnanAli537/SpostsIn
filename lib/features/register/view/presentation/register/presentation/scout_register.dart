@@ -61,6 +61,7 @@ class ScoutRegisterScreen extends StatelessWidget {
       sportName: sportNameNotifier.value!,
       yearsOfExperience: int.tryParse(yearsOfExperienceController.text.trim()),
       age: int.tryParse(ageController.text.trim()),
+      image: imageNotifier.value,
     );
 
     context.read<RegistrationBloc>().add(

@@ -55,6 +55,7 @@ class ClubRegisterScreen extends StatelessWidget {
       location: locationNotifier.value!,
       foundationDate: foundDateController.text,
       sportTypes: selectedSportsNotifier.value,
+      image: imageNotifier.value,
     );
 
     context.read<RegistrationBloc>().add(
