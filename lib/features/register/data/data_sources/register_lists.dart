@@ -148,7 +148,23 @@ class RegisterLists {
     PositionEntry(abbreviation: 'RB', displayEn: 'Right Back',  displayAr: 'ظهير أيمن'),
     PositionEntry(abbreviation: 'P',  displayEn: 'Pivot',       displayAr: 'الدائرة'),
   ];
+  static String? getPositionDisplayFromAbbreviation(String abbreviation, S s) {
+    final isArabic = s.male == 'ذكر';
+    // Combine all position lists (order doesn't matter, abbreviations are unique per sport)
+    final allPositions = [
+      ..._footballPositions,
+      ..._basketballPositions,
+      ..._volleyballPositions,
+      ..._handballPositions,
+    ];
 
+    for (final entry in allPositions) {
+      if (entry.abbreviation == abbreviation) {
+        return isArabic ? entry.displayAr : entry.displayEn;
+      }
+    }
+    return null; // not found
+  }
   /// Returns display strings like "GK - Goalkeeper (حارس مرمى)"
   static List<String> positionOptions(S s, String? sport) {
     if (sport == null) return [];

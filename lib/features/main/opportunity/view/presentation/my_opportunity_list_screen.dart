@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +13,6 @@ import 'package:sports_in/features/main/opportunity/view/widgets/opportunity_car
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
 import 'package:sports_in/features/main/profile/view/widgets/text_switch.dart';
 import 'package:sports_in/generated/l10n.dart';
-// import 'package:sports_in/generated/l10n.dart';
 
 class MyOpportunitiesListScreen extends StatelessWidget {
   final bool showActiveOnly;
@@ -21,7 +22,6 @@ class MyOpportunitiesListScreen extends StatelessWidget {
     super.key,
     this.showActiveOnly = true,
     this.isCurrentUser = true,
-    // true = active, false = inactive
   });
 
   @override
@@ -56,9 +56,14 @@ class _MyOpportunitiesListView extends StatefulWidget {
 class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
   final ScrollController _scrollController = ScrollController();
 
-  // Cache the last loaded opportunities
   List<OpportunityModel>? _cachedOpportunities;
   bool _hasMore = false;
+  
+  //For optimistic updates
+  OpportunityModel? _deletedOpportunity;
+  String? _deletedOpportunityId;
+  OpportunityModel? _archivedOpportunity;
+  String? _archivedOpportunityId;
 
   @override
   void initState() {
@@ -79,23 +84,41 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
       if (state is MyOpportunitiesLoaded && state.hasMore) {
         if (context.read<OpportunityBloc>().state is! OpportunityLoadingMore) {
           context.read<OpportunityBloc>().add(
-            LoadMoreMyOpportunities(showActive: widget.showActiveOnly),
-          );
+                LoadMoreMyOpportunities(showActive: widget.showActiveOnly),
+              );
         }
       }
     }
   }
 
-  void _refreshOpportunities() {
+  Future<void> _refreshOpportunities() async {
     context.read<OpportunityBloc>().add(
-      FetchMyOpportunities(showActive: widget.showActiveOnly, page: 1),
-    );
+          FetchMyOpportunities(showActive: widget.showActiveOnly, page: 1),
+        );
+    // Wait a bit for the state to update
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  void _removeOpportunityFromCache(String opportunityId) {
+    if (_cachedOpportunities != null) {
+      setState(() {
+        _cachedOpportunities!.removeWhere((opp) => opp.id == opportunityId);
+      });
+    }
+  }
+
+  void _addOpportunityBackToCache(OpportunityModel opportunity) {
+    if (_cachedOpportunities != null) {
+      setState(() {
+        _cachedOpportunities!.insert(0, opportunity);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final string = S.of(context);
+    final strings = S.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -103,21 +126,21 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
           children: [
             Text(
               widget.isCurrentUser
-                  ? string.myOpportunities
-                  : string.opportunities,
+                  ? strings.myOpportunities
+                  : strings.opportunities,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             widget.showActiveOnly
                 ? Text(
-                    string.publicOpportunities,
+                    strings.publicOpportunities,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onError,
                     ),
                   )
                 : Text(
-                    string.archiveOpportunities,
+                    strings.archiveOpportunities,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onError,
                     ),
@@ -148,48 +171,81 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
       ),
       body: BlocConsumer<OpportunityBloc, OpportunityState>(
         listener: (context, state) {
+          // ✅ Handle delete success
           if (state is OpportunityDeleted) {
-            _refreshOpportunities();
+            // Removed from cache already (optimistic), just show success
             Fluttertoast.showToast(
-              msg: 'Opportunity deleted successfully',
+              msg: strings.opportunityDeletedSuccess,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-          } else if (state is OpportunityUpdated) {
-            // Refresh immediately when an update completes
+            _deletedOpportunity = null;
+            _deletedOpportunityId = null;
+          } 
+          // ✅ Handle delete error - undo optimistic removal
+          else if (state is OpportunityError) {
+            // Check if this is a delete error
+            if (_deletedOpportunity != null) {
+              _addOpportunityBackToCache(_deletedOpportunity!);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              _deletedOpportunity = null;
+              _deletedOpportunityId = null;
+            } else if (_archivedOpportunity != null) {
+              // Archive failed, undo optimistic removal
+              _addOpportunityBackToCache(_archivedOpportunity!);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              _archivedOpportunity = null;
+              _archivedOpportunityId = null;
+            } else {
+              // Other errors
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          } 
+          // ✅ Handle update success
+          else if (state is OpportunityUpdated) {
             _refreshOpportunities();
             Fluttertoast.showToast(
-              msg: 'Opportunity updated successfully',
+              msg: strings.opportunityUpdatedSuccess,
               backgroundColor: Colors.green,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
-          } else if (state is OpportunityError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+          } 
+          // ✅ Handle toggle success
+          else if (state is OpportunityToggeled) {
+            _archivedOpportunity = null;
+            _archivedOpportunityId = null;
+            _refreshOpportunities();
           }
         },
         builder: (context, state) {
-          // Update cache when we have fresh data
           if (state is MyOpportunitiesLoaded) {
             _cachedOpportunities = state.opportunities;
             _hasMore = state.hasMore;
           }
 
-          // Determine if we should show cached data while loading/updating
-          final bool isLoading =
-              state is MyOpportunitiesLoading ||
+          final bool isLoading = state is MyOpportunitiesLoading ||
               state is OpportunityInitial ||
               state is OpportunityLoadingMore;
 
           final bool isUpdating = state is OpportunityUpdated;
 
-          // If we have cached data and we're in a transient state, show the cached list
           if ((isLoading || isUpdating) &&
               _cachedOpportunities != null &&
               _cachedOpportunities!.isNotEmpty) {
@@ -198,68 +254,86 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
               hasMore: _hasMore,
               isLoadingMore: state is OpportunityLoadingMore,
               theme: theme,
-              string: string,
+              strings: strings,
             );
           }
 
-          // Show shimmer on initial load with no cache
-          if ((state is MyOpportunitiesLoading ||
-                  state is OpportunityInitial) &&
+          if ((state is MyOpportunitiesLoading || state is OpportunityInitial) &&
               _cachedOpportunities == null) {
-            return ListView.builder(
-              padding: EdgeInsets.all(16.r),
-              itemCount: 3,
-              itemBuilder: (context, index) => const OpportunityCardShimmer(),
+            return RefreshIndicator(
+              onRefresh: _refreshOpportunities,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.all(16.r),
+                itemCount: 3,
+                itemBuilder: (context, index) => const OpportunityCardShimmer(),
+              ),
             );
           }
 
-          // Show error with retry
           if (state is OpportunityError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            return RefreshIndicator(
+              onRefresh: _refreshOpportunities,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64.sp,
-                    color: theme.colorScheme.error,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    state.message,
-                    style: theme.textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 16.h),
-                  ElevatedButton(
-                    onPressed: _refreshOpportunities,
-                    child: const Text('Retry'),
+                  SizedBox(height: 100.h),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64.sp,
+                          color: theme.colorScheme.error,
+                        ),
+                        SizedBox(height: 16.h),
+                        Text(
+                          state.message,
+                          style: theme.textTheme.bodyLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 16.h),
+                        ElevatedButton(
+                          onPressed: _refreshOpportunities,
+                          child: Text(strings.retry),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             );
           }
 
-          // Show loaded list (normal case)
           if (state is MyOpportunitiesLoaded) {
             if (state.opportunities.isEmpty &&
                 _cachedOpportunities?.isEmpty != false) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              return RefreshIndicator(
+                onRefresh: _refreshOpportunities,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   children: [
-                    Icon(
-                      Icons.work_outline,
-                      size: 64.sp,
-                      color: theme.colorScheme.primary,
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      widget.showActiveOnly
-                          ? 'No active opportunities'
-                          : 'No inactive opportunities',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onError,
+                    SizedBox(height: 100.h),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.work_outline,
+                            size: 64.sp,
+                            color: theme.colorScheme.primary,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            widget.showActiveOnly
+                                ? strings.noActiveOpportunities
+                                : strings.noInactiveOpportunities,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onError,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -271,23 +345,32 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
               hasMore: state.hasMore,
               isLoadingMore: false,
               theme: theme,
-              string: string,
+              strings: strings,
             );
           }
 
-          // Fallback: show cached list if available, otherwise empty
-          if (_cachedOpportunities != null &&
-              _cachedOpportunities!.isNotEmpty) {
+          if (_cachedOpportunities != null && _cachedOpportunities!.isNotEmpty) {
             return _buildOpportunityList(
               opportunities: _cachedOpportunities!,
               hasMore: _hasMore,
               isLoadingMore: false,
               theme: theme,
-              string: string,
+              strings: strings,
             );
           }
 
-          return const SizedBox.shrink();
+          return RefreshIndicator(
+            onRefresh: _refreshOpportunities,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(height: 100.h),
+                Center(
+                  child: Text(strings.noData),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -298,15 +381,13 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
     required bool hasMore,
     required bool isLoadingMore,
     required ThemeData theme,
-    required S string,
+    required S strings,
   }) {
     return RefreshIndicator(
-      onRefresh: () async {
-        _refreshOpportunities();
-        await Future.delayed(const Duration(milliseconds: 500));
-      },
+      onRefresh: _refreshOpportunities,
       child: ListView.separated(
         controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.all(16.r),
         itemCount: opportunities.length + (hasMore ? 1 : 0),
         separatorBuilder: (context, index) => SizedBox(height: 12.h),
@@ -351,55 +432,68 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
               );
               if (result == true) _refreshOpportunities();
             },
-            onDelete: () => _showDeleteConfirmation(
+            onDelete: () => _handleOptimisticDelete(
               context,
-              opportunity.id,
-              opportunity.title,
+              opportunity,
+              strings,
             ),
             onToggle: (bool isArchiving) =>
-                _showToggleConfirmation(context, opportunity.id, isArchiving),
+                _handleOptimisticToggle(context, opportunity, isArchiving, strings),
             showActiveOnly: widget.showActiveOnly,
+            strings: strings,
           );
         },
       ),
     );
   }
 
-  void _showDeleteConfirmation(
+  void _handleOptimisticDelete(
     BuildContext context,
-    String opportunityId,
-    String title,
+    OpportunityModel opportunity,
+    S strings,
   ) {
     ConfirmationDialog.show(
       context: context,
-      title: 'Delete Opportunity',
-      message:
-          'Are you sure you want to delete "$title"? This action cannot be undone.',
+      title: strings.deleteOpportunity,
+      message: strings.deleteOpportunityConfirmation,
       onConfirm: () {
+        _deletedOpportunity = opportunity;
+        _deletedOpportunityId = opportunity.id;
+        
+        _removeOpportunityFromCache(opportunity.id);
+        
         context.read<OpportunityBloc>().add(
-          DeleteOpportunity(opportunityId: opportunityId),
+          DeleteOpportunity(opportunityId: opportunity.id),
         );
       },
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      confirmText: strings.delete,
+      cancelText: strings.cancel,
       icon: Icons.delete_outline,
       isDestructive: true,
     );
   }
 
-  void _showToggleConfirmation(
+  void _handleOptimisticToggle(
     BuildContext context,
-    String opportunityId,
+    OpportunityModel opportunity,
     bool isArchiving,
+    S strings,
   ) {
-    final action = isArchiving ? 'Archive' : 'Restore';
+    final action = isArchiving ? strings.archive : strings.restore;
+    final title = isArchiving ? strings.archiveOpportunity : strings.restoreOpportunity;
+    
     ConfirmationDialog.show(
       context: context,
-      title: '$action Opportunity',
-      message: 'Are you sure you want to $action this opportunity?',
+      title: title,
+      message: strings.archiveRestoreConfirmation(action),
       onConfirm: () {
+        _archivedOpportunity = opportunity;
+        _archivedOpportunityId = opportunity.id;
+        
+        _removeOpportunityFromCache(opportunity.id);
+        
         context.read<OpportunityBloc>().add(
-          ToggleOpportunityVisibility(opportunityId: opportunityId),
+          ToggleOpportunityVisibility(opportunityId: opportunity.id),
         );
       },
       confirmText: action,
@@ -412,8 +506,9 @@ class _MyOpportunityCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final ValueChanged<bool> onToggle; // Now expects a bool
+  final ValueChanged<bool> onToggle;
   final bool showActiveOnly;
+  final S strings;
 
   const _MyOpportunityCard({
     required this.opportunity,
@@ -422,12 +517,12 @@ class _MyOpportunityCard extends StatelessWidget {
     required this.onDelete,
     required this.onToggle,
     required this.showActiveOnly,
+    required this.strings,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final strings = S.of(context); // Add if needed
 
     return GestureDetector(
       onTap: onTap,
@@ -475,12 +570,10 @@ class _MyOpportunityCard extends StatelessWidget {
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            "Since ${_formatDate(opportunity.createdAt)}",
+                            strings.sinceDate(_formatDate(opportunity.createdAt)),
                             style: TextStyle(
                               fontSize: 13.sp,
-                              color: theme.colorScheme.onSurface.withOpacity(
-                                0.5,
-                              ),
+                              color: theme.colorScheme.onSurface.withOpacity(0.5),
                             ),
                           ),
                         ],
@@ -498,7 +591,7 @@ class _MyOpportunityCard extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
-                    child: _buildLeadingWidget(opportunity),
+                    child: _buildLeadingWidget(),
                   ),
                 ),
               ],
@@ -519,9 +612,9 @@ class _MyOpportunityCard extends StatelessWidget {
                   } else if (value == 'delete') {
                     onDelete();
                   } else if (value == 'archive') {
-                    onToggle(true); // isArchiving = true
+                    onToggle(true);
                   } else if (value == 'restore') {
-                    onToggle(false); // isArchiving = false
+                    onToggle(false);
                   }
                 },
                 itemBuilder: (context) => [
@@ -532,7 +625,7 @@ class _MyOpportunityCard extends StatelessWidget {
                         children: [
                           Icon(Icons.archive_outlined, size: 20.sp),
                           SizedBox(width: 8.w),
-                          Text(strings.archive), // Use localized string
+                          Text(strings.archive),
                         ],
                       ),
                     )
@@ -553,7 +646,7 @@ class _MyOpportunityCard extends StatelessWidget {
                       children: [
                         Icon(Icons.edit_outlined, size: 20.sp),
                         SizedBox(width: 8.w),
-                        const Text('Edit'),
+                        Text(strings.edit),
                       ],
                     ),
                   ),
@@ -568,7 +661,7 @@ class _MyOpportunityCard extends StatelessWidget {
                         ),
                         SizedBox(width: 8.w),
                         Text(
-                          'Delete',
+                          strings.delete,
                           style: TextStyle(color: Colors.red[700]),
                         ),
                       ],
@@ -583,7 +676,7 @@ class _MyOpportunityCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLeadingWidget(OpportunityModel opportunity) {
+  Widget _buildLeadingWidget() {
     if (opportunity.mediaUrl != null && opportunity.mediaUrl!.isNotEmpty) {
       return Image.network(
         opportunity.mediaUrl!,
