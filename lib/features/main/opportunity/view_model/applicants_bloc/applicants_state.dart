@@ -64,3 +64,13 @@ class ApplicantsError extends ApplicantsState {
   @override
   List<Object?> get props => [message];
 }
+class RecommendationsLoading extends ApplicantsState {}
+ 
+class RecommendationsLoaded extends ApplicantsState {
+  final RecommendationsResponseModel response;
+ 
+  const RecommendationsLoaded({required this.response});
+ 
+  @override
+  List<Object?> get props => [response];
+}

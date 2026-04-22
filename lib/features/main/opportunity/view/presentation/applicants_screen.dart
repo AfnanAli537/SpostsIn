@@ -1,3 +1,491 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:shimmer/shimmer.dart';
+// import 'package:sports_in/features/main/opportunity/data/model/applicants_model.dart';
+// import 'package:sports_in/features/main/opportunity/view_model/applicants_bloc/applicants_bloc.dart';
+// import 'package:sports_in/generated/l10n.dart';
+
+// class ApplicantsPage extends StatefulWidget {
+//   final String opportunityId;
+
+//   const ApplicantsPage({super.key, required this.opportunityId});
+
+//   @override
+//   State<ApplicantsPage> createState() => _ApplicantsPageState();
+// }
+
+// class _ApplicantsPageState extends State<ApplicantsPage>
+//     with SingleTickerProviderStateMixin {
+//   late TabController _tabController;
+//   String? _currentStatus;
+//   String? _generalStatus;
+//   final Map<String, ApplicantsResponseModel> _tabCache = {};
+//   final Set<String> _dirtyTabs = {};
+//   String get _cacheKey => _currentStatus ?? 'null';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _tabController = TabController(length: 3, vsync: this);
+//     _currentStatus = null;
+//     _fetchCurrentTab();
+//   }
+
+//   @override
+//   void dispose() {
+//     _tabController.dispose();
+//     super.dispose();
+//   }
+
+//   void _fetchCurrentTabIfNeeded() {
+//     final hasCached = _tabCache.containsKey(_cacheKey);
+//     final isDirty = _dirtyTabs.contains(_cacheKey);
+
+//     if (!hasCached || isDirty) {
+//       _fetchCurrentTab();
+//     } else {
+//       setState(() {});
+//     }
+//   }
+
+//   void _fetchCurrentTab() {
+//     context.read<ApplicantsBloc>().add(
+//       FetchApplicants(
+//         opportunityId: widget.opportunityId,
+//         status: _currentStatus,
+//       ),
+//     );
+//   }
+
+//   void _markAllTabsDirty() {
+//     _dirtyTabs.addAll(['null', 'accepted', 'rejected']);
+//   }
+
+//   void _onTabTapped(int index) {
+//     String? status;
+//     switch (index) {
+//       case 0:
+//         status = null;
+//         break;
+//       case 1:
+//         status = 'accepted';
+//         break;
+//       case 2:
+//         status = 'rejected';
+//         break;
+//     }
+//     setState(() => _currentStatus = status);
+//     setState(() => _generalStatus = status);
+
+//     _fetchCurrentTabIfNeeded();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final strings = S.of(context);
+//     final theme = Theme.of(context).colorScheme;
+//     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         elevation: 0,
+//         leading: IconButton(
+//           icon: Icon(Icons.arrow_back, color: theme.onSurface),
+//           onPressed: () => Navigator.pop(context),
+//         ),
+//         title: Text(
+//           strings.applicants,
+//           style: GoogleFonts.poppins(
+//             fontSize: 18.sp,
+//             fontWeight: FontWeight.w600,
+//             color: theme.onSurface,
+//           ),
+//         ),
+//         centerTitle: true,
+//         bottom: TabBar(
+//           dividerColor: theme.surface,
+//           controller: _tabController,
+//           labelColor: theme.onSurface,
+//           unselectedLabelColor: Colors.grey,
+//           indicator: UnderlineTabIndicator(
+//             borderRadius: BorderRadius.circular(4),
+//             borderSide: BorderSide(color: theme.onSurface, width: 3),
+//           ),
+//           labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+//           unselectedLabelStyle: GoogleFonts.poppins(
+//             fontWeight: FontWeight.w400,
+//           ),
+//           onTap: _onTabTapped,
+//           tabs: [
+//             Tab(text: strings.all),
+//             Tab(text: strings.accepted),
+//             Tab(text: strings.rejected),
+//           ],
+//         ),
+//       ),
+//       body: BlocConsumer<ApplicantsBloc, ApplicantsState>(
+//         listener: (context, state) {
+//           if (state is ApplicantsLoaded) {
+//             final key = _generalStatus ?? 'null';
+//             _tabCache[key] = state.response;
+//             _dirtyTabs.remove(key);
+//           }
+
+//           if (state is ApplicantActionSuccess) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text(state.message),
+//                 backgroundColor: Colors.green,
+//                 duration: const Duration(seconds: 2),
+//               ),
+//             );
+//             _markAllTabsDirty();
+//             _tabCache.remove(_cacheKey);
+//             _fetchCurrentTab();
+//           }
+
+//           if (state is ApplicantsError) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text(state.message),
+//                 backgroundColor: Colors.red,
+//                 duration: const Duration(seconds: 3),
+//               ),
+//             );
+//           }
+//         },
+//         builder: (context, state) {
+//           final cachedData = _tabCache[_cacheKey];
+//           if (state is ApplicantsLoading && cachedData == null) {
+//             return _buildShimmerList(isDark: isDark);
+//           }
+//           if (cachedData != null) {
+//             return _buildRefreshable(
+//               isDark: isDark,
+//               child: _buildApplicantsList(cachedData, strings),
+//             );
+//           }
+//           if (state is ApplicantsLoaded && _generalStatus == _currentStatus) {
+//             return _buildRefreshable(
+//               isDark: isDark,
+//               child: _buildApplicantsList(state.response, strings),
+//             );
+//           }
+//           if (state is ApplicantsError) {
+//             return Center(
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   Icon(
+//                     Icons.error_outline,
+//                     size: 48.sp,
+//                     color: Colors.grey.shade400,
+//                   ),
+//                   SizedBox(height: 12.h),
+//                   Text(
+//                     strings.errorLoadingApplicants,
+//                     style: GoogleFonts.poppins(
+//                       fontSize: 16.sp,
+//                       color: Colors.grey.shade600,
+//                     ),
+//                   ),
+//                   SizedBox(height: 12.h),
+//                   ElevatedButton.icon(
+//                     onPressed: _fetchCurrentTab,
+//                     icon: Icon(Icons.refresh, color: theme.surface),
+//                     label: Text(
+//                       strings.retry,
+//                       style: TextStyle(color: theme.surface),
+//                     ),
+//                     style: ElevatedButton.styleFrom(
+//                       backgroundColor: theme.primary,
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(8.r),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             );
+//           }
+//           return _buildShimmerList(isDark: isDark);
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildRefreshable({required Widget child, required bool isDark}) {
+//     return RefreshIndicator(
+//       color: Theme.of(context).colorScheme.primary,
+//       backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
+//       strokeWidth: 2.5,
+//       onRefresh: () async {
+//         _tabCache.remove(_cacheKey);
+//         _fetchCurrentTab();
+//         await Future.delayed(const Duration(milliseconds: 600));
+//       },
+//       child: child,
+//     );
+//   }
+
+//   Widget _buildShimmerList({required bool isDark}) {
+//     return ListView.builder(
+//       padding: EdgeInsets.all(16.w),
+//       itemCount: 6,
+//       itemBuilder: (_, __) => _buildShimmerCard(isDark: isDark),
+//     );
+//   }
+
+//   Widget _buildShimmerCard({required bool isDark}) {
+//     final baseColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
+//     final highlightColor = isDark ? Colors.grey.shade500 : Colors.grey.shade100;
+
+//     return Shimmer.fromColors(
+//       baseColor: baseColor,
+//       highlightColor: highlightColor,
+//       child: Card(
+//         margin: EdgeInsets.only(bottom: 12.h),
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(16.r),
+//         ),
+//         elevation: 0,
+//         color: isDark ? Colors.grey.shade800 : Colors.white,
+//         child: Padding(
+//           padding: EdgeInsets.all(16.w),
+//           child: Row(
+//             children: [
+//               CircleAvatar(
+//                 radius: 28.r,
+//                 backgroundColor: isDark
+//                     ? Colors.grey.shade600
+//                     : Colors.grey.shade300,
+//               ),
+//               SizedBox(width: 12.w),
+//               Expanded(
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Container(
+//                       height: 14.h,
+//                       width: 140.w,
+//                       decoration: BoxDecoration(
+//                         color: isDark
+//                             ? Colors.grey.shade600
+//                             : Colors.grey.shade300,
+//                         borderRadius: BorderRadius.circular(6.r),
+//                       ),
+//                     ),
+//                     SizedBox(height: 8.h),
+//                     Container(
+//                       height: 11.h,
+//                       width: 90.w,
+//                       decoration: BoxDecoration(
+//                         color: isDark
+//                             ? Colors.grey.shade600
+//                             : Colors.grey.shade300,
+//                         borderRadius: BorderRadius.circular(6.r),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               SizedBox(width: 12.w),
+//               Container(
+//                 height: 36.h,
+//                 width: 72.w,
+//                 decoration: BoxDecoration(
+//                   color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+//                   borderRadius: BorderRadius.circular(8.r),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildApplicantsList(ApplicantsResponseModel response, S strings) {
+//     if (response.items.isEmpty) {
+//       final emptyMessage = _currentStatus == 'accepted'
+//           ? strings.noAcceptedApplicants
+//           : _currentStatus == 'rejected'
+//           ? strings.noRejectedApplicants
+//           : strings.noApplicantsFound;
+//       return LayoutBuilder(
+//         builder: (context, constraints) => SingleChildScrollView(
+//           physics: const AlwaysScrollableScrollPhysics(),
+//           child: SizedBox(
+//             height: constraints.maxHeight,
+//             child: Center(
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   Icon(
+//                     Icons.people_outline,
+//                     size: 56.sp,
+//                     color: Colors.grey.shade300,
+//                   ),
+//                   SizedBox(height: 12.h),
+//                   Text(
+//                     emptyMessage,
+//                     style: GoogleFonts.poppins(
+//                       fontSize: 15.sp,
+//                       color: Colors.grey.shade500,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       );
+//     }
+
+//     return ListView.builder(
+//       physics: const AlwaysScrollableScrollPhysics(),
+//       padding: EdgeInsets.all(16.w),
+//       itemCount: response.items.length,
+//       itemBuilder: (context, index) =>
+//           _buildApplicantCard(response.items[index], strings),
+//     );
+//   }
+
+//   Widget _buildApplicantCard(Applicant applicant, S strings) {
+//     final actionState = context.watch<ApplicantsBloc>().state;
+//     final isProcessing =
+//         actionState is ApplicantActionLoading &&
+//         actionState.applicationId == applicant.applicationId;
+
+//     return Card(
+//       margin: EdgeInsets.only(bottom: 12.h),
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+//       elevation: 2,
+//       shadowColor: Colors.black.withOpacity(0.08),
+//       child: Padding(
+//         padding: EdgeInsets.all(16.w),
+//         child: Row(
+//           children: [
+//             CircleAvatar(
+//               radius: 28.r,
+//               backgroundColor: Colors.grey.shade400,
+//               backgroundImage: applicant.profilePictureUrl != null
+//                   ? NetworkImage(applicant.profilePictureUrl!)
+//                   : null,
+//               child: applicant.profilePictureUrl == null
+//                   ? Icon(Icons.person, size: 28.sp, color: Colors.grey.shade200)
+//                   : null,
+//             ),
+//             SizedBox(width: 12.w),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text(
+//                     applicant.applicantName,
+//                     style: GoogleFonts.poppins(
+//                       fontSize: 15.sp,
+//                       fontWeight: FontWeight.w600,
+//                       color: Theme.of(context).colorScheme.onSurface,
+//                     ),
+//                   ),
+//                   SizedBox(height: 2.h),
+//                   Text(
+//                     applicant.applicantType,
+//                     style: GoogleFonts.poppins(
+//                       fontSize: 12.sp,
+//                       color: Colors.grey.shade500,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             if (isProcessing)
+//               SizedBox(
+//                 width: 24.w,
+//                 height: 24.h,
+//                 child: const CircularProgressIndicator(strokeWidth: 2),
+//               )
+//             else
+//               _buildActionButtons(applicant, strings),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildActionButtons(Applicant applicant, S strings) {
+//     if (applicant.isAccepted) return _buildRejectButton(applicant, strings);
+//     if (applicant.isRejected) return _buildAcceptButton(applicant, strings);
+//     return Row(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         _buildAcceptButton(applicant, strings),
+//         SizedBox(width: 8.w),
+//         _buildRejectButton(applicant, strings),
+//       ],
+//     );
+//   }
+
+//   Widget _buildAcceptButton(Applicant applicant, S strings) {
+//     return ElevatedButton(
+//       onPressed: () => context.read<ApplicantsBloc>().add(
+//         AcceptApplicant(
+//           applicationId: applicant.applicationId,
+//           status: 'accepted',
+//           opportunityId: widget.opportunityId,
+//         ),
+//       ),
+//       style: ElevatedButton.styleFrom(
+//         backgroundColor: const Color(0xFF1A5F4E),
+//         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+//         minimumSize: Size(0, 36.h),
+//         elevation: 0,
+//       ),
+//       child: Text(
+//         strings.accept,
+//         style: GoogleFonts.poppins(
+//           fontSize: 12.sp,
+//           fontWeight: FontWeight.w600,
+//           color: Colors.white,
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildRejectButton(Applicant applicant, S strings) {
+//     return ElevatedButton(
+//       onPressed: () => context.read<ApplicantsBloc>().add(
+//         RejectApplicant(
+//           applicationId: applicant.applicationId,
+//           status: 'rejected',
+//           opportunityId: widget.opportunityId,
+//         ),
+//       ),
+//       style: ElevatedButton.styleFrom(
+//         backgroundColor: Colors.red,
+//         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+//         minimumSize: Size(0, 36.h),
+//         elevation: 0,
+//       ),
+//       child: Text(
+//         strings.reject,
+//         style: GoogleFonts.poppins(
+//           fontSize: 12.sp,
+//           fontWeight: FontWeight.w600,
+//           color: Colors.white,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,16 +507,26 @@ class ApplicantsPage extends StatefulWidget {
 class _ApplicantsPageState extends State<ApplicantsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String? _currentStatus;
+
+  // ── Tab indices ───────────────────────────────────────────────────────────
+  // 0 = All (null), 1 = Accepted, 2 = Rejected, 3 = Top Match
+  static const int _topMatchIndex = 3;
+
+  String? _currentStatus; // null = all
   String? _generalStatus;
+
   final Map<String, ApplicantsResponseModel> _tabCache = {};
+  RecommendationsResponseModel? _recommendationsCache;
   final Set<String> _dirtyTabs = {};
+
   String get _cacheKey => _currentStatus ?? 'null';
+  bool get _isTopMatchTab =>
+      _tabController.index == _topMatchIndex;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _currentStatus = null;
     _fetchCurrentTab();
   }
@@ -39,7 +537,14 @@ class _ApplicantsPageState extends State<ApplicantsPage>
     super.dispose();
   }
 
+  // ── Fetching helpers ──────────────────────────────────────────────────────
+
   void _fetchCurrentTabIfNeeded() {
+    if (_isTopMatchTab) {
+      if (_recommendationsCache == null) _fetchRecommendations();
+      return;
+    }
+
     final hasCached = _tabCache.containsKey(_cacheKey);
     final isDirty = _dirtyTabs.contains(_cacheKey);
 
@@ -52,11 +557,17 @@ class _ApplicantsPageState extends State<ApplicantsPage>
 
   void _fetchCurrentTab() {
     context.read<ApplicantsBloc>().add(
-      FetchApplicants(
-        opportunityId: widget.opportunityId,
-        status: _currentStatus,
-      ),
-    );
+          FetchApplicants(
+            opportunityId: widget.opportunityId,
+            status: _currentStatus,
+          ),
+        );
+  }
+
+  void _fetchRecommendations() {
+    context.read<ApplicantsBloc>().add(
+          FetchRecommendations(opportunityId: widget.opportunityId),
+        );
   }
 
   void _markAllTabsDirty() {
@@ -75,12 +586,19 @@ class _ApplicantsPageState extends State<ApplicantsPage>
       case 2:
         status = 'rejected';
         break;
+      case _topMatchIndex:
+        setState(() {});
+        _fetchCurrentTabIfNeeded();
+        return;
     }
-    setState(() => _currentStatus = status);
-    setState(() => _generalStatus = status);
-
+    setState(() {
+      _currentStatus = status;
+      _generalStatus = status;
+    });
     _fetchCurrentTabIfNeeded();
   }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -109,28 +627,46 @@ class _ApplicantsPageState extends State<ApplicantsPage>
           controller: _tabController,
           labelColor: theme.onSurface,
           unselectedLabelColor: Colors.grey,
+          isScrollable: true,
+          tabAlignment: TabAlignment.center,
           indicator: UnderlineTabIndicator(
             borderRadius: BorderRadius.circular(4),
             borderSide: BorderSide(color: theme.onSurface, width: 3),
           ),
-          labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          unselectedLabelStyle: GoogleFonts.poppins(
-            fontWeight: FontWeight.w400,
-          ),
+          labelStyle:
+              GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13.sp),
+          unselectedLabelStyle:
+              GoogleFonts.poppins(fontWeight: FontWeight.w400, fontSize: 13.sp),
           onTap: _onTabTapped,
           tabs: [
             Tab(text: strings.all),
             Tab(text: strings.accepted),
             Tab(text: strings.rejected),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.star_rounded, size: 16.sp, color: const Color(0xFFFFB300)),
+                  SizedBox(width: 4.w),
+                  Text(strings.topMatch),
+                ],
+              ),
+            ),
           ],
         ),
       ),
       body: BlocConsumer<ApplicantsBloc, ApplicantsState>(
         listener: (context, state) {
+          // Cache regular applicants
           if (state is ApplicantsLoaded) {
             final key = _generalStatus ?? 'null';
             _tabCache[key] = state.response;
             _dirtyTabs.remove(key);
+          }
+
+          // Cache recommendations
+          if (state is RecommendationsLoaded) {
+            setState(() => _recommendationsCache = state.response);
           }
 
           if (state is ApplicantActionSuccess) {
@@ -157,78 +693,94 @@ class _ApplicantsPageState extends State<ApplicantsPage>
           }
         },
         builder: (context, state) {
+          // ── Top Match tab ─────────────────────────────────────────────────
+          if (_tabController.index == _topMatchIndex) {
+            if (state is RecommendationsLoading &&
+                _recommendationsCache == null) {
+              return _buildShimmerList(isDark: isDark);
+            }
+            if (_recommendationsCache != null) {
+              return _buildRefreshable(
+                isDark: isDark,
+                onRefresh: () async {
+                  setState(() => _recommendationsCache = null);
+                  _fetchRecommendations();
+                  await Future.delayed(const Duration(milliseconds: 600));
+                },
+                child:
+                    _buildRecommendationsList(_recommendationsCache!, strings),
+              );
+            }
+            if (state is RecommendationsLoaded) {
+              return _buildRefreshable(
+                isDark: isDark,
+                onRefresh: () async {
+                  setState(() => _recommendationsCache = null);
+                  _fetchRecommendations();
+                  await Future.delayed(const Duration(milliseconds: 600));
+                },
+                child: _buildRecommendationsList(state.response, strings),
+              );
+            }
+            return _buildShimmerList(isDark: isDark);
+          }
+
+          // ── Regular tabs ──────────────────────────────────────────────────
           final cachedData = _tabCache[_cacheKey];
+
           if (state is ApplicantsLoading && cachedData == null) {
             return _buildShimmerList(isDark: isDark);
           }
           if (cachedData != null) {
             return _buildRefreshable(
               isDark: isDark,
+              onRefresh: () async {
+                _tabCache.remove(_cacheKey);
+                _fetchCurrentTab();
+                await Future.delayed(const Duration(milliseconds: 600));
+              },
               child: _buildApplicantsList(cachedData, strings),
             );
           }
-          if (state is ApplicantsLoaded && _generalStatus == _currentStatus) {
+          if (state is ApplicantsLoaded &&
+              _generalStatus == _currentStatus) {
             return _buildRefreshable(
               isDark: isDark,
+              onRefresh: () async {
+                _tabCache.remove(_cacheKey);
+                _fetchCurrentTab();
+                await Future.delayed(const Duration(milliseconds: 600));
+              },
               child: _buildApplicantsList(state.response, strings),
             );
           }
           if (state is ApplicantsError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 48.sp,
-                    color: Colors.grey.shade400,
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    strings.errorLoadingApplicants,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  ElevatedButton.icon(
-                    onPressed: _fetchCurrentTab,
-                    icon: Icon(Icons.refresh, color: theme.surface),
-                    label: Text(
-                      strings.retry,
-                      style: TextStyle(color: theme.surface),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return _buildErrorState(state.message, strings);
           }
+
           return _buildShimmerList(isDark: isDark);
         },
       ),
     );
   }
 
-  Widget _buildRefreshable({required Widget child, required bool isDark}) {
+  // ── Refreshable wrapper ───────────────────────────────────────────────────
+
+  Widget _buildRefreshable({
+    required Widget child,
+    required bool isDark,
+    required Future<void> Function() onRefresh,
+  }) {
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.primary,
       backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
       strokeWidth: 2.5,
-      onRefresh: () async {
-        _tabCache.remove(_cacheKey);
-        _fetchCurrentTab();
-        await Future.delayed(const Duration(milliseconds: 600));
-      },
+      onRefresh: onRefresh,
       child: child,
     );
   }
+
+  // ── Shimmer ───────────────────────────────────────────────────────────────
 
   Widget _buildShimmerList({required bool isDark}) {
     return ListView.builder(
@@ -239,8 +791,10 @@ class _ApplicantsPageState extends State<ApplicantsPage>
   }
 
   Widget _buildShimmerCard({required bool isDark}) {
-    final baseColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
-    final highlightColor = isDark ? Colors.grey.shade500 : Colors.grey.shade100;
+    final baseColor =
+        isDark ? Colors.grey.shade700 : Colors.grey.shade300;
+    final highlightColor =
+        isDark ? Colors.grey.shade500 : Colors.grey.shade100;
 
     return Shimmer.fromColors(
       baseColor: baseColor,
@@ -258,9 +812,8 @@ class _ApplicantsPageState extends State<ApplicantsPage>
             children: [
               CircleAvatar(
                 radius: 28.r,
-                backgroundColor: isDark
-                    ? Colors.grey.shade600
-                    : Colors.grey.shade300,
+                backgroundColor:
+                    isDark ? Colors.grey.shade600 : Colors.grey.shade300,
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -296,7 +849,8 @@ class _ApplicantsPageState extends State<ApplicantsPage>
                 height: 36.h,
                 width: 72.w,
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+                  color:
+                      isDark ? Colors.grey.shade600 : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
@@ -307,41 +861,19 @@ class _ApplicantsPageState extends State<ApplicantsPage>
     );
   }
 
-  Widget _buildApplicantsList(ApplicantsResponseModel response, S strings) {
+  // ── Regular applicants list ───────────────────────────────────────────────
+
+  Widget _buildApplicantsList(
+    ApplicantsResponseModel response,
+    S strings,
+  ) {
     if (response.items.isEmpty) {
       final emptyMessage = _currentStatus == 'accepted'
           ? strings.noAcceptedApplicants
           : _currentStatus == 'rejected'
-          ? strings.noRejectedApplicants
-          : strings.noApplicantsFound;
-      return LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.people_outline,
-                    size: 56.sp,
-                    color: Colors.grey.shade300,
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    emptyMessage,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15.sp,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+              ? strings.noRejectedApplicants
+              : strings.noApplicantsFound;
+      return _buildEmptyState(emptyMessage);
     }
 
     return ListView.builder(
@@ -355,66 +887,282 @@ class _ApplicantsPageState extends State<ApplicantsPage>
 
   Widget _buildApplicantCard(Applicant applicant, S strings) {
     final actionState = context.watch<ApplicantsBloc>().state;
-    final isProcessing =
-        actionState is ApplicantActionLoading &&
+    final isProcessing = actionState is ApplicantActionLoading &&
         actionState.applicationId == applicant.applicationId;
 
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       elevation: 2,
       shadowColor: Colors.black.withOpacity(0.08),
       child: Padding(
         padding: EdgeInsets.all(16.w),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 28.r,
-              backgroundColor: Colors.grey.shade400,
-              backgroundImage: applicant.profilePictureUrl != null
-                  ? NetworkImage(applicant.profilePictureUrl!)
-                  : null,
-              child: applicant.profilePictureUrl == null
-                  ? Icon(Icons.person, size: 28.sp, color: Colors.grey.shade200)
-                  : null,
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 28.r,
+                  backgroundColor: Colors.grey.shade400,
+                  backgroundImage: applicant.profilePictureUrl != null
+                      ? NetworkImage(applicant.profilePictureUrl!)
+                      : null,
+                  child: applicant.profilePictureUrl == null
+                      ? Icon(Icons.person,
+                          size: 28.sp, color: Colors.grey.shade200)
+                      : null,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        applicant.applicantName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Text(
+                            applicant.applicantType,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.sp,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                          if (applicant.city != null &&
+                              applicant.city!.isNotEmpty) ...[
+                            Text(
+                              ' · ',
+                              style: TextStyle(color: Colors.grey.shade400),
+                            ),
+                            Icon(Icons.location_on,
+                                size: 12.sp, color: Colors.grey.shade400),
+                            SizedBox(width: 2.w),
+                            Text(
+                              applicant.city!,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12.sp,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (isProcessing)
+                  SizedBox(
+                    width: 24.w,
+                    height: 24.h,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  _buildActionButtons(applicant, strings),
+              ],
             ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    applicant.applicantName,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    applicant.applicantType,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12.sp,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
+            // matchInsights chips
+            if (applicant.matchInsights.isNotEmpty) ...[
+              SizedBox(height: 10.h),
+              Wrap(
+                spacing: 6.w,
+                runSpacing: 4.h,
+                children: applicant.matchInsights
+                    .map((insight) => _buildInsightChip(insight))
+                    .toList(),
               ),
-            ),
-            if (isProcessing)
-              SizedBox(
-                width: 24.w,
-                height: 24.h,
-                child: const CircularProgressIndicator(strokeWidth: 2),
-              )
-            else
-              _buildActionButtons(applicant, strings),
+            ],
           ],
         ),
       ),
     );
   }
+
+  // ── Recommendations list (Top Match tab) ──────────────────────────────────
+
+  Widget _buildRecommendationsList(
+    RecommendationsResponseModel response,
+    S strings,
+  ) {
+    if (response.items.isEmpty) {
+      return _buildEmptyState(strings.noTopMatchFound);
+    }
+
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.all(16.w),
+      itemCount: response.items.length,
+      itemBuilder: (context, index) =>
+          _buildRecommendationCard(response.items[index], strings),
+    );
+  }
+
+  Widget _buildRecommendationCard(
+    RecommendationApplicant applicant,
+    S strings,
+  ) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 12.h),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.08),
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Avatar with star badge
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 28.r,
+                      backgroundColor: Colors.grey.shade400,
+                      backgroundImage: applicant.profilePictureUrl != null
+                          ? NetworkImage(applicant.profilePictureUrl!)
+                          : null,
+                      child: applicant.profilePictureUrl == null
+                          ? Icon(Icons.person,
+                              size: 28.sp, color: Colors.grey.shade200)
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 18.w,
+                        height: 18.h,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFB300),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.star_rounded,
+                          size: 12.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        applicant.applicantName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Text(
+                            applicant.applicantType,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.sp,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                          if (applicant.city != null &&
+                              applicant.city!.isNotEmpty) ...[
+                            Text(
+                              ' · ',
+                              style: TextStyle(color: Colors.grey.shade400),
+                            ),
+                            Icon(Icons.location_on,
+                                size: 12.sp, color: Colors.grey.shade400),
+                            SizedBox(width: 2.w),
+                            Text(
+                              applicant.city!,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12.sp,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Top match label badge
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 4.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFB300).withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: const Color(0xFFFFB300).withOpacity(0.5),
+                    ),
+                  ),
+                  child: Text(
+                    strings.topMatch,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFB8860B),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // matchInsights chips
+            if (applicant.matchInsights.isNotEmpty) ...[
+              SizedBox(height: 10.h),
+              Wrap(
+                spacing: 6.w,
+                runSpacing: 4.h,
+                children: applicant.matchInsights
+                    .map((insight) => _buildInsightChip(insight))
+                    .toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInsightChip(String label) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+        ),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(
+          fontSize: 11.sp,
+          fontWeight: FontWeight.w500,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  // ── Action buttons ────────────────────────────────────────────────────────
 
   Widget _buildActionButtons(Applicant applicant, S strings) {
     if (applicant.isAccepted) return _buildRejectButton(applicant, strings);
@@ -432,16 +1180,17 @@ class _ApplicantsPageState extends State<ApplicantsPage>
   Widget _buildAcceptButton(Applicant applicant, S strings) {
     return ElevatedButton(
       onPressed: () => context.read<ApplicantsBloc>().add(
-        AcceptApplicant(
-          applicationId: applicant.applicationId,
-          status: 'accepted',
-          opportunityId: widget.opportunityId,
-        ),
-      ),
+            AcceptApplicant(
+              applicationId: applicant.applicationId,
+              status: 'accepted',
+              opportunityId: widget.opportunityId,
+            ),
+          ),
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF1A5F4E),
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r)),
         minimumSize: Size(0, 36.h),
         elevation: 0,
       ),
@@ -459,16 +1208,17 @@ class _ApplicantsPageState extends State<ApplicantsPage>
   Widget _buildRejectButton(Applicant applicant, S strings) {
     return ElevatedButton(
       onPressed: () => context.read<ApplicantsBloc>().add(
-        RejectApplicant(
-          applicationId: applicant.applicationId,
-          status: 'rejected',
-          opportunityId: widget.opportunityId,
-        ),
-      ),
+            RejectApplicant(
+              applicationId: applicant.applicationId,
+              status: 'rejected',
+              opportunityId: widget.opportunityId,
+            ),
+          ),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r)),
         minimumSize: Size(0, 36.h),
         elevation: 0,
       ),
@@ -479,6 +1229,66 @@ class _ApplicantsPageState extends State<ApplicantsPage>
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
+      ),
+    );
+  }
+
+  // ── Empty / Error ─────────────────────────────────────────────────────────
+
+  Widget _buildEmptyState(String message) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: constraints.maxHeight,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.people_outline,
+                    size: 56.sp, color: Colors.grey.shade300),
+                SizedBox(height: 12.h),
+                Text(
+                  message,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15.sp,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, S strings) {
+    final theme = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 48.sp, color: Colors.grey.shade400),
+          SizedBox(height: 12.h),
+          Text(
+            strings.errorLoadingApplicants,
+            style: GoogleFonts.poppins(
+                fontSize: 16.sp, color: Colors.grey.shade600),
+          ),
+          SizedBox(height: 12.h),
+          ElevatedButton.icon(
+            onPressed: _fetchCurrentTab,
+            icon: Icon(Icons.refresh, color: theme.surface),
+            label: Text(strings.retry,
+                style: TextStyle(color: theme.surface)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.primary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r)),
+            ),
+          ),
+        ],
       ),
     );
   }

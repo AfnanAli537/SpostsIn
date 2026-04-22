@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:sports_in/features/register/data/interface/i_register_data_source.dart';
-import 'package:sports_in/features/register/models/certification_model.dart';
-import 'package:sports_in/features/register/models/user_model.dart';
+import 'package:sports_in/features/register/data/models/certification_model.dart';
+import 'package:sports_in/features/register/data/models/user_model.dart';
 
 @lazySingleton
 class RegisterRepo {

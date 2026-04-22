@@ -41,8 +41,4 @@ class StringKeys {
   static const String emailAlreadyExists = 'emailAlreadyExists';
   static const String userNotFound = 'userNotFound';
 
-  //cloudenary 
-  static const String uploadPreset = 'flutter'; 
-  static const String cloudName = 'dk9y4kl49';
-
 }

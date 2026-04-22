@@ -8,7 +8,7 @@ import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
-import 'package:sports_in/features/register/models/scout_response_model.dart';
+import 'package:sports_in/features/register/data/models/scout_response_model.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_two_fields_row.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
@@ -61,6 +61,7 @@ class ScoutRegisterScreen extends StatelessWidget {
       sportName: sportNameNotifier.value!,
       yearsOfExperience: int.tryParse(yearsOfExperienceController.text.trim()),
       age: int.tryParse(ageController.text.trim()),
+      image: imageNotifier.value,
     );
 
     context.read<RegistrationBloc>().add(

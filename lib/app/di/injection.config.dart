@@ -18,6 +18,7 @@ import 'package:sports_in/core/config/language_cubit/language_cubit.dart'
     as _i185;
 import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart' as _i934;
 import 'package:sports_in/core/network/api_client.dart' as _i694;
+import 'package:sports_in/core/utils/helper/image_helper.dart' as _i492;
 import 'package:sports_in/data/data_sources/auth_api_data_source.dart' as _i172;
 import 'package:sports_in/data/interfaces/i_auth_data_source.dart' as _i470;
 import 'package:sports_in/data/repo/auth_repo.dart' as _i472;
@@ -179,6 +180,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i694.ApiClient>(),
         gh<_i414.SharedPref>(),
       ),
+    );
+    gh.lazySingleton<_i492.CloudinaryService>(
+      () => _i492.CloudinaryService(apiClient: gh<_i694.ApiClient>()),
     );
     gh.lazySingleton<_i709.OpportunityInterface>(
       () => _i78.OpportunityRemoteDataSourceImpl(

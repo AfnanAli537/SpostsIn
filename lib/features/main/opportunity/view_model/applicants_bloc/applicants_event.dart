@@ -66,3 +66,19 @@ class RejectApplicant extends ApplicantsEvent {
   @override
   List<Object?> get props => [applicationId, status, opportunityId];
 }
+
+class FetchRecommendations extends ApplicantsEvent {
+  final String opportunityId;
+  final int pageNumber;
+  final int pageSize;
+ 
+  const FetchRecommendations({
+    required this.opportunityId,
+    this.pageNumber = 1,
+    this.pageSize = 10,
+  });
+ 
+  @override
+  List<Object?> get props => [opportunityId, pageNumber, pageSize];
+}
+ 

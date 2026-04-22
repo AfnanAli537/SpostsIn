@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
+import 'package:sports_in/features/main/profile/model/profile_model.dart';
 
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
@@ -18,13 +21,74 @@ class LoadUserProfile extends ProfileEvent {
 }
 
 class UpdateProfile extends ProfileEvent {
-  final Map<String, dynamic> updateData;
-  const UpdateProfile({required this.updateData});
+  final ProfileModel currentProfile;
+  final File? newImage;
+  final String? oldImage;
+  final String? firstName;
+  final String? lastName;
+  final String? clubName;
+  final String? instituteName;
+  final String? bio;
+  final List<String>? sports;
+  final double? height;
+  final double? weight;
+  final String? position;
+  final int? age;
+  final int? yearsOfExperience;
+  final String? specialization;
+  final String? foundationDate;
+  final String? industry;
+  final String? gender;
+  final String? location;
+  final bool? hasClub;
+
+  const UpdateProfile({
+    required this.currentProfile,  // 👈 required
+    this.newImage,
+    this.oldImage,
+    this.firstName,
+    this.lastName,
+    this.clubName,
+    this.instituteName,
+    this.bio,
+    this.sports,
+    this.height,
+    this.weight,
+    this.position,
+    this.age,
+    this.yearsOfExperience,
+    this.specialization,
+    this.foundationDate,
+    this.industry,
+    this.gender,
+    this.location,
+    this.hasClub,
+  });
 
   @override
-  List<Object?> get props => [updateData];
+  List<Object?> get props => [
+        currentProfile,
+        newImage,
+        oldImage,
+        firstName,
+        lastName,
+        clubName,
+        instituteName,
+        bio,
+        sports,
+        height,
+        weight,
+        position,
+        age,
+        yearsOfExperience,
+        specialization,
+        foundationDate,
+        industry,
+        gender,
+        location,
+        hasClub,
+      ];
 }
-
 class ToggleFollow extends ProfileEvent {
   final String userId;
   const ToggleFollow({required this.userId});

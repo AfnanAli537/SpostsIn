@@ -1,14 +1,20 @@
 import 'package:sports_in/core/utils/helper/image_helper.dart';
 import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
-import 'package:sports_in/features/register/models/user_model.dart';
+import 'package:sports_in/features/register/data/models/user_model.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/generated/l10n.dart';
 
-Future<Map<String, dynamic>> buildRequestBodyIsolate(UserModel user) async {
-  return _buildRequestBody(user);
+Future<Map<String, dynamic>> buildRequestBodyIsolate(
+  UserModel user,
+  CloudinaryService cloudinaryService,
+) async {
+  return _buildRequestBody(user, cloudinaryService);
 }
 
-Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
+Future<Map<String, dynamic>> _buildRequestBody(
+  UserModel user,
+  CloudinaryService cloudinaryService,
+) async {
   S? s;
   try {
     s = S.current;
@@ -16,7 +22,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
     s = null;
   }
 
-  final String imageUrl = await CloudinaryService.uploadImage(user.image);
+  final String imageUrl = await cloudinaryService.uploadImage(user.image);
 
   final genderEnum = user.gender != null
       ? EnumMapper.fromLabel(EnumMapper.genderLabels(s), user.gender!)
@@ -45,7 +51,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
   switch (user.userType) {
     case UserType.player:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -65,7 +71,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
 
     case UserType.coach:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -85,7 +91,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
 
     case UserType.scout:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -106,7 +112,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
           .toList();
 
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -119,7 +125,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
 
     case UserType.institute:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,
@@ -131,7 +137,7 @@ Future<Map<String, dynamic>> _buildRequestBody(UserModel user) async {
 
     case UserType.others:
       return clean({
-        "image": imageUrl,
+        "profilePictureUrl": imageUrl,
         "email": user.email,
         "password": user.password,
         "confirmPassword": user.confirmPassword,

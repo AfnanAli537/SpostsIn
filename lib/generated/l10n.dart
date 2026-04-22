@@ -7382,6 +7382,221 @@ class S {
       args: [count],
     );
   }
+
+  /// `Top Match`
+  String get topMatch {
+    return Intl.message('Top Match', name: 'topMatch', desc: '', args: []);
+  }
+
+  /// `No top matches found`
+  String get noTopMatchFound {
+    return Intl.message(
+      'No top matches found',
+      name: 'noTopMatchFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match Criteria`
+  String get matchCriteria {
+    return Intl.message(
+      'Match Criteria',
+      name: 'matchCriteria',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Target specific applicants (optional)`
+  String get matchCriteriaSubtitle {
+    return Intl.message(
+      'Target specific applicants (optional)',
+      name: 'matchCriteriaSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Target User Type`
+  String get targetUserType {
+    return Intl.message(
+      'Target User Type',
+      name: 'targetUserType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select player or coach`
+  String get selectTargetUserType {
+    return Intl.message(
+      'Select player or coach',
+      name: 'selectTargetUserType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Target Gender`
+  String get targetGender {
+    return Intl.message(
+      'Target Gender',
+      name: 'targetGender',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select gender`
+  String get selectGender {
+    return Intl.message(
+      'Select gender',
+      name: 'selectGender',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Age Range`
+  String get ageRange {
+    return Intl.message('Age Range', name: 'ageRange', desc: '', args: []);
+  }
+
+  /// `Min Age`
+  String get minAge {
+    return Intl.message('Min Age', name: 'minAge', desc: '', args: []);
+  }
+
+  /// `Max Age`
+  String get maxAge {
+    return Intl.message('Max Age', name: 'maxAge', desc: '', args: []);
+  }
+
+  /// `Target Location`
+  String get targetLocation {
+    return Intl.message(
+      'Target Location',
+      name: 'targetLocation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select location`
+  String get selectLocation {
+    return Intl.message(
+      'Select location',
+      name: 'selectLocation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select position`
+  String get selectPosition {
+    return Intl.message(
+      'Select position',
+      name: 'selectPosition',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Height Range (cm)`
+  String get heightRange {
+    return Intl.message(
+      'Height Range (cm)',
+      name: 'heightRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Min Height`
+  String get minHeight {
+    return Intl.message('Min Height', name: 'minHeight', desc: '', args: []);
+  }
+
+  /// `Max Height`
+  String get maxHeight {
+    return Intl.message('Max Height', name: 'maxHeight', desc: '', args: []);
+  }
+
+  /// `Weight Range (kg)`
+  String get weightRange {
+    return Intl.message(
+      'Weight Range (kg)',
+      name: 'weightRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Min Weight`
+  String get minWeight {
+    return Intl.message('Min Weight', name: 'minWeight', desc: '', args: []);
+  }
+
+  /// `Max Weight`
+  String get maxWeight {
+    return Intl.message('Max Weight', name: 'maxWeight', desc: '', args: []);
+  }
+
+  /// `Select specialization`
+  String get selectSpecialization {
+    return Intl.message(
+      'Select specialization',
+      name: 'selectSpecialization',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Min Experience (years)`
+  String get minExperienceYears {
+    return Intl.message(
+      'Min Experience (years)',
+      name: 'minExperienceYears',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. 3`
+  String get enterMinExperience {
+    return Intl.message(
+      'e.g. 3',
+      name: 'enterMinExperience',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Additional Notes`
+  String get additionalNotes {
+    return Intl.message(
+      'Additional Notes',
+      name: 'additionalNotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Any extra details...`
+  String get enterAdditionalNotes {
+    return Intl.message(
+      'Any extra details...',
+      name: 'enterAdditionalNotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `years`
+  String get years {
+    return Intl.message('years', name: 'years', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

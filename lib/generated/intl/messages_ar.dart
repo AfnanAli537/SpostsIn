@@ -194,10 +194,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "add_achievement_title": MessageLookupByLibrary.simpleMessage(
       "إضافة إنجاز",
     ),
+    "additionalNotes": MessageLookupByLibrary.simpleMessage("ملاحظات إضافية"),
     "ads": MessageLookupByLibrary.simpleMessage("إعلانات"),
     "advertisement": MessageLookupByLibrary.simpleMessage("إعلان"),
     "advertisements": MessageLookupByLibrary.simpleMessage("إعلانات"),
     "age": MessageLookupByLibrary.simpleMessage("العمر"),
+    "ageRange": MessageLookupByLibrary.simpleMessage("الفئة العمرية"),
     "agreeLabel": MessageLookupByLibrary.simpleMessage("أوافق"),
     "aiAssistantSubtitle": MessageLookupByLibrary.simpleMessage(
       "باستخدام هذا البرنامج يمكنك طرح الأسئلة والحصول على مقالات باستخدام مساعد الذكاء الاصطناعي.",
@@ -556,6 +558,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "أدخل وصف الإعلان",
     ),
     "enterAdTitle": MessageLookupByLibrary.simpleMessage("أدخل عنوان الإعلان"),
+    "enterAdditionalNotes": MessageLookupByLibrary.simpleMessage(
+      "أي تفاصيل إضافية...",
+    ),
     "enterAge": MessageLookupByLibrary.simpleMessage("يرجى إدخال العمر"),
     "enterCourseDescriptionHint": MessageLookupByLibrary.simpleMessage(
       "أدخل وصف الدورة",
@@ -582,6 +587,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterLessonTitleHint": MessageLookupByLibrary.simpleMessage(
       "أدخل عنوان الدرس",
     ),
+    "enterMinExperience": MessageLookupByLibrary.simpleMessage("مثال: 3"),
     "enterNewName": MessageLookupByLibrary.simpleMessage("أدخل الاسم الجديد"),
     "enterNewPassword": MessageLookupByLibrary.simpleMessage(
       "أدخل كلمة المرور الجديدة",
@@ -753,6 +759,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "الطول يستخدم لمعايرة قياسات الامتداد والسرعة.",
     ),
     "heightExample": MessageLookupByLibrary.simpleMessage("مثال: 1.85"),
+    "heightRange": MessageLookupByLibrary.simpleMessage("نطاق الطول (سم)"),
     "heightRequired": MessageLookupByLibrary.simpleMessage(
       "الطول مطلوب لتحليل حارس المرمى",
     ),
@@ -933,14 +940,21 @@ class MessageLookup extends MessageLookupByLibrary {
       "تحليل أداء المباراة الكامل",
     ),
     "matchAnalysisLabel": MessageLookupByLibrary.simpleMessage("مباراة"),
+    "matchCriteria": MessageLookupByLibrary.simpleMessage("معايير المطابقة"),
+    "matchCriteriaSubtitle": MessageLookupByLibrary.simpleMessage(
+      "استهداف متقدم لمقدمين محددين (اختياري)",
+    ),
     "matchVideoInstructions": MessageLookupByLibrary.simpleMessage(
       "• استخدم حامل ثلاثي القوائم – كاميرا ثابتة، زاوية واسعة\n• صوّر كامل الملعب\n• إضاءة جيدة وأقل قدر من الحركة في الخلفية\n• ارتفاع الكاميرا 1.5 م على الأقل لتجنب العوائق",
     ),
+    "maxAge": MessageLookupByLibrary.simpleMessage("الحد الأقصى للعمر"),
     "maxExtension": MessageLookupByLibrary.simpleMessage("أقصى امتداد"),
     "maxFileSize": MessageLookupByLibrary.simpleMessage(
       "الحد الأقصى 500 ميجابايت",
     ),
+    "maxHeight": MessageLookupByLibrary.simpleMessage("الحد الأقصى للطول"),
     "maxVelocity": MessageLookupByLibrary.simpleMessage("أقصى سرعة"),
+    "maxWeight": MessageLookupByLibrary.simpleMessage("الحد الأقصى للوزن"),
     "maximumFileSize": MessageLookupByLibrary.simpleMessage(
       "الحد الأقصى لحجم الملف 200 ميجابايت",
     ),
@@ -948,9 +962,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageSent": MessageLookupByLibrary.simpleMessage(
       "تم إرسال الرسالة بنجاح",
     ),
+    "minAge": MessageLookupByLibrary.simpleMessage("الحد الأدنى للعمر"),
+    "minExperienceYears": MessageLookupByLibrary.simpleMessage(
+      "الحد الأدنى للخبرة (سنوات)",
+    ),
+    "minHeight": MessageLookupByLibrary.simpleMessage("الحد الأدنى للطول"),
     "minLengthValidation": MessageLookupByLibrary.simpleMessage(
       "يجب أن تتكون من 8 أحرف على الأقل",
     ),
+    "minWeight": MessageLookupByLibrary.simpleMessage("الحد الأدنى للوزن"),
     "minutesAgo": m22,
     "month": MessageLookupByLibrary.simpleMessage("الشهر"),
     "monthsAgo": m23,
@@ -1068,6 +1088,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "لا توجد نتائج لمعايير البحث",
     ),
     "noResultsFound": MessageLookupByLibrary.simpleMessage("لا توجد نتائج"),
+    "noTopMatchFound": MessageLookupByLibrary.simpleMessage(
+      "لم يتم العثور على تطابق",
+    ),
     "noUserDataFound": MessageLookupByLibrary.simpleMessage(
       "لم يتم العثور على بيانات المستخدم",
     ),
@@ -1378,9 +1401,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "اختر تاريخ الانتهاء",
     ),
     "selectField": m34,
+    "selectGender": MessageLookupByLibrary.simpleMessage("اختر الجنس"),
     "selectLanguage": MessageLookupByLibrary.simpleMessage("اختر اللغة"),
+    "selectLocation": MessageLookupByLibrary.simpleMessage("اختر الموقع"),
+    "selectPosition": MessageLookupByLibrary.simpleMessage("اختر المركز"),
+    "selectSpecialization": MessageLookupByLibrary.simpleMessage("اختر التخصص"),
     "selectSport": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
     "selectSports": MessageLookupByLibrary.simpleMessage("اختر الرياضة"),
+    "selectTargetUserType": MessageLookupByLibrary.simpleMessage(
+      "اختر لاعب أو مدرب",
+    ),
     "select_date_hint": MessageLookupByLibrary.simpleMessage("اختر التاريخ"),
     "select_sport_error": MessageLookupByLibrary.simpleMessage(
       "الرجاء اختيار رياضة",
@@ -1509,6 +1539,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "tapToUploadVideo": MessageLookupByLibrary.simpleMessage("اضغط لرفع فيديو"),
     "targetAudience": MessageLookupByLibrary.simpleMessage("الجمهور المستهدف"),
+    "targetGender": MessageLookupByLibrary.simpleMessage("الجنس المستهدف"),
+    "targetLocation": MessageLookupByLibrary.simpleMessage("الموقع المستهدف"),
+    "targetUserType": MessageLookupByLibrary.simpleMessage(
+      "نوع المستخدم المستهدف",
+    ),
     "teakwando": MessageLookupByLibrary.simpleMessage("تايكوندو"),
     "teakwandoPlayer": MessageLookupByLibrary.simpleMessage("لاعب تايكوندو"),
     "team1": MessageLookupByLibrary.simpleMessage("الفريق 1"),
@@ -1528,6 +1563,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tokenEX": MessageLookupByLibrary.simpleMessage(
       "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
     ),
+    "topMatch": MessageLookupByLibrary.simpleMessage("أفضل تطابق"),
     "topSpeed": MessageLookupByLibrary.simpleMessage("السرعة القصوى"),
     "topSprintSpeed": MessageLookupByLibrary.simpleMessage("أقصى سرعة ركض"),
     "totalAds": MessageLookupByLibrary.simpleMessage("إجمالي الإعلانات"),
@@ -1666,6 +1702,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("التفاصيل الأسبوعية"),
     "weeksAgo": m44,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
+    "weightRange": MessageLookupByLibrary.simpleMessage("نطاق الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
     "whatHappensNext": MessageLookupByLibrary.simpleMessage(
       "ماذا يحدث بعد ذلك",
@@ -1680,6 +1717,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "writeMessageHint": MessageLookupByLibrary.simpleMessage("اكتب رسالتك"),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
+    "years": MessageLookupByLibrary.simpleMessage("سنوات"),
     "yearsAgo": m45,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),

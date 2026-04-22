@@ -16,6 +16,7 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
     on<AcceptApplicant>(_onAcceptApplicant);
     on<RejectApplicant>(_onRejectApplicant);
     on<LoadMoreApplicants>(_onLoadMoreApplicants);
+     on<FetchRecommendations>(_onFetchRecommendations);
   }
 
   Future<void> _onFetchApplicants(
@@ -144,4 +145,22 @@ class ApplicantsBloc extends Bloc<ApplicantsEvent, ApplicantsState> {
       }
     }
   }
+  Future<void> _onFetchRecommendations(
+    FetchRecommendations event,
+    Emitter<ApplicantsState> emit,
+  ) async {
+    emit(RecommendationsLoading());
+    try {
+      final response = await repository.getRecommendations(
+        opportunityId: event.opportunityId,
+        pageNumber: event.pageNumber,
+        pageSize: event.pageSize,
+      );
+      emit(RecommendationsLoaded(response: response));
+    } catch (e) {
+      emit(ApplicantsError( e.toString()));
+    }
+  }
+
+
 }

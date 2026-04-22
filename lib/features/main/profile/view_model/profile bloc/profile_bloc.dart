@@ -1,6 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
+import 'package:sports_in/core/utils/helper/image_helper.dart';
+import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'profile_event.dart';
@@ -63,7 +66,35 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     try {
       emit(ProfileLoading());
-      final updatedProfile = await _repository.updateProfile(event.updateData);
+
+      final currentProfile = event.currentProfile;
+      
+      final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
+        cloudinaryService: getIt<CloudinaryService>(),
+        currentProfile: currentProfile,
+        newImage: event.newImage,
+        oldImage: event.oldImage,
+        firstName: event.firstName,
+        lastName: event.lastName,
+        clubName: event.clubName,
+        instituteName: event.instituteName,
+        bio: event.bio,
+        sports: event.sports,
+        height: event.height,
+        weight: event.weight,
+        position: event.position,
+        age: event.age,
+        gender: event.gender,
+        yearsOfExperience: event.yearsOfExperience,
+        specialization: event.specialization,
+        foundationDate: event.foundationDate,
+        industry: event.industry,
+        location: event.location,
+        hasClub: event.hasClub,
+      );
+
+      final updatedProfile = await _repository.updateProfile(updateBody);
+
       emit(ProfileUpdated(profile: updatedProfile));
       await Future.delayed(const Duration(milliseconds: 100));
       emit(ProfileLoaded(profile: updatedProfile, isOwnProfile: true));
@@ -71,7 +102,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
   }
-
   // ── Follow ───────────────────────────────────────────────────────────────────
 
   Future<void> _onToggleFollow(

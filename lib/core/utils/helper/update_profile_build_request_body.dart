@@ -8,6 +8,7 @@ import 'package:sports_in/generated/l10n.dart';
 
 class UpdateProfileBodyBuilder {
   static Future<Map<String, dynamic>> buildUpdateBody({
+    required CloudinaryService cloudinaryService,
     required ProfileModel currentProfile,
     File? newImage,
     String? oldImage,
@@ -80,7 +81,7 @@ class UpdateProfileBodyBuilder {
       "FullName": fullName,
       "UserType": _getUserTypeString(currentProfile.userType),
       "ProfilePictureUrl": newImage != null
-          ? await CloudinaryService.uploadImage(newImage)
+          ? await cloudinaryService.uploadImage(newImage)
           : oldImage,
       "Bio": bio ?? currentProfile.description,
       "Sports": sportIds??sports ?? [],

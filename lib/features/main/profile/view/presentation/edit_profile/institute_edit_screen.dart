@@ -13,7 +13,6 @@ import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profil
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
-import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 
 class InstituteEditScreen extends StatefulWidget {
   final ProfileModel profile;
@@ -40,7 +39,7 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
   void initState() {
     super.initState();
     final instituteData = widget.profile.instituteData!;
-    
+
     instituteNameController = TextEditingController(text: widget.profile.name);
     industryController = TextEditingController(text: instituteData.industry);
     bioController = TextEditingController(text: widget.profile.description);
@@ -56,24 +55,22 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
     super.dispose();
   }
 
-  void _onUpdate(BuildContext context, S string) async {
+  void _onUpdate(BuildContext context, S string) {
     autoValidateNotifier.value = AutovalidateMode.onUserInteraction;
 
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    final updateBody = await UpdateProfileBodyBuilder.buildUpdateBody(
-      currentProfile: widget.profile,
-      newImage: imageNotifier.value,
-      oldImage: widget.profile.profileImage,
-      instituteName: instituteNameController.text.trim(),
-      bio: bioController.text.trim(),
-      // location: locationNotifier.value,
-      industry: industryController.text.trim(),
+    context.read<ProfileBloc>().add(
+      UpdateProfile(
+        currentProfile: widget.profile,
+        newImage: imageNotifier.value,
+        oldImage: widget.profile.profileImage,
+        instituteName: instituteNameController.text.trim(),
+        bio: bioController.text.trim(),
+        industry: industryController.text.trim(),
+        // location: locationNotifier.value,
+      ),
     );
-
-    context.read<ProfileBloc>().add(UpdateProfile(updateData: updateBody));
   }
 
   @override
@@ -82,9 +79,7 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
     final string = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(string.editProfile),
-      ),
+      appBar: AppBar(title: Text(string.editProfile)),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {
@@ -121,8 +116,7 @@ class _InstituteEditScreenState extends State<InstituteEditScreen> {
                         children: [
                           AppImagePicker(
                             initialImage: widget.profile.profileImage,
-                            onImageSelected: (img) =>
-                                imageNotifier.value = img,
+                            onImageSelected: (img) => imageNotifier.value = img,
                           ),
                           SizedBox(height: 24.h),
 

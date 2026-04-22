@@ -1150,5 +1150,33 @@
         "type": "int"
       }
     }
-  }
+  },
+   "topMatch": "Top Match",
+"noTopMatchFound": "No top matches found",
+"matchCriteria": "Match Criteria",
+"matchCriteriaSubtitle": "Target specific applicants (optional)",
+"targetUserType": "Target User Type",
+"selectTargetUserType": "Select player or coach",
+"targetGender": "Target Gender",
+"selectGender": "Select gender",
+"ageRange": "Age Range",
+"minAge": "Min Age",
+"maxAge": "Max Age",
+"targetLocation": "Target Location",
+"selectLocation": "Select location",
+"selectPosition": "Select position",
+"heightRange": "Height Range (cm)",
+"minHeight": "Min Height",
+"maxHeight": "Max Height",
+"weightRange": "Weight Range (kg)",
+"minWeight": "Min Weight",
+"maxWeight": "Max Weight",
+"selectSpecialization": "Select specialization",
+"minExperienceYears": "Min Experience (years)",
+"enterMinExperience": "e.g. 3",
+"additionalNotes": "Additional Notes",
+"enterAdditionalNotes": "Any extra details...",
+"years": "years"
+
+
 }

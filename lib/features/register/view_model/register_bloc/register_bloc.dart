@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/register/data/repo/register_repo.dart';
-import 'package:sports_in/features/register/models/certification_model.dart';
-import 'package:sports_in/features/register/models/user_model.dart';
+import 'package:sports_in/features/register/data/models/certification_model.dart';
+import 'package:sports_in/features/register/data/models/user_model.dart';
 
 part 'register_event.dart';
 part 'register_state.dart';
