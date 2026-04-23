@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
+import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/applicants_screen.dart';
@@ -49,6 +52,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final strings = S.of(context);
 
     return BlocProvider<RegistrationBloc>.value(
@@ -64,7 +68,66 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
           }
 
           return Scaffold(
-            appBar: AppBar(title: Text(strings.applyOpportunity), elevation: 0),
+            appBar: AppBar(title: Text(strings.applyOpportunity),
+                    actions: widget.isOwner == true
+            ? [
+                IconButton(
+                  icon: Icon(Icons.edit_outlined,
+                      color: colorScheme.onSurface, size: 20.sp),
+                  onPressed: () async {
+                    context.read<OpportunityBloc>().add(
+                          FetchOpportunityDetails(
+                              opportunityId: widget.opportunityId),
+                        );
+                    final result = await Navigator.pushNamed(
+                      context,
+                      AppRoutes.opportunityEditScreen,
+                      arguments: widget.opportunityId,
+                    );
+                    if (result == true && mounted) {
+                      context.read<OpportunityBloc>().add(
+                            const FetchOpportunities(isRefresh: true),
+                          );
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete_outline,
+                      color: colorScheme.onSurface, size: 20.sp),
+                  onPressed: () {
+                    ConfirmationDialog.show(
+                      context: context,
+                      title: strings.deleteOpportunity,
+                      message: strings.deleteOpportunityConfirmation,
+                      onConfirm: () {
+                        context.read<OpportunityBloc>().add(
+                              DeleteOpportunity(
+                                  opportunityId: widget.opportunityId),
+                            );
+                        Fluttertoast.showToast(
+                          msg: strings.deletingOpportunity,
+                          backgroundColor: Colors.orange,
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                        );
+                        if (mounted) {
+                      context.read<OpportunityBloc>().add(
+                            const FetchOpportunities(isRefresh: true),
+                          );
+                      Navigator.pop(context);
+                        }
+                      },
+                      confirmText: strings.delete,
+                      cancelText: strings.cancel,
+                      icon: Icons.delete_outline,
+                      isDestructive: true,
+                    );
+                  },
+                ),
+              ]
+            : null,
+            elevation: 0),
             body: BlocBuilder<OpportunityBloc, OpportunityState>(
               builder: (context, state) {
                 if (state is OpportunityDetailsLoaded) {
