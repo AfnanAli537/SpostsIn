@@ -371,6 +371,7 @@
   "clearFilters": "Clear filters",
   "since": "Since",
   "applyOpportunity": "Apply opportunity",
+  "opportunityDetails": "Opportunity Details",
   "deleteOpportunity": "Delete Opportunity",
   "deleteOpportunityConfirmation": "Are you sure you want to delete this opportunity? This action cannot be undone.",
   "deletingOpportunity": "Deleting opportunity...",

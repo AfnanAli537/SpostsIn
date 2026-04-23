@@ -117,14 +117,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m43(count) => "${count} د";
 
-  static String m44(error) => "خطأ في الرفع: ${error}";
+  static String m44(name) => "${name} يكتب...";
 
-  static String m45(name) => "تحليلات ${name}";
+  static String m45(error) => "خطأ في الرفع: ${error}";
 
-  static String m46(count) =>
-      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+  static String m46(name) => "تحليلات ${name}";
 
   static String m47(count) =>
+      "${Intl.plural(count, one: 'منذ أسبوع', two: 'منذ أسبوعين', few: 'منذ ${count} أسابيع', many: 'منذ ${count} أسبوعًا', other: 'منذ ${count} أسبوع')}";
+
+  static String m48(count) =>
       "${Intl.plural(count, one: 'منذ سنة', two: 'منذ سنتين', few: 'منذ ${count} سنوات', many: 'منذ ${count} سنة', other: 'منذ ${count} سنة')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1181,6 +1183,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "opportunityDeletedSuccess": MessageLookupByLibrary.simpleMessage(
       "تم حذف الفرصة بنجاح",
     ),
+    "opportunityDetails": MessageLookupByLibrary.simpleMessage("تفاصيل الفرصة"),
     "opportunityUpdatedSuccess": MessageLookupByLibrary.simpleMessage(
       "تم تحديث الفرصة بنجاح",
     ),
@@ -1633,7 +1636,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tryDifferentSearch": MessageLookupByLibrary.simpleMessage("جرب بحث أخر"),
     "typeAMessage": MessageLookupByLibrary.simpleMessage("اكتب رسالة..."),
     "typing": MessageLookupByLibrary.simpleMessage("يكتب..."),
-    "typingWithName": m42,
+    "typingWithName": m44,
     "unKnown": MessageLookupByLibrary.simpleMessage("غير محدد"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "غير مصرح لك. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
@@ -1665,7 +1668,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadCourseThumbnail": MessageLookupByLibrary.simpleMessage(
       "رفع صورة مصغرة للدورة",
     ),
-    "uploadError": m42,
+    "uploadError": m45,
     "uploadFailedPasteManually": MessageLookupByLibrary.simpleMessage(
       "فشل الرفع. الصق رابط الفيديو يدوياً.",
     ),
@@ -1700,7 +1703,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "userMessage": MessageLookupByLibrary.simpleMessage("رسالة المستخدم"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("المستخدم غير موجود"),
     "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
-    "usersAnalyses": m43,
+    "usersAnalyses": m46,
     "validEmail": MessageLookupByLibrary.simpleMessage(
       "أدخل بريدًا إلكترونيًا صالحًا",
     ),
@@ -1757,7 +1760,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("تمت المشاهدة"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("تفاصيل الأسبوع"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("التفاصيل الأسبوعية"),
-    "weeksAgo": m46,
+    "weeksAgo": m47,
     "weight": MessageLookupByLibrary.simpleMessage("الوزن (كجم)"),
     "weightRange": MessageLookupByLibrary.simpleMessage("نطاق الوزن (كجم)"),
     "welcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
@@ -1775,7 +1778,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "writeMessageHint": MessageLookupByLibrary.simpleMessage("اكتب رسالتك"),
     "year": MessageLookupByLibrary.simpleMessage("السنة"),
     "years": MessageLookupByLibrary.simpleMessage("سنوات"),
-    "yearsAgo": m47,
+    "yearsAgo": m48,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage("سنوات الخبرة"),
     "yearsOfExperience0to2": MessageLookupByLibrary.simpleMessage("0-2 سنوات"),
     "yearsOfExperience10Plus": MessageLookupByLibrary.simpleMessage(

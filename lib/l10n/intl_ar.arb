@@ -354,6 +354,7 @@
   "clearFilters": "مسح الفلاتر",
   "since": "منذ",
   "applyOpportunity": "التقديم على الفرصة",
+  "opportunityDetails": "تفاصيل الفرصة",
   "deleteOpportunity": "حذف الفرصة",
   "deleteFailed": "فشل الحذف. يرجى المحاولة مرة أخرى.",
   "deleteOpportunityConfirmation": "هل أنت متأكد من حذف هذه الفرصة؟ لا يمكن التراجع عن هذا الإجراء.",

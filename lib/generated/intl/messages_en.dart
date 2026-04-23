@@ -118,14 +118,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m43(count) => "${count}m";
 
-  static String m44(error) => "Upload error: ${error}";
+  static String m44(name) => "${name} is typing...";
 
-  static String m45(name) => "${name}\'s Analyses";
+  static String m45(error) => "Upload error: ${error}";
 
-  static String m46(count) =>
-      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+  static String m46(name) => "${name}\'s Analyses";
 
   static String m47(count) =>
+      "${Intl.plural(count, one: '${count} week ago', other: '${count} weeks ago')}";
+
+  static String m48(count) =>
       "${Intl.plural(count, one: '${count} year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1212,6 +1214,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "opportunityDeletedSuccess": MessageLookupByLibrary.simpleMessage(
       "Opportunity deleted successfully",
     ),
+    "opportunityDetails": MessageLookupByLibrary.simpleMessage(
+      "Opportunity Details",
+    ),
     "opportunityUpdatedSuccess": MessageLookupByLibrary.simpleMessage(
       "Opportunity updated successfully",
     ),
@@ -1688,7 +1693,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "typeAMessage": MessageLookupByLibrary.simpleMessage("Type a message..."),
     "typing": MessageLookupByLibrary.simpleMessage("typing..."),
-    "typingWithName": m42,
+    "typingWithName": m44,
     "unKnown": MessageLookupByLibrary.simpleMessage("N/A"),
     "unauthorized": MessageLookupByLibrary.simpleMessage(
       "Unauthorized. Please check your credentials.",
@@ -1718,7 +1723,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadCourseThumbnail": MessageLookupByLibrary.simpleMessage(
       "Upload Course Thumbnail",
     ),
-    "uploadError": m44,
+    "uploadError": m45,
     "uploadFailedPasteManually": MessageLookupByLibrary.simpleMessage(
       "Upload failed. Paste a URL manually.",
     ),
@@ -1753,7 +1758,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "userMessage": MessageLookupByLibrary.simpleMessage("User message"),
     "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),
     "userType": MessageLookupByLibrary.simpleMessage("User Type"),
-    "usersAnalyses": m45,
+    "usersAnalyses": m46,
     "validEmail": MessageLookupByLibrary.simpleMessage("Enter a valid email"),
     "validHeightRange": MessageLookupByLibrary.simpleMessage(
       "Enter a valid height (1.0 – 2.5 m)",
@@ -1812,7 +1817,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "watched": MessageLookupByLibrary.simpleMessage("Watched"),
     "weeklyBreakdown": MessageLookupByLibrary.simpleMessage("Weekly Breakdown"),
     "weeklyDetails": MessageLookupByLibrary.simpleMessage("Weekly Details"),
-    "weeksAgo": m44,
+    "weeksAgo": m47,
     "weight": MessageLookupByLibrary.simpleMessage("Weight (kg)"),
     "weightRange": MessageLookupByLibrary.simpleMessage("Weight Range (kg)"),
     "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
@@ -1834,7 +1839,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "year": MessageLookupByLibrary.simpleMessage("Year"),
     "years": MessageLookupByLibrary.simpleMessage("years"),
-    "yearsAgo": m45,
+    "yearsAgo": m48,
     "yearsOfExperience": MessageLookupByLibrary.simpleMessage(
       "Years of experience",
     ),

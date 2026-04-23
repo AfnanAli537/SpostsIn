@@ -2914,6 +2914,16 @@ class S {
     );
   }
 
+  /// `Opportunity Details`
+  String get opportunityDetails {
+    return Intl.message(
+      'Opportunity Details',
+      name: 'opportunityDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Delete Opportunity`
   String get deleteOpportunity {
     return Intl.message(
