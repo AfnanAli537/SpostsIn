@@ -36,29 +36,36 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FocusNode _focusNode = FocusNode();
 
-  late final List<Widget> _pages = [
-    const HomePage(),
-    const SearchScreen(),
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<ChatBloc>(
-          create: (_) => ChatBloc(
-            repo: getIt<ChatRepository>(),
-            hub: getIt<ChatHubService>(),
-          ),
-        ),
-        BlocProvider<ChatbotBloc>(
-          create: (_) => ChatbotBloc(repository: getIt<ChatbotRepository>()),
-        ),
-      ],
-      child: const MessagesView(),
-    ),
-    const MyProfileScreen(),
-  ];
-
+  late final ProfileBloc _profileBloc;
+  late final List<Widget> _pages;
   @override
   void initState() {
     super.initState();
+    
+    _profileBloc = getIt<ProfileBloc>();
+
+    _pages = [
+      const HomePage(),
+      const SearchScreen(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<ChatBloc>(
+            create: (_) => ChatBloc(
+              repo: getIt<ChatRepository>(),
+              hub: getIt<ChatHubService>(),
+            ),
+          ),
+          BlocProvider<ChatbotBloc>(
+            create: (_) => ChatbotBloc(repository: getIt<ChatbotRepository>()),
+          ),
+        ],
+        child: const MessagesView(),
+      ),
+      BlocProvider<ProfileBloc>.value(
+        value: _profileBloc,
+        child: const MyProfileScreen(),
+      ),
+    ];
 
     final hub = GetIt.I<NotificationHubService>();
 
@@ -76,7 +83,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
     _initSignalR(hub);
     context.read<NotificationBloc>().add(const GetUnreadCountEvent());
-    context.read<ProfileBloc>().add(LoadMyProfile());
+    _profileBloc.add(LoadMyProfile());
   }
 
   Future<void> _initSignalR(NotificationHubService hub) async {
@@ -126,7 +133,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
   @override
   Widget build(BuildContext context) {
-    // Provide the singleton PaymentBloc above the Scaffold so the listener can find it.
     return BlocProvider<PaymentBloc>.value(
       value: getIt<PaymentBloc>(),
       child: _buildWithListeners(context),
@@ -140,7 +146,6 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
     return MultiBlocListener(
       listeners: [
-        // Only PaymentBloc listener – now it has a provider above it
         BlocListener<PaymentBloc, PaymentState>(
           listenWhen: (_, s) =>
               s is AnalysisExecutionCompleted || s is AnalysisExecutionFailed,

@@ -20,7 +20,7 @@ class ForYouTab extends StatefulWidget {
   const ForYouTab({super.key, required this.onTabChange});
 
   @override
-  State<ForYouTab> createState() => ForYouTabState();
+  ForYouTabState createState() => ForYouTabState();
 }
 
 class ForYouTabState extends State<ForYouTab>
@@ -34,7 +34,7 @@ class ForYouTabState extends State<ForYouTab>
           const FetchOpportunities(isRefresh: true),
         );
     context.read<CoursesBloc>().add(
-          const FetchAvailableCourses(page: 1, size: 1),
+          const FetchAvailableCourses(page: 1, size: 1, source: 'forYouTab'),
         );
   }
 
@@ -186,7 +186,11 @@ class ForYouTabState extends State<ForYouTab>
               _buildErrorState(
                 context, string, theme, state.message,
                 () => context.read<CoursesBloc>().add(
-                      const FetchAvailableCourses(page: 1, size: 1),
+                      const FetchAvailableCourses(
+                        page: 1,
+                        size: 1,
+                        source: 'forYouTab',
+                      ),
                     ),
               )
 
@@ -305,7 +309,11 @@ class ForYouTabState extends State<ForYouTab>
     );
     if (enrolled == true) {
       context.read<CoursesBloc>().add(
-            const FetchAvailableCourses(page: 1, size: 1),
+            const FetchAvailableCourses(
+              page: 1,
+              size: 1,
+              source: 'forYouTab',
+            ),
           );
     }
   }

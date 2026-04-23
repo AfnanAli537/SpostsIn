@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,6 +26,7 @@ import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/generated/l10n.dart';
+import 'dart:developer';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -83,12 +82,16 @@ class _HomePageState extends State<HomePage> {
     switch (tab) {
       case HomeTab.forYou:
         _forYouKey.currentState?.reload();
+        break;
       case HomeTab.posts:
         _postsKey.currentState?.reload();
+        break;
       case HomeTab.courses:
         _coursesKey.currentState?.reload();
+        break;
       case HomeTab.opportunities:
         _opportunitiesKey.currentState?.reload();
+        break;
     }
   }
 
@@ -174,7 +177,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               )..add(const FetchPosts()),
             ),
-            // ── Ads BLoC — feeds AdWidget cards inside PostsTab ──────────────
             BlocProvider(
               create: (_) =>
                   AdsBloc(adsRepo: getIt<AdsRepositoryImpl>())
