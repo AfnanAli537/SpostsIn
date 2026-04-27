@@ -1969,6 +1969,16 @@ class S {
     return Intl.message('Interests', name: 'interests', desc: '', args: []);
   }
 
+  /// `No interests yet`
+  String get noInterestsYet {
+    return Intl.message(
+      'No interests yet',
+      name: 'noInterestsYet',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Show all`
   String get showAll {
     return Intl.message('Show all', name: 'showAll', desc: '', args: []);
@@ -7456,6 +7466,21 @@ class S {
       desc: '',
       args: [],
     );
+  }
+
+  /// `Analysis`
+  String get categoryAnalysis {
+    return Intl.message(
+      'Analysis',
+      name: 'categoryAnalysis',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Courses`
+  String get categoryCourses {
+    return Intl.message('Courses', name: 'categoryCourses', desc: '', args: []);
   }
 
   /// `Opportunities`

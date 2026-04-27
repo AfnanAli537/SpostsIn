@@ -16,6 +16,7 @@ import 'package:sports_in/features/main/courses/view/presentation/client/course_
 import 'package:sports_in/features/main/courses/view_model/courses_bloc/courses_bloc.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/my_opportunity_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/connections_screen.dart';
+import 'package:sports_in/features/main/profile/view/presentation/interests_list_screen.dart';
 import 'package:sports_in/features/main/profile/view/profile_section_factory.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_library_screen.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
@@ -32,8 +33,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? userId;
+  final String? userType;
 
-  const ProfileScreen({super.key, this.userId});
+  const ProfileScreen({super.key, this.userId, this.userType});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -285,6 +287,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               },
 
+              onAcceptPressed:() {
+                context.read<ProfileBloc>().add(
+                      AcceptConnectionRequestOnItem(profile.id),
+                    );},
+
+              onRejectPressed:() {
+                    context.read<ProfileBloc>().add(
+                      RejectConnectionRequestOnItem(profile.id),
+                    );
+                  },
+
               // ── Follow button ─────────────────────────────────────────────
               onFollowPressed: () {
                 context.read<ProfileBloc>().add(
@@ -322,6 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     builder: (_) => MyOpportunitiesListScreen(
                       showActiveOnly: true,
                       isCurrentUser: profile.isOwner,
+                      userId: profile.id,
                     ),
                   ),
                 );
@@ -331,7 +345,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
-                        MyOpportunitiesListScreen(showActiveOnly: true),
+                        MyOpportunitiesListScreen(showActiveOnly: true, isCurrentUser: profile.isOwner, userId: profile.id,),
                   ),
                 );
               },
@@ -436,7 +450,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
 
               // ── Interests ─────────────────────────────────────────────────
-              onInterestsShowAll: () {},
+              onInterestsShowAll: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => BlocProvider.value(   // reuse the existing ProfileBloc
+        value: context.read<ProfileBloc>(),
+        child: InterestsListScreen(
+          userId: profile.id,
+          isOwner: profile.isOwner,
+        ),
+      ),
+    ),
+  );
+},
               onConnectToggle: (interest) {},
               onFollowToggle: (interest) {
                 context.read<ProfileBloc>().add(

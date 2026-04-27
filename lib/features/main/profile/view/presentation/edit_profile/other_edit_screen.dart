@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
-import 'package:sports_in/core/mappers/enum_mapper.dart';
+// import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/app_image_picker.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -11,10 +11,10 @@ import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
-import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
+// import 'package:sports_in/features/register/data/data_sources/register_lists.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_text_field.dart';
 import 'package:sports_in/features/register/view/presentation/register/widgets/register_two_fields_row.dart';
-import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
+// import 'package:sports_in/features/register/view/presentation/register/widgets/radio_dropdown_overlay.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sports_in/generated/l10n.dart';
 
@@ -33,7 +33,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
   late final TextEditingController lastNameController;
   late final TextEditingController bioController;
 
-  late final ValueNotifier<String?> genderNotifier;
+  // late final ValueNotifier<String?> genderNotifier;
   // late final ValueNotifier<String?> locationNotifier;
   final ValueNotifier<File?> imageNotifier = ValueNotifier<File?>(null);
 
@@ -52,9 +52,9 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     firstNameController = TextEditingController(text: firstName);
     lastNameController = TextEditingController(text: lastName);
     bioController = TextEditingController(text: widget.profile.description);
-    genderNotifier = ValueNotifier(
-      EnumMapper.genderIdToLabel(widget.profile.otherData!.gender ?? 0),
-    );
+    // genderNotifier = ValueNotifier(
+    //   EnumMapper.genderIdToLabel(widget.profile.otherData!.gender ?? 0),
+    // );
   }
 
   @override
@@ -62,7 +62,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     firstNameController.dispose();
     lastNameController.dispose();
     bioController.dispose();
-    genderNotifier.dispose();
+    // genderNotifier.dispose();
     super.dispose();
   }
 
@@ -78,7 +78,7 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
         oldImage: widget.profile.profileImage,
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
-        gender: genderNotifier.value,
+        // gender: genderNotifier.value,
         bio: bioController.text.trim(),
         // location: locationNotifier.value,
       ),
@@ -166,24 +166,24 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
                             //   return null;
                             // },
                           ),
-                          SizedBox(height: 16.h),
+                          // SizedBox(height: 16.h),
 
-                          ValueListenableBuilder<String?>(
-                            valueListenable: genderNotifier,
-                            builder: (context, gender, _) {
-                              return AppDropdownOverlay(
-                                labelText: string.gender,
-                                value: gender,
-                                options: RegisterLists.genderOptions(string),
-                                onChanged: (val) => genderNotifier.value = val,
-                                validator: (v) => Validators.validateDropdown(
-                                  context: context,
-                                  value: v,
-                                  fieldName: string.gender.toLowerCase(),
-                                ),
-                              );
-                            },
-                          ),
+                          // ValueListenableBuilder<String?>(
+                          //   valueListenable: genderNotifier,
+                          //   builder: (context, gender, _) {
+                          //     return AppDropdownOverlay(
+                          //       labelText: string.gender,
+                          //       value: gender,
+                          //       options: RegisterLists.genderOptions(string),
+                          //       onChanged: (val) => genderNotifier.value = val,
+                          //       validator: (v) => Validators.validateDropdown(
+                          //         context: context,
+                          //         value: v,
+                          //         fieldName: string.gender.toLowerCase(),
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
 
                           SizedBox(height: 24.h),
 

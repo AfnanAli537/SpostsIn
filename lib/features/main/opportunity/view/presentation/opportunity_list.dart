@@ -9,6 +9,7 @@ import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
 import 'package:sports_in/generated/l10n.dart';
 
 class OpportunitiesContent extends StatefulWidget {
@@ -480,6 +481,7 @@ class OpportunitiesContentState extends State<OpportunitiesContent>
                 builder: (_) => BlocProvider(
                   create: (_) => OpportunityBloc(
                     opportunityRepo: getIt<OpportunityReposatory>(),
+                    profileRepo: getIt<IProfileDataSource>(),
                   ),
                   child: OpportunityDetailsPage(
                     opportunityId: opportunity.id,

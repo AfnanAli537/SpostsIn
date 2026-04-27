@@ -35,10 +35,14 @@ import 'package:sports_in/features/main/main_layout/main_layout.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/update_opportunity_screen.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
 import 'package:sports_in/features/main/profile/view/presentation/edit_profile_router_screen.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_list.dart';
 import 'package:sports_in/features/main/profile/view/presentation/posts/post_update.dart';
 import 'package:sports_in/features/main/profile/view/presentation/user_profile_screen.dart';
+import 'package:sports_in/features/main/video_analysis/data/repo/analysis_repo.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_report_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
 import 'package:sports_in/features/notitification/presentation/view/ad_detail_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view/post_detail_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
@@ -255,6 +259,7 @@ case AppRoutes.mainLayout:
           builder: (_) => BlocProvider(
             create: (_) => OpportunityBloc(
               opportunityRepo: getIt<OpportunityReposatory>(),
+              profileRepo: getIt<IProfileDataSource>(),
             ),
             child: UpdateOpportunityScreen(opportunityId: opportunityId),
           ),
@@ -294,6 +299,17 @@ case AppRoutes.mainLayout:
             create: (_) => CoursesBloc(getIt<CourseRepository>()),
             child: CourseDetailScreen(
             courseId: courseId,
+          ),
+        ));
+
+      case AppRoutes.analysisDetail:
+        final analysisId = settings.arguments as String;
+        
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => AnalysisBloc(getIt<IAnalysisRepo>()),
+            child: AnalysisReportScreen(
+            analysisId: analysisId,
           ),
         ));
       // ── Settings / misc ─────────────────────────────────────────────────────

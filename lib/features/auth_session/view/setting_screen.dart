@@ -292,7 +292,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: () => Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (_) => MyOpportunitiesListScreen(showActiveOnly: true),
+                builder: (_) => MyOpportunitiesListScreen(showActiveOnly: true, isCurrentUser: true, userId: _currentUserId!),
               ),
             ),
             theme: theme,

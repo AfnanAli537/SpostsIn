@@ -25,6 +25,7 @@ import 'package:sports_in/features/main/opportunity/data/data_source/opportunity
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/opportunity_list.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -185,6 +186,7 @@ class _HomePageState extends State<HomePage> {
                 opportunityRepo: OpportunityReposatory(
                   OpportunityRemoteDataSourceImpl(apiClient: apiClient),
                 ),
+                profileRepo: getIt<IProfileDataSource>(),
               ),
             ),
             BlocProvider(create: (_) => getIt<CoursesBloc>()),

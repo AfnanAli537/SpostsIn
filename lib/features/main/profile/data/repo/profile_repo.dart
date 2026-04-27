@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import '../interface/i_profile_data_source.dart';
 
@@ -118,7 +119,7 @@ class ProfileRepo {
   }) => _dataSource.getActiveAds(userId: userId, page: page, size: size);
   // ── Opportunities ────────────────────────────────────────────────────────────
 
-  Future<List<Opportunity>> getOpportunities({
+  Future<PaginatedOpportunitiesResponse> getOpportunities({
     required String userId,
     int page = 1,
     int pageSize = 10,
@@ -139,9 +140,8 @@ class ProfileRepo {
   // ── Interests ────────────────────────────────────────────────────────────────
 
   Future<List<Interest>> getInterests({
-    required String userId,
     int page = 1,
-    int pageSize = 10,
+    int pageSize = 3,
   }) =>
-      _dataSource.getInterests(userId: userId, page: page, pageSize: pageSize);
+      _dataSource.getInterests( page: page, pageSize: pageSize);
 }

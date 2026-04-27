@@ -342,6 +342,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "cancelEdit": MessageLookupByLibrary.simpleMessage("Cancel Edit"),
+    "categoryAnalysis": MessageLookupByLibrary.simpleMessage("Analysis"),
+    "categoryCourses": MessageLookupByLibrary.simpleMessage("Courses"),
     "categoryOpportunities": MessageLookupByLibrary.simpleMessage(
       "Opportunities",
     ),
@@ -1098,6 +1100,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noInactiveOpportunities": MessageLookupByLibrary.simpleMessage(
       "No inactive opportunities",
     ),
+    "noInterestsYet": MessageLookupByLibrary.simpleMessage("No interests yet"),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No Internet Connection",
     ),

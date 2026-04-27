@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/widgets/interest_card.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../model/profile_model.dart';
@@ -22,7 +23,6 @@ class InterestsSection extends StatelessWidget {
     required this.theme,
     required this.string,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     if (interests.isEmpty) return const SizedBox.shrink();
@@ -41,8 +41,8 @@ class InterestsSection extends StatelessWidget {
             // final interest = interests[index];
             return InterestCard(
               interest: interests[index],
-              onFollowToggle: onFollowToggle,
-              onInterestTap: onInterestTap,
+              onTap: () =>
+              Navigator.pushNamed(context, AppRoutes.userProfile, arguments: interests[index].id),
             );
           },
         ),
@@ -50,4 +50,5 @@ class InterestsSection extends StatelessWidget {
       ],
     );
   }
+    
 }

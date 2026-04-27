@@ -1,4 +1,5 @@
 import 'package:sports_in/core/mappers/enum_mapper.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 
 class ProfileModel {
@@ -13,7 +14,7 @@ class ProfileModel {
   final List<Achievement> achievements;
   final List<AnalysisListItemModel> analyzedVideos;
   final List<Interest> interests;
-  final List<Opportunity>? opportunities;
+  final PaginatedOpportunitiesResponse? opportunities;
   final List<Course>? courses;
   // ── Active ads shown on the profile ──────────────────────────────────────
   final List<ProfileAd> ads;
@@ -88,9 +89,7 @@ class ProfileModel {
               .toList() ??
           [],
       opportunities: json['opportunities'] != null
-          ? (json['opportunities'] as List)
-                .map((e) => Opportunity.fromJson(e))
-                .toList()
+          ? PaginatedOpportunitiesResponse.fromJson(json['opportunities'])
           : null,
       courses: json['courses'] != null
           ? (json['courses'] as List).map((e) => Course.fromJson(e)).toList()
@@ -153,7 +152,7 @@ class ProfileModel {
       'achievements': achievements.map((e) => e.toJson()).toList(),
       'analyzedVideos': analyzedVideos.map((e) => e.toJson()).toList(),
       'interests': interests.map((e) => e.toJson()).toList(),
-      'opportunities': opportunities?.map((e) => e.toJson()).toList(),
+      'opportunities': opportunities?.items.map((e) => e.toJson()).toList(),
       'courses': courses?.map((e) => e.toJson()).toList(),
       'ads': ads.map((e) => e.toJson()).toList(),
       'playerData': playerData?.toJson(),
@@ -180,7 +179,7 @@ class ProfileModel {
     List<Achievement>? achievements,
     List<AnalysisListItemModel>? analyzedVideos,
     List<Interest>? interests,
-    List<Opportunity>? opportunities,
+    PaginatedOpportunitiesResponse? opportunities,
     List<Course>? courses,
     List<ProfileAd>? ads, // ← new
     PlayerSpecificData? playerData,
@@ -370,87 +369,45 @@ class Interest {
   final String name;
   final String role;
   final String profileImage;
-
-  /// null = not connected, "Pending" = request sent, "Accepted" = in contacts
-  final String? connectionStatus;
-  final bool isFollowing;
-
-  bool get isConnected => connectionStatus == 'Accepted';
+  final String userType;
+  final String? location;
+  final int? age;
 
   Interest({
     required this.id,
     required this.name,
     required this.role,
     required this.profileImage,
-    this.connectionStatus,
-    this.isFollowing = false,
+    required this.userType,
+    this.location,
+    this.age,
   });
-
-  Interest copyWith({
-    String? id,
-    String? name,
-    String? role,
-    String? profileImage,
-    String? connectionStatus,
-    bool? isFollowing,
-    bool clearConnectionStatus = false,
-  }) {
-    return Interest(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      role: role ?? this.role,
-      profileImage: profileImage ?? this.profileImage,
-      connectionStatus: clearConnectionStatus
-          ? null
-          : (connectionStatus ?? this.connectionStatus),
-      isFollowing: isFollowing ?? this.isFollowing,
-    );
-  }
 
   factory Interest.fromJson(Map<String, dynamic> json) {
     return Interest(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      role: json['role'] ?? '',
-      profileImage: json['profileImage'] ?? json['profile_image'] ?? '',
-      connectionStatus: json['connectionStatus'] as String?,
-      isFollowing: json['isFollowing'] ?? json['is_following'] ?? false,
+      id: json['userId']?.toString() ?? '',
+      name: json['fullName'] ?? '',
+      role: json['userType'] ?? '',
+      profileImage: json['profilePictureUrl'] ?? '',
+      userType: json['userType'],
+      location: json['location'],
+      age: json['age'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'role': role,
-      'profileImage': profileImage,
-      'connectionStatus': connectionStatus,
-      'isFollowing': isFollowing,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'userId': id,
+    'name': name,
+    'role': role,
+    'profileImage': profileImage,
+    'userType': userType,
+    'location': location,
+    'age': age,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-class Opportunity {
-  final String id;
-  final String mediaUrl;
-  final String? title;
-
-  Opportunity({required this.id, required this.mediaUrl, this.title});
-
-  factory Opportunity.fromJson(Map<String, dynamic> json) {
-    return Opportunity(
-      id: json['id'] ?? '',
-      mediaUrl: json['mediaUrl'] ?? '',
-      title: json['title'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'mediaUrl': mediaUrl, 'title': title};
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 
