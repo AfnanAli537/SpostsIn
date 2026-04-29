@@ -170,7 +170,7 @@ class _UnpaidBanner extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => AnalysisPaymentScreen(
                       analysisId: report.id,
-                      price: 10.0,
+                      price: 100.0,
                       analysisType: _typeFromString(report.type),
                     ),
                   ),

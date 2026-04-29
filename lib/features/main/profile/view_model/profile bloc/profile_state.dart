@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import '../../model/profile_model.dart';
 
 abstract class ProfileState extends Equatable {
@@ -146,7 +147,7 @@ class PostsLoaded extends ProfileState {
 
 // Opportunities States
 class OpportunitiesLoaded extends ProfileState {
-  final List<Opportunity> opportunities;
+  final List<OpportunityModel> opportunities;
   final bool hasMore;
 
   const OpportunitiesLoaded({

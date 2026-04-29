@@ -298,8 +298,8 @@ class _FollowCard extends StatelessWidget {
                         pendingText: strings.pending,
                         removeContactText: strings.remove,
                         acceptText: strings
-                            .accept, // optional, make sure strings.accept exists
-                        rejectText: strings.reject, // optional
+                            .accept,
+                        rejectText: strings.reject, 
                       ),
                     ),
                     SizedBox(width: 12.w),

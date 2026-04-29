@@ -1,122 +1,126 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sports_in/core/widgets/connect_button.dart';
 import 'package:sports_in/core/widgets/custom_avatar.dart';
-import 'package:sports_in/core/widgets/follow_button.dart';
 import 'package:sports_in/features/main/profile/model/profile_model.dart';
-import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
-import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_event.dart';
-import 'package:sports_in/generated/l10n.dart';
 
 class InterestCard extends StatelessWidget {
   final Interest interest;
-  final Function(Interest)? onFollowToggle;
-  final Function(Interest)? onInterestTap;
+  final VoidCallback onTap;
 
   const InterestCard({
     super.key,
     required this.interest,
-    this.onFollowToggle,
-    this.onInterestTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final string = S.of(context);
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8.r,
-            offset: Offset(0, 2.h),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16.r),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => onInterestTap?.call(interest),
-              child: CustomAvatar(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.h),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Avatar
+              CustomAvatar(
                 imageUrl: interest.profileImage,
                 name: interest.name,
                 radius: 32.r,
               ),
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () => onInterestTap?.call(interest),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          interest.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          interest.role,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onTertiaryContainer,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ConnectButton(
-                          connectionStatus: interest.connectionStatus,
-                          onPressed: () {
-                            final status = interest.connectionStatus;
-                            if (status == null) {
-                              context.read<ProfileBloc>().add(
-                                    SendConnectionRequest(receiverId: interest.id),
-                                  );
-                            } else if (status == 'Accepted') {
-                              context.read<ProfileBloc>().add(
-                                    RemoveContact(targetId: interest.id),
-                                  );
-                            }
-                          },
-                          connectText: string.connect,
-                          pendingText: string.pending,
-                          removeContactText: string.remove,
-                        ),
+              SizedBox(width: 16.w),
+
+              // Name + Role + Location
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      interest.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
-                      SizedBox(width: 12.w),
-                      Expanded(
-                        child: FollowButton(
-                          isFollowing: interest.isFollowing,
-                          onPressed: () => onFollowToggle?.call(interest),
-                          followingText: string.following,
-                          followText: string.follow,
-                        ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      interest.role,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (interest.location != null) ...[
+                      SizedBox(height: 4.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14.sp,
+                            color: theme.colorScheme.onTertiaryContainer,
+                          ),
+                          SizedBox(width: 2.w),
+                          Text(
+                            interest.location!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onTertiaryContainer,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+
+             // Replace the age badge at the end with this:
+Column(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  crossAxisAlignment: CrossAxisAlignment.end,
+  children: [
+    if (interest.age != null)
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Text(
+          '${interest.age}y',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    SizedBox(height: 8.h),
+    Icon(
+      Icons.arrow_forward_ios_rounded,
+      size: 16.sp,
+      color: theme.colorScheme.onTertiaryContainer,
+    ),
+  ],
+),
+            ],
+          ),
         ),
       ),
     );

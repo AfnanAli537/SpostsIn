@@ -1,3 +1,5 @@
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
+
 import '../../model/profile_model.dart';
 
 abstract class IProfileDataSource {
@@ -38,7 +40,7 @@ abstract class IProfileDataSource {
 
   Future<void> deleteAchievement(String achievementId);
 
-  Future<List<Opportunity>> getOpportunities({
+  Future<PaginatedOpportunitiesResponse> getOpportunities({
     required String userId,
     int page = 1,
     int pageSize = 10,
@@ -51,9 +53,8 @@ abstract class IProfileDataSource {
   });
 
   Future<List<Interest>> getInterests({
-    required String userId,
     int page = 1,
-    int pageSize = 10,
+    int pageSize = 3,
   });
 
   Future<void> toggleFollow(String userId);

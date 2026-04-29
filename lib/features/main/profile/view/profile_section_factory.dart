@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/profile/view/presentation/follow_list_screen.dart';
 import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart';
 import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
@@ -100,7 +101,7 @@ class ProfileSectionFactory {
     Function(ProfileAd)? onAdTap,
     // ── Other callbacks ─────────────────────────────────────────────────────
     Function(Post)? onPostTap,
-    Function(Opportunity)? onOpportunityTap,
+    Function(OpportunityModel)? onOpportunityTap,
     Function(Course)? onCourseTap,
     Function(Achievement)? onAchievementTap,
     Function(AnalysisListItemModel)? onVideoTap,
@@ -139,13 +140,13 @@ class ProfileSectionFactory {
     }
     // ── Opportunities ────────────────────────────────────────────────────────
     if (profile.opportunities != null &&
-        profile.opportunities!.isNotEmpty &&
+        profile.opportunities!.items.isNotEmpty &&
         (profile.userType == UserType.coach ||
             profile.userType == UserType.scout ||
             profile.userType == UserType.club)) {
       sections.add(
         OpportunitiesSection(
-          opportunities: profile.opportunities!,
+          opportunities: profile.opportunities!.items,
           onShowAll: onOpportunitiesShowAll,
           onOpportunityTap: onOpportunityTap,
           theme: theme,
@@ -153,7 +154,7 @@ class ProfileSectionFactory {
         ),
       );
     } else if (profile.opportunities != null &&
-        profile.opportunities!.isEmpty &&
+        profile.opportunities!.items.isEmpty &&
         (profile.userType == UserType.coach ||
             profile.userType == UserType.scout ||
             profile.userType == UserType.institute ||
@@ -215,7 +216,7 @@ class ProfileSectionFactory {
     if (profile.analyzedVideos.isNotEmpty) {
   sections.add(
     AnalyzedVideosSection(
-      videos: profile.analyzedVideos, // This is now List<AnalysisListItemModel>
+      videos: profile.analyzedVideos, 
       onShowAll: onVideosShowAll,
       onVideoTap: (item) => onVideoTap?.call(item),
       title: string.analyzedVideosReports,
@@ -258,7 +259,7 @@ class ProfileSectionFactory {
     Function(ProfileAd)? onAdTap,
     // ── Other ─────────────────────────────────────────────────────────────────
     Function(Post)? onPostTap,
-    Function(Opportunity)? onOpportunityTap,
+    Function(OpportunityModel)? onOpportunityTap,
     Function(Course)? onCourseTap,
     Function(Achievement)? onAchievementTap,
     Function(AnalysisListItemModel)? onVideoTap,
@@ -266,6 +267,8 @@ class ProfileSectionFactory {
     Function(Interest)? onFollowToggle,
     Function(Interest)? onInterestTap,
     VoidCallback? onConnectPressed,
+    VoidCallback? onAcceptPressed,
+    VoidCallback? onRejectPressed,
     VoidCallback? onFollowPressed,
     VoidCallback? onConnectionsPressed,
   }) {
@@ -329,9 +332,14 @@ class ProfileSectionFactory {
                 child: ConnectButton(
                   connectionStatus: profile.connectionStatus,
                   onPressed: onConnectPressed ?? () {},
+                  onAccept: onAcceptPressed ?? () {},
+                  onReject: onRejectPressed ?? () {},
                   connectText: string.connect,
                   pendingText: string.pending,
                   removeContactText: string.remove,
+                  acceptText: string
+                      .accept,
+                  rejectText: string.reject, 
                 ),
               ),
               SizedBox(width: 12.w),

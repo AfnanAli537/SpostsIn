@@ -18,6 +18,8 @@ import 'package:sports_in/core/config/language_cubit/language_cubit.dart'
     as _i185;
 import 'package:sports_in/core/config/theme_cubit/theme_cubit.dart' as _i934;
 import 'package:sports_in/core/network/api_client.dart' as _i694;
+import 'package:sports_in/core/services/push_notification_service.dart'
+    as _i212;
 import 'package:sports_in/core/utils/helper/image_helper.dart' as _i492;
 import 'package:sports_in/data/data_sources/auth_api_data_source.dart' as _i172;
 import 'package:sports_in/data/interfaces/i_auth_data_source.dart' as _i470;
@@ -201,6 +203,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i294.OpportunityReposatory>(
       () => _i294.OpportunityReposatory(gh<_i709.OpportunityInterface>()),
     );
+    gh.lazySingleton<_i212.NotificationService>(
+      () => _i212.NotificationService(gh<_i694.ApiClient>()),
+    );
     gh.lazySingleton<_i102.NotificationRemoteDataSource>(
       () => _i577.NotificationRemoteDataSourceImpl(
         apiClient: gh<_i694.ApiClient>(),
@@ -219,11 +224,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i221.PaymentRepository>(
       () =>
           _i221.PaymentRepositoryImpl(dataSource: gh<_i802.PaymentInterface>()),
-    );
-    gh.factory<_i1047.OpportunityBloc>(
-      () => _i1047.OpportunityBloc(
-        opportunityRepo: gh<_i294.OpportunityReposatory>(),
-      ),
     );
     gh.lazySingleton<_i109.ISearchDataSource>(
       () => _i486.SearchDataSource(gh<_i694.ApiClient>()),
@@ -264,6 +264,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i352.IAnalysisRepo>(
       () => _i352.AnalysisRepo(gh<_i311.IAnalysisDataSource>()),
+    );
+    gh.factory<_i1047.OpportunityBloc>(
+      () => _i1047.OpportunityBloc(
+        opportunityRepo: gh<_i294.OpportunityReposatory>(),
+        profileRepo: gh<_i544.IProfileDataSource>(),
+      ),
     );
     gh.factory<_i45.PostsBloc>(
       () => _i45.PostsBloc(postRepo: gh<_i651.PostsRepositoryImpl>()),

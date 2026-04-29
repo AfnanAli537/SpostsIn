@@ -17,11 +17,13 @@ import 'package:sports_in/generated/l10n.dart';
 class MyOpportunitiesListScreen extends StatelessWidget {
   final bool showActiveOnly;
   final bool isCurrentUser;
+  final String userId;
 
   const MyOpportunitiesListScreen({
     super.key,
     this.showActiveOnly = true,
     this.isCurrentUser = true,
+    required this.userId,
   });
 
   @override
@@ -29,10 +31,11 @@ class MyOpportunitiesListScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) =>
           getIt<OpportunityBloc>()
-            ..add(FetchMyOpportunities(showActive: showActiveOnly)),
+            ..add(isCurrentUser ? FetchMyOpportunities(showActive: showActiveOnly) : FetchOpportunities(isRefresh: true, userId: userId)),
       child: _MyOpportunitiesListView(
         showActiveOnly: showActiveOnly,
         isCurrentUser: isCurrentUser,
+        userId: userId,
       ),
     );
   }
@@ -42,10 +45,13 @@ class MyOpportunitiesListScreen extends StatelessWidget {
 class _MyOpportunitiesListView extends StatefulWidget {
   bool showActiveOnly;
   final bool isCurrentUser;
+  final String userId;
 
   _MyOpportunitiesListView({
     required this.showActiveOnly,
     required this.isCurrentUser,
+    required this.userId,
+
   });
 
   @override
@@ -93,7 +99,7 @@ class _MyOpportunitiesListViewState extends State<_MyOpportunitiesListView> {
 
   Future<void> _refreshOpportunities() async {
     context.read<OpportunityBloc>().add(
-          FetchMyOpportunities(showActive: widget.showActiveOnly, page: 1),
+          widget.isCurrentUser ?  FetchMyOpportunities(showActive: widget.showActiveOnly, page: 1) : FetchOpportunities(isRefresh: true, userId: widget.userId),
         );
     // Wait a bit for the state to update
     await Future.delayed(const Duration(milliseconds: 500));

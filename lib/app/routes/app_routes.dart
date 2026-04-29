@@ -43,5 +43,6 @@ abstract class AppRoutes {
   static const String postDetail        = '/post-detail';
   static const String adDetail        = '/ad-detail';
   static const String courseDetail        = '/course-detail';
+  static const String analysisDetail        = '/analysis-detail';
 static const String opportunityDetail = '/opportunity-detail';
 }

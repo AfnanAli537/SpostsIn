@@ -8,6 +8,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
+import 'package:sports_in/core/services/push_notification_service.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
 import 'package:sports_in/features/notitification/presentation/view/notifi_screen.dart';
@@ -325,9 +326,8 @@ class AppDrawer extends StatelessWidget {
       iconColor: theme.colorScheme.error,
       isDestructive: true,
       onConfirm: () async {
-        // await getIt<SharedPref>().clear(); // Use clear() to wipe all user data
-        await getIt<SharedPref>()
-            .clearToken(); // Use clear() to wipe all user data
+        await getIt<NotificationService>().deleteToken();
+        await getIt<SharedPref>().clearToken();
         rootNavigator.pushNamedAndRemoveUntil(
           AppRoutes.login,
           (route) => false,

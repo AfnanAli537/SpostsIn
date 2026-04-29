@@ -7,6 +7,8 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/constants/assets_manager.dart';
 import 'package:sports_in/core/constants/color_manager.dart';
+import 'package:sports_in/core/services/auth_service.dart';
+import 'package:sports_in/core/services/push_notification_service.dart';
 import 'package:sports_in/core/utils/helper/errors_key_translator.dart';
 import 'package:sports_in/core/utils/validators/regex.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -53,7 +55,6 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body:MultiBlocListener(
-       
             listeners: [
       // ── LoginBloc listener ──
       BlocListener<LoginBloc, LoginState>(
@@ -65,6 +66,13 @@ class LoginScreen extends StatelessWidget {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
+            final notificationService = getIt<NotificationService>();
+            notificationService.setupInteractions().then((_) {
+              notificationService.getTokenAndRegister().then((_) {
+                AuthService.setupTokenRefreshListener(
+                    userId: sharedpref.getUserId() ?? '');
+              });
+            });
             context.read<PaymentBloc>().add(
               FetchMySubscriptionEvent(userId: sharedpref.getUserId()!),
             );
@@ -77,6 +85,13 @@ class LoginScreen extends StatelessWidget {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.TOP,
             );
+            final notificationService = getIt<NotificationService>();
+            notificationService.setupInteractions().then((_) {
+              notificationService.getTokenAndRegister().then((_) {
+                AuthService.setupTokenRefreshListener(
+                    userId: sharedpref.getUserId() ?? '');
+              });
+            });
             Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoutes.mainLayout,
               (route) => false,

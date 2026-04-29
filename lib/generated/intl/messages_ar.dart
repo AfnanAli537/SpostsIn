@@ -340,6 +340,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "cancelEdit": MessageLookupByLibrary.simpleMessage("إلغاء التعديل"),
+    "categoryAnalysis": MessageLookupByLibrary.simpleMessage("التحليلات"),
+    "categoryCourses": MessageLookupByLibrary.simpleMessage("الدورات"),
     "categoryOpportunities": MessageLookupByLibrary.simpleMessage("الفرص"),
     "categoryReactions": MessageLookupByLibrary.simpleMessage("التفاعلات"),
     "categoryRecent": MessageLookupByLibrary.simpleMessage("الأحدث"),
@@ -1090,6 +1092,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noInactiveOpportunities": MessageLookupByLibrary.simpleMessage(
       "لا توجد فرص غير نشطة",
+    ),
+    "noInterestsYet": MessageLookupByLibrary.simpleMessage(
+      "لا توجد اهتمامات بعد",
     ),
     "noInternetConnection": MessageLookupByLibrary.simpleMessage(
       "لا يوجد اتصال بالإنترنت.",

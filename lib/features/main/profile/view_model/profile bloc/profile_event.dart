@@ -116,7 +116,15 @@ class RemoveContact extends ProfileEvent {
   @override
   List<Object?> get props => [targetId];
 }
-
+// New events for accept/reject
+class AcceptConnectionRequestOnItem extends ProfileEvent {
+  final String senderId;
+  const AcceptConnectionRequestOnItem(this.senderId);
+}
+class RejectConnectionRequestOnItem extends ProfileEvent {
+  final String senderId;
+  const RejectConnectionRequestOnItem(this.senderId);
+}
 // ── Achievement Events ───────────────────────────────────────────────────────
 
 class LoadAchievements extends ProfileEvent {
@@ -224,16 +232,22 @@ class LoadCourses extends ProfileEvent {
 // ── Interests Events ─────────────────────────────────────────────────────────
 
 class LoadInterests extends ProfileEvent {
-  final String userId;
   final int page;
   final int pageSize;
 
   const LoadInterests({
-    required this.userId,
     this.page = 1,
-    this.pageSize = 10,
+    this.pageSize = 5,
   });
 
   @override
-  List<Object?> get props => [userId, page, pageSize];
+  List<Object?> get props => [page, pageSize];
+}
+class LoadMoreInterests extends ProfileEvent {
+  final String userId;
+  const LoadMoreInterests({required this.userId});
+}
+
+class ProfileLoadingMoreInterests extends ProfileEvent {
+  const ProfileLoadingMoreInterests();
 }

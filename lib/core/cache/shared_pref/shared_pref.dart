@@ -55,7 +55,9 @@ class SharedPref {
   String? getUserId() {
     return _prefs.getString(StringKeys.userIdKey);
   }
-
+  String? getUserType() {
+    return _prefs.getString(StringKeys.userType);
+  }
   Future<void> clearToken() async {
     await _prefs.remove(StringKeys.tokenKey);
     await _prefs.remove(StringKeys.expireData);

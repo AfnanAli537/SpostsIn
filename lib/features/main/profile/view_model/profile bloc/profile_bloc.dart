@@ -5,7 +5,7 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/utils/helper/image_helper.dart';
 import 'package:sports_in/core/utils/helper/update_profile_build_request_body.dart';
 import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
-import 'package:sports_in/features/main/profile/model/profile_model.dart';
+// import 'package:sports_in/features/main/profile/model/profile_model.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
@@ -20,6 +20,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ToggleFollow>(_onToggleFollow);
     on<SendConnectionRequest>(_onSendConnectionRequest);
     on<RemoveContact>(_onRemoveContact);
+    on<AcceptConnectionRequestOnItem>(_onAcceptConnection);
+    on<RejectConnectionRequestOnItem>(_onRejectConnection);
 
     on<LoadAchievements>(_onLoadAchievements);
     on<CreateAchievement>(_onCreateAchievement);
@@ -139,41 +141,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(const ProfileActionError(
             message: 'Failed to update follow status'));
       }
-    } else {
-      // Interest item follow toggle
-      final idx = currentState.profile.interests
-          .indexWhere((i) => i.id == event.userId);
-      if (idx == -1) return;
-
-      final old = currentState.profile.interests[idx];
-      final updatedInterests =
-          List<Interest>.from(currentState.profile.interests);
-      updatedInterests[idx] = old.copyWith(isFollowing: !old.isFollowing);
-
-      final updatedProfile =
-          currentState.profile.copyWith(interests: updatedInterests);
-      emit(ProfileLoaded(
-          profile: updatedProfile,
-          isOwnProfile: currentState.isOwnProfile));
-
-      try {
-        await _repository.toggleFollow(event.userId);
-        emit(ProfileActionSuccess(
-          message: old.isFollowing
-              ? 'Unfollowed successfully!'
-              : 'Following successfully!',
-        ));
-        emit(ProfileLoaded(
-            profile: updatedProfile,
-            isOwnProfile: currentState.isOwnProfile));
-      } catch (e) {
-        emit(ProfileLoaded(
-            profile: currentState.profile,
-            isOwnProfile: currentState.isOwnProfile));
-        emit(const ProfileActionError(
-            message: 'Failed to update follow status'));
-      }
-    }
+    } 
   }
 
   // ── Connection ───────────────────────────────────────────────────────────────
@@ -202,36 +170,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(const ProfileActionSuccess(message: 'Connection request sent!'));
         emit(ProfileLoaded(
             profile: updated, isOwnProfile: currentState.isOwnProfile));
-      } catch (e) {
-        emit(ProfileLoaded(
-            profile: currentState.profile,
-            isOwnProfile: currentState.isOwnProfile));
-        emit(const ProfileActionError(
-            message: 'Failed to send connection request'));
-      }
-    } else {
-      // Interest item
-      final idx = currentState.profile.interests
-          .indexWhere((i) => i.id == event.receiverId);
-      if (idx == -1) return;
-
-      final updatedInterests =
-          List<Interest>.from(currentState.profile.interests);
-      updatedInterests[idx] =
-          updatedInterests[idx].copyWith(connectionStatus: 'Pending');
-
-      final updatedProfile =
-          currentState.profile.copyWith(interests: updatedInterests);
-      emit(ProfileLoaded(
-          profile: updatedProfile,
-          isOwnProfile: currentState.isOwnProfile));
-
-      try {
-        await _repository.sendConnectionRequest(event.receiverId);
-        emit(const ProfileActionSuccess(message: 'Connection request sent!'));
-        emit(ProfileLoaded(
-            profile: updatedProfile,
-            isOwnProfile: currentState.isOwnProfile));
       } catch (e) {
         emit(ProfileLoaded(
             profile: currentState.profile,
@@ -272,38 +210,71 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             isOwnProfile: currentState.isOwnProfile));
         emit(const ProfileActionError(message: 'Failed to remove contact'));
       }
-    } else {
-      // Interest item
-      final idx = currentState.profile.interests
-          .indexWhere((i) => i.id == event.targetId);
-      if (idx == -1) return;
+    } 
+  }
 
-      final updatedInterests =
-          List<Interest>.from(currentState.profile.interests);
-      updatedInterests[idx] =
-          updatedInterests[idx].copyWith(clearConnectionStatus: true);
+Future<void> _onAcceptConnection(
+  AcceptConnectionRequestOnItem event,
+  Emitter<ProfileState> emit,
+) async {
+  final currentState = state;
+  if (currentState is! ProfileLoaded) return;
 
-      final updatedProfile =
-          currentState.profile.copyWith(interests: updatedInterests);
+  final isInterest = event.senderId != currentState.profile.id;
+
+  if (!isInterest) {
+    // Main profile
+    final updated = currentState.profile.copyWith(connectionStatus: 'Accepted');
+    emit(ProfileLoaded(profile: updated, isOwnProfile: currentState.isOwnProfile));
+
+    try {
+      await _repository.respondConnection(
+        senderId: event.senderId,
+        status: 'Accepted',
+      );
+      emit(const ProfileActionSuccess(message: 'Connection request accepted!'));
+      emit(ProfileLoaded(profile: updated, isOwnProfile: currentState.isOwnProfile));
+    } catch (e) {
       emit(ProfileLoaded(
-          profile: updatedProfile,
-          isOwnProfile: currentState.isOwnProfile));
+        profile: currentState.profile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
+      emit(const ProfileActionError(message: 'Failed to accept connection request'));
+    }
+  }
+}
 
-      try {
-        await _repository.removeContact(event.targetId);
-        emit(const ProfileActionSuccess(message: 'Contact removed'));
-        emit(ProfileLoaded(
-            profile: updatedProfile,
-            isOwnProfile: currentState.isOwnProfile));
-      } catch (e) {
-        emit(ProfileLoaded(
-            profile: currentState.profile,
-            isOwnProfile: currentState.isOwnProfile));
-        emit(const ProfileActionError(message: 'Failed to remove contact'));
-      }
+Future<void> _onRejectConnection(
+  RejectConnectionRequestOnItem event,
+  Emitter<ProfileState> emit,
+) async {
+  final currentState = state;
+  if (currentState is! ProfileLoaded) return;
+
+  final isInterest = event.senderId != currentState.profile.id;
+
+  if (!isInterest) {
+    // Main profile
+    final updated = currentState.profile.copyWith(clearConnectionStatus: true);
+    emit(ProfileLoaded(profile: updated, isOwnProfile: currentState.isOwnProfile));
+
+    try {
+      await _repository.respondConnection(
+        senderId: event.senderId,
+        status: 'Rejected',
+      );
+      emit(const ProfileActionSuccess(message: 'Connection request rejected'));
+      emit(ProfileLoaded(profile: updated, isOwnProfile: currentState.isOwnProfile));
+    } catch (e) {
+      emit(ProfileLoaded(
+        profile: currentState.profile,
+        isOwnProfile: currentState.isOwnProfile,
+      ));
+      emit(const ProfileActionError(message: 'Failed to reject connection request'));
     }
   }
 
+}
   // ── Achievement Handlers ─────────────────────────────────────────────────────
 
   Future<void> _onLoadAchievements(
@@ -395,8 +366,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final opportunities = await _repository.getOpportunities(
           userId: event.userId, page: event.page, pageSize: event.pageSize);
       emit(OpportunitiesLoaded(
-          opportunities: opportunities,
-          hasMore: opportunities.length >= event.pageSize));
+          opportunities: opportunities.items,
+          hasMore: opportunities.items.length >= event.pageSize));
     } catch (e) {
       emit(ProfileError(message: e is ApiException ? e.message : e.toString()));
     }
@@ -428,7 +399,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       emit(ProfileLoading());
       final interests = await _repository.getInterests(
-          userId: event.userId, page: event.page, pageSize: event.pageSize);
+          page: event.page, pageSize: event.pageSize);
       emit(InterestsLoaded(
           interests: interests, hasMore: interests.length >= event.pageSize));
     } catch (e) {

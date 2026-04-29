@@ -8,6 +8,7 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/core/mappers/enum_mapper.dart';
 import 'package:sports_in/core/network/api_client.dart';
 import 'package:sports_in/core/network/endpoints.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
 import '../interface/i_profile_data_source.dart';
 import '../../model/profile_model.dart';
@@ -20,6 +21,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   ApiProfileDataSource(this._apiClient, this._prefs);
 
   String? get _currentUserId => _prefs.getUserId();
+  String? get _currentUserType => _prefs.getUserType();
 
   DioException _badResponse(Response response) => DioException(
     requestOptions: response.requestOptions,
@@ -64,13 +66,13 @@ class ApiProfileDataSource implements IProfileDataSource {
                   profile.userType == UserType.scout ||
                   profile.userType == UserType.club)
               ? getOpportunities(userId: userId, page: 1, pageSize: 3)
-              : Future.value(<Opportunity>[]),
+              : Future.value(<OpportunityModel>[]),
           (profile.userType == UserType.club ||
                   profile.userType == UserType.coach ||
                   profile.userType == UserType.institute)
               ? getCourses(userId: userId, page: 1, pageSize: 10)
               : Future.value(<Course>[]),
-          getInterests(userId: userId, page: 1, pageSize: 6),
+          getInterests( page: 1, pageSize: 6),
           getActiveAds(userId: userId),
         ]);
 
@@ -78,7 +80,7 @@ class ApiProfileDataSource implements IProfileDataSource {
           posts: results[0] as List<Post>,
           achievements: results[1] as List<Achievement>,
           analyzedVideos: results[2] as List<AnalysisListItemModel>,
-          opportunities: results[3] as List<Opportunity>,
+          opportunities: results[3] as PaginatedOpportunitiesResponse,
           courses: results[4] as List<Course>,
           interests: results[5] as List<Interest>,
           ads: results[6] as List<ProfileAd>,
@@ -103,7 +105,8 @@ class ApiProfileDataSource implements IProfileDataSource {
         final json = response.data as Map<String, dynamic>;
         if (json.containsKey('message') && !json.containsKey('userId')) {
           final userId = _currentUserId;
-          if (userId == null) {
+          final userType = _currentUserType;
+          if (userId == null || userId.isEmpty || userType == null || userType.isEmpty) {
             throw ApiException(
               message: 'User not logged in',
               key: StringKeys.unauthorized,
@@ -351,7 +354,7 @@ class ApiProfileDataSource implements IProfileDataSource {
   // ── Opportunities ────────────────────────────────────────────────────────────
 
   @override
-  Future<List<Opportunity>> getOpportunities({
+  Future<PaginatedOpportunitiesResponse> getOpportunities({
     required String userId,
     int page = 1,
     int pageSize = 10,
@@ -364,19 +367,13 @@ class ApiProfileDataSource implements IProfileDataSource {
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
-        final items = data['items'] as List<dynamic>? ?? [];
-        return items.map((json) => Opportunity.fromJson(json)).toList();
+        return PaginatedOpportunitiesResponse.fromJson(data);
       }
 
       throw ApiErrorHandler.handleDioError(_badResponse(response));
     } on DioException catch (e) {
       throw ApiErrorHandler.handleDioError(e);
-    } on ApiException {
-      rethrow;
-    } catch (e) {
-      debugPrint('Error loading opportunities: $e');
-      return [];
-    }
+    } 
   }
 
   // ── Courses ──────────────────────────────────────────────────────────────────
@@ -424,62 +421,39 @@ class ApiProfileDataSource implements IProfileDataSource {
 
   @override
   Future<List<Interest>> getInterests({
-    required String userId,
     int page = 1,
-    int pageSize = 10,
+    int pageSize = 3,
   }) async {
-    final interestUserIds = [
-      "07f4e4d8-0315-48fc-82a0-89e37b67648a",
-      "3bdbe490-f7a7-4a1b-9d60-6fb1ef5d8fbf",
-      "8ee439e7-c504-4407-9ec0-24fb7b406623",
-    ];
+        final queryParams = <String, dynamic>{
+      'pageNumber': page,
+      'pageSize': pageSize,
+    };
 
-    try {
-      final interests = <Interest>[];
+    
+      queryParams['UserType'] = _currentUserType;
+    
+    final response = await _apiClient.get(
+      Endpoints.search,
+      params: queryParams,
+    );
 
-      for (final interestUserId in interestUserIds) {
-        try {
-          final response = await _apiClient.get(
-            Endpoints.getProfile.replaceAll('{userId}', interestUserId),
-          );
+    final responseData = response.data;
+    List data = [];
 
-          if (response.statusCode == 200) {
-            final json = response.data as Map<String, dynamic>;
-
-            if (json['isOwner'] == true || json['userId'] == userId) continue;
-
-            final userType = _parseUserType(json['userType']);
-            final sportsList = EnumMapper.sportIdsToLabels(
-              (json['sports'] as List<dynamic>?)
-                      ?.map((id) => id as int)
-                      .toList() ??
-                  [],
-            );
-            final sport = sportsList.isNotEmpty ? sportsList.first : null;
-
-            interests.add(
-              Interest(
-                id: json['userId'] ?? '',
-                name: json['fullName'] ?? 'Unknown',
-                role: _getRoleText(userType, json['specialization'], sport),
-                profileImage: json['profilePictureUrl'] ?? '',
-                // Store the raw string: null / "Pending" / "Accepted"
-                connectionStatus: json['connectionStatus'] as String?,
-                isFollowing: json['isFollowedByMe'] == true,
-              ),
-            );
-          }
-        } on DioException catch (e) {
-          debugPrint('Error loading interest user $interestUserId: $e');
-          continue;
-        }
-      }
-
-      return interests;
-    } catch (e) {
-      debugPrint('Error loading interests: $e');
-      return [];
+    if (responseData is List) {
+      data = responseData;
+    } else if (responseData is Map) {
+      data =
+          responseData['data'] ??
+          responseData['items'] ??
+          responseData['result'] ??
+          responseData['results'] ??
+          [];
     }
+
+    return data
+        .map((e) => Interest.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
   // ── Follow ───────────────────────────────────────────────────────────────────
 
