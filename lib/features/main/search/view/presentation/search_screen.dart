@@ -403,6 +403,8 @@ class _VideoAnalysisSearchTab extends StatefulWidget {
 
 class _VideoAnalysisSearchTabState extends State<_VideoAnalysisSearchTab> {
   final _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
   String? _selectedType;
 
   static const _types = ['Goalkeeper', 'Passing', 'Dribbling', 'Match'];
@@ -410,6 +412,7 @@ class _VideoAnalysisSearchTabState extends State<_VideoAnalysisSearchTab> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -443,6 +446,7 @@ class _VideoAnalysisSearchTabState extends State<_VideoAnalysisSearchTab> {
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           child: TextField(
             controller: _searchController,
+            onTapOutside: (_) => _searchFocusNode.unfocus(),
             onSubmitted: (_) => _search(),
             onChanged: (_) => setState(() {}),
             textInputAction: TextInputAction.search,
