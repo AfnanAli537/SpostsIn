@@ -446,6 +446,7 @@ class _VideoAnalysisSearchTabState extends State<_VideoAnalysisSearchTab> {
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           child: TextField(
             controller: _searchController,
+            focusNode: _searchFocusNode,   
             onTapOutside: (_) => _searchFocusNode.unfocus(),
             onSubmitted: (_) => _search(),
             onChanged: (_) => setState(() {}),
