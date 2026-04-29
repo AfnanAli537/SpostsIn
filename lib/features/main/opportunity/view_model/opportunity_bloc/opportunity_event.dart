@@ -9,11 +9,11 @@ abstract class OpportunityEvent extends Equatable {
 
 class FetchOpportunities extends OpportunityEvent {
   final bool isRefresh;
-
-  const FetchOpportunities({this.isRefresh = false});
+  final String? userId;
+  const FetchOpportunities({this.isRefresh = false, this.userId});
 
   @override
-  List<Object?> get props => [isRefresh];
+  List<Object?> get props => [isRefresh, userId];
 }
 
 class UpdateSearchTerm extends OpportunityEvent {

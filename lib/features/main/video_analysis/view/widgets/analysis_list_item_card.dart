@@ -102,7 +102,7 @@ class _AnalysisListItemCardState extends State<AnalysisListItemCard> {
       MaterialPageRoute(
         builder: (_) => AnalysisPaymentScreen(
           analysisId: widget.item.id,
-          price: 10.0,
+          price: 100.0,
           analysisType: _typeFromString(widget.item.type),
         ),
       ),

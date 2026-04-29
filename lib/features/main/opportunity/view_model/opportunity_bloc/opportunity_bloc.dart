@@ -9,6 +9,7 @@ import 'package:sports_in/core/error/api_error_handler.dart';
 import 'package:sports_in/features/main/opportunity/data/model/details_model.dart';
 import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
 
 part 'opportunity_event.dart';
 part 'opportunity_state.dart';
@@ -16,13 +17,14 @@ part 'opportunity_state.dart';
 @injectable
 class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
   final OpportunityReposatory opportunityRepo;
+  final IProfileDataSource profileRepo;
   final prefs = getIt<SharedPref>();
 
   String? _currentSearchTerm;
   int? _currentSportTypeId;
   String? _currentSportName;
 
-  OpportunityBloc({required this.opportunityRepo})
+  OpportunityBloc({required this.opportunityRepo, required this.profileRepo})
     : super(OpportunityInitial()) {
     on<FetchOpportunities>(_onFetchOpportunities);
     on<UpdateSearchTerm>(_onUpdateSearchTerm);
@@ -47,6 +49,62 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
     try {
       if (event.isRefresh || state is! OpportunityLoaded) {
         emit(OpportunityLoading());
+        if (event.userId != null) {
+      // ── Profile user opportunities (uses MyOpportunities* states) ──────
+      if (event.isRefresh || state is! MyOpportunitiesLoaded) {
+        emit(MyOpportunitiesLoading());
+      } else {
+        final currentState = state;
+        if (currentState is MyOpportunitiesLoaded) {
+          emit(MyOpportunitiesLoadingMore(currentState.opportunities));
+        } else {
+          emit(MyOpportunitiesLoading());
+        }
+      }
+
+      final int page;
+      if (event.isRefresh || state is! MyOpportunitiesLoaded) {
+        page = 1;
+      } else {
+        final currentState = state;
+        page = currentState is MyOpportunitiesLoaded
+            ? currentState.currentPage + 1
+            : 1;
+      }
+
+      final response = await profileRepo.getOpportunities(
+        userId: event.userId!,
+        page: page,
+        pageSize: 10,
+      );
+
+      log('Fetched ${response.items.length} opportunities for user ${event.userId}');
+
+      List<OpportunityModel> allOpps;
+      if (page == 1) {
+        allOpps = response.items;
+      } else {
+        final currentState = state;
+        if (currentState is MyOpportunitiesLoaded) {
+          allOpps = [...currentState.opportunities, ...response.items];
+        } else if (currentState is MyOpportunitiesLoadingMore) {
+          allOpps = [...currentState.currentOpportunities, ...response.items];
+        } else {
+          allOpps = response.items;
+        }
+      }
+
+      emit(
+        MyOpportunitiesLoaded(
+          opportunities: allOpps,
+          hasMore: response.hasNextPage,
+          currentPage: page,
+        ),
+      );
+    } else {
+      // ── General opportunities feed ────────────────────────────────────
+      if (event.isRefresh || state is! OpportunityLoaded) {
+        emit(OpportunityLoading());
 
         final opportunities = await opportunityRepo.getOpportunities(
           pageNumber: 1,
@@ -54,7 +112,7 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
           sportTypeId: _currentSportTypeId,
         );
 
-        log(' Fetched ${opportunities.length} opportunities');
+        log('Fetched ${opportunities.length} opportunities');
 
         emit(
           OpportunityLoaded(
@@ -67,6 +125,27 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
             sportName: _currentSportName,
           ),
         );
+      } else {
+          final opportunities = await opportunityRepo.getOpportunities(
+            pageNumber: 1,
+            searchTerm: _currentSearchTerm,
+            sportTypeId: _currentSportTypeId,
+          );
+
+          log(' Fetched ${opportunities.length} opportunities');
+
+          emit(
+            OpportunityLoaded(
+              opportunities: opportunities,
+              hasNextPage: opportunities.length >= 10,
+              currentPage: 1,
+              totalCount: opportunities.length,
+              searchTerm: _currentSearchTerm,
+              sportTypeId: _currentSportTypeId,
+              sportName: _currentSportName,
+            ),
+          );
+        }}
       } else {
         final currentState = state;
         if (currentState is OpportunityLoaded) {
@@ -105,7 +184,11 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       }
     } catch (e) {
       log('Error fetching opportunities: $e');
-      emit(OpportunityError('Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        OpportunityError(
+          'Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
 
@@ -141,7 +224,11 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       );
     } catch (e) {
       log('Error searching opportunities: $e');
-      emit(OpportunityError('Failed to search opportunities: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        OpportunityError(
+          'Failed to search opportunities: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
 
@@ -178,7 +265,11 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       );
     } catch (e) {
       log('Error filtering opportunities: $e');
-      emit(OpportunityError('Failed to filter opportunities: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        OpportunityError(
+          'Failed to filter opportunities: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
 
@@ -209,50 +300,59 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       );
     } catch (e) {
       log('Error clearing filters: $e');
-      emit(OpportunityError('Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}'));
+      emit(
+        OpportunityError(
+          'Failed to load opportunities: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
- Future<void> _onCreateOpportunity(
-  CreateOpportunity event,
-  Emitter<OpportunityState> emit,
-) async {
-  emit(OpportunityCreating());
-  try {
-    await opportunityRepo.postOpportunity(
-      title: event.title,
-      description: event.description,
-      endDate: event.endDate,
-      sportTypeId: event.sportTypeId,
-      additionalNotes: event.additionalNotes,
-      mediaFile: event.mediaFile,
-      targetUserType: event.targetUserType,
-      targetGender: event.targetGender,
-      minAge: event.minAge,
-      maxAge: event.maxAge,
-      targetLocation: event.targetLocation,
-      targetPosition: event.targetPosition,
-      minHeight: event.minHeight,
-      maxHeight: event.maxHeight,
-      minWeight: event.minWeight,
-      maxWeight: event.maxWeight,
-      targetSpecialization: event.targetSpecialization,
-      minExperienceYears: event.minExperienceYears,
-      preferredClubExperience: event.preferredClubExperience,
-      requiredCertifications: event.requiredCertifications,
-    );
-     emit(OpportunityCreated());
-   
-       log(' Opportunity created successfully');
+
+  Future<void> _onCreateOpportunity(
+    CreateOpportunity event,
+    Emitter<OpportunityState> emit,
+  ) async {
+    emit(OpportunityCreating());
+    try {
+      await opportunityRepo.postOpportunity(
+        title: event.title,
+        description: event.description,
+        endDate: event.endDate,
+        sportTypeId: event.sportTypeId,
+        additionalNotes: event.additionalNotes,
+        mediaFile: event.mediaFile,
+        targetUserType: event.targetUserType,
+        targetGender: event.targetGender,
+        minAge: event.minAge,
+        maxAge: event.maxAge,
+        targetLocation: event.targetLocation,
+        targetPosition: event.targetPosition,
+        minHeight: event.minHeight,
+        maxHeight: event.maxHeight,
+        minWeight: event.minWeight,
+        maxWeight: event.maxWeight,
+        targetSpecialization: event.targetSpecialization,
+        minExperienceYears: event.minExperienceYears,
+        preferredClubExperience: event.preferredClubExperience,
+        requiredCertifications: event.requiredCertifications,
+      );
+      emit(OpportunityCreated());
+
+      log(' Opportunity created successfully');
 
       emit(const OpportunityCreated());
 
-     await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       add(const FetchOpportunities(isRefresh: true));
-     } catch (e) {
-       log('Error creating opportunity: $e');
-       emit(OpportunityError('Failed to create opportunity: ${e is ApiException ? e.message : e.toString()}'));
+    } catch (e) {
+      log('Error creating opportunity: $e');
+      emit(
+        OpportunityError(
+          'Failed to create opportunity: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
+    }
   }
-}
 
   Future<void> _onFetchOpportunityDetails(
     FetchOpportunityDetails event,
@@ -270,9 +370,11 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       emit(OpportunityDetailsLoaded(opportunity: opportunity));
     } catch (e) {
       log('Error fetching opportunity details: $e');
-      emit(OpportunityError(
-        'Failed to load opportunity details: ${e is ApiException ? e.message : e.toString()}',
-      ));
+      emit(
+        OpportunityError(
+          'Failed to load opportunity details: ${e is ApiException ? e.message : e.toString()}',
+        ),
+      );
     }
   }
 
@@ -295,132 +397,139 @@ class OpportunityBloc extends Bloc<OpportunityEvent, OpportunityState> {
       emit(OpportunityError('Failed to apply to opportunity: ${e.toString()}'));
     }
   }
-Future<void> _onFetchMyOpportunities(
-  FetchMyOpportunities event,
-  Emitter<OpportunityState> emit,
-) async {
-  try {
-    // Emit loading states
-    if (event.page == 1) {
-      emit(MyOpportunitiesLoading());
-    } else {
-      final currentState = state;
-      if (currentState is MyOpportunitiesLoaded) {
-        emit(MyOpportunitiesLoadingMore(currentState.opportunities));
-      } else {
+
+  Future<void> _onFetchMyOpportunities(
+    FetchMyOpportunities event,
+    Emitter<OpportunityState> emit,
+  ) async {
+    try {
+      // Emit loading states
+      if (event.page == 1) {
         emit(MyOpportunitiesLoading());
-      }
-    }
-
-    final response = await opportunityRepo.getMyOpportunities(
-      showActive: event.showActive,
-      page: event.page,
-      pageSize: event.pageSize,
-    );
-
-    List<OpportunityModel> allOpps;
-    if (event.page == 1) {
-      allOpps = response.items;
-    } else {
-      final currentState = state;
-      if (currentState is MyOpportunitiesLoaded) {
-        allOpps = [...currentState.opportunities, ...response.items];
-      } else if (currentState is MyOpportunitiesLoadingMore) {
-        allOpps = [...currentState.currentOpportunities, ...response.items];
       } else {
-        allOpps = response.items;
+        final currentState = state;
+        if (currentState is MyOpportunitiesLoaded) {
+          emit(MyOpportunitiesLoadingMore(currentState.opportunities));
+        } else {
+          emit(MyOpportunitiesLoading());
+        }
       }
+
+      final response = await opportunityRepo.getMyOpportunities(
+        showActive: event.showActive,
+        page: event.page,
+        pageSize: event.pageSize,
+      );
+
+      List<OpportunityModel> allOpps;
+      if (event.page == 1) {
+        allOpps = response.items;
+      } else {
+        final currentState = state;
+        if (currentState is MyOpportunitiesLoaded) {
+          allOpps = [...currentState.opportunities, ...response.items];
+        } else if (currentState is MyOpportunitiesLoadingMore) {
+          allOpps = [...currentState.currentOpportunities, ...response.items];
+        } else {
+          allOpps = response.items;
+        }
+      }
+
+      emit(
+        MyOpportunitiesLoaded(
+          opportunities: allOpps,
+          hasMore: response.hasNextPage,
+          currentPage: event.page,
+        ),
+      );
+    } catch (e) {
+      emit(OpportunityError(e is ApiException ? e.message : e.toString()));
     }
-
-    emit(MyOpportunitiesLoaded(
-      opportunities: allOpps,
-      hasMore: response.hasNextPage,
-      currentPage: event.page,
-    ));
-  } catch (e) {
-    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
   }
-}
 
-Future<void> _onLoadMoreMyOpportunities(
-  LoadMoreMyOpportunities event,
-  Emitter<OpportunityState> emit,
-) async {
-  final currentState = state;
-  if (currentState is MyOpportunitiesLoaded && currentState.hasMore) {
-    // Dispatch a FetchMyOpportunities with the next page
-    add(FetchMyOpportunities(
-      showActive: event.showActive,
-      page: currentState.currentPage + 1,
-      pageSize: 10, // use default or stored
-    ));
-  }}
-Future<void> _onUpdateOpportunity(
-  UpdateOpportunity event,
-  Emitter<OpportunityState> emit,
-) async {
-  try {
-    emit(OpportunityLoading());
-    
-    await opportunityRepo.updateOpportunity(
-      id: event.opportunityId,
-      title: event.title,
-      description: event.description,
-      endDate: event.endDate,
-      sportTypeId: event.sportTypeId,
-      additionalNotes: event.additionalNotes,
-      mediaFile: event.mediaFile,
-      targetUserType: event.targetUserType,
-      targetGender: event.targetGender,
-      minAge: event.minAge,
-      maxAge: event.maxAge,
-      targetLocation: event.targetLocation,
-      targetPosition: event.targetPosition,
-      minHeight: event.minHeight,
-      maxHeight: event.maxHeight,
-      minWeight: event.minWeight,
-      maxWeight: event.maxWeight,
-      targetSpecialization: event.targetSpecialization,
-      minExperienceYears: event.minExperienceYears,
-      preferredClubExperience: event.preferredClubExperience,
-      requiredCertifications: event.requiredCertifications,
-
-    );
-    
-    emit(OpportunityUpdated(opportunityId: event.opportunityId));
-  } catch (e) {
-    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+  Future<void> _onLoadMoreMyOpportunities(
+    LoadMoreMyOpportunities event,
+    Emitter<OpportunityState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is MyOpportunitiesLoaded && currentState.hasMore) {
+      // Dispatch a FetchMyOpportunities with the next page
+      add(
+        FetchMyOpportunities(
+          showActive: event.showActive,
+          page: currentState.currentPage + 1,
+          pageSize: 10, // use default or stored
+        ),
+      );
+    }
   }
-}
 
-Future<void> _onDeleteOpportunity(
-  DeleteOpportunity event,
-  Emitter<OpportunityState> emit,
-) async {
-  try {
-    emit(OpportunityLoading());
-    
-    await opportunityRepo.deleteOpportunity(event.opportunityId);
-    
-    emit(OpportunityDeleted(opportunityId: event.opportunityId));
-  } catch (e) {
-    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+  Future<void> _onUpdateOpportunity(
+    UpdateOpportunity event,
+    Emitter<OpportunityState> emit,
+  ) async {
+    try {
+      emit(OpportunityLoading());
+
+      await opportunityRepo.updateOpportunity(
+        id: event.opportunityId,
+        title: event.title,
+        description: event.description,
+        endDate: event.endDate,
+        sportTypeId: event.sportTypeId,
+        additionalNotes: event.additionalNotes,
+        mediaFile: event.mediaFile,
+        targetUserType: event.targetUserType,
+        targetGender: event.targetGender,
+        minAge: event.minAge,
+        maxAge: event.maxAge,
+        targetLocation: event.targetLocation,
+        targetPosition: event.targetPosition,
+        minHeight: event.minHeight,
+        maxHeight: event.maxHeight,
+        minWeight: event.minWeight,
+        maxWeight: event.maxWeight,
+        targetSpecialization: event.targetSpecialization,
+        minExperienceYears: event.minExperienceYears,
+        preferredClubExperience: event.preferredClubExperience,
+        requiredCertifications: event.requiredCertifications,
+      );
+
+      emit(OpportunityUpdated(opportunityId: event.opportunityId));
+    } catch (e) {
+      emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+    }
   }
-}
 
-Future<void> _onToggleOpportunityVisibility(
-  ToggleOpportunityVisibility event,
-  Emitter<OpportunityState> emit,
-) async {
-  try {
-    emit(OpportunityLoading());
-    
-    await opportunityRepo.toggleOpportunityVisibility(opportunityId:  event.opportunityId);
-    
-    emit(OpportunityToggeled(opportunityId: event.opportunityId));
-  } catch (e) {
-    emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+  Future<void> _onDeleteOpportunity(
+    DeleteOpportunity event,
+    Emitter<OpportunityState> emit,
+  ) async {
+    try {
+      emit(OpportunityLoading());
+
+      await opportunityRepo.deleteOpportunity(event.opportunityId);
+
+      emit(OpportunityDeleted(opportunityId: event.opportunityId));
+    } catch (e) {
+      emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+    }
   }
-}
 
+  Future<void> _onToggleOpportunityVisibility(
+    ToggleOpportunityVisibility event,
+    Emitter<OpportunityState> emit,
+  ) async {
+    try {
+      emit(OpportunityLoading());
+
+      await opportunityRepo.toggleOpportunityVisibility(
+        opportunityId: event.opportunityId,
+      );
+
+      emit(OpportunityToggeled(opportunityId: event.opportunityId));
+    } catch (e) {
+      emit(OpportunityError(e is ApiException ? e.message : e.toString()));
+    }
+  }
 }

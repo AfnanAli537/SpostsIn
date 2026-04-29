@@ -7,6 +7,7 @@ import 'package:sports_in/app/routes/app_routes.dart';
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/details.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_event.dart';
 import 'package:sports_in/features/main/profile/view_model/connection%20bloc/connections_state.dart';
@@ -22,7 +23,8 @@ const _profileTypes = {
 };
 const _postTypes = {'PostLike', 'PostComment'};
 const _adTypes = {'AdLike', 'AdComment'};
-const _courseTypes = {'CoursePublished', 'CoursePurchased'};
+const _courseTypes = {'CoursePublished', 'CoursePurchased', 'CourseLessonAdded'};
+const _analysisTypes = {'AnalysisCompleted', 'AnalysisFailed'};
 const _opportunityTypes = {
   'OpportunityNew',
   'OpportunityApplied',
@@ -118,6 +120,8 @@ class _NotificationViewState extends State<_NotificationView>
       Navigator.pushNamed(context, AppRoutes.adDetail, arguments: id);
     } else if (_courseTypes.contains(n.type)) {
       Navigator.pushNamed(context, AppRoutes.courseDetail, arguments: id);
+    } else if (_analysisTypes.contains(n.type)) {
+      Navigator.pushNamed(context, AppRoutes.analysisDetail, arguments: id);
     } else if (_opportunityTypes.contains(n.type)) {
       Navigator.push(
         context,
@@ -125,6 +129,7 @@ class _NotificationViewState extends State<_NotificationView>
           builder: (_) => BlocProvider(
             create: (_) => OpportunityBloc(
               opportunityRepo: getIt<OpportunityReposatory>(),
+              profileRepo: getIt<IProfileDataSource>(),
             ),
             child: OpportunityDetailsPage(opportunityId: id, isOwner: true),
           ),
@@ -284,10 +289,12 @@ class _NotificationViewState extends State<_NotificationView>
       {'label': S.of(context).categoryRecent, 'value': 'recent'},
       {'label': S.of(context).categoryRequests, 'value': 'requests'},
       {'label': S.of(context).categoryReactions, 'value': 'reactions'},
+      {'label': S.of(context).categoryAnalysis, 'value': 'analysis'},
       {
         'label': S.of(context).categoryOpportunities,
         'value': 'opportunities',
       },
+      {'label': S.of(context).categoryCourses, 'value': 'courses'},
     ];
 
     return Container(

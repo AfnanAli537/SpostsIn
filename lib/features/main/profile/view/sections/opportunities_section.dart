@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
 import 'package:sports_in/generated/l10n.dart';
-import '../../model/profile_model.dart';
 import '../widgets/section_header.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OpportunitiesSection extends StatelessWidget {
-  final List<Opportunity> opportunities;
+  final List<OpportunityModel> opportunities;
   final VoidCallback? onShowAll;
-  final Function(Opportunity)? onOpportunityTap;
+  final Function(OpportunityModel)? onOpportunityTap;
   final ThemeData theme;
   final S string;
 
@@ -50,8 +50,9 @@ class OpportunitiesSection extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: theme.colorScheme.onError.withOpacity(0.1),
                       ),
-                      child: Image.network(
-                        opportunity.mediaUrl,
+                      child: opportunity.mediaUrl !=null?
+                      Image.network(
+                        opportunity.mediaUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Center(
@@ -62,7 +63,7 @@ class OpportunitiesSection extends StatelessWidget {
                           ),
                           );
                         },
-                      ),
+                      ):null,
                     ),
                   ),
                 ),

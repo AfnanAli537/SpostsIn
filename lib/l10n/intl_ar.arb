@@ -245,6 +245,7 @@
   "date": "التاريخ",
   "analyzedVideosReports": "تقارير الفيديو المحللة",
   "interests": "الاهتمامات",
+  "noInterestsYet": "لا توجد اهتمامات بعد",
   "showAll": "عرض الكل",
   "moreDetails": "المزيد من التفاصيل",
   "skills": "المهارات",
@@ -1088,6 +1089,8 @@
   "categoryRecent": "الأحدث",
   "categoryRequests": "الطلبات",
   "categoryReactions": "التفاعلات",
+  "categoryAnalysis": "التحليلات",
+  "categoryCourses": "الدورات",
   "categoryOpportunities": "الفرص",
 
   "dateToday": "اليوم",

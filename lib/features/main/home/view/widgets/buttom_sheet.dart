@@ -14,6 +14,7 @@ import 'package:sports_in/features/main/home/view_model/posts_bloc/posts_bloc.da
 import 'package:sports_in/features/main/opportunity/data/repo/opportunity_repo.dart';
 import 'package:sports_in/features/main/opportunity/view/presentation/upload_opportunity.dart';
 import 'package:sports_in/features/main/opportunity/view_model/opportunity_bloc/opportunity_bloc.dart';
+import 'package:sports_in/features/main/profile/data/interface/i_profile_data_source.dart';
 import 'package:sports_in/features/main/profile/view/presentation/achievement/achievement_edit_screen.dart';
 import 'package:sports_in/features/main/video_analysis/view/presentation/analysis_type_selection_screen.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -148,6 +149,7 @@ class CreateOptionsBottomSheet extends StatelessWidget {
                                 create: (_) => OpportunityBloc(
                                   opportunityRepo:
                                       getIt<OpportunityReposatory>(),
+                                  profileRepo: getIt<IProfileDataSource>(),
                                 ),
                                 child: const AddOpportunityScreen(),
                               ),
