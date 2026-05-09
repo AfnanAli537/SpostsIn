@@ -151,25 +151,25 @@ class _AboutScreenState extends State<AboutScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildSocialIcon(
-                  icon: Icons.language, // Using standard icons for placeholders
-                  label: 'Twitter',
-                  bgColor: theme.colorScheme.primary, // Using primary color for Twitter as seen in the image
-                  onTap: () => _launchUrl('https://twitter.com/sportsin'),
-                  theme: theme.colorScheme,
-                ),
+                // _buildSocialIcon(
+                //   icon: Icons.language, // Using standard icons for placeholders
+                //   label: 'Twitter',
+                //   bgColor: theme.colorScheme.primary, // Using primary color for Twitter as seen in the image
+                //   onTap: () => _launchUrl('https://twitter.com/sportsin'),
+                //   theme: theme.colorScheme,
+                // ),
                 _buildSocialIcon(
                   icon: Icons.facebook,
                   label: 'Facebook',
                   bgColor: theme.colorScheme.primary,
-                  onTap: () => _launchUrl('https://facebook.com/sportsin'),
+                  onTap: () => _launchUrl('https://www.facebook.com/share/18QCq8v13c/'),
                   theme: theme.colorScheme,
                 ),
                 _buildSocialIcon(
                   icon: Icons.camera_alt,
                   label: 'Instagram',
                   bgColor: theme.colorScheme.primary,
-                  onTap: () => _launchUrl('https://instagram.com/sportsin'),
+                  onTap: () => _launchUrl('https://www.instagram.com/sportsin_connect?igsh=dTRkcTFlcWFybDRr'),
                   theme: theme.colorScheme,
                 ),
               ],
