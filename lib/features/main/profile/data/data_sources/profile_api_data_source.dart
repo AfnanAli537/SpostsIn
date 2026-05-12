@@ -66,7 +66,15 @@ class ApiProfileDataSource implements IProfileDataSource {
                   profile.userType == UserType.scout ||
                   profile.userType == UserType.club)
               ? getOpportunities(userId: userId, page: 1, pageSize: 3)
-              : Future.value(<OpportunityModel>[]),
+              : Future.value(PaginatedOpportunitiesResponse(
+                  items: [],
+                  totalCount: 0,
+                  pageNumber: 1,
+                  pageSize: 3,
+                  totalPages: 0,
+                  hasNextPage: false,
+                  hasPreviousPage: false,
+                )),
           (profile.userType == UserType.club ||
                   profile.userType == UserType.coach ||
                   profile.userType == UserType.institute)

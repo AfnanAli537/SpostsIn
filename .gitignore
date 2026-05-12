@@ -47,3 +47,5 @@ app.*.map.json
 /android/app/google-services.json
 /lib/core/network/network_config.dart
 /lib/firebase_options.dart
+*.jks
+key.properties
