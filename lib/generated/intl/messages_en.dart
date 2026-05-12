@@ -425,7 +425,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "connections": MessageLookupByLibrary.simpleMessage("Connections"),
     "contactBody": MessageLookupByLibrary.simpleMessage(
-      "If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app",
+      "If you have any questions or concerns about this Privacy Policy, please contact us at: sportsin.connect@gmail.com",
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("Contact Us"),
     "contactUs": MessageLookupByLibrary.simpleMessage("Contact us"),

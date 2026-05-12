@@ -1384,10 +1384,10 @@ class S {
     return Intl.message('Contact Us', name: 'contactTitle', desc: '', args: []);
   }
 
-  /// `If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app`
+  /// `If you have any questions or concerns about this Privacy Policy, please contact us at: sportsin.connect@gmail.com`
   String get contactBody {
     return Intl.message(
-      'If you have any questions or concerns about this Privacy Policy, please contact us at: support@sportsin.app',
+      'If you have any questions or concerns about this Privacy Policy, please contact us at: sportsin.connect@gmail.com',
       name: 'contactBody',
       desc: '',
       args: [],

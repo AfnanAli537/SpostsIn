@@ -415,7 +415,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "connections": MessageLookupByLibrary.simpleMessage("الاتصالات"),
     "contactBody": MessageLookupByLibrary.simpleMessage(
-      "إذا كانت لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا عبر البريد الإلكتروني: support@sportsin.app",
+      "إذا كانت لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا عبر البريد الإلكتروني: sportsin.connect@gmail.com",
     ),
     "contactTitle": MessageLookupByLibrary.simpleMessage("تواصل معنا"),
     "contactUs": MessageLookupByLibrary.simpleMessage("اتصل بنا"),
