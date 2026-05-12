@@ -1,33 +1,1268 @@
 {
-      "selectLanguage" :"Select Language",
-     "arabic": "Arabic",
-     "english": "English",
- 
-     "next": "Next",
-     "skip": "Skip",
-     "back": "Back",
-    "forgotPassword":"Forgot Password",
-     "verify": "Verify",
-     "login":"Login",
-     "signUp":"Sign Up",
-     "email":"Email",
-     "password":"Password",
-     "confirmPassword": "Confirm Password",
-      "notHaveAccount":"Don't have an account?",
-     "alreadyHaveAccount":"Already have an account?",
-     "createYourAccount": "Create your Account",
-     "fullName":"Full Name",
-      "confirmPasswordIsRequired":"Confirm password is required",
-      "passwordsDonotMatch":"Passwords do not match",
-      "passwordIsRequired":"Password is required",
-      "pleaseEnteraStrongPassword":"Please enter a strong password",
-      "lowercaseValidation": "At least 1 lowercase letter",
-      "uppercaseValidation": "At least 1 uppercase letter",
-      "specialCharacterValidation": "At least 1 special character",
-      "numberValidation": "At least 1 number",
-      "minLengthValidation": "At least 8 characters long",
-        "home": "Home",
-      "chats": "Chats",
-      "chat": "Chat",
-      "profile": "Profile"
+  "selectLanguage": "Select Language",
+  "arabic": "Arabic",
+  "english": "English",
+  "next": "Next",
+  "skip": "Skip",
+  "back": "Back",
+  "forgotPassword": "Forgot Password",
+  "verify": "Verify",
+  "signIn": "Sign in",
+  "signUp": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "account": "Account",
+  "notHaveAccount": "Don't have an account?",
+  "alreadyHaveAccount": "Already have an account?",
+  "createYourAccount": "Create your Account",
+  "fullName": "Full Name",
+  "confirmPasswordIsRequired": "Confirm password is required",
+  "passwordsDonotMatch": "Passwords do not match",
+  "passwordIsRequired": "Password is required",
+  "pleaseEnteraStrongPassword": "Please enter a strong password",
+  "lowercaseValidation": "At least 1 lowercase letter",
+  "uppercaseValidation": "At least 1 uppercase letter",
+  "specialCharacterValidation": "At least 1 special character",
+  "numberValidation": "At least 1 number",
+  "minLengthValidation": "At least 8 characters long",
+  "home": "Home",
+  "chats": "Chats",
+  "chat": "Chat",
+  "profile": "Profile",
+  "register": "Register",
+  "create": "Create",
+  "registeredSuccessfully": "Registered successfully!",
+  "whatIsYourType": "What Is Your Type?",
+  "knowingYourGoal": "Knowing your goal helps us tailor your experience",
+  "continueText": "CONTINUE",
+  "alreadyHaveAnAccount": "Already have an account?",
+  "player": "Player",
+  "coach": "Coach",
+  "certifications":"Certifications",
+  "PreferredClubExperience":"Preferred Club Experience",
+  "specialist":"Specialist",
+  "selectCertifications":"Select Certifications",
+  "scout": "Scout",
+  "club": "Club",
+  "institute": "Institute",
+  "other": "Other",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "height": "Height (cm)",
+  "weight": "Weight (kg)",
+  "gender": "Gender",
+  "age": "Age",
+  "location": "Location",
+  "sportProfession": "Sport profession",
+  "specializedSport": "Specialized sports",
+  "position": "Position",
+  "nationality": "Nationality",
+  "yearsOfExperience": "Years of experience",
+  "instituteName": "Institute name",
+  "industary": "Industry",
+  "clubName": "Club name",
+  "foundDate": "Foundation date",
+  "currentlyInClub": "Currently in a Club",
+  "male": "Male",
+  "female": "Female",
+  "selectSports": "Select a Sport",
+  "sport": "Sport",
+  "footballer": "Footballer",
+  "handballPlayer": "Handball Player",
+  "basketballer": "Basketballer",
+  "volleyballer": "Volleyballer",
+  "teakwandoPlayer": "Teakwando Player",
+  "gymnast": "Gymnast",
+  "football": "Football",
+  "handball": "Handball",
+  "basketball": "Basketball",
+  "volleyball": "Volleyball",
+  "teakwando": "Teakwando",
+  "gymnastics": "Gymnastics",
+  "yearsOfExperience0to2": "0-2 years",
+  "yearsOfExperience3to5": "3-5 years",
+  "yearsOfExperience5to10": "6-10 years",
+  "yearsOfExperience10Plus": "10+ years",
+  "enterEmail": "Please enter your email",
+  "invalidEmail": "Please enter a valid email",
+  "enterPassword": "Please enter your password",
+  "passwordMinLength": "Password must be at least 8 characters.",
+  "passwordNeedsUppercase": "Password must contain at least one uppercase letter.",
+  "passwordNeedsLowercase": "Password must contain at least one lowercase letter.",
+  "passwordNeedsNumber": "Password must contain at least one number.",
+  "passwordNeedsSpecialChar": "Password must contain at least one special character (!@#$%^&* etc).",
+  "passwordsDontMatch": "Passwords do not match",
+  "enterHeight": "Please enter your height",
+  "invalidHeight": "Please enter a valid height (100–250 cm)",
+  "enterWeight": "Please enter your weight",
+  "invalidWeight": "Please enter a valid weight (30–200 kg)",
+  "enterAge": "Please enter your age",
+  "invalidAge": "Please enter a valid age (5-99)",
+  "enterExperience": "Please enter your Experience years.",
+  "invalidExperience": "Please enter a valid Experience years (1-60).",
+  "enterDate": "Please select a date",
+  "selectAtLeastOne": "Please select at least one sport",
+  "select": "Select",
+  "loading": "Loading",
+  "name": "name",
+  "number": "number",
+  "field": "field",
+  "done": "Done",
+  "enterField": "Please enter your {field}",
+  "@enterField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTooShort": "{field} is too short",
+  "@fieldTooShort": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidField": "Invalid {field}",
+  "@invalidField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "selectField": "Please select a {field}",
+  "@selectField": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "getStarted": "Get Started",
+  "onboarding1Title": "Discover Sports Talents",
+  "onboarding2Title": "Post Opportunities",
+  "onboarding3Title": "Build Your Sports Profile",
+  "onboarding4Title": "AI Video Analysis",
+  "onboarding5Title": "Connect & Communicate",
+  "onboarding1Desc": "Find and connect with top athletes through AI-powered talent discovery. Filter by sport, skills, and achievements.",
+  "onboarding2Desc": "Create and publish tryouts, competitions, or sponsorship offers to attract the right athletes.",
+  "onboarding3Desc": "Join SportsIn and take your sports career to the next level.",
+  "onboarding4Desc": "Upload your performance videos and get instant AI-powered analysis on your skills, movements, and progress.",
+  "onboarding5Desc": "Chat directly with coaches, clubs, and athletes. Build your sports network and stay updated with new opportunities.",
+  "emailVerfiy": "Email Verification",
+  "continueWith": "or continue with",
+  "forgetYourPassword": "Forgot your password?",
+  "welcome": "Welcome",
+  "loginToYourAccount": "Login to your Account",
+  "GetYourCode": "Get Your Code !",
+  "otpHint": "please enter 6 digits code that send to yor email address",
+  "otpMsgError": "Please enter all 6 digits to verify your email",
+  "otpMsgSuccess": "Your email has been verified successfully",
+  "VerifyAndProceed": "Verify and proceed",
+  "resetPassword": "Reset Password",
+  "resetPasswordSuccess": "Your password has been reset successfully",
+  "resetPasswordFailure": "Failed to reset password. Please try again",
+  "enterNewPassword": "Enter your new password",
+  "passwordHintDesc": "Your new password must be different than the previous password",
+  "newPassword": "New Password",
+  "ok": "OK",
+  "forgetPassword": "Forget Password",
+  "enterEmailAddressHere": "Enter Email Address here",
+  "enterEmailAssociated": "Enter Email Address associated with your account",
+  "sendVerificationCode": "Send verification code",
+  "otpSentSuccessfully": "OTP sent successfully! Please check your email.",
+  "tokenEX": "Session expired, please login again",
+  "privacyPolicyTitle": "Privacy & Policy",
+  "lastUpdated": "Last updated: 11 October 2025",
+  "introductionTitle": "Introduction",
+  "introductionBody": "SportsIn is a professional social platform for athletes, coaches, and sports clubs to connect, share experiences, and discover opportunities.",
+  "informationTitle": "Information We Collect",
+  "informationBody": "When you use SportsIn, we may collect the following types of information:\n\n• Personal data: your name, email, profile photo, sports skills, and interests.\n• Activity data: posts, messages, likes, and other interactions.\n• Device data: device type, operating system, and IP address.",
+  "useInfoTitle": "How We Use Your Information",
+  "useInfoBody": "We use the collected data to:\n\n• Personalize your experience within the app.\n• Improve our features and services.\n• Send you relevant notifications about activities or opportunities.\n• Ensure the security and integrity of our platform.",
+  "sharingInfoTitle": "Sharing Your Information",
+  "sharingInfoBody": "We do not share your personal data with third parties except in the following cases:\n\n• To comply with legal obligations or official requests.\n• To provide services through trusted partners (e.g., analytics or notification services).",
+  "changesTitle": "Changes to This Policy",
+  "changesBody": "We may update this Privacy Policy from time to time. Any significant changes will be communicated through the app.",
+  "contactTitle": "Contact Us",
+  "contactBody": "If you have any questions or concerns about this Privacy Policy, please contact us at: sportsin.connect@gmail.com",
+  "agreeLabel": "I agree",
+  "continueButton": "CONTINUE",
+  "strongPassword": "Enter Strong Password ,contain at least 8 characters , 1 uppercase, 1 lowercase, 1 digit , 1 special character ",
+  "emptyPassword": "Password is required",
+  "emptyEmail": "Email is required",
+  "validEmail": "Enter a valid email",
+  "signingIn": "Signing in...",
+  "loginSuccess": "Welcome back,let’s get started!",
+  "connectionTimedOut": "Connection timed out. Please try again.",
+  "requestCancelled": "Request was cancelled.",
+  "unexpectedError": "Unexpected error occurred.",
+  "somethingWentWrong": "Something went wrong. Please try again.",
+  "invalidEmailOrPassword": "Invalid email or password.",
+  "unauthorized": "Unauthorized. Please check your credentials.",
+  "resourceNotFound": "Resource not found.",
+  "serverError": "Server error. Please try again later.",
+  "noInternetConnection": "No Internet Connection",
+  "registrationSuccessful": "Registration successful!",
+  "registrationFailed": "Registration failed. Please try again.",
+  "validationError": "Validation error. Please check your inputs.",
+  "emailAlreadyExists": "This email is already registered",
+  "invalidPassword": "Invalid password",
+  "passwordMismatch": "Passwords do not match",
+  "badRequest": "Invalid request",
+  "forbidden": "Access forbidden",
+  "conflict": "Data conflict occurred",
+  "serviceUnavailable": "Service temporarily unavailable",
+  "userNotFound": "User not found",
+  "notifications": "Notification",
+  "settings": "Setting",
+  "theme": "Light",
+  "aboutUs": "About us",
+  "contactUs": "Contact us",
+  "logout": "LOG OUT",
+  "logoutConfirmation": "Are you sure you want to logout?",
+  "confirm": "Confirm",
+  "followers": "Followers",
+  "following": "Following",
+  "connections": "Connections",
+  "analyzedPeople": "Analyzed People",
+  "connect": "Connect",
+  "follow": "Follow",
+  "followBack": "Follow Back",
+  "connected": "Connected",
+  "posts": "Posts",
+  "myPosts": "My Posts",
+  "postTitle": "Post Title",
+  "noPosts": "No Posts",
+  "postDeleteed": "Post deleted successfully",
+  "postUpdated": "Post updated successfully",
+  "undo":"undo",
+  "noData": "No data.",
+  "deleteFailed": "Failed to delete. Please try again.",
+  "opportunities": "Opportunities",
+  "editOpportunity": "Edit Opportunity",
+  "myOpportunities": "My Opportunities",
+  "archiveOpportunities": "Archive Opportunities",
+  "publicOpportunities": "Public Opportunities",
+  "noOpportunities": "No Opportunities",
+  "courses": "Courses",
+  "noCourses": "No Courses",
+  "achievements": "Achievements",
+  "noAchievements": "No Achievements",
+  "achievement": "Achievement",
+  "addAchievement": "Added New Achievement",
+  "achievementDeleted": "Achievement deleted successfully",
+  "achievementUpdated": "Achievement updated successfully",
+  "deleteachievementconfirmation": "Are you sure you want to delete this achievement?",
+  "deleteachievement": "Delete Achievement",
+  "date": "Date",
+  "analyzedVideosReports": "Analyzed Videos Reports",
+  "interests": "Interests",
+  "noInterestsYet": "No interests yet",
+  "showAll": "Show all",
+  "moreDetails": "More details",
+  "skills": "Skills",
+  "connectionSuccess": "Connected successfully!",
+  "connectionError": "Failed to connect",
+  "followSuccess": "Following successfully!",
+  "followError": "Failed to follow",
+  "unfollowSuccess": "Unfollowed successfully!",
+  "disconnectSuccess": "Disconnected successfully!",
+  "search": "Search",
+  "searchResults": "Search Result",
+  "noResultsFound": "No results found",
+  "tryDifferentSearch": "Try a different search",
+  "startSearching": "Start searching",
+  "save": "Save",
+  "editProfile": "Edit Profile",
+  "editProfileSuccess": "Profile updated successfully!",
+  "noProfileData": "No profile data available.",
+  "editProfileFailed": "Failed to update profile.",
+  "profileLoadFailed": "Failed to load profile. Please try again.",
+  "bio": "Description",
+  "noBio": "No bio",
+  "updatePost": "Update Post",
+  "updatingPost": "Updating post",
+  "updatingProfile": "Updating profile",
+  "postUpdateFailed": "Failed to update post. Please try again.",
+  "deletePost": "Delete Post",
+  "deletePostConfirmation": "Are you sure you want to delete this post?",
+  "postDeleted": "Post deleted successfully!",
+  "archivePost": "Archive Post",
+  "archivePosts": "Archive Posts",
+  "publicPosts": "Public Posts",
+  "postArchived": "Post archived successfully!",
+  "archivePostConfirmation": "this post will be archived and hidden from your profile and feed, but you can restore it later. Are you sure you want to archive this post?",
+  "restorePost": "Restore Post",
+  "postRestored": "Post restored successfully!",
+  "restorePostConfirmation": "this post will be restored and visible in your profile and feed. Are you sure you want to restore this post?",
+  "postDeleteFailed": "Failed to delete post. Please try again.",
+  "commentAddedSuccessfully": "Comment added successfully",
+  "commentUpdatedSuccessfully": "Comment updated successfully",
+  "commentDeletedSuccessfully": "Comment deleted successfully",
+  "comments": "Comments",
+  "noCommentsYet": "No comments yet",
+  "retry": "Retry",
+  "edit": "Edit",
+  "delete": "Delete",
+  "deleteComment": "Delete Comment",
+  "deleteCommentConfirmation": "Are you sure you want to delete this comment?",
+  "cancel": "Cancel",
+  "editingComment": "Editing comment",
+  "editYourComment": "Edit your comment...",
+  "addAComment": "Add a comment...",
+  "update": "Update",
+  "post": "Post",
+  "error": "Error",
+  "loadingUserData": "Loading user data...",
+  "noUserDataFound": "No user data found",
+  "hi": "Hi",
+  "guest": "Guest",
+  "happyToSeeYouToday": "Happy to see you today",
+  "latestPosts": "Latest posts",
+  "latestCourses": "Latest Courses",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "noPostsYet": "No posts yet",
+  "noArchivedPosts": "No archived posts",
+  "noPostsAvailable": "No posts available",
+  "likes": "Likes",
+  "noLikesYet": "No likes yet",
+  "beTheFirstToCreatePost": "Be the first to create a post!",
+  "pickImage": "Pick Image",
+  "pickVideo": "Pick Video",
+  "postUploadedSuccessfully": "Post uploaded successfully!",
+  "uploadContent": "Upload Content",
+  "uploadImageOrVideo": "Upload an Image or video",
+  "maximumFileSize": "Maximum file size is 200 MB",
+  "title": "Title",
+  "enterYourTitle": "Enter Your Title.",
+  "description": "Description",
+  "enterYourDescription": "Enter Your Description...",
+  "pleaseFillAllFields": "Please fill all fields",
+  "createPost": "Create Post",
+  "createAchievement": "Create Achievement",
+  "createOpportunity": "Create opportunity",
+  "createAdvertisement": "Create Advertisement",
+  "makeVideoAnalysis": "Make Video Analysis",
+  "failedToLoadImage": "Failed to load image",
+  "failedToTranslate": "Failed to translate",
+  "failedToLoadVideo": "Failed to load video",
+  "analyzeVideoComingSoon": "Analyze video feature coming soon",
+  "analyzeVideo": "Analyze Video",
+  "analysisStartedToast": "Analysis started! Your report will be ready soon.",
+  "analysisStartFailedToast": "Analysis queued. Report will appear in your profile when ready.",
+  "archive": "Archive",
+  "activate": "Activate",
+  "pay": "Pay",
+  "deactivate": "Deactivate",
+  "restore": "Restore",
+  "seeOriginal": "See Original",
+  "translate": "Translate",
+  "forYou": "forYou",
+  "justNow": "Just now",
+  "selectSport": "Select Sport",
+  "clear": "Clear",
+  "opportunityCreatedSuccessfully": "Opportunity created successfully!",
+  "opportunityUpdatedSuccessfully": "Opportunity updated successfully!",
+  "applicationSubmittedSuccessfully": "Application submitted successfully!",
+  "noOpportunitiesFound": "No Opportunities found",
+  "clearFilters": "Clear filters",
+  "since": "Since",
+  "applyOpportunity": "Apply opportunity",
+  "opportunityDetails": "Opportunity Details",
+  "deleteOpportunity": "Delete Opportunity",
+  "deleteOpportunityConfirmation": "Are you sure you want to delete this opportunity? This action cannot be undone.",
+  "deletingOpportunity": "Deleting opportunity...",
+  "requirements": "Requirements",
+  "endDate": "End Date",
+  "showApplicants": "Show Applicants",
+  "alreadyApplied": "Already Applied",
+  "applyNow": "Apply Now",
+  "apply": "Apply",
+  "applicants": "Applicants",
+  "all": "All",
+  "accepted": "Accepted",
+  "rejected": "Rejected",
+  "noAcceptedApplicants": "No accepted applicants",
+  "noRejectedApplicants": "No rejected applicants",
+  "noApplicantsFound": "No applicants found",
+  "errorLoadingApplicants": "Error loading applicants",
+  "accept": "Accept",
+  "reject": "Reject",
+  "uploadAnImage": "Upload an Image",
+  "tapToSelectFromGallery": "Tap to select from gallery",
+  "tapToChange": "Tap to Change",
+  "enterYourRequirements": "Enter Requirements (one per line)...",
+  "selectEndDate": "Select End Date",
+  "upload": "Upload",
+  "pleaseEnterTitle": "Please enter a title",
+  "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterRequirements": "Please enter requirements",
+  "pleaseSelectSport": "Please select a sport",
+  "pleaseSelectEndDate": "Please select an end date",
+  "details": "Details",
+  "noOpportunitiesAvailable": "No opportunities available",
+  "opportunityDeletedSuccess": "Opportunity deleted successfully",
+  "opportunityUpdatedSuccess": "Opportunity updated successfully",
+  "noActiveOpportunities": "No active opportunities",
+  "noInactiveOpportunities": "No inactive opportunities",
+  "archiveOpportunity": "Archive Opportunity",
+  "restoreOpportunity": "Restore Opportunity",
+  "archiveRestoreConfirmation": "Are you sure you want to {action} this opportunity?",
+  "sinceDate": "Since {date}",
+  "taekwondo": "Taekwondo",
+  "yearsAgo": "{count, plural, =1 {{count} year ago} other {{count} years ago}}",
+  "@yearsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthsAgo": "{count, plural, =1 {{count} month ago} other {{count} months ago}}",
+  "@monthsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksAgo": "{count, plural, =1 {{count} week ago} other {{count} weeks ago}}",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count, plural, =1 {{count} day ago} other {{count} days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count, plural, =1 {{count} hour ago} other {{count} hours ago}}",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgo": "{count, plural, =1 {{count} minute ago} other {{count} minutes ago}}",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "secondsAgo": "{count, plural, =1 {{count} second ago} other {{count} seconds ago}}",
+  "@secondsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postLoadFailed": "Failed to load post. Please try again.",
+  "edit_achievement": "Edit Achievement",
+  "add_achievement_title": "Add Achievement",
+  "upload_photo_hint": "Upload Achievement Photo",
+  "date_label": "Date",
+  "select_date_hint": "Select Date",
+  "title_label": "Title",
+  "title_hint": "e.g. National Championship",
+  "description_label": "Description",
+  "description_hint": "Explain your achievement...",
+  "update_button": "Update",
+  "save_achievement_button": "Save Achievement",
+  "please_select_date": "Please select a date",
+  "achievement_added_success": "Achievement added successfully",
+  "achievement_updated_success": "Achievement updated successfully",
+  "messageSent": "Message sent successfully",
+  "failedToSendMessage": "Failed to send message. Please try again.",
+  "free": "FREE",
+  "egp": "EGP",
+  "enroll": "Enroll",
+  "lessonsCount": "{count} lessons",
+  "@lessonsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "enrolledCount": "{count} enrolled",
+  "@enrolledCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completePercentage": "{percentage}% complete",
+  "@completePercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "editPrice": "Edit Price",
+  "freeCourse": "Free Course",
+  "priceEGPtxt": "Price (EGP)",
+  "priceRequired": "Price is required",
+  "invalidPrice": "Invalid price",
+  "lessonNumber": "{number} Lesson",
+  "@lessonNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "Completed",
+  "playing": "Playing",
+  "showDescription": "Show Description",
+  "hideDescription": "Hide Description",
+  "watched": "Watched",
+  "percentageWatched": "{percentage}% watched",
+  "@percentageWatched": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "createCourse": "Create Course",
+  "uploadCourseThumbnail": "Upload Course Thumbnail",
+  "courseThumbnail": "Course Thumbnail",
+  "courseTitleHint": "Course Title",
+  "enterCourseTitleHint": "Course Title",
+  "courseDescriptionHint": "Course Description",
+  "enterCourseDescriptionHint": "Enter Course Description",
+  "noDescriptionAvailable": "No description available",
+  "price": "Price",
+  "enterPriceHint": "Enter price (0 for free)",
+  "pleaseEnterPrice": "Please enter a price",
+  "courseCreatedSuccess": "Course created successfully",
+  "addLesson": "Add Lesson",
+  "addLessonQuestion": "Would you like to add a lesson to this course now?",
+  "addLater": "Add Later",
+  "addNow": "Add Now",
+  "error_picking_image": "Error picking image. Please try again.",
+  "select_sport_error": "Please select a sport",
+  "editLesson": "Edit Lesson",
+  "lessonTitle": "Lesson Title",
+  "enterLessonTitleHint": "Enter lesson title",
+  "enterDescriptionHint": "Enter description",
+  "titleRequired": "Title is required",
+  "descriptionRequired": "Description is required",
+  "lessonOrder": "Lesson order: {order}",
+  "@lessonOrder": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    }
+  },
+  "duration": "Duration: {duration}",
+  "@duration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "updateLesson": "Update Lesson",
+  "newVideoWillBeUploaded": "New video will be uploaded",
+  "video": "Video",
+  "changeVideo": "Change Video",
+  "replaceVideo": "Replace Video",
+  "extractingDuration": "Extracting duration...",
+  "newVideoSelected": "New video selected",
+  "currentVideo": "Current video",
+  "updatingLesson": "Updating lesson...",
+  "file_size_exceeds_limit": "File size exceeds 500MB",
+  "error_picking_video": "Error picking video. Please try again.",
+  "failed_to_read_video_duration": "Failed to read video duration",
+  "uploadLesson": "Upload Lesson",
+  "uploadVideo": "Upload Video",
+  "maxFileSize": "Max 500MB",
+  "notDetected": "Not detected",
+  "lessonOrderAndDuration": "Lesson order: {order} • Duration: {duration}",
+  "@lessonOrderAndDuration": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "lessons": "Lessons",
+  "revenue": "Revenue",
+  "editCourse": "Edit Course",
+  "cancelEdit": "Cancel Edit",
+  "deleteCourse": "Delete Course",
+  "deleteLesson": "Delete Lesson",
+  "deleteLessonConfirmation": "Are you sure you want to delete \"{lessonTitle}\"? This action cannot be undone.",
+  "deleteCourseConfirmation": "Are you sure you want to delete this course?",
+  "titleCannotBeEmpty": "Title cannot be empty",
+  "savingChanges": "Saving changes...",
+  "deletingLesson": "Deleting lesson...",
+  "enrolledSuccessfully": "Enrolled successfully",
+  "courseDeleted": "Course deleted",
+  "enrollNow": "Enroll Now",
+  "enrollForPrice": "Enroll for {price}",
+  "@deleteLessonConfirmation": {
+    "placeholders": {
+      "lessonTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "@enrollForPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "Available",
+  "newCourses": "New Courses",
+  "continueWatching": "Continue Watching",
+  "showMore": "Show More",
+  "noCoursesFoundFor": "No courses found for \"{searchTerm}\"",
+  "percentComplete": "{percentage}% Complete",
+  "lessonsProgress": "{completed} / {total} Lessons",
+  "failedToPlayVideo": "Failed to play video",
+  "videoPlaybackError": "Video Playback Error",
+  "unknownError": "Unknown error",
+  "@noCoursesFoundFor": {
+    "placeholders": {
+      "searchTerm": {
+        "type": "String"
+      }
+    }
+  },
+  "@percentComplete": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "@lessonsProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "availableCourses": "Available Courses",
+  "noAvailableCourses": "No Available Courses",
+  "enrolledCourses": "Enrolled Courses",
+  "myCourses": "My Courses",
+  "noCoursesFound": "No courses found",
+  "noResultsForCriteria": "No results for your criteria",
+  "tryAdjustingSearch": "Try adjusting your search or filter",
+  "pleaseSelectVideo": "Please select a video",
+  "invalidVideoDuration": "Invalid video duration. Please select another video.",
+  "uploadingInBackground": "Uploading lesson in background...",
+  "uploadWillContinue": "Upload will continue in background",
+  "personalInfo": "Personal Information",
+  "subscription": "Subscription",
+  "activities": "Activities",
+  "userType": "User Type",
+  "changePassword": "Change Password",
+  "manageSubscription": "Manage Subscription",
+  "managePosts": "Manage Posts",
+  "manageOpportunities": "Manage Opportunities",
+  "manageCourse": "Manage Course",
+  "manageVideoAnalysis": "Manage Video Analysis People",
+  "manageAdvertisement": "Manage Advertisement",
+  "manageAchievement": "Manage Achievement",
+  "switchAccount": "Switch Account",
+  "addAccount": "Add Account",
+  "lessonOrderSaved": "Lesson order saved",
+  "noLessonsAvailable": "No lessons available",
+  "tapToAddFirstLesson": "Tap the + button to add your first lesson",
+  "courseProgress": "Course Progress",
+  "timeSpent": "Time Spent",
+  "noEnrolleesYet": "No enrollees yet",
+  "enrolleesWillAppear": "Enrolled students will appear here",
+  "totalEnrolled": "Total Enrolled",
+  "avgProgress": "Avg Progress",
+  "progress": "Progress",
+  "enrolled": "Enrolled",
+  "close": "Close",
+  "remove": "Remove",
+  "pending": "Pending",
+  "newConnectionRequests": "New Connection Requests",
+  "noConnectionRequests": "No Connection Requests",
+  "noMoreRequests": "No More Requests",
+  "myContacts": "My Contacts",
+  "noContactsYet": "No contacts yet",
+  "noFollowersYet": "No followers yet",
+  "noFollowingYet": "No following yet",
+  "wantsToConnect": "Wants to connect with you",
+  "noMoreContacts": "No more contacts",
+  "online": "Online",
+  "month": "Month",
+  "year": "Year",
+  "allTimeRevenue": "All-Time Revenue",
+  "weeklyBreakdown": "Weekly Breakdown",
+  "weeklyDetails": "Weekly Details",
+  "noDataForMonth": "No data available for {month}",
+  "january": "January",
+  "february": "February",
+  "march": "March",
+  "april": "April",
+  "may": "May",
+  "june": "June",
+  "july": "July",
+  "august": "August",
+  "september": "September",
+  "october": "October",
+  "november": "November",
+  "december": "December",
+  "@noDataForMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "advertisements": "Advertisements",
+  "adDashboard": "Ad Dashboard",
+  "overviewAllAds": "Overview — All Ads",
+  "performanceOverview": "Performance Overview",
+  "totalAds": "Total Ads",
+  "totalViews": "Total Views",
+  "totalClicks": "Total Clicks",
+  "engagement": "Engagement",
+  "averageCompletionRate": "Avg. Completion Rate",
+  "percentage": "{value}%",
+  "@percentage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "completePayment": "Complete Payment",
+  "adCreatedPendingPayment": "Ad Created — Pending Payment",
+  "adSavedCompletePayment": "Your ad has been saved. Complete payment to activate it in the feed.",
+  "totalAmount": "Total Amount",
+  "pricePerDay": "({price} EGP per day)",
+  "paymentIntegrationComingSoon": "Payment integration is coming soon. You can pay later from your ads dashboard.",
+  "payNowComingSoon": "Pay Now (Coming Soon)",
+  "payLaterDraft": "Pay Later (Ad saved as draft)",
+  "priceEGP": "{price} EGP",
+  "@priceEGP": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@pricePerDay": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "adPublished": "Ad Published!",
+  "adPublishedDescription": "Your advertisement is now live and will appear in the feed to your target audience.",
+  "backToHome": "Back to Home",
+  "editAdvertisement": "Edit Advertisement",
+  "adUpdatedSuccessfully": "Advertisement updated successfully",
+  "enterAdTitle": "Enter ad title",
+  "enterAdDescription": "Enter ad description",
+  "targetAudience": "Target Audience",
+  "whoShouldSeeThisAd": "Who should see this ad?",
+  "campaignDurationRequired": "Campaign Duration *",
+  "startDate": "Start Date",
+  "estimatedCost": "Estimated cost: {price} EGP",
+  "actionUrlOptional": "Action URL (optional)",
+  "urlPlaceholder": "https://...",
+  "ctaButtonTextOptional": "CTA Button Text (optional)",
+  "ctaPlaceholder": "e.g. Learn More, Buy Now",
+  "updateAd": "Update Ad",
+  "tapToChangeMedia": "Tap to change media",
+  "optional": "Optional",
+  "@estimatedCost": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "myAdvertisements": "My Advertisements",
+  "inactiveDraft": "Inactive / Draft",
+  "active": "Active",
+  "adDeletedSuccessfully": "Ad deleted successfully",
+  "adActivated": "Ad activated",
+  "adDeactivated": "Ad deactivated",
+  "noActiveAds": "No active advertisements",
+  "noInactiveAds": "No inactive advertisements",
+  "viewAnalyticsDashboard": "View Analytics Dashboard",
+  "viewReport": "View Report",
+  "analyticsOverview": "Analytics Overview",
+  "ads": "Ads",
+  "views": "Views",
+  "clicks": "Clicks",
+  "completion": "Completion",
+  "failedToLoadPage": "Failed to load page",
+  "learnMore": "Learn More",
+  "sponsor": "Sponsor",
+  "advertisement": "Advertisement",
+  "dashboard": "Dashboard",
+  "deactivateAd": "Deactivate Ad",
+  "activateAd": "Activate Ad",
+  "deactivateAdMessage": "This ad will no longer appear in the feed.",
+  "activateAdMessage": "This ad will appear in the feed again.",
+  "deleteAdConfirmation": "Are you sure you want to delete this advertisement?",
+  "adSavedAsDraft": "Ad saved as draft — not published",
+  "completePaymentToActivate": "Complete payment to activate this ad in the feed.",
+  "paymentComingSoon": "Payment coming soon",
+  "payNow": "Pay Now",
+  "chooseMethod": "Choose Payment Method",
+  "processing_payment_title": "Processing Payment...",
+  "processing_payment_subtitle": "Please do not close the app",
+  "payment_success_title": "Payment Successful!",
+  "payment_success_subtitle": "Your subscription is now active.\nEnjoy your access! ",
+  "payment_success_transaction_id": "Transaction ID: {id}",
+  "fawry_mobile_appbar_title": "Enter Mobile Number",
+  "fawry_mobile_label": "Enter your Fawry mobile number",
+  "fawry_mobile_terms": "By continuing you agree to our Terms",
+  "fawry_mobile_hint": "Mobile Number (e.g., 010xxxxxxxx)",
+  "fawry_mobile_confirm_btn": "Continue to Fawry",
+  "fawry_mobile_validation_empty": "Please enter your mobile number",
+  "fawry_mobile_validation_invalid": "Enter a valid Egyptian mobile number",
+  "fawry_screen_appbar_title": "Fawry Reference Code",
+  "fawry_screen_label": "Enter your payment details",
+  "fawry_screen_terms": "By continuing you agree to our Terms",
+  "fawry_screen_pay_instruction": "Pay at any Fawry POS using this code\nwithin 24 hours",
+  "fawry_screen_failed_code": "Failed to generate reference code",
+  "fawry_screen_retry": "Retry",
+  "fawry_screen_copy_btn": "Copy Code",
+  "fawry_screen_copied": "Reference code copied to clipboard",
+  "fawry_screen_copied_reminder": "Code copied! Go to any Fawry outlet and pay using this code.",
+  "fawry_screen_copied_btn": "Copied!",
+  "fawry_screen_done_btn": "Done",
+  "vodafone_appbar_title": "Enter Card Details",
+  "vodafone_label": "Enter your payment details",
+  "vodafone_terms": "By continuing you agree to our Terms",
+  "vodafone_hint": "Mobile Number (e.g., 010xxxxxxxx)",
+  "vodafone_send_btn": "Send Payment Request",
+  "vodafone_validation_empty": "Please enter your mobile number",
+  "vodafone_validation_invalid": "Enter a valid Egyptian mobile number",
+  "vodafone_name": "vodafone Cash",
+  "subscription_title": "Premium Access",
+  "subscription_subtitle": "Upgrade and analyse your game without limits",
+  "subscription_btn": "SUBSCRIBE NOW",
+  "subscription_renewal_note": "This is an automatically renewed subscription.\nYou can cancel anytime in settings.",
+  "subscription_retry": "Retry",
+  "subscription_plan_popular": "POPULAR",
+  "subscription_plan_best_value": "BEST VALUE",
+  "subscription_plan_forever": "forever",
+  "subscription_plan_per_month": "/ month",
+  "subscription_plan_per_year": "/ year",
+  "subscription_plan_current": "Current Plan",
+  "subscription_plan_select": "Select Now",
+  "subscription_plan_unlimited_videos": "Unlimited Videos",
+  "subscription_plan_videos_month": "{count} Videos / month",
+  "subscription_plan_ads_month": "{count} Ads / month",
+  "subscription_plan_detailed_reports": "Detailed Reports",
+  "subscription_plan_basic_stats": "Basic Stats",
+  "subscription_plan_no_videos": "No Videos",
+  "subscription_plan_no_ads": "No Ads",
+  "subscription_plan_duration_month": "{count} Days",
+  "subscription_plan_duration_year": "{count} Months",
+  "unKnown": "N/A",
+  "goalkeeper": "Goalkeeper",
+  "passing": "Passing",
+  "dribbling": "Dribbling",
+  "match": "Match",
+  "searchByPlayerName": "Search by player name",
+  "searchByPlayerInstruction1": "Search for public video analyses",
+  "searchByPlayerInstruction2": "Type a player's name or filter by analysis type",
+  "searchByUserName": "Search by user name",
+  "analysisDeleted": "Analysis deleted",
+  "deleteAnalysis": "Delete Analysis",
+  "deleteAnalysisConfirmation": "Are you sure you want to delete this analysis?",
+  "noAnalysesFound": "No analyses found",
+  "goalkeeperAnalysis": "Goalkeeper Analysis",
+  "passingAnalysis": "Passing Analysis",
+  "dribblingAnalysis": "Dribbling Analysis",
+  "matchAnalysis": "Match Analysis",
+  "analysisSavedCompletePayment": "Your video has been saved. Complete payment to run the AI analysis.",
+  "whatHappensNext": "What happens next",
+  "stepCompletePayment": "Complete payment using your preferred method",
+  "stepAiProcessing": "Our AI engine starts processing your video",
+  "stepReportNotified": "Report appears in your profile — you'll be notified",
+  "processing": "Processing...",
+  "analysisCompleteTitle": "Analysis Complete!",
+  "analysisInProgressTitle": "Analysis in Progress",
+  "analysisCompleteMessage": "Your {type} report is ready. Find it in your profile under Video Analysis.",
+  "analysisInProgressMessage": "Your {type} video is being processed by our AI engine. This may take a few minutes.",
+  "analysisReadyToast": "{type} analysis is ready! Check your profile.",
+  "analysisFailedToast": "Analysis failed: {message}",
+  "analysisNotificationInfo": "You'll see a toast notification here when your report is ready — no need to wait on this screen.",
+  "goToProfileButton": "Go to Profile",
+  "backToHomeButton": "Back to Home",
+  "@analysisCompleteMessage": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@analysisInProgressMessage": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@analysisReadyToast": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@analysisFailedToast": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "analyzedVideoReport": "Analyzed Video Report",
+  "analysisPendingPayment": "Analysis Pending Payment",
+  "completePaymentToUnlock": "Complete payment to unlock the full AI report and analyzed video.",
+  "payNowToUnlock": "Pay Now to Unlock",
+  "analyzedVideoLocked": "Analyzed Video (Locked)",
+  "aiEnhancedAnalysis": "AI Enhanced Analysis",
+  "originalFootage": "Original Footage",
+  "completePaymentToViewAnalyzedVideo": "Complete payment to view\nthe analyzed video",
+  "unpaid": "Unpaid",
+  "analyzedVideo": "Analyzed Video",
+  "originalVideo": "Original Video",
+  "videoAnalysis": "Video Analysis",
+  "chooseAnalysisType": "Choose Analysis Type",
+  "analysisTypeSubtitle": "Select the category that matches your training drill.",
+  "goalkeeperAnalysisLabel": "Goalkeeper",
+  "goalkeeperAnalysisDescription": "Analyze goalkeeper performance",
+  "passingAnalysisLabel": "Passing",
+  "passingAnalysisDescription": "Analyze passing accuracy and technique",
+  "dribblingAnalysisLabel": "Dribbling",
+  "dribblingAnalysisDescription": "Analyze dribbling skills and control",
+  "matchAnalysisLabel": "Match",
+  "matchAnalysisDescription": "Full match performance analysis",
+  "analyzedPlayers": "Analyzed Players",
+  "noAnalyzedPlayersYet": "No analyzed players yet",
+  "analysisTypeTitle": "{type} Analysis",
+  "whatToExpect": "What to expect",
+  "uploadOrLinkVideo": "Upload or Link Your Video",
+  "chooseFromGallery": "Choose from Gallery",
+  "recordWithCamera": "Record with Camera",
+  "uploadFailedPasteManually": "Upload failed. Paste a URL manually.",
+  "uploadError": "Upload error: {error}",
+  "orPasteVideoUrl": "Or Paste a Video URL",
+  "videoFromPost": "Video from Post",
+  "videoUrlPlaceholder": "Video URL (Cloudinary, YouTube, etc.)",
+  "provideVideoUrl": "Please provide a video URL",
+  "provideVideoUrlOrUpload": "Please provide a video URL or upload a video.",
+  "goalkeeperHeight": "Goalkeeper Height (meters)",
+  "heightExample": "e.g. 1.85",
+  "heightRequired": "Height is required for goalkeeper analysis",
+  "validHeightRange": "Enter a valid height (1.0 – 2.5 m)",
+  "heightCalibrationInfo": "Height calibrates extension & velocity measurements.",
+  "preparing": "Preparing…",
+  "startAnalysis": "Start Analysis",
+  "analysisNotificationHint": "You'll see a notification here when the report is ready.",
+  "uploading": "Uploading…",
+  "videoUploaded": "Video uploaded",
+  "tapToUploadVideo": "Tap to upload video",
+  "supportedFormats": "MP4 · MOV · AVI",
+  "orPasteUrlLabel": "OR PASTE URL",
+  "videoTips": "Video Tips",
+  "moreInfo": "More info",
+  "goalkeeperVideoInstructions": "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• The athlete must be the only person in the frame, and only one ball visible\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
+  "passingVideoInstructions": "• Use a tripod – keep the camera completely stationary\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Athlete on the far right of the frame, trainer on the far left\n• Clear view – only player, trainer, and ball\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
+  "dribblingVideoInstructions": "• Use a tripod – keep the camera completely stationary, static background\n• Get the full body – ensure the camera is wide enough\n• Film from the side view (as shown in the example)\n• Cones should be 90 cm apart\n• Camera far enough to capture start point, all cones, and the athlete\n• Only the athlete, one ball, and the cones in frame\n• Place the camera 5–7 meters (15–23 feet) away, mounted at chest height (1.5 m)\n• Ensure good lighting\n• Avoid baggy clothes – knee and hip joints must be clearly visible",
+  "matchVideoInstructions": "• Use a tripod – keep the camera stationary, wide angle\n• Capture the entire field of play\n• Ensure good lighting and minimal background movement\n• Camera height at least 1.5 m to avoid obstructions",
+  "@analysisTypeTitle": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@uploadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "analyzedVideos": "Analyzed videos",
+  "analyzed": "Analyzed",
+  "whatWillBeAnalyzed": "What will be analyzed",
+  "videoRecordingTips": "Video Recording Tips",
+  "exampleFrame": "Example Frame",
+  "gotIt": "Got it",
+  "exampleDrill": "Example: {type} drill",
+  "kpiReactionTime": "Reaction Time (seconds)",
+  "kpiMaxExtension": "Maximum Extension (meters)",
+  "kpiMaxVelocity": "Maximum Velocity (km/h)",
+  "kpiDeepestKneeAngle": "Deepest Knee Angle (degrees)",
+  "kpiDrillDuration": "Drill Duration (seconds)",
+  "kpiTotalBallTouches": "Total Ball Touches",
+  "kpiAverageBallSpeed": "Average Ball Speed (km/h)",
+  "kpiAveragePlayerSpeed": "Average Player Speed (km/h)",
+  "kpiRightKneeAngle": "Right Knee Angle (degrees)",
+  "kpiTouchesPerSec": "Total Ball Touches & Touches/sec",
+  "kpiAvgPlayerSpeedDribbling": "Average Player Speed (km/h)",
+  "kpiAvgBallDistance": "Average Ball Distance (meters)",
+  "kpiHeadUpPercentage": "Head-Up Percentage",
+  "kpiHipBounceVariance": "Hip Bounce Variance",
+  "kpiConePasses": "Cone Passes Forward/Backward & Hits",
+  "kpiTeamPossession": "Team Possession (%)",
+  "kpiDistanceCovered": "Distance Covered per Team (km)",
+  "kpiTopSpeedPerTeam": "Top Speed per Team (km/h)",
+  "kpiTopSprintSpeedOverall": "Top Sprint Speed overall (km/h)",
+  "kpiTotalFramesProcessed": "Total Frames Processed",
+  "@exampleDrill": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "maxExtension": "Max Extension",
+  "maxVelocity": "Max Velocity",
+  "kneeAngle": "Knee Angle",
+  "reactionTimeShort": "Reaction Time",
+  "reactionTime": "Reaction Time",
+  "elite": "Elite",
+  "good": "Good",
+  "average": "Average",
+  "needsWork": "Needs Work",
+  "drillDuration": "Drill Duration",
+  "ballTouches": "Ball Touches",
+  "avgBallSpeed": "Avg Ball Speed",
+  "avgPlayerSpeed": "Avg Player Speed",
+  "avgKneeAngle": "Avg Knee Angle",
+  "totalTouches": "Total Touches",
+  "touchesPerSec": "Touches / sec",
+  "avgBallDistance": "Avg Ball Distance",
+  "headUpPercent": "Head Up %",
+  "forwardPasses": "Forward\nPasses",
+  "backwardPasses": "Backward\nPasses",
+  "coneHits": "Cone Hits",
+  "hipVariance": "Hip Variance",
+  "team1": "Team 1",
+  "team2": "Team 2",
+  "vs": "VS",
+  "possession": "Possession",
+  "distanceCovered": "Distance Covered",
+  "topSpeed": "Top Speed",
+  "topSprintSpeed": "Top Sprint Speed",
+  "frames": "Frames",
+  "selectAnalysisType": "Select Analysis Type",
+  "postVideoSourceHint": "The post video will be used as the source.",
+  "myAnalysisLibrary": "My Analysis Library",
+  "usersAnalyses": "{name}'s Analyses",
+  "@usersAnalyses": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "people": "People",
+  "@@locale": "en",
+  "userMessage": "User message",
+  "@userMessage": {
+    "description": "Semantics label for a message sent by the user in the chat bubble"
+  },
+  "botMessage": "Bot message",
+  "@botMessage": {
+    "description": "Semantics label for a message sent by the bot in the chat bubble"
+  },
+  "aiAssistantTitle": "Your AI Assistant",
+  "aiAssistantSubtitle": "Using this software you can ask questions and receive articles using artificial intelligence assistant.",
+  "sportsinTitle": "SportsIn",
+  "onlineStatus": "● Online",
+  "writeMessageHint": "Write your message",
+  "sayHello": "Say hello to SportsIn! ",
+  "activeChats": "Active Chats",
+  "endedChats": "Ended Chats",
+  "noChatsYet": "No chats yet.\nStart a new conversation!",
+  "startAnotherChat": "Start Another Chat With SportsIn",
+  "deleteChat": "Delete Chat",
+  "deleteConfirmation": "Are you sure you want to delete this chat?",
+  "renameChat": "Rename Chat",
+  "enterNewName": "Enter new name",
+  "rename": "Rename",
+  "tapToContinue": "Tap to continue this chat...",
+  "sessionAvatarLabel": "S",
+  "notificationTitle": "Notification",
+  "markAllAsRead": "Mark all as read",
+  "noNotificationsYet": "No notifications yet",
+  "allCaughtUp": "You're all caught up!",
+  "requestAccepted": "Request Accepted",
+  "requestDeclined": "Request Declined",
+  "categoryRecent": "Recent",
+  "categoryRequests": "Requests",
+  "categoryReactions": "Reactions",
+  "categoryAnalysis": "Analysis",
+  "categoryCourses": "Courses",
+  "categoryOpportunities": "Opportunities",
+  "dateToday": "Today",
+  "dateYesterday": "Yesterday",
+  "timeMinutes": "{count}m",
+  "@timeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHours": "{count}h",
+  "@timeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDays": "{count}d",
+  "@timeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newBadge": "{count} new",
+  "@newBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+   "topMatch": "Top Match",
+"noTopMatchFound": "No top matches found",
+"matchCriteria": "Match Criteria",
+"matchCriteriaSubtitle": "Target specific applicants (optional)",
+"targetUserType": "Target User Type",
+"selectTargetUserType": "Select player or coach",
+"targetGender": "Target Gender",
+"selectGender": "Select gender",
+"ageRange": "Age Range",
+"minAge": "Min Age",
+"maxAge": "Max Age",
+"targetLocation": "Target Location",
+"selectLocation": "Select location",
+"selectPosition": "Select position",
+"heightRange": "Height Range (cm)",
+"minHeight": "Min Height",
+"maxHeight": "Max Height",
+"weightRange": "Weight Range (kg)",
+"minWeight": "Min Weight",
+"maxWeight": "Max Weight",
+"selectSpecialization": "Select specialization",
+"minExperienceYears": "Min Experience (years)",
+"enterMinExperience": "e.g. 3",
+"additionalNotes": "Additional Notes",
+"enterAdditionalNotes": "Any extra details...",
+"years": "years",
+  "messages": "Messages",
+  "@messages": { "description": "Title for the messages/chat list screen" },
+
+  "searchChats": "Search chats",
+  "@searchChats": { "description": "Hint text for the chat search field" },
+
+  "contacts": "Contacts",
+  "@contacts": { "description": "Section header for contacts list" },
+
+  "inbox": "Inbox",
+  "@inbox": { "description": "Section header for chat inbox" },
+
+  "@searchResults": { "description": "Section header shown while searching chats" },
+
+  "createGroup": "Create group",
+  "@createGroup": { "description": "Title for the create group bottom sheet" },
+
+  "groupName": "Group name",
+  "@groupName": { "description": "Label for the group name text field" },
+
+  "descriptionOptional": "Description (optional)",
+  "@descriptionOptional": { "description": "Label for the optional group description field" },
+
+  "members": "Members",
+  "@members": { "description": "Section header for member selection in group creation" },
+
+  "@create": { "description": "Button label to submit group creation" },
+
+  "noContactsAvailable": "No contacts available",
+  "@noContactsAvailable": { "description": "Empty state when no contacts are found" },
+
+  "@noChatsYet": { "description": "Empty state when there are no chats" },
+
+  "typeAMessage": "Type a message...",
+  "@typeAMessage": { "description": "Hint text in the chat message input field" },
+
+  "@online": { "description": "Status label shown when a user is online" },
+
+  "typing": "typing...",
+  "@typing": { "description": "Status label shown when a user is typing (no name prefix)" },
+
+  "typingWithName": "{name} is typing...",
+  "@typingWithName": {
+    "description": "Typing indicator with the user's name",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "edited": "edited",
+  "@edited": { "description": "Label appended to edited messages" },
+
+  "@edit": { "description": "Option to edit a message" },
+
+  "@delete": { "description": "Option to delete a message" },
+
+  "@retry": { "description": "Button label to retry a failed action" },
+
+  "reconnecting": "Reconnecting…",
+  "@reconnecting": { "description": "Banner text while SignalR is reconnecting" },
+
+  "connectionFailed": "Connection failed. Tap to retry",
+  "@connectionFailed": { "description": "Banner text when SignalR connection has failed" },
+
+  "disconnected": "Disconnected. Tap to reconnect",
+  "@disconnected": { "description": "Banner text when SignalR is disconnected" },
+
+  "@chat": { "description": "Generic fallback label for a chat" }
+
+
 }

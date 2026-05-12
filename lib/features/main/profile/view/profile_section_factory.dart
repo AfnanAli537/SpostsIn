@@ -1,0 +1,387 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sports_in/app/di/injection.dart';
+import 'package:sports_in/features/main/opportunity/data/model/opp_model.dart';
+import 'package:sports_in/features/main/profile/view/presentation/follow_list_screen.dart';
+import 'package:sports_in/features/main/profile/view_model/follow_bloc/follow_bloc.dart';
+import 'package:sports_in/features/main/profile/view/sections/ads_section.dart';
+import 'package:sports_in/features/main/profile/view/widgets/empty_section.dart';
+import 'package:sports_in/features/main/video_analysis/model/analysis_models.dart';
+import 'package:sports_in/features/main/video_analysis/view/presentation/analyzed_users_screen.dart';
+import 'package:sports_in/features/main/video_analysis/view_model/video_analysis_bloc/analysis_bloc.dart';
+import 'package:sports_in/generated/l10n.dart';
+import 'package:sports_in/features/main/profile/view/widgets/profile_stats_widget.dart';
+import 'package:sports_in/core/widgets/connect_button.dart';
+import 'package:sports_in/core/widgets/follow_button.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../model/profile_model.dart';
+import 'sections/posts_section.dart';
+import 'sections/opportunities_section.dart';
+import 'sections/courses_section.dart';
+import 'sections/achievements_section.dart';
+import 'sections/analyzed_videos_section.dart';
+import 'sections/interests_section.dart';
+import 'sections/player_data_section.dart';
+import 'sections/coach_data_section.dart';
+import 'sections/scout_data_section.dart';
+import 'sections/club_data_section.dart';
+import 'sections/institute_data_section.dart';
+
+class ProfileSectionFactory {
+  static Widget buildUserSpecificDataSection(
+    ProfileModel profile,
+    ThemeData theme,
+    S string,
+  ) {
+    switch (profile.userType) {
+      case UserType.player:
+        if (profile.playerData != null) {
+          return PlayerDataSection(
+            data: profile.playerData!,
+            theme: theme,
+            string: string,
+          );
+        }
+        break;
+      case UserType.coach:
+        if (profile.coachData != null) {
+          return CoachDataSection(
+            data: profile.coachData!,
+            theme: theme,
+            string: string,
+          );
+        }
+        break;
+      case UserType.scout:
+        if (profile.scoutData != null) {
+          return ScoutDataSection(
+            data: profile.scoutData!,
+            theme: theme,
+            string: string,
+          );
+        }
+        break;
+      case UserType.club:
+        if (profile.clubData != null) {
+          return ClubDataSection(
+            data: profile.clubData!,
+            theme: theme,
+            string: string,
+          );
+        }
+        break;
+      case UserType.institute:
+        if (profile.instituteData != null) {
+          return InstituteDataSection(
+            data: profile.instituteData!,
+            theme: theme,
+            string: string,
+          );
+        }
+        break;
+      case UserType.other:
+        return const SizedBox.shrink();
+    }
+    return const SizedBox.shrink();
+  }
+
+  static List<Widget> buildOtherSections({
+    required ProfileModel profile,
+    required bool isOwnProfile,
+    required ThemeData theme,
+    required S string,
+    VoidCallback? onPostsShowAll,
+    VoidCallback? onOpportunitiesShowAll,
+    VoidCallback? onCoursesShowAll,
+    VoidCallback? onAchievementsShowAll,
+    VoidCallback? onVideosShowAll,
+    VoidCallback? onInterestsShowAll,
+    // ── Ads callbacks ───────────────────────────────────────────────────────
+    VoidCallback? onAdsShowAll,
+    Function(ProfileAd)? onAdTap,
+    // ── Other callbacks ─────────────────────────────────────────────────────
+    Function(Post)? onPostTap,
+    Function(OpportunityModel)? onOpportunityTap,
+    Function(Course)? onCourseTap,
+    Function(Achievement)? onAchievementTap,
+    Function(AnalysisListItemModel)? onVideoTap,
+    Function(Interest)? onConnectToggle,
+    Function(Interest)? onFollowToggle,
+    Function(Interest)? onInterestTap,
+  }) {
+    final List<Widget> sections = [];
+
+    // ── Posts ────────────────────────────────────────────────────────────────
+    if (profile.posts.isNotEmpty) {
+      sections.add(
+        PostsSection(
+          posts: profile.posts,
+          onShowAll: onPostsShowAll,
+          onPostTap: onPostTap,
+          theme: theme,
+          string: string,
+        ),
+      );
+    } else {
+      sections.add(EmptySection(title: string.posts, message: string.noPosts));
+    }
+    // ── Advertisements ───────────────────────────────────────────────────────
+    if (profile.ads.isNotEmpty) {
+      sections.add(
+        AdsSection(
+          ads: profile.ads,
+          isOwner: isOwnProfile,
+          onShowAll: onAdsShowAll,
+          onAdTap: onAdTap,
+          theme: theme,
+          string: string,
+        ),
+      );
+    }
+    // ── Opportunities ────────────────────────────────────────────────────────
+    if (profile.opportunities != null &&
+        profile.opportunities!.items.isNotEmpty &&
+        (profile.userType == UserType.coach ||
+            profile.userType == UserType.scout ||
+            profile.userType == UserType.club)) {
+      sections.add(
+        OpportunitiesSection(
+          opportunities: profile.opportunities!.items,
+          onShowAll: onOpportunitiesShowAll,
+          onOpportunityTap: onOpportunityTap,
+          theme: theme,
+          string: string,
+        ),
+      );
+    } else if (profile.opportunities != null &&
+        profile.opportunities!.items.isEmpty &&
+        (profile.userType == UserType.coach ||
+            profile.userType == UserType.scout ||
+            profile.userType == UserType.institute ||
+            profile.userType == UserType.club)) {
+      sections.add(
+        EmptySection(
+          title: string.opportunities,
+          message: string.noOpportunities,
+        ),
+      );
+    }
+
+    // ── Courses ──────────────────────────────────────────────────────────────
+    if (profile.courses != null &&
+        profile.courses!.isNotEmpty &&
+        (profile.userType == UserType.club ||
+            profile.userType == UserType.coach ||
+            profile.userType == UserType.institute)) {
+      sections.add(
+        CoursesSection(
+          courses: profile.courses!,
+          onShowAll: onCoursesShowAll,
+          onCourseTap: onCourseTap,
+          theme: theme,
+          string: string,
+        ),
+      );
+    } else if (profile.courses != null &&
+        profile.courses!.isEmpty &&
+        (profile.userType == UserType.club ||
+            profile.userType == UserType.coach ||
+            profile.userType == UserType.institute)) {
+      sections.add(
+        EmptySection(title: string.courses, message: string.noCourses),
+      );
+    }
+
+    // ── Achievements ─────────────────────────────────────────────────────────
+    if (profile.achievements.isNotEmpty) {
+      sections.add(
+        AchievementsSection(
+          achievements: profile.achievements,
+          userId: profile.id,
+          isCurrentUser: isOwnProfile,
+          theme: theme,
+          string: string,
+        ),
+      );
+    } else {
+      sections.add(
+        EmptySection(
+          title: string.achievements,
+          message: string.noAchievements,
+        ),
+      );
+    }
+
+    // ── Analyzed videos ──────────────────────────────────────────────────────
+    if (profile.analyzedVideos.isNotEmpty) {
+  sections.add(
+    AnalyzedVideosSection(
+      videos: profile.analyzedVideos, 
+      onShowAll: onVideosShowAll,
+      onVideoTap: (item) => onVideoTap?.call(item),
+      title: string.analyzedVideosReports,
+    ),
+  );
+}
+
+    // ── Interests ────────────────────────────────────────────────────────────
+    if (profile.interests.isNotEmpty) {
+      sections.add(
+        InterestsSection(
+          interests: profile.interests,
+          onShowAll: onInterestsShowAll,
+          onFollowToggle: onFollowToggle,
+          onInterestTap: onInterestTap,
+          theme: theme,
+          string: string,
+        ),
+      );
+    }
+  sections.add(SizedBox(height: 42.h)); 
+    return sections;
+  }
+
+  static List<Widget> buildSections({
+    required ProfileModel profile,
+    required bool isOwnProfile,
+    required ThemeData theme,
+    required BuildContext context,
+    required S string,
+    bool isFollowing = false,
+    VoidCallback? onPostsShowAll,
+    VoidCallback? onOpportunitiesShowAll,
+    VoidCallback? onCoursesShowAll,
+    VoidCallback? onAchievementsShowAll,
+    VoidCallback? onVideosShowAll,
+    VoidCallback? onInterestsShowAll,
+    // ── Ads ──────────────────────────────────────────────────────────────────
+    VoidCallback? onAdsShowAll,
+    Function(ProfileAd)? onAdTap,
+    // ── Other ─────────────────────────────────────────────────────────────────
+    Function(Post)? onPostTap,
+    Function(OpportunityModel)? onOpportunityTap,
+    Function(Course)? onCourseTap,
+    Function(Achievement)? onAchievementTap,
+    Function(AnalysisListItemModel)? onVideoTap,
+    Function(Interest)? onConnectToggle,
+    Function(Interest)? onFollowToggle,
+    Function(Interest)? onInterestTap,
+    VoidCallback? onConnectPressed,
+    VoidCallback? onAcceptPressed,
+    VoidCallback? onRejectPressed,
+    VoidCallback? onFollowPressed,
+    VoidCallback? onConnectionsPressed,
+  }) {
+    final List<Widget> sections = [];
+
+    sections.add(buildUserSpecificDataSection(profile, theme, string));
+
+    sections.add(
+      ProfileStatsWidget(
+        stats: profile.stats,
+        isCurrentUser: isOwnProfile,
+        onFollowersPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FollowListScreen(
+                userId: profile.id,
+                type: FollowListType.followers,
+              ),
+            ),
+          );
+        },
+        onFollowingPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FollowListScreen(
+                userId: profile.id,
+                type: FollowListType.following,
+              ),
+            ),
+          );
+        },
+        onConnectionsPressed: onConnectionsPressed,
+        onAnalyzedPeoplePressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => getIt<AnalysisBloc>()
+                        ..add(const LoadAnalyzedUsers()),
+                      child: const AnalyzedUsersScreen(),
+                    ),
+                  ),
+                );
+              },
+        theme: theme,
+        string: string,
+      ),
+    );
+
+    sections.add(Divider(height: 1, color: theme.colorScheme.onError));
+
+    if (!profile.isOwner) {
+      sections.add(
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          child: Row(
+            children: [
+              Expanded(
+                child: ConnectButton(
+                  connectionStatus: profile.connectionStatus,
+                  onPressed: onConnectPressed ?? () {},
+                  onAccept: onAcceptPressed ?? () {},
+                  onReject: onRejectPressed ?? () {},
+                  connectText: string.connect,
+                  pendingText: string.pending,
+                  removeContactText: string.remove,
+                  acceptText: string
+                      .accept,
+                  rejectText: string.reject, 
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: FollowButton(
+                  isFollowing: profile.isFollowing,
+                  onPressed: onFollowPressed ?? () {},
+                  followingText: string.following,
+                  followText: string.follow,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    sections.addAll(
+      buildOtherSections(
+        profile: profile,
+        isOwnProfile: isOwnProfile,
+        theme: theme,
+        string: string,
+        onPostsShowAll: onPostsShowAll,
+        onOpportunitiesShowAll: onOpportunitiesShowAll,
+        onCoursesShowAll: onCoursesShowAll,
+        onAchievementsShowAll: onAchievementsShowAll,
+        onVideosShowAll: onVideosShowAll,
+        onInterestsShowAll: onInterestsShowAll,
+        onAdsShowAll: onAdsShowAll,
+        onAdTap: onAdTap,
+        onPostTap: onPostTap,
+        onOpportunityTap: onOpportunityTap,
+        onCourseTap: onCourseTap,
+        onAchievementTap: onAchievementTap,
+        onVideoTap: onVideoTap,
+        onConnectToggle: onConnectToggle,
+        onFollowToggle: onFollowToggle,
+        onInterestTap: onInterestTap,
+      ),
+    );
+
+    return sections;
+  }
+}
