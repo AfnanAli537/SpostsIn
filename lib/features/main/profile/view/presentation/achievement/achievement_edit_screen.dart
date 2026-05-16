@@ -177,8 +177,8 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     final theme = Theme.of(context).colorScheme;
     final string = S.of(context);
 
-    return BlocProvider(
-      create: (context) => getIt<ProfileBloc>(),
+    return BlocProvider.value(
+      value: getIt<ProfileBloc>(),
       child: BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is AchievementCreated) {
@@ -269,11 +269,10 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.w,
-                          vertical: 16.h, 
+                          vertical: 16.h,
                         ),
                         decoration: BoxDecoration(
-                          color: theme
-                              .surface, 
+                          color: theme.surface,
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
                             color: theme.outline.withOpacity(0.4),
@@ -290,10 +289,8 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 color: _selectedDate != null
-                                    ? Colors
-                                          .black87 
-                                    : Colors
-                                          .grey[500],
+                                    ? Colors.black87
+                                    : Colors.grey[500],
                               ),
                             ),
                             Icon(

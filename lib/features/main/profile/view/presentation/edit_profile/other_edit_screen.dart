@@ -91,7 +91,16 @@ class _OtherEditScreenState extends State<OtherEditScreen> {
     final string = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(string.editProfile)),
+      appBar: AppBar(
+        title: Text(string.editProfile),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Theme.of(context).colorScheme.onError,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {

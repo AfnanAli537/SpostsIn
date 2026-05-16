@@ -9,10 +9,7 @@ import 'profile_screen.dart';
 class UserProfileScreen extends StatefulWidget {
   final String userId;
 
-  const UserProfileScreen({
-    super.key,
-    required this.userId,
-  });
+  const UserProfileScreen({super.key, required this.userId});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -35,8 +32,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
         title: Text(string.profile),
       ),
-      body: BlocProvider(
-        create: (context) => getIt<ProfileBloc>()
+      body: BlocProvider.value(
+        value: getIt<ProfileBloc>()
           ..add(LoadUserProfile(userId: widget.userId)),
         child: ProfileScreen(userId: widget.userId),
       ),

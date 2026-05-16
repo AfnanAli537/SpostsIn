@@ -26,8 +26,8 @@ class AchievementDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ProfileBloc>(),
+    return BlocProvider.value(
+      value: getIt<ProfileBloc>(),
       child: _AchievementDetailView(
         achievement: achievement,
         isCurrentUser: isCurrentUser,

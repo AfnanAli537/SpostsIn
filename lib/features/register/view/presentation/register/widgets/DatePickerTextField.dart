@@ -42,7 +42,7 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
-      firstDate: DateTime(1950),
+      firstDate: DateTime(1800),
       lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(

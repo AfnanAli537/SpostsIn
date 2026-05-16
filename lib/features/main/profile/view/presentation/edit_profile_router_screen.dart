@@ -15,9 +15,20 @@ import 'edit_profile/club_edit_screen.dart';
 import 'edit_profile/institute_edit_screen.dart';
 import 'edit_profile/other_edit_screen.dart';
 
-class EditProfileRouterScreen extends StatelessWidget {
+class EditProfileRouterScreen extends StatefulWidget {
   const EditProfileRouterScreen({super.key});
 
+  @override
+  State<EditProfileRouterScreen> createState() => _EditProfileRouterScreenState();
+}
+
+class _EditProfileRouterScreenState extends State<EditProfileRouterScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load profile when screen is first created
+    context.read<ProfileBloc>().add(LoadMyProfile());
+  }
   @override
   Widget build(BuildContext context) {
     final string = S.of(context);
