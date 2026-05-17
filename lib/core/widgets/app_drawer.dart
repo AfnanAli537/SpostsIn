@@ -11,6 +11,7 @@ import 'package:sports_in/core/cache/shared_pref/shared_pref.dart';
 import 'package:sports_in/core/services/push_notification_service.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_bloc.dart';
 import 'package:sports_in/features/main/profile/view_model/profile%20bloc/profile_state.dart';
+import 'package:sports_in/features/notitification/data/service/notifaction_service.dart';
 import 'package:sports_in/features/notitification/presentation/view/notifi_screen.dart';
 import 'package:sports_in/features/notitification/presentation/view_model/bloc/notification_bloc.dart';
 import 'package:sports_in/generated/l10n.dart';
@@ -326,6 +327,7 @@ class AppDrawer extends StatelessWidget {
       iconColor: theme.colorScheme.error,
       isDestructive: true,
       onConfirm: () async {
+        await getIt<NotificationHubService>().disconnect();
         await getIt<NotificationService>().deleteToken();
         await getIt<SharedPref>().clearToken();
         rootNavigator.pushNamedAndRemoveUntil(

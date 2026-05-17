@@ -41,7 +41,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   @override
   void initState() {
     super.initState();
-    
+
     _profileBloc = getIt<ProfileBloc>();
 
     _pages = [
@@ -69,8 +69,8 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     hub.onReceiveNotification = (notification) {
       if (!mounted) return;
       context.read<NotificationBloc>().add(
-            RealtimeNotificationReceivedEvent(notification: notification),
-          );
+        RealtimeNotificationReceivedEvent(notification: notification),
+      );
     };
 
     hub.onConnectionStateChanged = (state) {
@@ -85,6 +85,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
 
   Future<void> _initSignalR(NotificationHubService hub) async {
     try {
+      await hub.disconnect();
       await hub.connect();
     } catch (e) {
       debugPrint('❌ Initial SignalR connect error: $e');
@@ -113,20 +114,20 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
   }
 
   void _toastSuccess(String msg) => Fluttertoast.showToast(
-        msg: msg,
-        backgroundColor: Colors.green[700],
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 4,
-      );
+    msg: msg,
+    backgroundColor: Colors.green[700],
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.TOP,
+    timeInSecForIosWeb: 4,
+  );
 
   void _toastError(String msg) => Fluttertoast.showToast(
-        msg: msg,
-        backgroundColor: Colors.red[700],
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 4,
-      );
+    msg: msg,
+    backgroundColor: Colors.red[700],
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.TOP,
+    timeInSecForIosWeb: 4,
+  );
 
   @override
   Widget build(BuildContext context) {
