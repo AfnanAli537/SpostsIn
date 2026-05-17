@@ -9,7 +9,7 @@ import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
-@lazySingleton 
+@singleton   
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepo _repository;
 

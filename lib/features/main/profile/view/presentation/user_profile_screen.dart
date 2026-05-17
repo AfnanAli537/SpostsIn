@@ -4,6 +4,7 @@ import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/generated/l10n.dart';
 import '../../view_model/profile bloc/profile_bloc.dart';
 import '../../view_model/profile bloc/profile_event.dart';
+import 'package:sports_in/features/main/profile/data/repo/profile_repo.dart';
 import 'profile_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -32,8 +33,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
         title: Text(string.profile),
       ),
-      body: BlocProvider.value(
-        value: getIt<ProfileBloc>()
+      body: BlocProvider(
+        create: (context) => ProfileBloc(getIt<ProfileRepo>())
           ..add(LoadUserProfile(userId: widget.userId)),
         child: ProfileScreen(userId: widget.userId),
       ),

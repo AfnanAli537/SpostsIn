@@ -61,10 +61,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
         ],
         child: const MessagesView(),
       ),
-      BlocProvider<ProfileBloc>.value(
-        value: _profileBloc,
-        child: const MyProfileScreen(),
-      ),
+      const MyProfileScreen(),
     ];
 
     final hub = GetIt.I<NotificationHubService>();

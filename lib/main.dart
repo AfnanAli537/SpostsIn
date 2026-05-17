@@ -41,7 +41,7 @@ void main() async {
         BlocProvider(create: (_) => getIt<ThemeCubit>()),
         BlocProvider(create: (_) => getIt<LocaleCubit>()),
         BlocProvider.value(
-  value: getIt<ProfileBloc>()),
+          value: getIt<ProfileBloc>()),
       ],
       child: const SportsIn(),
     ),

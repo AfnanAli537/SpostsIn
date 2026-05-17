@@ -259,7 +259,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i111.FollowListBloc>(
       () => _i111.FollowListBloc(gh<_i752.ProfileRepo>()),
     );
-    gh.lazySingleton<_i86.ProfileBloc>(
+    gh.singleton<_i86.ProfileBloc>(
       () => _i86.ProfileBloc(gh<_i752.ProfileRepo>()),
     );
     gh.lazySingleton<_i352.IAnalysisRepo>(
