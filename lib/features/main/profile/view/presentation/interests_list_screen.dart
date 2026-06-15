@@ -195,15 +195,15 @@ class _InterestTile extends StatelessWidget {
               backgroundImage:
                   NetworkImage(interest.profileImage),
               backgroundColor: theme.colorScheme.primaryContainer,
-              child: Text(
-                      interest.name.isNotEmpty
-                          ? interest.name[0].toUpperCase()
-                          : '?',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
+              // child: Text(
+              //         interest.name.isNotEmpty
+              //             ? interest.name[0].toUpperCase()
+              //             : '?',
+              //         style: TextStyle(
+              //           fontSize: 16.sp,
+              //           color: theme.colorScheme.onPrimaryContainer,
+              //         ),
+              //       ),
             ),
             SizedBox(width: 14.w),
             Expanded(

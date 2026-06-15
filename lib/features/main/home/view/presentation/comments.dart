@@ -429,14 +429,14 @@ class _CommentsBottomSheetContentState
         onBackgroundImageError: (exception, stackTrace) {
           // Fallback to initials if image fails to load
         },
-        child: Text(
-          initials,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 10,
-          ),
-        ),
+        // child: Text(
+        //   initials,
+        //   style: const TextStyle(
+        //     fontWeight: FontWeight.bold,
+        //     color: Colors.white,
+        //     fontSize: 10,
+        //   ),
+        // ),
       );
     } else {
       return CircleAvatar(

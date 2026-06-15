@@ -121,14 +121,12 @@ class _FollowListViewState extends State<FollowListView> {
                             type: widget.type,
                             contact: state.items[index],
                             currentUserId: currentUserId,
+                            isOwner: widget.userId == currentUserId, 
                             onTap: () => Navigator.pushNamed(
                               context,
                               AppRoutes.userProfile,
                               arguments: state.items[index].userId,
                             ),
-                            followText: widget.type == FollowListType.followers
-                                ? strings.followBack
-                                : strings.follow,
                           ),
                           childCount: state.items.length,
                         ),
@@ -195,14 +193,14 @@ class _FollowCard extends StatelessWidget {
   final FollowListType type;
   final UserContactItem contact;
   final String currentUserId;
-  final String? followText;
+  final bool isOwner;
   final VoidCallback onTap;
 
   const _FollowCard({
     required this.type,
     required this.contact,
     required this.currentUserId,
-    this.followText,
+    required this.isOwner,
     required this.onTap,
   });
 
@@ -312,7 +310,7 @@ class _FollowCard extends StatelessWidget {
                           );
                         },
                         followingText: strings.following,
-                        followText: type == FollowListType.followers ? strings.followBack : strings.follow,
+                        followText: type == FollowListType.followers && isOwner ? strings.followBack: strings.follow,
                       ),
                     ),
                   ],

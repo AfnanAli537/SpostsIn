@@ -128,24 +128,38 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
               ]
             : null,
             elevation: 0),
-            body: BlocBuilder<OpportunityBloc, OpportunityState>(
-              builder: (context, state) {
-                if (state is OpportunityDetailsLoaded) {
-                  return _buildDetailsContent(
-                    context,
-                    state.opportunity,
-                    strings,
-                  );
-                }
-                if (state is OpportunityLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is OpportunityError) {
-                  return Center(child: Text(state.message));
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+            body: BlocConsumer<OpportunityBloc, OpportunityState>(
+            // In the listener inside body: BlocConsumer
+            listener: (context, state) {
+              if (state is OpportunityApplied) {
+                context.read<OpportunityBloc>().add(
+                  FetchOpportunityDetails(opportunityId: widget.opportunityId),
+                );
+                Navigator.pop(context, true); // ← pop with true = applied
+              }
+              if (state is OpportunityError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is OpportunityDetailsLoaded) {
+                return _buildDetailsContent(
+                  context,
+                  state.opportunity,
+                  strings,
+                );
+              }
+              if (state is OpportunityLoading || state is OpportunityApplied) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is OpportunityError) {
+                return Center(child: Text(state.message));
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
           );
         },
       ),
@@ -215,7 +229,7 @@ class _OpportunityDetailsPageState extends State<OpportunityDetailsPage> {
         if (isOwner)
           _buildShowApplicantsButton(strings)
         else
-          _buildApplyButton(opportunity, false, false, strings),
+          _buildApplyButton(opportunity, false, opportunity.isAlreadyApplied, strings)
       ],
     );
   }

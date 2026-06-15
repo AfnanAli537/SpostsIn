@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'package:dotted_border/dotted_border.dart'; // Ensure this matches your ^3.1.0 version
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sports_in/app/di/injection.dart';
 import 'package:sports_in/core/widgets/auth_text_form_feild.dart';
 import 'package:sports_in/core/widgets/confirmation_dialog.dart';
 import 'package:sports_in/core/widgets/custom_elevated_button.dart';
@@ -88,9 +87,9 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      firstDate: DateTime(1800),
+      lastDate: DateTime.now(),
       builder: (context, child) {
         final theme = Theme.of(context);
 
@@ -177,9 +176,7 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
     final theme = Theme.of(context).colorScheme;
     final string = S.of(context);
 
-    return BlocProvider.value(
-      value: getIt<ProfileBloc>(),
-      child: BlocListener<ProfileBloc, ProfileState>(
+    return BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is AchievementCreated) {
             Fluttertoast.showToast(
@@ -339,7 +336,6 @@ class _AchievementEditScreenState extends State<AchievementEditScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 

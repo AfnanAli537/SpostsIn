@@ -489,7 +489,13 @@ class OpportunitiesContentState extends State<OpportunitiesContent>
                   ),
                 ),
               ),
-            );
+            ).then((didApply) {
+              if (didApply == true && context.mounted) {
+                context.read<OpportunityBloc>().add(
+                  const FetchOpportunities(isRefresh: true),
+                );
+              }
+            });
           },
           child: Padding(
             padding: EdgeInsets.all(16.w),
