@@ -159,11 +159,11 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   ) async {
     try {
       final lessons = await _repository.getCourseLessons(event.courseId);
-      final course = await _repository.getCourseById(event.courseId);
+      // final course = await _repository.getCourseById(event.courseId);
       emit(LessonsLoaded(
         lessons: lessons,
         courseId: event.courseId,
-        isEnrolled: course.isEnrolled,
+        isEnrolled: event.isEnrolled,
       ));
     } catch (e) {
       emit(CoursesError(message: e.toString()));

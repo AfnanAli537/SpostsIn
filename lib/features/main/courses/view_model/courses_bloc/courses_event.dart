@@ -80,9 +80,15 @@ class FetchCourseDetail extends CoursesEvent {
 
 class FetchCourseLessons extends CoursesEvent {
   final String courseId;
-  const FetchCourseLessons({required this.courseId});
+  final bool isEnrolled; 
+
+  const FetchCourseLessons({
+    required this.courseId,
+    this.isEnrolled = false,
+  });
+
   @override
-  List<Object?> get props => [courseId];
+  List<Object?> get props => [courseId, isEnrolled];
 }
 
 // ==================== COURSE CRUD ====================

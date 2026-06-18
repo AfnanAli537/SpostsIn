@@ -114,7 +114,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       _tabController = TabController(length: length, vsync: this);
     }
     _course = course;
-    context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId));
+    context.read<CoursesBloc>().add(FetchCourseLessons(courseId: widget.courseId, isEnrolled: course.isEnrolled,));
   }
 
   // ── Processing dialog helpers (same as AdPaymentScreen) ────────────────
@@ -370,7 +370,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
             },
             child: BlocConsumer<CoursesBloc, CoursesState>(
               listener: (ctx, state) {
-                if (state is EnrollmentSuccess) {
+                if (state is LessonsLoaded && state.courseId == widget.courseId) {
+                  setState(() {
+                    _allLessons = List.from(state.lessons);
+                  });
+                } else if (state is EnrollmentSuccess) {
                   Fluttertoast.showToast(
                       msg: string.enrolledSuccessfully,
                       backgroundColor: Colors.green);
@@ -391,17 +395,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               buildWhen: (previous, current) =>
                   current is CourseDetailLoading ||
                   current is CourseDetailLoaded ||
-                  current is LessonsLoaded ||
                   (current is CoursesError && previous is! CourseDetailLoaded),
               builder: (ctx, state) {
-                if (_course == null && state is CourseDetailLoaded) {
+                if (state is CourseDetailLoaded) {
                   _updateTabController(state.course);
-                }
-                if (state is LessonsLoaded &&
-                    state.courseId == widget.courseId) {
-                  if (state.lessons != _allLessons) {
-                    _allLessons = List.from(state.lessons);
-                  }
                 }
 
                 final course = _course ??
@@ -489,7 +486,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         isEditMode: _isEditMode,
         onRefresh: () => context
             .read<CoursesBloc>()
-            .add(FetchCourseLessons(courseId: widget.courseId)),
+            .add(FetchCourseLessons(courseId: widget.courseId, isEnrolled: course.isEnrolled)),
         onLessonTap: (l) => setState(() => _currentPlayingLesson = l),
         onUpdateLesson: _navigateToEditLesson,
         onDeleteLesson: (lesson) => _deleteLesson(lesson, string),
